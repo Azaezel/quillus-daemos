@@ -35,7 +35,7 @@
 #include <Zen/Engine/Core/I_BehaviorService.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 #include <Zen/Engine/World/I_SkyService.hpp>
 

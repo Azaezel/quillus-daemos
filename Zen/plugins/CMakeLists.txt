@@ -11,6 +11,11 @@ set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRE
 list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
 
 #-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+
+message("-- Framework")
+add_subdirectory("${ZEN_HOME}/plugins/Framework" Framework)
+
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 # Include various modules of ZOSS plugins
 #-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 # ZOgre, but online if Ogre is found
@@ -64,6 +69,19 @@ if (NOT LUA_FOUND)
 	Find_Package(Lua)
 endif (NOT LUA_FOUND)
 
+# Get the clibs directory to add to the .vcproj.user path
+IF (MSVC_IDE)
+    FIND_PATH(LUA_ROOT_DIR clibs
+        HINTS
+        ${DEPENDENCIES_HOME}/lua
+        ${INDIEZEN_PARENT}/lua
+    )
+    IF (LUA_ROOT_DIR)
+        set(LUA_CLIBS_DIR ${LUA_ROOT_DIR}/clibs CACHE FILEPATH "Lua clibs directory" )
+        message("Lua cpath: ${LUA_CLIBS_DIR}")
+    ENDIF (LUA_ROOT_DIR)
+ENDIF(MSVC_IDE)
+
 if(LUA_FOUND)
     message("-- ZLua")
     add_subdirectory( ZLua )
@@ -88,20 +106,56 @@ endif()
 
 #-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 # ZCrazyEddie, but only if CEGUI is found
-pkg_check_modules(CEGUI	CEGUI>=0.3.0)
-pkg_check_modules(CEGUI_OGRE CEGUI-OGRE)
-if (CEGUI_FOUND AND CEGUI_OGRE_FOUND)
-	message("-- ZCrazyEddie")
-	add_subdirectory( ZCrazyEddie )
-else(NOT CEGUI_FOUND AND CEGUI_OGRE_FOUND)
-	message("-- ZCrazyEddie will NOT be compiled.  CEGUI / CEGUI_OGRE was not found.")
-endif (CEGUI_FOUND AND CEGUI_OGRE_FOUND)
+if (MSVC_IDE)
+    # Hack for now -- going to go ahead and add ZCrazyEddie by force
+    # and worry about finding CEGUI later.
+    find_path( CEGUI_INCLUDE_DIR CEGUI/CEGUI.h 
+        HINTS 
+        ${INDIEZEN_PARENT}/cegui/cegui/include
+    )
+    find_path( CEGUI_LIBRARYDIR CEGUI/lib 
+        HINTS
+        ${INDIEZEN_PARENT}
+    )
+    set( CEGUI_INCLUDEDIR "${CEGUI_INCLUDE_DIR}" )
+    set( CEGUI_LIBRARIES "debug;${CEGUI_LIBRARYDIR}/CEGUI/lib/CEGUIBase_d.lib;optimized;${CEGUI_LIBRARYDIR}/CEGUI/lib/CEGUIBase.lib;debug;${CEGUI_LIBRARYDIR}/CEGUI/lib/CEGUIOgreRenderer_d.lib;optimized;${CEGUI_LIBRARYDIR}/CEGUI/lib/CEGUIOgreRenderer.lib;debug;${CEGUI_LIBRARYDIR}/CEGUI/lib/CEGUILuaScriptModule_d.lib;optimized;${CEGUI_LIBRARYDIR}/CEGUI/lib/CEGUILuaScriptModule.lib" )
+    if (CEGUI_INCLUDE_DIR AND CEGUI_LIBRARYDIR)
+        message("-- ZCrazyEddie")
+        add_subdirectory( ZCrazyEddie )
+    else (CEGUI_INCLUDE_DIR AND CEGUI_LIBRARYDIR)
+        message("-- ZCrazyEddie will NOT be compiled.  CEGUI / CEGUI_OGRE was not found.")
+    endif (CEGUI_INCLUDE_DIR AND CEGUI_LIBRARYDIR)
+else (NOT MSVC_IDE)
+    pkg_check_modules(CEGUI	CEGUI>=0.3.0)
+    pkg_check_modules(CEGUI_OGRE CEGUI-OGRE)
+    if (CEGUI_FOUND AND CEGUI_OGRE_FOUND)
+        message("-- ZCrazyEddie")
+        add_subdirectory( ZCrazyEddie )
+    else(NOT CEGUI_FOUND AND CEGUI_OGRE_FOUND)
+        message("-- ZCrazyEddie will NOT be compiled.  CEGUI / CEGUI_OGRE was not found.")
+    endif (CEGUI_FOUND AND CEGUI_OGRE_FOUND)
+endif (MSVC_IDE)
 
 message("-- ZTerrain")
 add_subdirectory( ZTerrain )
 
 message("-- ZSky")
 add_subdirectory( ZSky )
+
+
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+# ZODE but only if Open Dynamics Engine is found
+Find_Package(OpenDE)
+
+if (OPENDE_FOUND)
+    message("-- ZODE (${OPENDE_FOUND}, ${OPENDE_LIBRARIES})")
+    add_subdirectory(ZODE)
+else(OPENDE_FOUND)
+    message("-- ZODE will NOT be compiled.  ODE was not found.")
+endif(OPENDE_FOUND)
+
+message("-- ZMicroPather")
+add_subdirectory(ZMicroPather)
 
 # These have not yet been ported.
 #  Please add them if you port them ;)

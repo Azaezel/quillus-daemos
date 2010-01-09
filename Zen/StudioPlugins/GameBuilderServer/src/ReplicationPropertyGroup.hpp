@@ -65,7 +65,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             ReplicationPropertyGroup(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Property* _pParent = NULL);
+             ReplicationPropertyGroup(Properties& _properties, Property* _pParent = NULL);
     virtual ~ReplicationPropertyGroup();
     /// @}
 

@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// IndieZen Game Engine Framework
+// Zen Engine Framework
 //
-// Copyright (C) 2001 - 2007 Tony Richards
-// Copyright (C)        2008 Walt Collins
+// Copyright (C) 2001 - 2009 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,126 +20,112 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PhysicsMaterial.hpp"
-#include <vector>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-PhysicsMaterial::PhysicsMaterial(wpPhysicsZone_type _zone, bool _default)
-:   m_pZone(_zone)
+PhysicsMaterial::PhysicsMaterial()
 {
-    //thinking this is bad practice, so just a general outline -bjr
-    materials_vector_type materialsListing m_pZone->getZonePtr()->getAllMaterials();
-    if (_default) m_id = NULL;
-    else m_id = materialsListing.end();
-    materialsListing.push_back(this);
-
-    setCollidable(true);
-    setAdvancedCollisionPrediction(false);
-    setRestitution(0.25f);
-    setStaticFriction(1.0f);
-    setDynamicFriction(0.7f);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsMaterial::~PhysicsMaterial()
 {
+    throw Utility::runtime_exception("PhysicsMaterial::setIgnoreCollision(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-int 
+int
 PhysicsMaterial::getMaterialID()
 {
-    return m_id;
+    throw Utility::runtime_exception("PhysicsMaterial::getMaterialID(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-int 
+int
 PhysicsMaterial::getDefaultMaterialID()
 {
-    return NULL;
+    throw Utility::runtime_exception("PhysicsMaterial::getDefaultMaterialID(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Math::Real 
+Math::Real
 PhysicsMaterial::getDynamicFriction()
 {
-    return m_dynamicFriction;
+    throw Utility::runtime_exception("PhysicsMaterial::getDynamicFriction(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Math::Real 
+Math::Real
 PhysicsMaterial::getStaticFriction()
 {
-    return m_staticFriction;
+    throw Utility::runtime_exception("PhysicsMaterial::getStaticFriction(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Math::Real 
-PhysicsMaterial::getElasticity()
+Math::Real
+PhysicsMaterial::getRestitution()
 {
-    return m_elasticity;
+    throw Utility::runtime_exception("PhysicsMaterial::getRestitution(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-bool 
+bool
 PhysicsMaterial::getAdvancedCollisionPrediction()
 {
-    return m_bAdvancedCollisionPrediction;
+    throw Utility::runtime_exception("PhysicsMaterial::getAdvancedCollisionPrediction(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-bool 
+bool
 PhysicsMaterial::getCollidable()
 {
-    return m_bCollidable;
+    throw Utility::runtime_exception("PhysicsMaterial::getCollidable(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 PhysicsMaterial::setDynamicFriction(Math::Real _dynamicFriction)
 {
-    m_dynamicFriction = _dynamicFriction;
+    throw Utility::runtime_exception("PhysicsMaterial::setDynamicFriction(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 PhysicsMaterial::setStaticFriction(Math::Real _staticFriction)
 {
-    // Newton friction coefficients are normally between 0 and 1
-    m_staticFriction = _staticFriction;
+    throw Utility::runtime_exception("PhysicsMaterial::setStaticFriction(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-PhysicsMaterial::setRestitution(Math::Real _restitution)
+PhysicsMaterial::setRestitution(Math::Real _elasticity)
 {
-    m_restitution = _restitution;
+    throw Utility::runtime_exception("PhysicsMaterial::setRestitution(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 PhysicsMaterial::setAdvancedCollisionPrediction(bool _mode)
 {
-    m_bAdvancedCollisionPrediction = _mode;
+    throw Utility::runtime_exception("PhysicsMaterial::setAdvancedCollisionPrediction(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 PhysicsMaterial::setCollidable(bool _collide)
 {
-    m_bCollidable = _collide;
+    throw Utility::runtime_exception("PhysicsMaterial::setCollidable(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 PhysicsMaterial::setIgnoreCollision(pPhysicsMaterial_type _material)
 {
-   //implement explicit mat on mat ignore collisions, or stick to a collisiongroups mask for collisionshapes?
+    throw Utility::runtime_exception("PhysicsMaterial::setIgnoreCollision(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

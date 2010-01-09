@@ -70,21 +70,27 @@ RenderingService::~RenderingService()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Engine::Rendering::I_Context* 
+Zen::Engine::Rendering::I_Context*
 RenderingService::createContext(window_handle_type _pParent)
 {
-    return new NullContext(_pParent);
+    return new NullContext(_pParent ? _pParent : 
+#ifdef _WIN32
+        NULL
+#else
+        ""
+#endif
+        );
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingService::destroyContext(Zen::Engine::Rendering::I_Context* _pContext)
 {
     // TODO Implement
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Engine::Rendering::I_View* 
+Zen::Engine::Rendering::I_View*
 RenderingService::createView(Zen::Engine::Rendering::I_Context& _context, const std::string& _windowName, unsigned int _width, unsigned int _height)
 {
     // TODO Pass _context to the constructor?
@@ -108,7 +114,7 @@ RenderingService::getScriptObject()
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(), 
+            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(),
             Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
     }
 

@@ -74,7 +74,7 @@ Widget::getStyle()
 Widget::pWidget_type
 Widget::getParent()
 {
-    Widget* pWidget = 
+    Widget* pWidget =
         static_cast<Widget*>(m_window.getParent()->getUserData());
 
     return pWidget;
@@ -86,15 +86,15 @@ Widget::getChild(const std::string& _name)
 {
     try
     {
-        CEGUI::Window* pWindow = 
+        CEGUI::Window* pWindow =
             m_window.getChild((CEGUI::utf8*)_name.c_str());
 
-        Widget* pWidget = 
+        Widget* pWidget =
             static_cast<Widget*>(pWindow->getUserData());
 
         return pWidget;
     }
-    catch(CEGUI::UnknownObjectException _e)
+    catch(CEGUI::UnknownObjectException& _e)
     {
         return NULL;
     }
@@ -150,7 +150,7 @@ Widget::destroyChild(const std::string& _name)
 
         pWindow->destroy();
     }
-    catch(CEGUI::UnknownObjectException _e)
+    catch(CEGUI::UnknownObjectException& _e)
     {
         throw Zen::Utility::runtime_exception(_e.getMessage().c_str());
     }
@@ -204,7 +204,7 @@ Widget::getProperty(const std::string& _name)
         return *iter->second;
     }
 
-    CEGUI::String propertyValue = 
+    CEGUI::String propertyValue =
         m_window.getProperty((CEGUI::utf8*)_name.c_str());
 
     WidgetProperty* pWidgetProperty = new WidgetProperty(*this,propertyValue.c_str());
@@ -227,7 +227,7 @@ Widget::handleButtonClick(boost::any& _parameter)
 {
     CEGUI::EventArgs eventArgs = boost::any_cast<CEGUI::EventArgs>(_parameter);
 
-    const CEGUI::MouseEventArgs& mouseEventArgs = 
+    const CEGUI::MouseEventArgs& mouseEventArgs =
         *static_cast<const CEGUI::MouseEventArgs*>(&eventArgs);
 
     Zen::Engine::Widgets::I_WidgetEvent& widgetEvent(getEvent("ButtonClick"));

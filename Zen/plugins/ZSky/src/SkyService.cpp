@@ -83,7 +83,7 @@ SkyService::createSky(config_type& _config)
     Sky* pRawSky = new Sky();
     pSky_type pSky = pSky_type(pRawSky, boost::bind(&SkyService::onDestroySky, this, _1));
 
-    if (!m_pPhysicsService.isValid() ||
+    if (!m_pPhysicsService.isValid() || 
         !m_pRenderingService.isValid() ||
         //!m_pPhysicsResourceService.isValid() ||
         !m_pRenderingResourceService.isValid())
@@ -116,7 +116,7 @@ SkyService::onDestroySky(wpSky_type _wpSky)
 {
     /// Fire the Sky's onDestroyEvent
     _wpSky->onDestroyEvent(_wpSky);
-
+    
     /// delete the Sky pointer
     Sky* pSky = dynamic_cast<Sky*>(_wpSky.get());
 

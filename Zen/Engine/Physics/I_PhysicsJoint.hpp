@@ -44,7 +44,7 @@ namespace Engine {
 namespace Physics {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_PhysicsZone;
-class I_CollisionShape;
+class I_PhysicsActor;
 
 class PHYSICS_DLL_LINK I_PhysicsJoint
 {
@@ -54,14 +54,14 @@ public:
     typedef Memory::managed_ptr<I_PhysicsJoint>            pPhysicsJoint_type;
     typedef Memory::managed_weak_ptr<I_PhysicsJoint>       wpPhysicsJoint_type;
     typedef Event::Event<wpPhysicsJoint_type>              physicsJointEvent_type;
-    typedef Memory::managed_ptr<I_CollisionShape>            pCollisionShape_type;
-    typedef Memory::managed_weak_ptr<I_CollisionShape>       wpCollisionShape_type;
+    typedef Memory::managed_ptr<I_PhysicsActor>            pPhysicsActor_type;
+    typedef Memory::managed_weak_ptr<I_PhysicsActor>       wpPhysicsActor_type;
     /// @}
 
     /// @name I_PhysicsJoint interface
     /// @{
 public:
-    virtual void attachShape(pCollisionShape_type _shape) = 0;
+    virtual void attachActor(pPhysicsActor_type _shape) = 0;
     virtual void initUpVectorJoint(const Math::Vector3& _upVector) = 0;
     /// @}
 
@@ -83,7 +83,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Physics
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_PhysicsJoint is managed by a I_PhysicsZone
     template<>

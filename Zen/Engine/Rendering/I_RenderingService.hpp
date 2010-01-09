@@ -73,7 +73,8 @@ public:
 #ifdef _WIN32
     typedef HWND                                    window_handle_type;
 #else
-    typedef void*                                   window_handle_type;
+    // On X11, this is a string in the format of display:screen:window
+    typedef const char*                             window_handle_type;
 #endif
     /// @}
 
@@ -134,7 +135,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Rendering
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_RenderingService is managed by a factory
     template<>

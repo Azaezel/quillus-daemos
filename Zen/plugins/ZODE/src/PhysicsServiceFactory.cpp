@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// IndieZen Game Engine Framework
+// Zen Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
-// Copyright (C)        2008 Walt Collins
+// Copyright (C) 2001 - 2009 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +20,6 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "PhysicsServiceFactory.hpp"
@@ -31,6 +29,7 @@
 #include <boost/function.hpp>
 
 #include <cstddef>
+#include <iostream>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -59,6 +58,8 @@ PhysicsServiceFactory::getSingleton()
 PhysicsServiceFactory::pPhysicsService_type
 PhysicsServiceFactory::create(const std::string& _type, Engine::Physics::I_PhysicsServiceFactory::config_type& _config)
 {
+    std::cout << "PhysicsServiceFactory::create" << std::endl;
+
     PhysicsService* pRawService = new PhysicsService();
 
 	PhysicsServiceFactory::pPhysicsService_type pService(pRawService, boost::bind(&PhysicsServiceFactory::destroy, this, _1));
@@ -66,6 +67,8 @@ PhysicsServiceFactory::create(const std::string& _type, Engine::Physics::I_Physi
     wpPhysicsService_type pWeakPtr(pService);
 
     pRawService->setSelfReference(pWeakPtr);
+
+    assert(pService.get() != NULL);
 
     return pService;
 }

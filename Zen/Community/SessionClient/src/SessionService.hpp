@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -30,6 +30,8 @@
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
 #include <Zen/Core/Memory/managed_self_ref.hpp>
 
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Enterprise/AppServer/I_ApplicationService.hpp>
 #include <Zen/Enterprise/AppServer/I_ApplicationServer.hpp>
 
@@ -55,11 +57,17 @@ namespace Client {
 
 class SessionService
 :   public Zen::Community::Common::I_SessionService
-,   public Zen::Memory::managed_self_ref<Common::I_SessionService>
+,   public Zen::Scripting::I_ScriptableService
+,   public Zen::Memory::managed_self_ref<Zen::Community::Common::I_SessionService>
 {
     /// @name Types
     /// @{
 public:
+    typedef SessionService*                                         pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<SessionService>         ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                              ScriptWrapper_type;
+    typedef ScriptWrapper_type*                                     pScriptWrapper_type;
+
     typedef Zen::Memory::managed_ptr<Zen::Networking::I_Endpoint>   pEndpoint_type;
 
 	typedef std::map<unsigned int, pResponseHandler_type>		    Handlers_type;
@@ -76,7 +84,7 @@ public:
     virtual Zen::Threading::I_Condition* prepareToStart(Zen::Threading::ThreadPool& _threadPool);
     virtual void start();
     virtual Zen::Threading::I_Condition* prepareToStop();
-    virtual void stop();    
+    virtual void stop();
     /// @}
 
     /// @name I_RequestHandler implementation
@@ -92,18 +100,24 @@ public:
     virtual void handleMessage(pMessage_type _pMessage);
     /// @}
 
+    /// @name I_ScriptableType
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
+    virtual Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
+    /// @name I_ScriptableService implementation
+    /// @{
+public:
+    virtual void registerScriptEngine(pScriptEngine_type _pScriptEngine);
+    /// @}
+
     /// @name I_SessionService implementation
     /// @{
 public:
-#if 0   // deprecated
-    virtual void requestSession(pEndpoint_type _pDestinationEndpoint, 
-                              const std::string& _name, 
-                              const std::string& _password,
-                              pResponseHandler_type _pResponseHandler);
-#endif  // deprecated
-
-    virtual pFutureSession_type requestSession(pEndpoint_type _pDestinationEndpoint, 
-                                             const std::string& _name, 
+    virtual pFutureSession_type requestSession(pEndpoint_type _pDestinationEndpoint,
+                                             const std::string& _name,
                                              const std::string& _password);
     /// @}
 
@@ -112,6 +126,11 @@ public:
 public:
     pFutureAttribute_type requestAttribute(const Common::I_Session& _session,
                                            const std::string& _key);
+
+    pScriptModule_type getScriptModule();
+
+    /// Script interface for login.
+    void login(const std::string& _server, const std::string& _name, const std::string& _password, boost::any _listener);
 	/// @}
 
     /// @name 'Structors
@@ -131,6 +150,10 @@ private:
 	/// Map from MessageID() to the response handler
 	Handlers_type										m_responseHandlers;
 	Zen::Threading::I_Mutex*							m_pHandlersMutex;
+
+    pScriptEngine_type                                  m_pScriptEngine;
+    Zen::Scripting::script_module*                      m_pScriptModule;
+    Scripting::I_ObjectReference*                       m_pScriptObject;
     /// @}
 
 };  // class SessionService

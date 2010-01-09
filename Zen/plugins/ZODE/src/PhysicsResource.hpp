@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
-// Copyright (C)        2008 Walt Collins
+// Copyright (C) 2001 - 2009 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +20,6 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef ZEN_ZODE_PHYSICS_RESOURCE_HPP_INCLUDED
 #define ZEN_ZODE_PHYSICS_RESOURCE_HPP_INCLUDED

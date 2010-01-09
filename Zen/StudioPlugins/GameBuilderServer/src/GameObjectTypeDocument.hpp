@@ -14,12 +14,14 @@
 #define GAME_BUILDER_GAME_OBJECT_TYPE_DOCUMENT_HPP_INCLUDED
 
 #include "GameObjectTypeController.hpp"
+#include "DocumentProperties.hpp"
 
 #include <Zen/Enterprise/Database/I_DatabaseService.hpp>
 
 #include <Zen/Studio/WorkbenchCommon/I_Project.hpp>
 #include <Zen/Studio/WorkbenchCommon/I_Document.hpp>
 #include <Zen/Studio/WorkbenchCommon/I_ExplorerNode.hpp>
+#include <Zen/Studio/WorkbenchCommon/I_PropertiesListener.hpp>
 
 #include <Zen/StudioPlugins/GameBuilderCommon/I_GameObjectTypeDocument.hpp>
 #include <Zen/StudioPlugins/GameBuilderCommon/I_GameObjectTypeView.hpp>
@@ -40,6 +42,7 @@ class GameObjectTypeDocument
 :   public I_GameObjectTypeDocument
 ,   public I_GameObjectTypeView
 ,   public Zen::Studio::Workbench::I_Document
+,   public Zen::Studio::Workbench::I_PropertiesListener
 {
     /// @name Types
     /// @{
@@ -87,9 +90,18 @@ public:
     /// @name I_GameObjectTypeView implementation
     /// @{
 public:
+    virtual void onDocumentModified(I_GameObjectTypeDocument& _gameObjectTypeDocument);
     virtual void onNewElement(I_GameObjectElement& _element, int _position);
     virtual void onElementRemoved(int _position);
     virtual void onElementModified(I_GameObjectElement& _element, int _row);
+    /// @}
+
+    /// @name I_PropertiesListener imlementation for listening to document properties
+    /// @{
+public:
+    virtual void onAddProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Zen::Studio::Workbench::I_Property& _property);
+    virtual void onValueModified(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Zen::Studio::Workbench::I_Property& _property);
+    virtual void onRemoveProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Zen::Studio::Workbench::I_Property& _property);
     /// @}
 
     /// @name GameObjectTypeDocument implementation
@@ -129,6 +141,9 @@ protected:
     /// Eventually this should become asynchronous.
     /// @see GameObjectType::getDocument()
     void load(GameObjectType& _node);
+
+    /// Notify all of the GOT views that this document has been modified.
+    void notifyViewsOfModification();
     /// @}
 
     /// @name Event handlers
@@ -166,6 +181,7 @@ private:
     Zen::Studio::Workbench::I_Document::pDocument_type* m_ppParent;
     pSubscription_type                                  m_pParentSubscription;
 
+    /// Explorer node to which this document belongs.
     pExplorerNode_type                                  m_pNode;
     pNodeEventConnection_type                           m_pNodeConnection;
 
@@ -184,7 +200,11 @@ private:
     Elements_type                                       m_parentElements;
     Elements_type                                       m_elements;
 
+    /// true if this document has been loaded from the database
     bool                                                m_loaded;
+
+    /// Subscription to the document properties
+    DocumentProperties::pSubscription_type              m_pDocumentPropertySubscription;
     /// @}
 
 };  // class GameObjectTypeDocument

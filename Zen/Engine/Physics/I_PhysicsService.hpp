@@ -63,18 +63,21 @@ public:
     /// @name I_PhysicsService interface
     /// @{
 public:
-   	virtual pPhysicsZone_type createZone(void) = 0;
+    /// Create a physics zone.
+    /// A physics zone contains all of the physics actors that make up a
+    /// standalone physics simulation.  Actors within on zone do not
+    /// interact with actors within another zone.
+    /// @note Some physics plugins do not support muliple zones.  If
+    ///     this is the case, the plugin should throw an exception
+    ///     if an application attemts to create more than one zone.
+   	virtual pPhysicsZone_type createZone() = 0;
 
-    /// @todo TR - This should not be here.  It should be
-    ///     moved to I_PhysicsZone.  Each world needs to
-    ///     be treated as a separate simulation.
+    /// Step the physics simulations by the specified amount of time.
+    /// This will step the physics simulations for all zones and will
+    /// not return until the simulation has completed.
+    /// You might consider running I_PhysicsZone::stepSimulation() instead.
+    /// @param _elapsedTime is in seconds where 1.0 is one second.
 	virtual void stepSimulation(double _elapsedTime) = 0;
-    /// @}
-
-    /// @name Event handlers
-    /// @{
-protected:
-	virtual void onFrame() = 0;
     /// @}
 
     /// @name Static methods
@@ -88,7 +91,7 @@ public:
     /// @{
 public:
     /// Fired immediately before this object is destroyed.
-    /// The payload is about to be destroyed, so do not keep a reference of it around.
+    /// The payload is about to be destroyed, so do not keep a reference to it.
     serviceEvent_type onDestroyEvent;
 
     /// This event is fired after every frame is rendered
@@ -109,7 +112,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Physics
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_PhysicsService is managed by a I_PhysicsServiceFactory
     template<>

@@ -150,14 +150,16 @@ WorkbenchService::getApplicationServer()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
-WorkbenchService::setControlPath(const boost::filesystem::path& _controlPath)
+WorkbenchService::setWorkspacePath(const boost::filesystem::path& _workspacePath)
 {
-    m_controlPath = _controlPath;
+    m_workspacePath = _workspacePath;
+    m_controlPath = m_workspacePath / ".workbench";
 
     // Connect to the database
     boost::filesystem::path dbPath = m_controlPath / "workbench.sqlite";
     if (!boost::filesystem::exists(dbPath))
     {
+        // TODO Create it.
         return false;
     }
 
@@ -180,7 +182,16 @@ WorkbenchService::setControlPath(const boost::filesystem::path& _controlPath)
         return false;
     }
 
+    // Set the workspace path to the the
+
     return true;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const boost::filesystem::path&
+WorkbenchService::getWorkspacePath()
+{
+    return m_workspacePath;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -382,26 +393,20 @@ WorkbenchService::loadProjects()
 I_ExplorerNode::pUserData_type
 WorkbenchService::createNodeUserData(boost::uint64_t _explorerNodeId, const std::string& _nodeType, I_ExplorerNode& _parentNode)
 {
-    std::cout << "WorkbenchService::createNodeUserData(): Get Zen::Studio::Workbench::ExplorerNode extension point" << std::endl;
     // Find the correct extension for this node user data and load it
     Plugins::I_ExtensionRegistry::pExtensionPoint_type
         pExtensionPoint = Plugins::I_ExtensionRegistry::getSingleton().getExtensionPoint("Zen::Studio::Workbench", "ExplorerNode");
 
     if (pExtensionPoint.get() != NULL)
     {
-        std::cout << "WorkbenchService::createNodeUserData(): Got extension point" << std::endl;
         Plugins::I_Extension::extension_ptr_type pExtension = pExtensionPoint->getExtension(_nodeType);
 
-        std::cout << "WorkbenchService::createNodeUserData(): Got extension " << _nodeType << std::endl;
         if (pExtension)
         {
-            std::cout << "WorkbenchService::createNodeUserData(): Getting class factory " << _nodeType << std::endl;
-
             // TODO Cache this factory / extension?
             I_ExplorerNodeFactory* pFactory = dynamic_cast<I_ExplorerNodeFactory*>(&pExtension->getClassFactory());
 
             // Create the project.
-            std::cout << "WorkbenchService::createNodeUserData(): Creating the project " << _nodeType << std::endl;
             return pFactory->createNodeUserData(_explorerNodeId, _nodeType, _parentNode);
         }
     }

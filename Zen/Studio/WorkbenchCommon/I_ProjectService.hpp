@@ -64,6 +64,7 @@ public:
     /// Create a project.
     /// @param _controller I_ProjectExplorerController that is being used to create this
     ///     I_Project.
+    /// @param _projectName the name of the project
     virtual pProject_type createProject(Zen::Studio::Workbench::I_ProjectExplorerController& _controller, const std::string& _projectName) = 0;
     /// @}
 

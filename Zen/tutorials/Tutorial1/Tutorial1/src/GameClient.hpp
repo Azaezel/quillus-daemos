@@ -38,7 +38,7 @@
 #include <Zen/Engine/Camera/I_Camera.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 #include <Zen/Starter/Base/BaseClient/I_BaseGameClient.hpp>
 #include <Zen/Starter/Base/BaseCommon/I_BaseGame.hpp>

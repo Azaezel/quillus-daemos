@@ -22,7 +22,7 @@
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -163,7 +163,7 @@ GameObject::loadRenderable(const std::string& _meshName, const std::string& _mat
     config["label"] = name.str();
 
     config["type"] = "entity";
-    
+
     pRenderableResource_type pRenderable =
         Zen::Engine::Base::I_BaseGameClient::getSingleton().getRenderingResourceService().loadResource(config).as<pRenderableResource_type>();
 
@@ -242,7 +242,8 @@ GameObject::setScale(Zen::Engine::Core::I_BaseGameObject& _object, float _x, flo
 {
     _object.setScale(_x, _y, _z);
 
-    _object.getCollisionShape()->setScale(_x * 100.0f, _y * 100.0f, _z * 100.0f);
+    // TODO Should physics actor support scale?
+    //_object.getPhysicsActor()->setScale(_x * 100.0f, _y * 100.0f, _z * 100.0f);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

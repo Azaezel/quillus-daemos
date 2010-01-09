@@ -52,7 +52,7 @@ namespace Engine {
         class I_Resource;
     }
     namespace Physics {
-        class I_CollisionShape;
+        class I_PhysicsActor;
     }
 namespace World {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -65,7 +65,7 @@ public:
     typedef Zen::Memory::managed_ptr<I_Terrain>                 pScriptObject_type;
     typedef Scripting::ObjectReference<I_Terrain>               ScriptObjectReference_type;
 
-    typedef Memory::managed_ptr<Physics::I_CollisionShape>        pCollisionShape_type;
+    typedef Memory::managed_ptr<Physics::I_PhysicsActor>        pPhysicsActor_type;
     typedef Memory::managed_ptr<I_Terrain>                      pTerrain_type;
     typedef Memory::managed_weak_ptr<I_Terrain>                 wpTerrain_type;
     typedef Event::Event<wpTerrain_type>                        terrainEvent_type;
@@ -76,21 +76,12 @@ public:
     /// @name I_Terrain interface
     /// @{
 public:
-    virtual void setCollisionShape(pCollisionShape_type _shape) = 0;
-    virtual pCollisionShape_type getCollisionShape(void) = 0;
+    virtual void setPhysicsActor(pPhysicsActor_type _pActor) = 0;
+    virtual pPhysicsActor_type getPhysicsActor() = 0;
     virtual void setResource(pResource_type _resource) = 0;
     virtual pResource_type getResource() = 0;
-
-    /// @note TR - I Changed this to const std::string& but I haven't fixed everything.
-    ///     Please fix if you get an error.
     virtual bool loadVisualization(const std::string& _ogreSpecificConfigFileName, const Math::Matrix4& _transform) = 0;
-
-    /// @note TR - I Changed this to const std::string& but I haven't fixed everything.
-    ///     Please fix if you get an error.
     virtual bool loadPhysicsFromRaw(const std::string& _rawFileName, size_t _size, float _maxHeight, float _scaleXY, const Math::Matrix4& _transform, bool _bSerialize) = 0;
-
-    /// @note TR - I Changed this to const std::string& but I haven't fixed everything.
-    ///     Please fix if you get an error.
     virtual bool loadPhysicsFromSerialization(const std::string& _serializationFileName, const Math::Matrix4& _transform) = 0;
     /// @}
 
@@ -120,7 +111,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace World
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_Terrain is managed by a I_TerrainService
     template<>

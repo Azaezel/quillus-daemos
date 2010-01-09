@@ -113,8 +113,8 @@ ProjectExplorerModel::unSubscribe(pExplorerView_type _pView)
 void
 ProjectExplorerModel::createNewProject(pProject_type _pProject)
 {
-    ProjectExplorerNode* pNewNode = 
-        new ProjectExplorerNode(*this, _pProject.as<I_ExplorerNode::pUserData_type>());
+    ProjectExplorerNode* pNewNode =
+        new ProjectExplorerNode(*this, _pProject.as<I_ExplorerNode::pUserData_type>(), _pProject.get());
 
     boost::uint64_t newNodeId = insertExplorerNode(_pProject->getType().getName(), 0);
 
@@ -146,8 +146,8 @@ ProjectExplorerModel::createNewProject(pProject_type _pProject)
 void
 ProjectExplorerModel::loadExistingProject(pProject_type _pProject, I_ExplorerNodeDataMap::pExplorerNodeDomainObject_type _pExplorerNodeDO)
 {
-    ProjectExplorerNode* pNewNode = 
-        new ProjectExplorerNode(*this, _pProject.as<I_ExplorerNode::pUserData_type>());
+    ProjectExplorerNode* pNewNode =
+        new ProjectExplorerNode(*this, _pProject.as<I_ExplorerNode::pUserData_type>(), _pProject.get());
 
     pNewNode->setNodeId(_pExplorerNodeDO->getExplorerNodeId());
 
@@ -166,10 +166,10 @@ ProjectExplorerModel::loadExistingChildren(pExplorerNode_type _pParentNode)
     I_ExplorerNodeDataMap::pExplorerNodeDataMap_type pExplorerNodeDM =
         I_ExplorerNodeDataMap::create(m_workbenchService.getDatabaseConnection());
 
-    I_ExplorerNodeDataMap::pFutureExplorerNodeDataCollection_type 
+    I_ExplorerNodeDataMap::pFutureExplorerNodeDataCollection_type
         pChildrenDC = pExplorerNodeDM->getChildren(_pParentNode->getNodeId());
 
-    struct NodeVisitor 
+    struct NodeVisitor
     :   public I_ExplorerNodeDataCollection::I_CollectionVisitor
     {
         virtual void begin()
@@ -185,7 +185,7 @@ ProjectExplorerModel::loadExistingChildren(pExplorerNode_type _pParentNode)
             // Get the user data for this node from the workbench.
             // This involves loading an extension, and so we leave it to the
             // workbench to handle it correctly.
-            I_ExplorerNode::pUserData_type pUserData =             
+            I_ExplorerNode::pUserData_type pUserData =
                 m_workbenchService.createNodeUserData(explorerNodeId, nodeType, m_parentNode);
 
             // ProjectExplorerModel will correctly construct the node
@@ -229,7 +229,7 @@ ProjectExplorerModel::createChildNode(I_ExplorerNode& _parent, I_ExplorerNode::p
         throw Utility::runtime_exception("ProjectExplorerModel::createChildNode(): Error, parent is wrong type.");
     }
 
-    ProjectExplorerNode* pNewNode = new ProjectExplorerNode(*this, _pData, pParent);
+    ProjectExplorerNode* pNewNode = new ProjectExplorerNode(*this, _pData, _parent.getProject(), pParent);
 
     boost::uint64_t newNodeId = insertExplorerNode(_pData->getType().getName(), _parent.getNodeId());
 
@@ -256,7 +256,7 @@ ProjectExplorerModel::loadChildNode(I_ExplorerNode& _parent, I_ExplorerNode::pUs
         throw Utility::runtime_exception("ProjectExplorerModel::loadChildNode(): Error, parent is wrong type.");
     }
 
-    ProjectExplorerNode* pNewNode = new ProjectExplorerNode(*this, _pData, pParent);
+    ProjectExplorerNode* pNewNode = new ProjectExplorerNode(*this, _pData, pParent->getProject(), pParent);
 
     boost::uint64_t explorerNodeId = _pNodeDO->getExplorerNodeId();
     std::string nodeType = _pNodeDO->getNodeType();

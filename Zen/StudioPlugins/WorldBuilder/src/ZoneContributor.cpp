@@ -15,13 +15,14 @@
 #include "ContributorService.hpp"
 #include "Creator.hpp"
 #include "ZoneLayerView.hpp"
+#include "ZenOgitorsSystem.hpp"
 
 #include <Zen/Studio/Workbench/I_Workbench.hpp>
 #include <Zen/Studio/Workbench/I_StudioTopFrame.hpp>
 #include <Zen/Studio/Workbench/I_Notebook.hpp>
 
 #include <Zen/Studio/WorkbenchCommon/I_View.hpp>
-#include <Zen/Studio/WorkbenchCommon/I_SceneView.hpp>
+#include <Zen/Studio/Workbench/I_SceneView.hpp>
 
 #include <Zen/Studio/WorkbenchCommon/direct_explorer_node_action.hpp>
 #include <Zen/Studio/WorkbenchCommon/I_Document.hpp>
@@ -125,6 +126,8 @@ ZoneContributor::open(Zen::Studio::Workbench::I_ExplorerNode& _selectedNode)
         // Initialize Ogitor
         initializeOgitor(view);
 
+        m_pCurrentCreator->createOgitorObjects();
+
         // Activate the view.
         m_service.getWorkbench().getMainWindow().getWorkspaceNotebook().showPage(view);
 
@@ -190,10 +193,10 @@ ZoneContributor::activate(Zen::Studio::Workbench::I_Notebook::ViewEvent& _event)
         // then hide the currently shown Creator window, if there is one.
         if (m_pCurrentCreator != NULL)
         {
-            explorerNotebook.hidePage(m_pCurrentCreator);
+            // For now, don't hide the creator view.
+            //explorerNotebook.hidePage(m_pCurrentCreator);
+            //m_pCurrentCreator = NULL;
         }
-
-        m_pCurrentCreator = NULL;
 
         // And we're done.
         return;
@@ -264,7 +267,29 @@ void
 ZoneContributor::initializeOgitor(Zen::Studio::Workbench::I_View& _view)
 {
     std::cout << "initializeOgitor" << std::endl;
-    Ogitors::OgitorsRoot::getSingletonPtr()->SetRenderWindow(&dynamic_cast<Zen::ZOgre::I_OgreView*>(&_view)->getRenderWindow());
+    Zen::Studio::Workbench::I_SceneView* pSceneView = dynamic_cast<Zen::Studio::Workbench::I_SceneView*>(&_view);
+    assert(pSceneView);
+
+    // Initialize ZenOgitorsSystem and OgitorsRoot, but make sure
+    // it's only done once.
+    ZenOgitorsSystem* pSystem = NULL;
+    if (Ogitors::OgitorsSystem::getSingletonPtr() == NULL)
+    {
+        pSystem = new ZenOgitorsSystem();
+        new Ogitors::OgitorsRoot();
+    }
+    else
+    {
+        pSystem = dynamic_cast<ZenOgitorsSystem*>(Ogitors::OgitorsSystem::getSingletonPtr());
+    }
+
+    // Set the current scene view
+    pSystem->setCurrentSceneView(pSceneView);
+
+    Ogre::RenderWindow& renderWindow = dynamic_cast<Zen::ZOgre::I_OgreView*>(pSceneView->getSceneView())->getRenderWindow();
+
+    Ogitors::OgitorsRoot::getSingletonPtr()->SetRenderWindow(&renderWindow);
+
     std::cout << "initializeOgitor done" << std::endl;
 }
 

@@ -94,7 +94,7 @@ private:
     pScriptModule_type              m_pPhysicsModule;
     pScriptType_type                m_pPhysicsServiceType;
     pScriptType_type                m_pPhysicsZoneType;
-    pScriptType_type                m_pCollisionShapeType;
+    pScriptType_type                m_pPhysicsActorType;
 
     /// @}
 

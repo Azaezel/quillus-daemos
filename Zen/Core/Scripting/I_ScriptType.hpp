@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Core Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -42,6 +42,7 @@ namespace Zen {
 namespace Scripting {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_ObjectReference;
+class I_ScriptMethod;
 
 class SCRIPTING_DLL_LINK I_ScriptType
 {
@@ -102,6 +103,9 @@ public:
 
     /// Add a method to this type that takes arguments and returns a bool
     virtual void addMethod(const std::string& _name, const std::string& _docString, int_function_args_type _function) = 0;
+
+    /// Add a generic I_ScriptMethod.
+    virtual void addMethod(const std::string& _name, const std::string& _docString, I_ScriptMethod* _pMethod) = 0;
 
     /// Activate the type.  No more methods or attributes can be modified
     /// once the type is activated.

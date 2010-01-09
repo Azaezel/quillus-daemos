@@ -20,12 +20,13 @@
 #include <Zen/Studio/WorkbenchModel/I_PropertyDataCollection.hpp>
 
 #include <sstream>
+#include <iostream>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Property::Property(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _name, const std::string& _value, Property* _pParent)
-:   m_publisher(_publisher)
+Property::Property(Properties& _properties, const std::string& _name, const std::string& _value, Property* _pParent)
+:   m_properties(_properties)
 ,   m_name(_name)
 ,   m_value(_value)
 ,   m_pParent(_pParent)
@@ -89,9 +90,8 @@ Property::getParent()
 Zen::Studio::Workbench::I_PropertiesPublisher&
 Property::getPublisher()
 {
-    return m_publisher;
+    return m_properties;
 }
-
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
@@ -154,8 +154,8 @@ Property::setPropertyDO(pPropertyDomainObject_type _pPropertyDO)
 void
 Property::notifyAdd(pPropertiesListener_type _pListener)
 {
-    _pListener->onAddProperty(m_publisher, *this);
-    _pListener->onValueModified(m_publisher, *this);
+    _pListener->onAddProperty(getPublisher(), *this);
+    _pListener->onValueModified(getPublisher(), *this);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -171,27 +171,18 @@ Property::setValue(const std::string& _newValue)
 {
     m_value = _newValue;
 
+    // Quite likely this property is a new property and doesn't exist
+    // in the database.
+    if (!m_pPropertyDO.isValid())
+    {
+        // This property doesn't exist in the database, so put it there.
+        insert(getProperties().getProject().getDatabaseConnection());
+    }
+
     m_pPropertyDO->getValue() = getValue();
 
-    // TODO type hunt...
-    // m_publisher is either a DocumentProperties or a ElementProperties.
-    {
-        DocumentProperties* const pPublisher = dynamic_cast<DocumentProperties*>(&m_publisher);
-        if( pPublisher != NULL )
-        {
-            pPublisher->notifyPropertyValueModified(this);
-            return;
-        }
-    }
-
-    {
-        ElementProperties* const pPublisher = dynamic_cast<ElementProperties*>(&m_publisher);
-        if( pPublisher != NULL )
-        {
-            pPublisher->notifyPropertyValueModified(this);
-            return;
-        }
-    }
+    std::cout << "Property::setValue(): notifyPropertyValueModified" << std::endl;
+    getProperties().notifyPropertyValueModified(this);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -214,6 +205,26 @@ Property::tryLoadProperty(pPropertyDomainObject_type _pDomainObject)
     return false;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const Zen::Studio::Workbench::I_Property*
+Property::getPropertyByName(const std::string& _name)
+{
+    if (m_name == _name)
+    {
+        return this;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Properties&
+Property::getProperties()
+{
+    return m_properties;
+}
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace GameBuilder
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -55,7 +55,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-    ExtensionPointProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _value, const std::string& _name = "ExtensionPoint", Property* _pParent = NULL);
+    ExtensionPointProperty(Properties& _properties, const std::string& _value, const std::string& _name = "ExtensionPoint", Property* _pParent = NULL);
     virtual ~ExtensionPointProperty();
     /// @}
 

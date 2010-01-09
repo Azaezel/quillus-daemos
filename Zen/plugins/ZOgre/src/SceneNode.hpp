@@ -46,7 +46,7 @@ class SceneNode
     /// @{
 public:
     //virtual void attachResource(Engine::Rendering::I_RenderableResource& _resource);
-    virtual void attachCollisionShape(Engine::Physics::I_CollisionShape& _shape);
+    virtual void attachPhysicsActor(Engine::Physics::I_CollisionShape& _shape);
     virtual void setPosition(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z);
     virtual void getPosition(Zen::Math::Point3& _position) const;
     virtual void setRotation(Zen::Math::Real _phi, Zen::Math::Real _theta, Zen::Math::Real _psi);

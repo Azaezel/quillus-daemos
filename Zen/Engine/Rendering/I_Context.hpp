@@ -50,9 +50,12 @@ class RENDERING_DLL_LINK I_Context
     /// @{
 public:
 #ifdef _WIN32
+    typedef HWND                                    parent_window_handle_type;
     typedef HWND                                    window_handle_type;
 #else
+    // On X11, this is a string in the format of display:screen:window
     typedef void*                                   window_handle_type;
+    typedef const char*                             parent_window_handle_type;
 #endif
     /// @}
 
@@ -64,7 +67,7 @@ public:
 
     /// Get the parent window.
     /// This value is used when creating a new view.
-    virtual window_handle_type getParentWindow() const = 0;
+    virtual parent_window_handle_type getParentWindow() const = 0;
 
     /// Get the window.
     /// This value is not valid until this context has been used

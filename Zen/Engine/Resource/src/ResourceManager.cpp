@@ -131,7 +131,7 @@ ResourceManager::getDefaultScriptModule()
 void
 ResourceManager::registerScriptEngine(pScriptEngine_type _pEngine, pResourceService_type _pService)
 {
-    new Scripting::ObjectReference<I_ResourceService>(m_pResourceModule, m_pResourceServiceType, _pService, "resourceService");
+    new Scripting::ObjectReference<I_ResourceService>(m_pResourceModule, m_pResourceServiceType, _pService, _pService->getScriptSingletonName());
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

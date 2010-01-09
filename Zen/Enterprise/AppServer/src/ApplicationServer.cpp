@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Enterprise Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 // Copyright (C)        2009 Joshua Cassity
 //
@@ -45,6 +45,8 @@
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
 #include <Zen/Core/Threading/MutexFactory.hpp>
+
+#include <Zen/Core/Scripting/I_ScriptableService.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -258,6 +260,15 @@ ApplicationServer::stop()
         Threading::CriticalSection lock(m_pApplicationGuard);
         m_applicationServices.empty();
     }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ApplicationServer::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
+{
+    // TODO Register with all of the already-installed app services.
+
+    m_pScriptEngine = _pEngine;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -806,6 +817,16 @@ ApplicationServer::handleInstallApplication(pApplicationService_type _pApplicati
     // TODO Get the root resource location and set the application service
     ResourceLocation* pRoot = dynamic_cast<ResourceLocation*>(_pRootLocation.get());
     pRoot->setApplicationService(_pApplicationService);
+
+    if (m_pScriptEngine.isValid())
+    {
+        Scripting::I_ScriptableService* const pScriptable = dynamic_cast<Scripting::I_ScriptableService*>(_pApplicationService.get());
+
+        if (pScriptable)
+        {
+            pScriptable->registerScriptEngine(m_pScriptEngine);
+        }
+    }
 
 #if 0   // deprecated
     // TODO Handle startup sequence better.  

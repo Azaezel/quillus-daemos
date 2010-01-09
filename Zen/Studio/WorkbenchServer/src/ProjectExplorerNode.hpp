@@ -56,6 +56,7 @@ public:
     virtual pUserData_type getUserData() const;
     virtual I_ExplorerNode* getParent();
     virtual void getChildren(I_ExplorerNodeVisitor& _visitor);
+    virtual I_Project* getProject();
     virtual boost::uint64_t getNodeId() const;
     /// @}
 
@@ -86,10 +87,11 @@ protected:
     /// Construct a ProjectExplorerNode.
     /// @param _model Kept as a reference to the model that contains this node.  It's also
     ///     used to attach I_ExplorerNode::onModified event to ProjectExplorerModel::onNodeModified().
-    /// @param _pUserData is not an optional parameter.  All explorer nodes must be 
+    /// @param _pUserData is not an optional parameter.  All explorer nodes must be
     ///     associated with a user data.
+    /// @param _pProject The project to which this explorer node belongs.
     /// @param _pParent parent node or NULL if this node does not have a parent.
-    ProjectExplorerNode(ProjectExplorerModel& _model, pUserData_type _pUserData, ProjectExplorerNode* _pParent = NULL);
+    ProjectExplorerNode(ProjectExplorerModel& _model, pUserData_type _pUserData, I_Project* _pProject, ProjectExplorerNode* _pParent = NULL);
     virtual ~ProjectExplorerNode();
     /// @}
 
@@ -98,18 +100,27 @@ protected:
 private:
     /// Model that contains this node
     ProjectExplorerModel&   m_model;
+
     /// User data that is attached to this node
     pUserData_type          m_pUserData;
+
+    /// Project to which this node belongs (possibly NULL?)
+    I_Project*              m_pProject;
+
     /// Parent node (possibly NULL)
     ProjectExplorerNode*    m_pParent;
+
     /// Display name of this node.  This value is only used if
     /// m_pUserData is invalid (which it never is, so why do this?)
     std::string             m_displayName;
+
     /// Internal user data attached to this node.  Generally this
     /// is used by the GUI to associate this node with a tree-view node.
     pInternalData_type      m_pInternalData;
+
     /// Database node Id.
     boost::uint64_t         m_nodeId;
+
     /// Children of this node (possibly empty if this is a leaf node)
     Children_type           m_children;
 

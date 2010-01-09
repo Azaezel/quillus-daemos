@@ -34,6 +34,8 @@
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
+#include <OgreRenderSystem.h>
+
 #include <stddef.h>
 #include <iostream>
 #include <sstream>
@@ -57,20 +59,31 @@ RenderingCanvas::RenderingCanvas(RenderingView* _pView)
 
     m_pViewPort = _pView->getRenderWindow().addViewport(&m_pCurrentCamera->getOgreCamera());
 
-    m_pViewPort->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
+    // HACK Why do we have to do this on Linux?
+    if (Ogre::Root::getSingleton().getRenderSystem()->_getViewport() == NULL)
+    {
+        std::cout << "RenderingCanvas::RenderingCanvas(): Warning!  OGRE RenderSystem viewPort was not set.  Why not?" << std::endl;
+        Ogre::Root::getSingleton().getRenderSystem()->_setViewport(m_pViewPort);
+        assert(m_pViewPort);
+        std::cout << "Set OGRE RenderSystem viewPort." << std::endl;
+    }
 
+    m_pViewPort->setBackgroundColour(Ogre::ColourValue(0.0f, 0.0f, 0.0f));
 
     m_pSceneManager->setAmbientLight(Ogre::ColourValue(0.75f, 0.75f, 0.75f));
+
+    std::cout << "RenderingCanvas::RenderingCanvas(): Done" << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 RenderingCanvas::~RenderingCanvas()
 {
+    std::cout << "RenderingCanvas::~RenderingCanvas()" << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #if 0   // deprecated
-void 
+void
 RenderingCanvas::setCamera(pCamera_type _camera)
 {
     m_pCameraController = _camera;
@@ -79,7 +92,7 @@ RenderingCanvas::setCamera(pCamera_type _camera)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #if 0   // deprecated
-void 
+void
 RenderingCanvas::setCameraType(const std::string& _cameraType)
 {
     m_strCameraType = _cameraType;
@@ -87,26 +100,31 @@ RenderingCanvas::setCameraType(const std::string& _cameraType)
 #endif
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingCanvas::setSceneGraph(const Zen::Engine::Rendering::I_SceneGraph& _sceneGraph)
 {
+    std::cout << "RenderingCanvas::setSceneGraph()" << std::endl;
     throw Utility::runtime_exception("RenderingCanvas::setSceneGraph(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingCanvas::resize(int _x, int _y, int _width, int _height)
 {
+    std::cout << "RenderingCanvas::resize(): " << _x << " " << _y << " " << _width << " " << _height << std::endl;
     m_pRenderingView->getRenderWindow().reposition(_x, _y);
     m_pRenderingView->getRenderWindow().resize(_width, _height);
 
     m_pRenderingView->getRenderWindow().windowMovedOrResized();
+
+    std::cout << "RenderingCanvas::resize(): done" << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingCanvas::renderScene()
 {
+
 #if 0   // deprecated
     // If the camera controller is valid, copy the values from there to the
     // Ogre camera, otherwise just use the Ogre camera
@@ -140,47 +158,48 @@ RenderingCanvas::renderScene()
     }
 
     m_root.renderOneFrame();
+
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingCanvas::swapBuffers()
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingCanvas::clearBackBuffer()
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingCanvas::setInputDevice(const std::string& _deviceName)
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingCanvas::focusLost()
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingCanvas::focusGained()
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned 
+unsigned
 RenderingCanvas::getWidth() const
 {
     return m_pRenderingView->getRenderWindow().getWidth();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned 
+unsigned
 RenderingCanvas::getHeight() const
 {
     return m_pRenderingView->getRenderWindow().getHeight();
@@ -275,10 +294,10 @@ RenderingCanvas::querySceneNodes(Math::Real _x, Math::Real _y, I_SceneNodeVisito
         position = camera.getDerivedPosition();
     }
 
-    Ogre::RaySceneQuery* pSceneQuery = 
+    Ogre::RaySceneQuery* pSceneQuery =
         m_pSceneManager->createRayQuery(camera.getCameraToViewportRay(_x, _y));
     pSceneQuery->setSortByDistance(true);
-    
+
     Ogre::RaySceneQueryResult::const_iterator iter;
     const Ogre::RaySceneQueryResult& queryResult = pSceneQuery->execute();
 

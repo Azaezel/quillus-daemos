@@ -37,7 +37,7 @@
 #include <Zen/Engine/Resource/I_Resource.hpp>
 #include <Zen/Engine/Rendering/I_RenderableResource.hpp>
 #include <Zen/Engine/Rendering/I_SceneNode.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 
 #include <string>
 
@@ -72,8 +72,8 @@ public:
     virtual pSceneNode_type getSceneNode();
     virtual void attachToSceneNode(pSceneNode_type _pSceneNode);
 
-    virtual void attachCollisionShape(pCollisionShape_type _pCollisionShape);
-    virtual pCollisionShape_type getCollisionShape();
+    virtual void attachPhysicsActor(pPhysicsActor_type _pPhysicsActor);
+    virtual pPhysicsActor_type getPhysicsActor();
 
     virtual void setPosition(const Math::Point3& _position, bool _overridePhysics = false);
     virtual void setPosition(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z, bool _overridePhysics = false);
@@ -100,22 +100,22 @@ public:
     const Math::Point3& getPosition() const;
 
     /// Called after the physics shape has moved.
-    void objectTransformCallback(Physics::I_CollisionShape::I_TransformEventData& _data);
+    void objectTransformCallback(Physics::I_PhysicsActor::I_TransformEventData& _data);
 
     /// Called during force and torque update of the physics shape
-    void objectForcesCallback(Physics::I_CollisionShape::I_ApplyForcesEventData& _data);
+    void objectForcesCallback(Physics::I_PhysicsActor::I_ApplyForcesEventData& _data);
     /// @}
 
     /// Called during AABB collision
-	void objectBoundBoxCollisionCallback(Physics::I_CollisionShape::I_BeginCollisionEventData& _data);
+	void objectBoundBoxCollisionCallback(Physics::I_PhysicsActor::I_BeginCollisionEventData& _data);
     /// @}
 
     /// Called during collision
-    void objectCollisionCallback(Physics::I_CollisionShape::I_DuringCollisionEventData& _data);
+    void objectCollisionCallback(Physics::I_PhysicsActor::I_DuringCollisionEventData& _data);
     /// @}
 
     /// Called at end of a collision
-    void objectCollisionResolutionCallback(Physics::I_CollisionShape::I_EndCollisionEventData& _data);
+    void objectCollisionResolutionCallback(Physics::I_PhysicsActor::I_EndCollisionEventData& _data);
     /// @}
 
     /// @name 'Structors

@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// IndieZen Game Engine Framework
+// Zen Engine Framework
 //
-// Copyright (C) 2001 - 2007 Tony Richards
-// Copyright (C)        2008 Walt Collins
+// Copyright (C) 2001 - 2009 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,19 +20,17 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PhysicsJoint.hpp"
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
-#include <Zen/Core/Math/Vector3.hpp>
+#include "PhysicsActor.hpp"
+
+#include <Zen/Core/Utility/runtime_exception.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-PhysicsJoint::PhysicsJoint(wpPhysicsZone_type _zone)
-:   m_pZone(_zone)
+PhysicsJoint::PhysicsJoint()
 {
 }
 
@@ -44,15 +41,16 @@ PhysicsJoint::~PhysicsJoint()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-PhysicsJoint::attachShape(PhysicsJoint::pCollisionShape_type _shape)
+PhysicsJoint::attachActor(pPhysicsActor_type _pActor)
 {
-    m_pShape = _shape;
+    throw Utility::runtime_exception("PhysicsJoint::attachShape(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 PhysicsJoint::initUpVectorJoint(const Math::Vector3& _upVector)
 {
+    throw Utility::runtime_exception("PhysicsJoint::attachShape(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

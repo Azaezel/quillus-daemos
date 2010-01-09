@@ -28,17 +28,6 @@
 #include "BehavioredGameObject.hpp"
 #include "GameObject.hpp"
 
-#include <Zen/Engine/Rendering/I_RenderingService.hpp>
-#include <Zen/Engine/Rendering/I_RenderingServiceFactory.hpp>
-
-#include <Zen/Engine/Rendering/I_RenderingManager.hpp>
-#include <Zen/Engine/Rendering/I_View.hpp>
-#include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>
-#include <Zen/Engine/Rendering/I_SceneManager.hpp>
-#include <Zen/Engine/Rendering/I_SceneService.hpp>
-#include <Zen/Engine/Rendering/I_SceneServiceFactory.hpp>
-#include <Zen/Engine/Rendering/I_Context.hpp>
-
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 #include <Zen/Engine/Resource/I_ResourceManager.hpp>
 
@@ -47,24 +36,13 @@
 #include <Zen/Engine/World/I_TerrainService.hpp>
 #include <Zen/Engine/World/I_SkyService.hpp>
 
-#include <Zen/Engine/Camera/I_CameraManager.hpp>
-#include <Zen/Engine/Camera/I_CameraService.hpp>
-#include <Zen/Engine/Camera/I_Camera.hpp>
-
 #include <Zen/Engine/Physics/I_PhysicsManager.hpp>
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
-
-#include <Zen/Engine/Input/I_InputServiceManager.hpp>
-#include <Zen/Engine/Input/I_InputService.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
-#include <Zen/Engine/Input/I_KeyEvent.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 
 #include <Zen/Engine/Navigation/I_NavigationManager.hpp>
 #include <Zen/Engine/Navigation/I_NavigationService.hpp>
-
-#include <Zen/Engine/Client/I_GameClient.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptingManager.hpp>
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
@@ -222,7 +200,7 @@ script_initBoxShape(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boo
 static void
 script_setMass(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
 {
-    Zen::Scripting::ObjectReference<Physics::I_CollisionShape>* pObject = dynamic_cast<Zen::Scripting::ObjectReference<Physics::I_CollisionShape>*>(_pObject);
+    Zen::Scripting::ObjectReference<Physics::I_PhysicsActor>* pObject = dynamic_cast<Zen::Scripting::ObjectReference<Physics::I_PhysicsActor>*>(_pObject);
 }
 
 static void
@@ -280,14 +258,14 @@ script_setOrientation(Zen::Scripting::I_ObjectReference* _pObject, std::vector<b
 }
 
 static Zen::Scripting::I_ObjectReference*
-script_getCollisionShape(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
+script_getPhysicsActor(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
 {
     Engine::Core::I_BaseGameObject::ScriptObjectReference_type* pObject = dynamic_cast<Engine::Core::I_BaseGameObject::ScriptObjectReference_type*>(_pObject);
 
     I_BaseGameObject* pGameObject = dynamic_cast<I_BaseGameObject*>(pObject->getObject());
 
-    Zen::Engine::Core::I_BaseGameObject::pCollisionShape_type pCollisionShape = pGameObject->getCollisionShape();
-    Zen::Scripting::I_ObjectReference* pScriptObject = pCollisionShape->getScriptObject();
+    Zen::Engine::Core::I_BaseGameObject::pPhysicsActor_type pPhysicsActor = pGameObject->getPhysicsActor();
+    Zen::Scripting::I_ObjectReference* pScriptObject = pPhysicsActor->getScriptObject();
     return pScriptObject;
 }
 
@@ -325,8 +303,8 @@ BaseGame::initScriptTypes()
         &script_setScale);
     m_pGameObjectScriptType->addMethod("setOrientation", "Set the orientation of this object",
         &script_setOrientation);
-    m_pGameObjectScriptType->addMethod("getCollisionShape", "Get the Physics Shape of this object",
-        &script_getCollisionShape);
+    m_pGameObjectScriptType->addMethod("getPhysicsActor", "Get the Physics Shape of this object",
+        &script_getPhysicsActor);
 
     // Create the PhysicsZone script type
     m_pPhysicsZoneScriptType = m_pModule->createScriptType("PhysicsZone", "Physics World", 0);
@@ -382,6 +360,8 @@ BaseGame::createScriptObjects()
 bool
 BaseGame::initPhysicsService(const std::string& _type)
 {
+    std::cout << "Initializing Physics service: " << _type << std::endl;
+
     // was "ZNewton"
     Zen::Engine::Physics::I_PhysicsManager::config_type config;
 
@@ -389,7 +369,7 @@ BaseGame::initPhysicsService(const std::string& _type)
     m_pPhysicsService =
         Zen::Engine::Physics::I_PhysicsManager::getSingleton().create(_type, config);
 
-    if (m_pPhysicsService.isValid())
+    if (!m_pPhysicsService.isValid())
     {
         std::cout << "Error: couldn't initPhysicsService()" << std::endl;
     }
@@ -397,12 +377,15 @@ BaseGame::initPhysicsService(const std::string& _type)
     // Initialize the first world
     m_pPhysicsZone = getPhysicsService()->createZone();
 
+    std::cout << "Zone created, checking for scripting support." << std::endl;
+
     // Register the script engine with the Physics Manager
     if (m_pScriptEngine.isValid())
     {
         Zen::Engine::Physics::I_PhysicsManager::getSingleton().registerDefaultScriptEngine(m_pScriptEngine);
     }
 
+    std::cout << "BaseGame::initPhysicsService(): Success!" << std::endl;
     return true;
 }
 
@@ -434,13 +417,6 @@ BaseGame::initPhysicsResourceService(const std::string& _type)
 
     pScriptModule_type const pModule = Resource::I_ResourceManager::getSingleton().getDefaultScriptModule();
 
-    if (pModule.isValid())
-    {
-        new Scripting::ObjectReference<Resource::I_ResourceService>(pModule,
-            pModule->getScriptType(m_pPhysicsResourceService->getScriptTypeName()),
-            m_pPhysicsResourceService, "physicsResourceService");
-    }
-
     return true;
 }
 
@@ -465,7 +441,7 @@ BaseGame::initNavigationService(const std::string& _type)
     m_pNavigationService =
         Zen::Engine::Navigation::I_NavigationManager::getSingleton().create(_type);
 
-    if (m_pNavigationService.isValid())
+    if (!m_pNavigationService.isValid())
     {
         std::cout << "Error: couldn't create NavigationService" << std::endl;
         return false;

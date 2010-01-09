@@ -32,6 +32,8 @@
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
 
+#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
+
 #include <map>
 #include <string>
 
@@ -48,15 +50,17 @@ class WIDGETS_DLL_LINK I_WidgetServiceFactory
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<I_WidgetService>        pWidgetService_type;
-    typedef Memory::managed_weak_ptr<I_WidgetService>   wpWidgetService_type;
-    typedef std::map< std::string, std::string >        config_type;
+    typedef Memory::managed_ptr<I_WidgetService>                    pWidgetService_type;
+    typedef Memory::managed_weak_ptr<I_WidgetService>               wpWidgetService_type;
+    typedef std::map< std::string, std::string >                    config_type;
+    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptEngine>     pScriptEngine_type;
     /// @}
 
     /// @name I_WidgetServiceFactory interface
     /// @{
 public:
-    virtual pWidgetService_type create(const std::string& _type, config_type& _config) = 0;
+    /// @param _pScriptEngine - The script engine to which the widget service should bind.
+    virtual pWidgetService_type create(const std::string& _type, config_type& _config, pScriptEngine_type _pScriptEngine) = 0;
     /// @}
 
     /// @name 'Structors

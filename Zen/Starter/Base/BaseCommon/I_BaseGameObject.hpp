@@ -35,7 +35,7 @@
 #include <Zen/Engine/Resource/I_Resource.hpp>
 #include <Zen/Engine/Rendering/I_RenderableResource.hpp>
 #include <Zen/Engine/Rendering/I_SceneNode.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 
 #include <string>
 
@@ -58,8 +58,8 @@ class BASECOMMON_DLL_LINK I_BaseGameObject
 {
 
 protected:
-    /// Use getCollisionShape() to create a physics shape
-    virtual void attachCollisionShape(pCollisionShape_type _pCollisionShape) = 0;
+    /// Use getPhysicsActor() to create a physics shape
+    virtual void attachPhysicsActor(pPhysicsActor_type _pPhysicsActor) = 0;
 
     /// @name I_BaseGameObject interface
     /// @{

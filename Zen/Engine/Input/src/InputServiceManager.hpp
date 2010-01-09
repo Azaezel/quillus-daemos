@@ -67,12 +67,14 @@ public:
 
     typedef Zen::Memory::managed_ptr<I_InputService>        pInputService_type;
     typedef Zen::Memory::managed_weak_ptr<I_InputService>   wpInputService_type;
+    typedef Zen::Memory::managed_weak_ptr<I_InputMapService> wpInputMapService_type;
     /// @}
 
     /// @name I_InputServiceManager implementation
     /// @{
 public:
     virtual pService_type create(const std::string& _type, config_type& _config);
+    virtual pInputMapService_type createInputMapService();
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
     virtual pScriptModule_type getDefaultScriptModule();
     /// @}
@@ -83,6 +85,8 @@ public:
     /// Service destruction event handler.
     /// @param _pService Weak pointer to service being destroyed.
     void onDestroy(wpInputService_type _pService);
+
+    void destroyInputMapService(wpInputMapService_type _wpInputMapService);
 
 private:
     /// Register the script classes with the scripting engine
@@ -110,7 +114,7 @@ private:
 
     pScriptModule_type          m_pInputModule;
     pScriptType_type            m_pInputServiceType;
-    pScriptType_type            m_pInputMapType;
+    pScriptType_type            m_pKeyMapType;
     pScriptType_type            m_pKeyEventType;
     pScriptType_type            m_pInput;
 

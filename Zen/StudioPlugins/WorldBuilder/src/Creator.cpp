@@ -12,9 +12,14 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "Creator.hpp"
 
+#include <Ogitors.h>
+
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
 #include <Zen/Studio/Workbench/wxUtilities.hpp>
+
+#include <Zen/Studio/WorkbenchCommon/I_Property.hpp>
+#include <Zen/Studio/WorkbenchCommon/I_SpreadSheetProperties.hpp>
 
 #include <Zen/StudioPlugins/GameBuilderCommon/I_GameObjectType.hpp>
 #include <Zen/StudioPlugins/GameBuilderCommon/I_GameObjectElement.hpp>
@@ -76,6 +81,41 @@ Creator::createGUIControls()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+Creator::createOgitorObjects()
+{
+    const std::string ogitorPath("/Ogitor Objects");
+    wxTreeItemId ogitorFolder = findFolder(ogitorPath);
+
+    Ogitors::EditorObjectFactoryMap objects = Ogitors::OgitorsRoot::getSingletonPtr()->GetEditorObjectFactories();
+    Ogitors::EditorObjectFactoryMap::iterator it = objects.begin();
+
+    while(it != objects.end())
+    {
+        // TODO pItem maybe should be a special OgitorItem or something.
+        CreatorItem* const pItem = new CreatorItem;
+        pItem->gameObjectTypeId = 0;
+        pItem->typeName = it->second->mTypeName;
+
+        // Keep track of the Ogitor Items?
+        //m_creatorItems[gameObjectTypeId] = pItem;
+
+        pItem->id = m_pTreeCtrl->AppendItem(ogitorFolder, std2wx(pItem->typeName));
+        m_pTreeCtrl->SetItemData(pItem->id, pItem);
+
+        it++;
+  	}
+
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Creator::onDocumentModified(GameBuilder::I_GameObjectTypeDocument& _gameObjectTypeDocument)
+{
+    updateFromDocument(_gameObjectTypeDocument);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 Creator::gameObjectTypeCreated(GameBuilder::I_GameObjectType& _gameObjectType)
 {
     // Get the document and temporarily subscribe to it
@@ -89,6 +129,7 @@ Creator::gameObjectTypeCreated(GameBuilder::I_GameObjectType& _gameObjectType)
     else
     {
         // TODO Error?
+        std::cout << "Creator::gameObjectTypeCreated(): No document?" << std::endl;
     }
 }
 
@@ -112,7 +153,9 @@ Creator::updateFromDocument(GameBuilder::I_GameObjectTypeDocument& _document)
 {
     // Subscribe, but since we don't retain a reference, the subscription will
     // immediately unsubscribe when it goes out of scope.
-    _document.subscribe(this);
+
+    //_document.subscribe(this);
+    handleDocument(_document);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -143,12 +186,21 @@ Creator::handleElement(GameBuilder::I_GameObjectElement& _element)
     GameBuilder::I_GameObjectTypeDocument*
         pDoc = dynamic_cast<GameBuilder::I_GameObjectTypeDocument*>(&_element.getDocument());
 
-    const boost::uint64_t gameObjectTypeId = pDoc->getNode()->getGameObjectTypeId();
+
+    handleDocument(*pDoc);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Creator::handleDocument(GameBuilder::I_GameObjectTypeDocument& _document)
+{
+    const boost::uint64_t gameObjectTypeId = _document.getNode()->getGameObjectTypeId();
 
     bool isCreatorObject = false;
     std::string creatorCategory;
     std::string creatorIcon;
 
+#if 0 // deprecated; we're now using element properties
     if (_element.getElementName() == "creatorCategory")
     {
         creatorCategory = _element.getDefaultValue();
@@ -159,6 +211,31 @@ Creator::handleElement(GameBuilder::I_GameObjectElement& _element)
         creatorIcon = _element.getDefaultValue();
         isCreatorObject = true;
     }
+    else
+    {
+        // DEBUG
+        std::cout << "Modified / added GOT element: " << _element.getElementName() << std::endl;
+    }
+#endif // deprecated
+
+    const Zen::Studio::Workbench::I_Property* pProperty;
+    pProperty = _document.getProperties().getPropertyByFullName("Creator\\Creator Category");
+    if (pProperty)
+    {
+        creatorCategory = pProperty->getValue();
+    }
+
+    pProperty = _document.getProperties().getPropertyByFullName("Creator\\Creator Icon");
+    if (pProperty)
+    {
+        creatorIcon = pProperty->getValue();
+    }
+
+    if (!creatorCategory.empty())
+    {
+        isCreatorObject = true;
+    }
+
 
     // If it's a creator object, update the element.
     if (isCreatorObject)
@@ -222,14 +299,13 @@ Creator::handleElement(GameBuilder::I_GameObjectElement& _element)
         if (pItem->id.IsOk())
         {
 
-            m_pTreeCtrl->SetItemText(pItem->id, std2wx(pDoc->getNode()->getName()));
+            m_pTreeCtrl->SetItemText(pItem->id, std2wx(_document.getNode()->getName()));
 
             // TODO: Umm, what happens if it changes?  Does that
             // change get propagated all the way to here?  If not, need to fix it.
         }
 
     }
-
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -88,7 +88,7 @@ public:
 #endif // deprecated
 
     /// Attach a physics actor to this node
-    virtual void attachCollisionShape(Physics::I_CollisionShape& _shape) = 0;
+    virtual void attachPhysicsActor(Physics::I_CollisionShape& _shape) = 0;
 
     /// Set the position of this node.
     virtual void setPosition(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z) = 0;

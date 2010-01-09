@@ -27,13 +27,13 @@
 
 int main(int argc, const char* argv[])
 {
-    
+
     try
     {
         client.init(argc, argv);
         client.run();
     }
-    catch(std::exception ex)
+    catch(std::exception& ex)
     {
         std::cout << ex.what() << std::endl;
     }

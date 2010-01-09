@@ -34,7 +34,7 @@ ProjectService::~ProjectService()
 ProjectService::pProject_type
 ProjectService::createProject(Zen::Studio::Workbench::I_ProjectExplorerController& _controller, const std::string& _projectName)
 {
-    pProject_type pProject(new Project(_controller, _projectName), boost::bind(&ProjectService::destroyProject, this, _1));
+    pProject_type pProject(new WorldBuilder::Project(_controller, _projectName), boost::bind(&ProjectService::destroyProject, this, _1));
 
     // TODO If there's any additional data associated with the Project,
     // it needs to be saved in the WorldBuilderProject table here.

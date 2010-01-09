@@ -55,7 +55,7 @@ WidgetManager::~WidgetManager()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_WidgetManager::pService_type
-WidgetManager::create(const std::string& _type, config_type& _config)
+WidgetManager::create(const std::string& _type, config_type& _config, pScriptEngine_type _pScriptEngine)
 {
     Threading::CriticalSection guard(m_serviceCache.getLock());
 
@@ -76,7 +76,7 @@ WidgetManager::create(const std::string& _type, config_type& _config)
         throw Zen::Utility::runtime_exception(errorMessage.str());
     }
 
-    pService = m_serviceCache.cacheService(_type, pFactory->create(_type, _config));
+    pService = m_serviceCache.cacheService(_type, pFactory->create(_type, _config, _pScriptEngine));
 
     if( m_pDefaultScriptEngine.isValid() )
     {

@@ -26,9 +26,13 @@
 
 #include <Zen/Studio/Workbench/wxUtilities.hpp>
 
+#include <iostream>
+
 BEGIN_EVENT_TABLE(Zen::Studio::Workbench::Notebook,wxAuiNotebook)
     EVT_AUINOTEBOOK_PAGE_CHANGED(wxID_ANY, Notebook::onPageChanged)
     EVT_AUINOTEBOOK_PAGE_CLOSED(wxID_ANY, Notebook::onPageClose)
+
+    EVT_KEY_DOWN(Zen::Studio::Workbench::Notebook::handleKeyDown)
 END_EVENT_TABLE()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -107,7 +111,7 @@ Notebook::addPage(I_View* _pWindow, const std::string& _title)
     const size_t pageCount = GetPageCount();
 
     // Add a page to the end
-    AddPage(pWindow, std2wx(_title.c_str()), false);
+    AddPage(pWindow, std2wx(_title.c_str()), true);
     pWindow->SetLabel(std2wx(_title.c_str()));
 
     // Return that page.
@@ -119,6 +123,8 @@ Notebook::addPage(I_View* _pWindow, const std::string& _title)
 
     // Activate the page.
     SetSelection(pageCount);
+
+    pPage->SetFocus();
 
     // If it's the first page, activate it. (um, didn't we just do that?)
     if (pageCount == 0)
@@ -136,7 +142,7 @@ Notebook::showPage(I_View& _view)
     // TODO This should call getWindow() from I_View instead of assuming
     //      _view is a View.
     View* const pView = dynamic_cast<View*>(&_view);
- 
+
     const int pageIndex = GetPageIndex(pView);
     if (pageIndex != wxNOT_FOUND)
     {
@@ -163,6 +169,13 @@ Notebook::getPage(const std::string& _title)
     }
 
     return NULL;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Notebook::handleKeyDown(wxKeyEvent& _event)
+{
+    std::cout << "Notebook::handleKeyDown()" << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

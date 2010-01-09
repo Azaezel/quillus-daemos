@@ -64,7 +64,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             CreatorPropertyGroup(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Property* _pParent = NULL);
+             CreatorPropertyGroup(Properties& _properties, Property* _pParent = NULL);
     virtual ~CreatorPropertyGroup();
     /// @}
 

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Base Starter Kit
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -65,7 +65,7 @@ namespace Engine {
     namespace Input {
         class I_InputService;
         class I_KeyEvent;
-        class I_InputMap;
+        class I_KeyMap;
     }   // namespace Input
     namespace Core {
         class I_Action;
@@ -94,6 +94,7 @@ public:
     typedef double                                              FrameDelta_type;
     typedef Event::Event<FrameDelta_type>                       FrameEvent_type;
 
+    typedef Memory::managed_ptr<Scripting::I_ScriptEngine>      pScriptEngine_type;
     typedef Memory::managed_ptr<Scripting::I_ScriptModule>      pScriptModule_type;
     typedef Memory::managed_ptr<Scripting::I_ScriptType>        pScriptType_type;
     /// @}
@@ -173,6 +174,9 @@ public:
     ///         I_BaseGameClient object.
     virtual Scripting::I_ScriptEngine& getScriptEngine() = 0;
 
+    /// Get the script engine by pointer.
+    virtual pScriptEngine_type getScriptEnginePtr() = 0;
+
     /// @brief Get the rendering resource service
     ///
     /// Use this to set additional directories for the rendering resource service.
@@ -195,8 +199,8 @@ public:
 
     virtual Widgets::I_WidgetService& getWidgetService() = 0;
 
-    /// Get the primary InputMap
-    virtual Input::I_InputMap& getInputMap() = 0;
+    /// Get the primary KeyMap
+    virtual Input::I_KeyMap& getKeyMap() = 0;
 
     /// Get the GameClient script module
     virtual pScriptModule_type getScriptModule() = 0;

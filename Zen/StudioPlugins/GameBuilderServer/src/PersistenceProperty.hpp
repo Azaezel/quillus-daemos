@@ -62,7 +62,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             PersistenceProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _value, Property* _pParent = NULL);
+             PersistenceProperty(Properties& _properties, const std::string& _value, Property* _pParent = NULL);
     virtual ~PersistenceProperty();
     /// @}
 

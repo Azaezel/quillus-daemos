@@ -24,6 +24,9 @@
 //  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PhysicsMaterial.hpp"
+#include "PhysicsActor.hpp"
+#include "PhysicsZone.hpp"
+
 #include <vector>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -33,7 +36,7 @@ namespace ZNewton {
 PhysicsMaterial::PhysicsMaterial(wpPhysicsZone_type _zone, bool _default)
 :   m_pZone(_zone)
 {
-    m_pNewtonZone = (NewtonWorld*)m_pZone->getZonePtr();
+    m_pNewtonZone = dynamic_cast<PhysicsZone*>(m_pZone.get())->getZonePtr();
     m_defaultGroupID = NewtonMaterialGetDefaultGroupID(m_pNewtonZone);
 
     if (_default)
@@ -269,8 +272,8 @@ static int GenericContactBegin(const NewtonMaterial* material, const NewtonBody*
 static int  GenericContactProcess(const NewtonMaterial* material, const NewtonContact* contact);
 static void GenericContactEnd(const NewtonMaterial* material);
 
-static CollisionShape*          g_currentObjectRegister;
-static CollisionShape*          g_hitObjectRegister;
+static PhysicsActor*          g_currentObjectRegister;
+static PhysicsActor*          g_hitObjectRegister;
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
@@ -295,12 +298,12 @@ GenericContactBegin(const NewtonMaterial* _material, const NewtonBody* _body0, c
 {
 	//we store this pair in registers to ensure they don't get lost, since I've been unable to determine
 	//an inherent collision list associated with bodies. Research further later.
-	g_currentObjectRegister = static_cast<CollisionShape*>(NewtonBodyGetUserData(_body0));
-	g_hitObjectRegister = static_cast<CollisionShape*>(NewtonBodyGetUserData(_body1));
+	g_currentObjectRegister = static_cast<PhysicsActor*>(NewtonBodyGetUserData(_body0));
+	g_hitObjectRegister = static_cast<PhysicsActor*>(NewtonBodyGetUserData(_body1));
 
 	//std::cout << g_currentObjectRegister->getName() << " hits the AABB of " << g_hitObjectRegister->getName() << "\n";
 
-	CollisionShape::BeginCollisionEventData eventData(_material, *g_currentObjectRegister,*g_hitObjectRegister);
+	PhysicsActor::BeginCollisionEventData eventData(_material, *g_currentObjectRegister,*g_hitObjectRegister);
     g_currentObjectRegister->onBoundBoxCollisionEvent(eventData);
 
 	// return one to tell Newton the application wants to proccess this contact
@@ -322,7 +325,7 @@ GenericContactProcess(const NewtonMaterial* _material, const NewtonContact* _con
 	Zen::Math::Real strikelen = (strikerVel - struckVel).magnitude();
 */
 	//std::cout << g_currentObjectRegister->getName() << " hits " << g_hitObjectRegister->getName() << "\n";
-	CollisionShape::DuringCollisionEventData eventData(_material, _contact, *g_currentObjectRegister,*g_hitObjectRegister);
+	PhysicsActor::DuringCollisionEventData eventData(_material, _contact, *g_currentObjectRegister,*g_hitObjectRegister);
     g_currentObjectRegister->onCollisionEvent(eventData);
 
 	//std::cout << "GenericContactProcess";
@@ -337,7 +340,7 @@ void
 GenericContactEnd(const NewtonMaterial* _material)
 {
 	//std::cout << g_currentObjectRegister->getName() << " resolves colliding with " << g_hitObjectRegister->getName() << "\n";
-	CollisionShape::EndCollisionEventData eventData(_material, *g_currentObjectRegister, *g_hitObjectRegister);
+	PhysicsActor::EndCollisionEventData eventData(_material, *g_currentObjectRegister, *g_hitObjectRegister);
     g_currentObjectRegister->onCollisionResolutionEvent(eventData);
 
 	g_currentObjectRegister = NULL;

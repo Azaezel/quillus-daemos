@@ -12,6 +12,7 @@ list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
 Find_Package(IndieZen REQUIRED)
 Find_Package(Boost REQUIRED COMPONENTS system filesystem )
 Find_Package(LibXml2 REQUIRED)
+Find_Package(OGRE REQUIRED)
 
 SET (LIB_TYPE SHARED)
 
@@ -36,10 +37,20 @@ add_dependencies( Tutorial5 ZenCore ZenEngine BaseClient BaseCommon )
 
 target_link_libraries( Tutorial5 ZenCore ZenEngine BaseClient BaseCommon ${Boost_LIBRARIES} ${LIBXML2_LIBRARIES} )
 
+set ( CLIENT_LIBRARIES_PATH "${Boost_LIBRARY_DIRS};${PC_LIBXML_LIBDIR};${OGRE_LIBRARY_DIRS};${DEV_BIN}" )
+
+create_zgameloader_vcproj_userfile(Tutorial5)
+
 set_target_properties ( Tutorial5 
 						PROPERTIES
 						DEBUG_POSTFIX "_d"
 					)
+
+configure_file(
+	${INDIEZEN_PARENT}/Zen/tutorials/Tutorial5/client.xml.template
+	${INDIEZEN_PARENT}/Zen/tutorials/Tutorial5/client.xml
+	@ONLY
+)
 
 if (MSVC_IDE)
     # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows

@@ -77,7 +77,7 @@ SceneNode::attachResource(Engine::Rendering::I_RenderableResource& _resource)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void 
-SceneNode::attachCollisionShape(Engine::Physics::I_CollisionShape& _CollisionShape)
+SceneNode::attachPhysicsActor(Engine::Physics::I_CollisionShape& _CollisionShape)
 {
     m_pCollisionShape = &_CollisionShape;
 }

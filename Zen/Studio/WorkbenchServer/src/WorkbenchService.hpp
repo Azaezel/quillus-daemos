@@ -84,7 +84,8 @@ public:
     /// @name I_WorkbenchService implementation
     /// @{
 public:
-    virtual bool setControlPath(const boost::filesystem::path& _controlPath);
+    virtual bool setWorkspacePath(const boost::filesystem::path& _controlPath);
+    virtual const boost::filesystem::path& getWorkspacePath();
     virtual const boost::filesystem::path& getControlPath();
     virtual pDatabaseConnection_type getDatabaseConnection();
 
@@ -150,8 +151,17 @@ private:
     Zen::Enterprise::AppServer::I_ApplicationServer&                m_appServer;
     Zen::Threading::ThreadPool*                                     m_pThreadPool;
 
+    /// Path to the workbench control directory where the SQLite database
+    /// and other information is stored.
     boost::filesystem::path                                         m_controlPath;
+
+    /// Path to the root workspace directory.
+    boost::filesystem::path                                         m_workspacePath;
+
+    /// Main database service for the workspace.
     pDatabaseService_type                                           m_pDatabase;
+
+    /// Main database connection for the workspace.
     pDatabaseConnection_type                                        m_pConnection;
 
     pProjectExplorerModel_type                                      m_pProjectExplorerModel;

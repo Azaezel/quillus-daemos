@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Base Starter Kit
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -22,11 +22,6 @@
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "BaseClient.hpp"
-
-//#include "Action.hpp"
-//#include "GameGroup.hpp"
-//#include "BehavioredGameObject.hpp"
-//#include "GameObject.hpp"
 
 #include <Zen/Engine/Rendering/I_RenderingService.hpp>
 #include <Zen/Engine/Rendering/I_RenderingServiceFactory.hpp>
@@ -55,15 +50,16 @@
 
 #include <Zen/Engine/Physics/I_PhysicsManager.hpp>
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 
 #include <Zen/Engine/Sound/I_SoundService.hpp>
 #include <Zen/Engine/Sound/I_SoundManager.hpp>
 
 #include <Zen/Engine/Input/I_InputServiceManager.hpp>
 #include <Zen/Engine/Input/I_InputService.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
+#include <Zen/Engine/Input/I_InputMapService.hpp>
+#include <Zen/Engine/Input/I_KeyMap.hpp>
 #include <Zen/Engine/Input/I_KeyEvent.hpp>
 
 #include <Zen/Engine/Navigation/I_NavigationManager.hpp>
@@ -308,11 +304,11 @@ BaseClient::run()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 static Zen::Scripting::I_ObjectReference*
-script_getInputMap(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
+script_getKeyMap(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
 {
     //Zen::Scripting::ObjectReference<Client::I_GameClient, Client::I_GameClient*>* pObject = dynamic_cast<Zen::Scripting::ObjectReference<Client::I_GameClient, Client::I_GameClient*>*>(_pObject);
 
-    return I_BaseGameClient::getSingleton().getInputMap().getScriptObject();
+    return I_BaseGameClient::getSingleton().getKeyMap().getScriptObject();
 }
 
 static Zen::Scripting::I_ObjectReference*
@@ -408,10 +404,9 @@ BaseClient::initScriptEngine(const std::string& _type)
     m_pModule = m_pScriptEngine->createScriptModule("BaseClient", "Game Client");
 
     m_pGameClientScriptType = m_pModule->createScriptType("GameClient", "Game Client", 0);
-    m_pGameClientScriptType->addMethod("getInputMap", "Get the InputMap",
-        &script_getInputMap);
-    m_pGameClientScriptType->addMethod("getGame", "Get the main Game object",
-        &script_getGame);
+
+    m_pGameClientScriptType->addMethod("getKeyMap", "Get the KeyMap", &script_getKeyMap);
+    m_pGameClientScriptType->addMethod("getGame", "Get the main Game object", &script_getGame);
 
     // Register the script engine with the Rendering Manager
     if (m_pScriptEngine.isValid())
@@ -553,17 +548,8 @@ BaseClient::initRenderingResourceService(const std::string& _type)
 
     pScriptModule_type const pModule = Resource::I_ResourceManager::getSingleton().getDefaultScriptModule();
 
-    if (pModule.isValid())
-    {
-        new Scripting::ObjectReference<Resource::I_ResourceService>(pModule,
-            pModule->getScriptType(m_pRenderingResourceService->getScriptTypeName()),
-            m_pRenderingResourceService, "renderingResourceService");
-    }
-
     return true;
 }
-
-
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
@@ -666,7 +652,7 @@ BaseClient::initWidgetService(const std::string& _type)
 
     // Create the service
     m_pWidgetService =
-        Zen::Engine::Widgets::I_WidgetManager::getSingleton().create(_type, config);
+        Zen::Engine::Widgets::I_WidgetManager::getSingleton().create(_type, config, m_pScriptEngine);
 
     if ( !m_pWidgetService.isValid() )
     {
@@ -721,7 +707,10 @@ BaseClient::initInputService(const std::string& _type)
     m_pInputService =
         Input::I_InputServiceManager::getSingleton().create(_type, config);
 
-    m_pMainInputMap = m_pInputService->createInputMap("main");
+    m_pInputMapService =
+        Input::I_InputServiceManager::getSingleton().createInputMapService();
+
+    m_pMainKeyMap = m_pInputMapService->createKeyMap("main");
 
     // Register the script engine with the Rendering Manager
     if (m_pScriptEngine.isValid())
@@ -737,6 +726,13 @@ Scripting::I_ScriptEngine&
 BaseClient::getScriptEngine()
 {
     return *(m_pScriptEngine.get());
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+BaseClient::pScriptEngine_type
+BaseClient::getScriptEnginePtr()
+{
+    return m_pScriptEngine;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -841,10 +837,10 @@ BaseClient::getInputService()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Input::I_InputMap&
-BaseClient::getInputMap()
+Input::I_KeyMap&
+BaseClient::getKeyMap()
 {
-    return *(m_pMainInputMap.get());
+    return *(m_pMainKeyMap.get());
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

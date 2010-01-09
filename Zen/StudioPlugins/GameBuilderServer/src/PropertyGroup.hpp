@@ -29,6 +29,7 @@ class PropertyGroup
     /// @name Types
     /// @{
 public:
+    typedef std::map<std::string, Property*>                 PropertyChildren_type;
     /// @}
 
     /// @name I_Property implementation
@@ -37,21 +38,29 @@ public:
     virtual PropertyType getType() const;
     /// @}
 
+    /// @name Property override
+    /// @{
+public:
+    virtual const Zen::Studio::Workbench::I_Property* getPropertyByName(const std::string& _fullName);
+    /// @}
+
     /// @name PropertyGroup implementation
     /// @{
 public:
+    void addChild(const std::string& _name, Property* _pChild);
     /// @}
 
     /// @name 'Structors
     /// @{
 public:
-             PropertyGroup(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _name, Property* _pParent = NULL);
+             PropertyGroup(Properties& _properties, const std::string& _name, Property* _pParent = NULL);
     virtual ~PropertyGroup();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
+    PropertyChildren_type                   m_children;
     /// @}
 
 };  // class PropertyGroup

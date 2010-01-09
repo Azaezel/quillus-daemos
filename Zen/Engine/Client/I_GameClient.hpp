@@ -73,7 +73,7 @@ public:
 #ifdef _WIN32
     typedef HWND                                        WindowHandle_type;
 #else
-    typedef void*                                       WindowHandle_type;
+    typedef const char*                                 WindowHandle_type;
 #endif
 
     typedef std::string                                 index_type;
@@ -94,6 +94,9 @@ public:
 public:
     /// Get the window handle
     virtual const WindowHandle_type getHandle() const = 0;
+
+    /// 
+    virtual void activateGameClientScriptModule() = 0;
 
     /// Initialize the Game Client
     virtual bool init() = 0;

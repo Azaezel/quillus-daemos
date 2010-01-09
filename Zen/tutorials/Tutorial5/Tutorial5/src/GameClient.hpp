@@ -38,7 +38,7 @@
 #include <Zen/Engine/Client/I_GameClient.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 #include <Zen/Engine/World/I_SkyService.hpp>
 #include <Zen/Engine/World/I_TerrainService.hpp>

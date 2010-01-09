@@ -20,6 +20,8 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
+#include <Zen/Studio/WorkbenchCommon/Project.hpp>
+
 #include <Zen/StudioPlugins/GameBuilderCommon/I_Project.hpp>
 #include <Zen/StudioPlugins/GameBuilderCommon/I_GameObjectTypeView.hpp>
 
@@ -37,8 +39,11 @@ namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ;
 
+/// @note The order of inheritance here is important.  Zen::Studio::Workbench::Project
+///     must be inherited before GameBuilder::I_Project
 class Project
-:   public I_Project
+:   public Zen::Studio::Workbench::Project
+,   public GameBuilder::I_Project
 ,   public I_GameObjectTypeView
 {
     /// @name Types
@@ -62,16 +67,17 @@ public:
     virtual Zen::Studio::Workbench::I_ExplorerNodeType& getType() const;
     /// @}
 
-    /// @name Workbench::I_Project implementation
+    /// @name Workbench::I_Project overrides
     /// @{
 public:
     virtual void onCreated();
-    virtual boost::uint64_t getProjectId() const;
-    virtual void setProjectId(boost::uint64_t _projectId);
-    virtual Zen::Studio::Workbench::I_ProjectExplorerController& getController();
-    virtual Zen::Studio::Workbench::I_WorkbenchService& getWorkbenchService();
-    virtual pDatabaseConnection_type getDatabaseConnection();
-    virtual const boost::filesystem::path& getControlPath();
+    virtual boost::uint64_t getProjectId() const                                { return Zen::Studio::Workbench::Project::getProjectId(); }
+    virtual void setProjectId(boost::uint64_t _projectId)                       { Zen::Studio::Workbench::Project::setProjectId(_projectId); }
+    virtual Zen::Studio::Workbench::I_ProjectExplorerController& getController(){ return Zen::Studio::Workbench::Project::getController(); }
+    virtual Zen::Studio::Workbench::I_WorkbenchService& getWorkbenchService()   { return Zen::Studio::Workbench::Project::getWorkbenchService(); }
+    virtual pDatabaseConnection_type getDatabaseConnection()                    { return Zen::Studio::Workbench::Project::getDatabaseConnection(); }
+    virtual const boost::filesystem::path& getControlPath() const               { return Zen::Studio::Workbench::Project::getControlPath(); }
+    virtual const boost::filesystem::path& getProjectPath() const               { return Zen::Studio::Workbench::Project::getProjectPath(); }
     /// @}
 
     /// @name GameBuilder::I_Project implementation
@@ -83,6 +89,7 @@ public:
     /// @name I_GameObjectTypeView implementation
     /// @{
 public:
+    virtual void onDocumentModified(I_GameObjectTypeDocument& _gameObjectTypeDocument);
     virtual void onNewElement(I_GameObjectElement& _element, int _position);
     virtual void onElementRemoved(int _position);
     virtual void onElementModified(I_GameObjectElement& _element, int _row);
@@ -118,9 +125,6 @@ protected:
     /// @name Member Variables
     /// @{
 private:
-    Zen::Studio::Workbench::I_ProjectExplorerController&    m_controller;
-    boost::uint64_t             m_projectId;
-
     static class ProjectType    sm_type;
 
     Zen::Threading::I_Mutex*                            m_pSubscriptionsGuard;

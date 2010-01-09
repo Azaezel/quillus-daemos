@@ -109,7 +109,7 @@ getEnvironment(Zen::Scripting::I_ObjectReference* _pObject)
 
     ZenRoot* pZenObject = pObject->getRawObject();
 
-    Zen::Scripting::ObjectReference<ZenEnvironment>* pScriptObject = 
+    Zen::Scripting::ObjectReference<ZenEnvironment>* pScriptObject =
         new Zen::Scripting::ObjectReference<ZenEnvironment>(sm_pModule, sm_pEnvironmentType, gZenEnvironment);
 
     return pScriptObject;
@@ -140,7 +140,7 @@ getGameClient(const std::string& _name)
 
     if (pExtensionIter != pExtensions->end())
     {
-        Zen::Plugins::I_ExtensionRegistry::class_factory_ref_type 
+        Zen::Plugins::I_ExtensionRegistry::class_factory_ref_type
             classFactory(extensionRegistry.getClassFactory(*pExtensionIter));
 
         Zen::Engine::Client::I_GameClientFactory*
@@ -164,6 +164,8 @@ getGameClient(const std::string& _name)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static Zen::Engine::Client::I_GameClientFactory::pGameClient_type sm_pGameClient;
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 static
 Zen::Scripting::I_ObjectReference*
 createGameClient(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
@@ -172,11 +174,13 @@ createGameClient(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost:
 
     std::string gameClientName = boost::any_cast<std::string>(_parms[0]);
 
-    Zen::Engine::Client::I_GameClientFactory::pGameClient_type pGameClient = getGameClient(gameClientName);
+    // Create the game client
+    sm_pGameClient = getGameClient(gameClientName);
 
-    pGameClient->init();
+    // Activate the game client script module so that it's accessible via script.
+    sm_pGameClient->activateGameClientScriptModule();
 
-    return pGameClient->getScriptObject();
+    return sm_pGameClient->getScriptObject();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -184,7 +188,7 @@ static
 void
 gameClientInit(Zen::Scripting::I_ObjectReference* _pObject)
 {
-    Zen::Engine::Client::I_GameClient::ScriptObjectReference_type* pObject = 
+    Zen::Engine::Client::I_GameClient::ScriptObjectReference_type* pObject =
         dynamic_cast<Zen::Engine::Client::I_GameClient::ScriptObjectReference_type*>(_pObject);
 
     pObject->getObject()->init();
@@ -195,12 +199,13 @@ static
 void
 gameClientRun(Zen::Scripting::I_ObjectReference* _pObject)
 {
-    Zen::Engine::Client::I_GameClient::ScriptObjectReference_type* pObject = 
+    Zen::Engine::Client::I_GameClient::ScriptObjectReference_type* pObject =
         dynamic_cast<Zen::Engine::Client::I_GameClient::ScriptObjectReference_type*>(_pObject);
 
-    Zen::Engine::Client::I_GameClient* pGameClient = pObject->getObject().get();
+    // Zen::Engine::Client::I_GameClient* pGameClient = pObject->getObject().get();
 
-    pGameClient->run();
+    pObject->getObject()->run();
+    //pGameClient->run();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -267,7 +272,7 @@ int main(int argc, const char* argv[])
             base.getGameClientScriptType()->addMethod("run", "Execute the game client's main loop", gameClientRun);
 
             Zen::Memory::managed_ptr<ZenRoot> pZenRootObject(new ZenRoot);
-            Zen::Scripting::ObjectReference<ZenRoot>* pScriptObject = 
+            Zen::Scripting::ObjectReference<ZenRoot>* pScriptObject =
                 new Zen::Scripting::ObjectReference<ZenRoot>(sm_pModule, pZenType, pZenRootObject, "Zen");
 
             scriptEngine.executeScript(argv[4]);
@@ -284,14 +289,14 @@ int main(int argc, const char* argv[])
             pClient->run();
         }
     }
-    catch(Zen::Utility::runtime_exception ex)
+    catch(Zen::Utility::runtime_exception& ex)
     {
         std::cout << ex.what() << std::endl;
 #ifdef WIN32
         ::MessageBoxA(NULL, ex.what(), "Error", MB_ICONEXCLAMATION | MB_OK);
 #endif
     }
-    catch(std::exception ex)
+    catch(std::exception& ex)
     {
         std::cout << ex.what() << std::endl;
 #ifdef WIN32

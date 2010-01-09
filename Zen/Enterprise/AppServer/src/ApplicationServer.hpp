@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Enterprise Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 // Copyright (C)        2009 Joshua Cassity
 //
@@ -71,6 +71,7 @@ public:
 public:
     virtual Zen::Threading::I_Condition* start();
     virtual void stop();
+    virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
     virtual void installProtocols(pConfig_type _pProtocolsConfig);
     virtual void installProtocol(pProtocolService_type _pProtocolService, const std::string& _protocolName);
     virtual pProtocolService_type getProtocol(const std::string& _protocolName);
@@ -123,6 +124,9 @@ public:
     /// @{
 private:
     ServerStates                m_currentState;
+
+    /// Default script engine.
+    pScriptEngine_type          m_pScriptEngine;
 
     /// ThreadPool that's shared among all of the services and protocols.
     Threading::ThreadPool       m_sharedThreadPool;

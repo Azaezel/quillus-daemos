@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 2.6) 
 
 project (BaseClient)
+set ( PROJECT_PREFIX "Starter/Base/BaseClient" )
 
 if ( NOT INDIEZEN_PARENT)
 	find_path ( INDIEZEN_PARENT Zen .. ../.. ../../.. ENV )
@@ -50,3 +51,12 @@ if (MSVC_IDE)
     set_target_properties ( BaseClient PROPERTIES PREFIX "../../bin/" )
 	set_target_properties ( BaseClient PROPERTIES IMPORT_PREFIX "../../lib/" )
 endif(MSVC_IDE)
+
+<%HeaderInstallDirectives%>
+
+install ( TARGETS
+	BaseClient
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+)

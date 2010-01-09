@@ -58,7 +58,7 @@ namespace Engine {
     namespace Input {
         class I_InputService;
         class I_KeyEvent;
-        class I_InputMap;
+        class I_KeyMap;
     }   // namespace Input
     namespace Core {
         class I_Action;

@@ -31,7 +31,7 @@
 #include <Zen/Core/Memory/managed_self_ref.hpp>
 #include <Zen/Core/Utility/runtime_exception.hpp>
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-//#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+//#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {

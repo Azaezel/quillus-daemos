@@ -24,7 +24,7 @@
 //  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PhysicsService.hpp"
-#include "PhysicsWorld.hpp"
+#include "PhysicsZone.hpp"
 
 #include <boost/bind.hpp>
 #include <exception>
@@ -67,7 +67,7 @@ PhysicsService::stepSimulation(double _elapsedTime)
     // TODO - iterate across the world list and allow them to update themselves.
     for (std::set<pPhysicsZone_type>::iterator iter = m_zoneSet.begin(); iter != m_zoneSet.end(); iter++)
     {
-        NewtonUpdate((NewtonWorld*)iter->get()->getZonePtr(), (dFloat)_elapsedTime);
+        NewtonUpdate(dynamic_cast<PhysicsZone*>(iter->get())->getZonePtr(), (dFloat)_elapsedTime);
     }
 }
 

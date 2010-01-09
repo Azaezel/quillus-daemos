@@ -17,8 +17,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-PersistenceProperty::PersistenceProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _value, Property* _pParent)
-:   Property(_publisher, "Persistence", _value, _pParent)
+PersistenceProperty::PersistenceProperty(Properties& _properties, const std::string& _value, Property* _pParent)
+:   Property(_properties, "Persistence", _value, _pParent)
 {
 }
 

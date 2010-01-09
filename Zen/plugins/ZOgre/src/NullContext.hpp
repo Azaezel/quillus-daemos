@@ -28,11 +28,13 @@
 
 #include <OgreRoot.h>
 
+#include <Zen/Core/Utility/runtime_exception.hpp>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-class NullContext 
+class NullContext
     : public Zen::Engine::Rendering::I_Context
 {
     /// @name I_Context interface
@@ -47,9 +49,13 @@ public:
         return m_bIsFullScreen;
     }
 
-    virtual window_handle_type getParentWindow() const
+    virtual parent_window_handle_type getParentWindow() const
     {
+#ifdef WIN32
         return m_pParent;
+#else
+        return m_parent.c_str();
+#endif
     }
 
     virtual window_handle_type getWindow() const
@@ -58,9 +64,14 @@ public:
     }
     /// @}
 
-    NullContext(window_handle_type _pParent)
+    NullContext(parent_window_handle_type _pParent)
     :   m_bIsFullScreen(false)
+#ifdef WIN32
     ,   m_pParent(_pParent)
+#else
+    ,   m_parent(_pParent)
+#endif
+    ,   m_pHandle(NULL)
     {
     }
 
@@ -69,7 +80,15 @@ public:
     }
 
     bool    m_bIsFullScreen;
-    window_handle_type  m_pParent;
+
+#ifdef WIN32
+    parent_window_handle_type  m_pParent;
+#else
+    // On non-Win32 platforms, this provides a place to keep a copy of the
+    // string.
+    std::string m_parent;
+#endif
+
     window_handle_type  m_pHandle;
 
 };  // class NulLContext

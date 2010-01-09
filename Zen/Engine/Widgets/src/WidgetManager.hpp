@@ -60,7 +60,7 @@ public:
     /// @name I_WidgetManager implementation
     /// @{
 public:
-    virtual pService_type create(const std::string& _type, config_type& _config);
+    virtual pService_type create(const std::string& _type, config_type& _config, pScriptEngine_type _pScriptEngine);
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
     virtual pScriptModule_type getDefaultScriptModule();
     /// @}

@@ -30,8 +30,8 @@
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Rendering/I_RenderingService.hpp>
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 #include <Zen/Engine/Resource/I_Resource.hpp>

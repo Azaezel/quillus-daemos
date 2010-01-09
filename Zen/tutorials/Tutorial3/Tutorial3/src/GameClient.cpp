@@ -22,7 +22,7 @@
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -43,7 +43,7 @@
 #include <Zen/Engine/Core/I_ActionMap.hpp>
 #include <Zen/Engine/Core/I_GameObjectBehaviors.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
 
 #include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>
@@ -121,7 +121,7 @@ GameClient::init()
     m_base.initTerrainService("ZTerrain");
 
     // Initialize the Input service
-    // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse 
+    // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse
     // combined input service.
     m_base.initInputService("keyboard");
 
@@ -134,14 +134,14 @@ GameClient::init()
     // Create the script types
     createScriptTypes();
 
-    // Possibly the rest of this should be done later and we should show 
+    // Possibly the rest of this should be done later and we should show
     // an initial game screen or splash screens here.
 
     createActions();
     createDefaultMapping();
     createBehaviors();
 
-    // Normally, createScene() is done after other things like 
+    // Normally, createScene() is done after other things like
     // displaying some splash screens, etc.  But for now lets
     // just do it here.
     createScene();
@@ -250,7 +250,7 @@ GameClient::createScene()
     {
         m_pTerrain->loadPhysicsFromRaw(terrainRawFile, 513, 200.0f, 4.0f, matXfm, true);
     }
-    m_pTerrain->getCollisionShape()->setMaterial(m_pTerrainMaterial);
+    m_pTerrain->getPhysicsActor()->setMaterial(m_pTerrainMaterial);
 
     // Create a sky box
 
@@ -332,7 +332,7 @@ GameClient::beforeRender(double _elapsedTime)
     Zen::Engine::Rendering::I_Camera& camera = canvas.getCurrentCamera();
 
     Zen::Math::Vector3 position = camera.getPosition();
-    
+
     position.m_z += m_moveZDelta;
 }
 

@@ -45,10 +45,14 @@ class ResourceService
     /// @name I_RenderingService implementation
     /// @{
 public:
-    virtual void addResourceLocation(const std::string& _path, const std::string& _type, 
+    virtual void addResourceLocation(const std::string& _path, const std::string& _type,
         const std::string& _group, bool _recursive = false);
 
+    virtual void initialiseAllResourceGroups();
+
     virtual pResource_type loadResource(config_type& _config);
+
+    virtual const std::string& getScriptSingletonName() const;
     /// @}
 
     /// @name I_ScriptableType implementation

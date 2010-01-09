@@ -30,6 +30,8 @@
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
 #include <Zen/Core/Event/Event.hpp>
 
+#include <list>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Engine {

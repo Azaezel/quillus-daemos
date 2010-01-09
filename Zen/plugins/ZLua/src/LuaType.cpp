@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Gaem Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -42,37 +42,11 @@ LuaType::LuaType(LuaModule* _pModule, const std::string& _name, const std::strin
     std::ostringstream fullName;
     fullName << m_pModule->getName() << "." << m_name;
     m_fullName = fullName.str();
-
-#if 0
-    memset(&m_type, 0, sizeof(PyTypeObject));
-
-
-    m_type._ob_next     = 0;
-    m_type._ob_prev     = 0;
-    m_type.ob_refcnt    = 1;
-    m_type.ob_type      = NULL;
-    m_type.ob_size      = 0;
-    m_type.tp_name      = m_fullName.c_str();
-    m_type.tp_basicsize = _rawSize;
-    m_type.tp_flags     = Py_TPFLAGS_DEFAULT;
-    m_type.tp_doc       = m_docString.c_str();
-
-    // Is this correct?
-    m_type.tp_new       = PyType_GenericNew;
-
-    PyType_Ready(&m_type);
-
-    Py_INCREF(&m_type);
-#endif
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 LuaType::~LuaType()
 {
-#if 0
-    Py_DECREF(m_pClassDict);
-    Py_DECREF(m_pClass);
-#endif
 }
 
 void

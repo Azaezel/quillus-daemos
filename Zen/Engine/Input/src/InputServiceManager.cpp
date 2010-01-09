@@ -23,6 +23,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "InputServiceManager.hpp"
+#include "InputMapService.hpp"
 
 #include "../I_InputServiceFactory.hpp"
 #include "../I_InputService.hpp"
@@ -42,7 +43,7 @@
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
 
 #include <Zen/Engine/Core/I_Action.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
+#include <Zen/Engine/Input/I_KeyMap.hpp>
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
@@ -89,6 +90,35 @@ InputServiceManager::create(const std::string& _type, config_type& _config)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+InputServiceManager::pInputMapService_type
+InputServiceManager::createInputMapService()
+{
+    // TODO Should only one of these be created?
+
+    I_InputMapService* const pRawInputMapService = new InputMapService;
+    pInputMapService_type pInputServiceMap(pRawInputMapService,
+        boost::bind(&InputServiceManager::destroyInputMapService, this, _1));
+
+    return pInputServiceMap;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+InputServiceManager::destroyInputMapService(wpInputMapService_type _wpInputMapService)
+{
+    InputMapService* pService = dynamic_cast<InputMapService*>(_wpInputMapService.get());
+
+    if (pService)
+    {
+        delete pService;
+    }
+    else
+    {
+        throw Zen::Utility::runtime_exception("InputServiceManager::destroyInputMapService(): Error, wrong type.");
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 InputServiceManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
 {
@@ -99,8 +129,8 @@ InputServiceManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
     {
         Threading::CriticalSection guard(m_inputServiceCache.getLock());
 
-        for(services_type::iterator iter = m_inputServiceCache.begin(); 
-            iter != m_inputServiceCache.end(); 
+        for(services_type::iterator iter = m_inputServiceCache.begin();
+            iter != m_inputServiceCache.end();
             iter++)
         {
             registerScriptEngine(_pEngine, iter->second);
@@ -129,7 +159,7 @@ InputServiceManager::registerScriptEngine(pScriptEngine_type _pEngine, pInputSer
 static void
 script_mapKeyInput(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
 {
-    I_InputMap::ScriptObjectReference_type* pObject = dynamic_cast<I_InputMap::ScriptObjectReference_type*>(_pObject);
+    I_KeyMap::ScriptObjectReference_type* pObject = dynamic_cast<I_KeyMap::ScriptObjectReference_type*>(_pObject);
 
     std::string key = boost::any_cast<std::string>(_parms[0]);
 
@@ -177,10 +207,10 @@ InputServiceManager::registerScriptTypes(pScriptEngine_type _pEngine)
 
     // Expose I_InputService to the Script Engine
     m_pInputServiceType = m_pInputModule->createScriptType("InputService", "Input Service", 0);
-    //m_pInputServiceType->addMethod("createInputMap", "Create an input map", createInputMap);
+    //m_pInputServiceType->addMethod("createKeyMap", "Create an input map", createKeyMap);
     //
-    m_pInputMapType = m_pInputModule->createScriptType("InputMap", "Input Map", 0);
-    m_pInputMapType->addMethod("mapKeyInput", "Map a key to an action", script_mapKeyInput);
+    m_pKeyMapType = m_pInputModule->createScriptType("KeyMap", "Input Map", 0);
+    m_pKeyMapType->addMethod("mapKeyInput", "Map a key to an action", script_mapKeyInput);
 
     m_pKeyEventType = m_pInputModule->createScriptType("KeyEvent", "Key Event", 0);
     m_pKeyEventType->addMethod("getPressedState", "Get the state of the key (true = down, false = up", script_getPressedState);

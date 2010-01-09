@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Base Starter Kit
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -67,8 +67,9 @@ namespace Engine {
     }   // namespace World
     namespace Input {
         class I_InputService;
+        class I_InputMapService;
         class I_KeyEvent;
-        class I_InputMap;
+        class I_KeyMap;
     }   // namespace Input
     namespace Core {
         class I_Action;
@@ -92,7 +93,6 @@ class BaseClient
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<Scripting::I_ScriptEngine>              pScriptEngine_type;
     /// @}
 
     /// @name I_BaseGameClient Initializers
@@ -116,6 +116,7 @@ public:
     /// @{
 public:
     virtual Scripting::I_ScriptEngine& getScriptEngine();
+    virtual pScriptEngine_type getScriptEnginePtr();
     virtual Resource::I_ResourceService& getRenderingResourceService();
     virtual Input::I_InputService& getInputService();
     virtual Rendering::I_RenderingService& getRenderingService();
@@ -154,8 +155,8 @@ public:
     /// is drawn.
     Rendering::I_RenderingCanvas& getRenderingCanvas();
 
-    /// Get the primary InputMap
-    virtual Input::I_InputMap& getInputMap();
+    /// Get the primary KeyMap
+    virtual Input::I_KeyMap& getKeyMap();
 
     virtual Core::I_BehaviorService& getBehaviorService();
 
@@ -208,6 +209,7 @@ protected:
     Zen::Memory::managed_ptr<Camera::I_CameraService>       m_pCameraService;
     Zen::Memory::managed_ptr<Camera::I_Camera>              m_pCamera;
     Zen::Memory::managed_ptr<Input::I_InputService>         m_pInputService;
+    Zen::Memory::managed_ptr<Input::I_InputMapService>      m_pInputMapService;
     Zen::Memory::managed_ptr<World::I_WaterService>         m_pWaterService;
     Zen::Memory::managed_ptr<World::I_TerrainService>       m_pTerrainService;
     Zen::Memory::managed_ptr<World::I_SkyService>           m_pSkyService;
@@ -215,7 +217,7 @@ protected:
     Zen::Memory::managed_ptr<Sound::I_SoundService>         m_pSoundService;
 
     /// Primary input map for the game
-    Zen::Memory::managed_ptr<Input::I_InputMap>             m_pMainInputMap;
+    Zen::Memory::managed_ptr<Input::I_KeyMap>               m_pMainKeyMap;
 
     Core::I_GameGroup::ScriptObjectReference_type*          m_pScriptMainGroup;
 

@@ -42,6 +42,7 @@ class Creator
     /// @name GameBuilder::I_ProjectListener implementation
     /// @{
 public:
+    virtual void onDocumentModified(GameBuilder::I_GameObjectTypeDocument& _gameObjectTypeDocument);
     virtual void gameObjectTypeCreated(GameBuilder::I_GameObjectType& _gameObjectType);
     virtual void gameObjectTypeDocumentModified(GameBuilder::I_GameObjectTypeDocument& _document);
     virtual void gameObjectTypeDeleted(GameBuilder::I_GameObjectType& _gameObjectType);
@@ -57,13 +58,22 @@ public:
 
     /// @name Creator implementation
     /// @{
+public:
+    /// Create the Ogitors objects in the Creator view after the Ogitor view has
+    /// been initialized.
+    ///
+    /// @see ZoneContributor::open()
+    void createOgitorObjects();
+
 protected:
     void createGUIControls();
+
     void setImage(const std::string& _imageName, const wxTreeItemId& _id);
 
     void updateFromDocument(GameBuilder::I_GameObjectTypeDocument& _document);
 
     void handleElement(GameBuilder::I_GameObjectElement& _element);
+    void handleDocument(GameBuilder::I_GameObjectTypeDocument& _document);
 
     /// @param _path "/" separated list of folders.
     /// @return wxTreeItemId of the folder that was created or found

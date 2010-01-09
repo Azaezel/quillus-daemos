@@ -163,7 +163,7 @@ GameObjectBehaviors::setScale(Core::I_BaseGameObject& _object, float _x, float _
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-GameObjectBehaviors::handlePhysicsTransform(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_TransformEventData& _eventData)
+GameObjectBehaviors::handlePhysicsTransform(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_TransformEventData& _eventData)
 {
     for(PhysicsTransformBehaviors_type::iterator iter = m_physicsTransformBehaviors.begin(); iter != m_physicsTransformBehaviors.end(); iter++)
     {
@@ -174,7 +174,7 @@ GameObjectBehaviors::handlePhysicsTransform(Core::I_BaseGameObject& _gameObject,
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-GameObjectBehaviors::handlePhysicsForce(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_ApplyForcesEventData& _eventData)
+GameObjectBehaviors::handlePhysicsForce(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_ApplyForcesEventData& _eventData)
 {
     for(PhysicsForceBehaviors_type::iterator iter = m_physicsForceBehaviors.begin(); iter != m_physicsForceBehaviors.end(); iter++)
     {
@@ -185,7 +185,7 @@ GameObjectBehaviors::handlePhysicsForce(Core::I_BaseGameObject& _gameObject, Phy
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
-GameObjectBehaviors::handleBoundBoxCollision(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_BeginCollisionEventData& _eventData)
+GameObjectBehaviors::handleBoundBoxCollision(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_BeginCollisionEventData& _eventData)
 {
     for(CollisionBehavior_type::iterator iter = m_collisionBehaviors.begin(); iter != m_collisionBehaviors.end(); iter++)
     {
@@ -197,7 +197,7 @@ GameObjectBehaviors::handleBoundBoxCollision(Core::I_BaseGameObject& _gameObject
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-GameObjectBehaviors::handleCollision(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_DuringCollisionEventData& _eventData)
+GameObjectBehaviors::handleCollision(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_DuringCollisionEventData& _eventData)
 {
     for(CollisionBehavior_type::iterator iter = m_collisionBehaviors.begin(); iter != m_collisionBehaviors.end(); iter++)
     {
@@ -208,7 +208,7 @@ GameObjectBehaviors::handleCollision(Core::I_BaseGameObject& _gameObject, Physic
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-GameObjectBehaviors::handleCollisionResolution(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_EndCollisionEventData& _eventData)
+GameObjectBehaviors::handleCollisionResolution(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_EndCollisionEventData& _eventData)
 {
     for(CollisionBehavior_type::iterator iter = m_collisionBehaviors.begin(); iter != m_collisionBehaviors.end(); iter++)
     {

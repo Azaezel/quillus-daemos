@@ -65,7 +65,6 @@ ExplorerNodeFactory::createProject(Zen::Studio::Workbench::I_ProjectExplorerCont
 ExplorerNodeFactory::pUserData_type
 ExplorerNodeFactory::createNodeUserData(boost::uint64_t _explorerNodeId, const std::string& _nodeType, Zen::Studio::Workbench::I_ExplorerNode& _parent)
 {
-    std::cout << "ExplorerNodeFactory::createNodeUserData(): Begin" << std::endl;
     Zen::Studio::Workbench::I_ExplorerNode::UserData* pParentUserData = _parent.getUserData().get();
 
     // TODO Use a map for _nodeType?

@@ -55,7 +55,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             CreatorCategoryProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _value, Property* _pParent = NULL);
+             CreatorCategoryProperty(Properties& _properties, const std::string& _value, Property* _pParent = NULL);
     virtual ~CreatorCategoryProperty();
     /// @}
 

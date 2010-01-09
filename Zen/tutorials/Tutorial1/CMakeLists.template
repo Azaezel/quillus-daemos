@@ -36,11 +36,23 @@ add_dependencies( Tutorial1 ZenCore ZenEngine BaseClient BaseCommon )
 
 target_link_libraries( Tutorial1 ZenCore ZenEngine BaseClient BaseCommon ${Boost_LIBRARIES} ${LIBXML2_LIBRARIES} )
 
+set ( CLIENT_PATH "${INDIEZEN_PARENT}/Zen/tutorials/Tutorial1" )
+
+set ( CLIENT_LIBRARIES_PATH "${Boost_LIBRARY_DIRS};${PC_LIBXML_LIBDIR};${DEV_BIN}" )
+
+create_zgameloader_vcproj_userfile(Tutorial1)
+
 set_target_properties ( Tutorial1 
 						PROPERTIES
 						DEBUG_POSTFIX "_d"
 					)
 
+configure_file(
+	${INDIEZEN_PARENT}/Zen/tutorials/Tutorial1/client.xml.template
+	${INDIEZEN_PARENT}/Zen/tutorials/Tutorial1/client.xml
+	@ONLY
+)					
+					
 if (MSVC_IDE)
     # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
     set_target_properties ( Tutorial1 PROPERTIES PREFIX "../../bin/" )

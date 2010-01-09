@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 2.6) 
 
 project (ZSky)
+set ( PROJECT_PREFIX "plugins/ZSky" )
 
 if ( NOT INDIEZEN_PARENT)
 	find_path ( INDIEZEN_PARENT Zen .. ../.. ../../.. ENV )
@@ -46,3 +47,11 @@ if (MSVC_IDE)
 	set_target_properties ( ZSky PROPERTIES IMPORT_PREFIX "../../lib/" )
 endif(MSVC_IDE)
 
+<%HeaderInstallDirectives%>
+
+install ( TARGETS
+	ZSky
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+)

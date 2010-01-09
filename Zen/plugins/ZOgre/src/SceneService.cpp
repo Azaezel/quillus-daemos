@@ -46,12 +46,14 @@ SceneService::SceneService()
 {
     //m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "default");
     //Ogre::Root::getSingleton().initialise(false, "IndieZen Rendering Window");
-    m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_EXTERIOR_CLOSE, "default");
+    //m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_EXTERIOR_CLOSE, "default");
+    m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "default");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SceneService::~SceneService()
 {
+    std::cout << "SceneService::~SceneService()" << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -95,7 +97,7 @@ SceneService::createChildNode(const std::string &_name)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 SceneService::setAmbientLight(Math::Real _red, Math::Real _green, Math::Real _blue, Math::Real _alpha)
 {
     m_pSceneManager->setAmbientLight(Ogre::ColourValue(_red, _green, _blue, _alpha));
@@ -165,7 +167,7 @@ SceneService::getScriptObject()
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(), 
+            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(),
             Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
     }
 

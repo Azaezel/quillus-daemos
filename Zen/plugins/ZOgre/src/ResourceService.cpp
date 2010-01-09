@@ -69,8 +69,8 @@ ResourceService::addResourceLocation(const std::string& _path, const std::string
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Engine::Resource::I_ResourceService::pResource_type
-ResourceService::loadResource(config_type& _config)
+void
+ResourceService::initialiseAllResourceGroups()
 {
     if (!m_bInitialized)
     {
@@ -82,6 +82,13 @@ ResourceService::loadResource(config_type& _config)
             m_bInitialized = true;
         }
     }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Engine::Resource::I_ResourceService::pResource_type
+ResourceService::loadResource(config_type& _config)
+{
+    initialiseAllResourceGroups();
 
     // TODO Maintain a pointer to this object
 
@@ -141,6 +148,16 @@ ResourceService::destroyResource(wpResource_type _pResource)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static std::string sm_scriptSingletonName("renderingResourceService");
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+ResourceService::getScriptSingletonName() const
+{
+    return sm_scriptSingletonName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Scripting::I_ObjectReference*
 ResourceService::getScriptObject()
 {
@@ -148,7 +165,7 @@ ResourceService::getScriptObject()
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Resource::I_ResourceManager::getSingleton().getDefaultScriptModule(), 
+            Engine::Resource::I_ResourceManager::getSingleton().getDefaultScriptModule(),
             Engine::Resource::I_ResourceManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
     }
 

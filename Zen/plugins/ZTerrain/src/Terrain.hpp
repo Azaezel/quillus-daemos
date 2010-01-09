@@ -54,10 +54,10 @@ public:
     /// @name I_Terrain implementation
     /// @{
 public:
-    virtual void setCollisionShape(pCollisionShape_type _shape);
-    virtual pCollisionShape_type getCollisionShape(void);
+    virtual void setPhysicsActor(pPhysicsActor_type _shape);
+    virtual pPhysicsActor_type getPhysicsActor();
     virtual void setResource(pResource_type _resource);
-    virtual pResource_type getResource(void);
+    virtual pResource_type getResource();
     virtual bool loadVisualization(const std::string& _ogreSpecificConfigFileName, const Math::Matrix4& _transform);
     virtual bool loadPhysicsFromRaw(const std::string& _rawFileName, size_t _size, float _maxHeight, float _scaleXY, const Math::Matrix4& _transform, bool _bSerialize);
     virtual bool loadPhysicsFromSerialization(const std::string& _serializationFileName, const Math::Matrix4& _transform);
@@ -86,7 +86,7 @@ public:
 private:
     wpTerrainService_type       m_pTerrainService;
     pResource_type              m_pResource;
-    pCollisionShape_type          m_pCollisionShape;
+    pPhysicsActor_type          m_pActor;
 
     pScriptModule_type          m_pScriptModule;
     ScriptObjectReference_type* m_pScriptObject;

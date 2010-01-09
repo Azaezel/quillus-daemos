@@ -71,6 +71,8 @@ public:
     void onPageChanged(wxAuiNotebookEvent& _event);
     void onPageClose(wxAuiNotebookEvent& _event);
 
+    void handleKeyDown(wxKeyEvent& _event);
+
     /// @param _pOldView The old view that was active before this call.
     ///     If the value is NULL, m_pActiveView is used.
     void notifyPageChange(I_View* _pNewView, I_View* _pOldView = NULL);

@@ -46,21 +46,11 @@ RenderingView::RenderingView(Zen::Engine::Rendering::I_Context& _context, const 
     Ogre::NameValuePairList nvpl;
 
 #ifdef WIN32
-    //nvpl["externalWindowHandle"] = Ogre::StringConverter::toString((int)m_context.getParentWindow());
-    nvpl["parentWindowHandle"] = Ogre::StringConverter::toString((int)m_context.getParentWindow());
+    nvpl["externalWindowHandle"] = Ogre::StringConverter::toString((int)m_context.getParentWindow());
+    //nvpl["parentWindowHandle"] = Ogre::StringConverter::toString((int)m_context.getParentWindow());
 #else
-#if 0 // not working yet
-    // Retrieving the display, screen and window values from the Pigment window
-    Display* dpy = XOpenDisplay (g_getenv ("DISPLAY"));
-    gint screen = DefaultScreen (dpy);
-    Window win;
-    // viewport was created with pgm_viewport_factory_make ("opengl", &viewport);
-    pgm_viewport_get_embedding_id(viewport, &win);
-
-    misc["parentWindowHandle"] =  StringConverter::toString((long)dpy) + ":" +
-                                        StringConverter::toString((int)screen) + ":" +
-                                        StringConverter::toString((long)win);
-#endif // not working on other platforms?
+    nvpl["externalWindowHandle"] = m_context.getParentWindow();
+    std::cout << "ZOgre::RenderingView using " << m_context.getParentWindow() << " as the external window handle." << std::endl;
 #endif
     nvpl["title"] = _windowName.c_str();
 
@@ -73,6 +63,7 @@ RenderingView::RenderingView(Zen::Engine::Rendering::I_Context& _context, const 
 
     if (pContext != NULL)
     {
+        // TODO This might be different depending on the OS.
         m_pRenderWindow->getCustomAttribute("WINDOW", &pContext->m_pHandle);
     }
 }
@@ -80,6 +71,7 @@ RenderingView::RenderingView(Zen::Engine::Rendering::I_Context& _context, const 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 RenderingView::~RenderingView()
 {
+    std::cout << "RenderingView::~RenderingView()" << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

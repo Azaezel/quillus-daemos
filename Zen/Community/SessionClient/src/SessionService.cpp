@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -157,28 +157,60 @@ SessionService::handleRequest(pRequest_type _pRequest, pResponseHandler_type _pR
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+SessionService::getScriptTypeName()
+{
+    static std::string sm_name("SessionClient");
+    return sm_name;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+SessionService::getScriptObject()
+{
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptWrapper_type(getScriptModule(), 
+            getScriptModule()->getScriptType(getScriptTypeName()),
+            this
+            );
+    }
+
+    return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SessionService::pScriptModule_type
+SessionService::getScriptModule()
+{
+    return m_pScriptModule->getScriptModule();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SessionService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
+{
+    m_pScriptEngine = _pScriptEngine;
+
+    // TODO change this so the Community module can be shared
+    static Zen::Scripting::script_module module(_pScriptEngine, "Community");
+
+    m_pScriptModule = &module;
+
+    module.addType<SessionService>(getScriptTypeName(), "Session Service")
+        .addMethod("login", &SessionService::login)
+        .createGlobalObject("sessionClient", this)
+    ;
+
+    module.activate();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Zen::Enterprise::AppServer::I_ApplicationServer&
 SessionService::getApplicationServer()
 {
     return m_appServer;
 }
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#if 0   // deprecated
-void
-SessionService::requestSession(pEndpoint_type _pDestinationEndpoint, 
-                           const std::string& _name, 
-                           const std::string& _password,
-                           pResponseHandler_type _pResponseHandler)
-{
-    pRequest_type pRequest = Zen::Community::Protocol::I_LoginRequest::create(pEndpoint_type(),
-                                                                              _pDestinationEndpoint,
-                                                                              _name,
-                                                                              _password);
-
-    handleRequest(pRequest, _pResponseHandler);
-}
-#endif  // deprecated
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class LoginResponseHandler
@@ -397,6 +429,13 @@ SessionService::requestAttribute(const Common::I_Session& _session,
 
     return pRawResponseHandler->getAttribute();
 
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SessionService::login(const std::string& _server, const std::string& _name, const std::string& _password, boost::any _listener)
+{
+    // TODO Implement
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Enterprise Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 // Copyright (C)        2009 Joshua Cassity
 //
@@ -31,10 +31,9 @@
 #include "Configuration.hpp"
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
-
 #include <Zen/Core/Plugins/I_Configuration.hpp>
-
 #include <Zen/Core/Threading/I_Condition.hpp>
+#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 
 #include <boost/noncopyable.hpp>
 
@@ -80,6 +79,9 @@ public:
     typedef Memory::managed_ptr<I_MessageRegistry>          pMessageRegistry_type;
 
     typedef Zen::Plugins::I_ConfigurationElement::const_ptr_type    pConfig_type;
+
+    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptEngine>     pScriptEngine_type;
+    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptModule>     pScriptModule_type;
     /// @}
 
     /// @name I_ApplicationServer interface.
@@ -93,6 +95,15 @@ public:
     /// This method will return when the application server is fully stopped and destroyed.
     /// Do not reference this object after stop() is called.
     virtual void stop() = 0;
+
+    /// Register the default script engine for all application services.
+    /// Every application service that has been created or is created in the future
+    /// will use this script engine.
+    /// @param _pEngine NULL to set the default engine to none, but doing so will
+    ///             not unregister the script engine to services that have already
+    ///             been created.  It will only prevent subsequent services from
+    ///             using this script engine.
+    virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine) = 0;
 
     /// Install multiple protocol services using the provided configuration.
     /// The provided configuration should have zero or more <protocol/> entries which

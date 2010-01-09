@@ -62,7 +62,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             ReplicationTypeProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _value, Property* _pParent = NULL);
+             ReplicationTypeProperty(Properties& _properties, const std::string& _value, Property* _pParent = NULL);
     virtual ~ReplicationTypeProperty();
     /// @}
 

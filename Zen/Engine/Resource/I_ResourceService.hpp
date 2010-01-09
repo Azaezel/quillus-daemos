@@ -78,13 +78,20 @@ public:
     /// @param _type Stream plugin type that handles this resource location.
     /// @param _group Group or Mod associated with this resource location
     /// @param _recursive True if this resource location is recursive
-    virtual void addResourceLocation(const std::string& _path, const std::string& _type, 
+    virtual void addResourceLocation(const std::string& _path, const std::string& _type,
         const std::string& _group, bool _recursive = false) = 0;
+
+    /// After you're finished adding resource locations, you must
+    /// call this method to initialize them.
+    virtual void initialiseAllResourceGroups() = 0;
 
     /// Load a resource into memory
     /// @param _config Configuration for the service.
     /// @return Pointer to new I_Resource instance
     virtual pResource_type loadResource(config_type& _config) = 0;
+
+    /// Get the name of the singleton exposed to script for this service.
+    virtual const std::string& getScriptSingletonName() const = 0;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -121,7 +128,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Resource
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_ResourceService is managed by a factory
     template<>

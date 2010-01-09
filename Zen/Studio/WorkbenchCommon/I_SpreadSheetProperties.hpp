@@ -35,9 +35,10 @@ namespace Zen {
 namespace Studio {
 namespace Workbench {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-;
+class I_Property;
 
 /// Spread Sheet Properties interface.
+/// This is a collection of properties associated with a spread sheet.
 /// The lifetime of this object is the same as the model
 /// from whence it came.  Any calls to I_PropertiesPublisher::subscribe()
 /// will need to retain a strong reference to the model for as long
@@ -58,6 +59,10 @@ public:
 
     /// @return true if the cell properties change for each column.
     virtual bool cellPropertiesChangeEachColumn() const = 0;
+
+    /// Get a property by the fully qualified name of the property.
+    /// @return The property, or NULL if the property wasn't found.
+    virtual const I_Property* getPropertyByFullName(const std::string& _fullName) = 0;
     /// @}
 
     /// @name 'Structors

@@ -22,7 +22,7 @@
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -46,7 +46,7 @@
 #include <Zen/Engine/Core/I_ActionMap.hpp>
 #include <Zen/Engine/Core/I_GameObjectBehaviors.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
 
 #include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>
@@ -134,7 +134,7 @@ GameClient::init()
     // m_baseClient.initWaterService("ogre");
 
     // Initialize the Input service
-    // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse 
+    // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse
     // combined input service.
     m_baseClient.initInputService("keyboard");
 
@@ -147,14 +147,14 @@ GameClient::init()
     // Create the script types
     createScriptTypes();
 
-    // Possibly the rest of this should be done later and we should show 
+    // Possibly the rest of this should be done later and we should show
     // an initial game screen or splash screens here.
 
     createActions();
     createDefaultMapping();
     createBehaviors();
 
-    // Normally, createScene() is done after other things like 
+    // Normally, createScene() is done after other things like
     // displaying some splash screens, etc.  But for now lets
     // just do it here.
     createScene();
@@ -257,10 +257,10 @@ GameClient::createScene()
     {
         m_pTerrain->loadPhysicsFromRaw(terrainRawFile, 513, 200.0f, 4.0f, matXfm, true);
     }
-    m_pTerrain->getCollisionShape()->setMaterial(m_pTerrainMaterial);
-	m_pTerrain->getCollisionShape()->setCollisionGroup(TERRAIN); 
-    // Create a sky box
+    m_pTerrain->getPhysicsActor()->setMaterial(m_pTerrainMaterial);
+	m_pTerrain->getPhysicsActor()->setCollisionGroup(TERRAIN);
 
+    // Create a sky box
     Zen::Engine::World::I_SkyService::config_type skyConfig;
     skyConfig["type"] = "skybox";
     skyConfig["resourceName"] = "SteveCube";
@@ -278,15 +278,15 @@ GameClient::createScene()
 
     // Load the Ninja!
     m_pPlayer->loadRenderable("ninja.mesh");
-	m_pPlayer->base().getCollisionShape()->setMaterial(m_pAvatarMaterial);
+	m_pPlayer->base().getPhysicsActor()->setMaterial(m_pAvatarMaterial);
 
-	m_pPlayer->base().getCollisionShape()->setCollisionGroup(AVATAR);
+	m_pPlayer->base().getPhysicsActor()->setCollisionGroup(AVATAR);
 
     m_pPlayer->base().setScale(0.005f, 0.005f, 0.005f);
     m_pPlayer->base().setPosition(146.0f, 101.0f, 221.0f, true);
 
 
-	//m_pPlayer->base().getCollisionShape()->setAngularMomentum(Zen::Math::Vector3(0.0f,0.0f,0.0f));
+	//m_pPlayer->base().getPhysicsActor()->setAngularMomentum(Zen::Math::Vector3(0.0f,0.0f,0.0f));
 
     Zen::Engine::Rendering::I_RenderingCanvas& canvas = m_baseClient.getRenderingCanvas();
 
@@ -374,7 +374,7 @@ GameClient::setupPhysicsMaterials()
     m_pAvatarMaterial = m_baseGame.getCurrentPhysicsZone()->createMaterial();
     m_pAvatarMaterial->setRestitution(0.15f);
     m_pAvatarMaterial->setDynamicFriction(0.1f);
-    m_pAvatarMaterial->setStaticFriction(1.0f); 
+    m_pAvatarMaterial->setStaticFriction(1.0f);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -407,9 +407,9 @@ GameClient::beforeRender(double _elapsedTime)
 
 	Zen::Math::Vector3 oldvel, oldangvel;
 
-    m_pPlayer->base().getCollisionShape()->getOrientation(m_pPlayer->m_orientation);
-    m_pPlayer->base().getCollisionShape()->getVelocity(oldvel);
-	oldangvel = m_pPlayer->base().getCollisionShape()->getAngularMomentum();
+    m_pPlayer->base().getPhysicsActor()->getOrientation(m_pPlayer->m_orientation);
+    m_pPlayer->base().getPhysicsActor()->getLinearVelocity(oldvel);
+	oldangvel = m_pPlayer->base().getPhysicsActor()->getAngularVelocity();
 
 	//really should rip this entire chunk out and replace it with a controledMovementBehavior (don't look for it, it's just a name atm)
     //
@@ -422,7 +422,7 @@ GameClient::beforeRender(double _elapsedTime)
 		Zen::Math::Vector3 deltaV(0.0f, _elapsedTime * m_pPlayer->m_stepHeight, _elapsedTime * m_pPlayer->m_moveSpeed);
         Zen::Math::Vector3 newvel = m_pPlayer->m_orientation.rotate(deltaV);
         newvel = newvel + oldvel;
-        m_pPlayer->base().getCollisionShape()->setVelocity(newvel);
+        m_pPlayer->base().getPhysicsActor()->setLinearVelocity(newvel);
     }
     if (m_moveZDelta < 0)
     {
@@ -430,7 +430,7 @@ GameClient::beforeRender(double _elapsedTime)
         Zen::Math::Vector3 deltaV(0.0f, _elapsedTime * m_pPlayer->m_stepHeight, _elapsedTime * -m_pPlayer->m_moveSpeed);
         Zen::Math::Vector3 newvel = m_pPlayer->m_orientation.rotate(deltaV);
         newvel = newvel+oldvel;
-        m_pPlayer->base().getCollisionShape()->setVelocity(newvel);
+        m_pPlayer->base().getPhysicsActor()->setLinearVelocity(newvel);
     }
 
     //
@@ -442,7 +442,7 @@ GameClient::beforeRender(double _elapsedTime)
         Zen::Math::Vector3 deltaV(0.0f,  _elapsedTime * -m_pPlayer->m_turnSpeed, 0.0f);
         Zen::Math::Vector3 newangvel = m_pPlayer->m_orientation.rotate(deltaV);
         newangvel = newangvel + oldangvel;
-        m_pPlayer->base().getCollisionShape()->setAngularMomentum(newangvel);
+        m_pPlayer->base().getPhysicsActor()->setAngularVelocity(newangvel);
     }
     if (m_moveXDelta < 0)
     {
@@ -450,13 +450,13 @@ GameClient::beforeRender(double _elapsedTime)
         Zen::Math::Vector3 deltaV(0.0f, _elapsedTime * m_pPlayer->m_turnSpeed, 0.0f);
         Zen::Math::Vector3 newangvel = m_pPlayer->m_orientation.rotate(deltaV);
         newangvel = newangvel + oldangvel;
-        m_pPlayer->base().getCollisionShape()->setAngularMomentum(newangvel);
+        m_pPlayer->base().getPhysicsActor()->setAngularVelocity(newangvel);
     }
 
 	// This updates all physics zones we've created:
 	m_baseGame.getPhysicsService()->stepSimulation(_elapsedTime);
 
-	//m_pPlayer->base().getCollisionShape()->setOrientation(m_pPlayer->m_orientation);
+	//m_pPlayer->base().getPhysicsActor()->setOrientation(m_pPlayer->m_orientation);
 
     m_baseClient.getRenderingCanvas().selectCamera("chase").update();
 

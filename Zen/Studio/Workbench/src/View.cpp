@@ -45,6 +45,17 @@ View::View(wxWindow* _pParent, Workbench* _pWorkbench, pViewable_type _pViewable
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+View::View(wxWindow* _pParent, Workbench* _pWorkbench, pViewable_type _pViewable, const int _instance, long _windowStyle)
+:   wxPanel(_pParent, 1, wxDefaultPosition, wxDefaultSize, _windowStyle)
+,   m_pWorkbench(_pWorkbench)
+,   m_pViewable(_pViewable)
+,   m_instance(_instance)
+,   m_pNotebook(NULL)
+,   m_pPage(NULL)
+{
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 View::~View()
 {
 }

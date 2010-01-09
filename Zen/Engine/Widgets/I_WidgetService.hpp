@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 // Copyright (C)		2009 Denis Hilliard
 //
@@ -42,6 +42,8 @@
 #include <Zen/Engine/Rendering/I_View.hpp>
 
 #include <Zen/Engine/Input/I_InputService.hpp>
+#include <Zen/Engine/Input/I_KeyPublisher.hpp>
+#include <Zen/Engine/Input/I_MousePublisher.hpp>
 
 #include <boost/noncopyable.hpp>
 
@@ -59,7 +61,9 @@ class I_Widget;
 class I_WidgetServiceFactory;
 
 class WIDGETS_DLL_LINK I_WidgetService
-    :   public virtual Zen::Scripting::I_ScriptableType
+:   public virtual Zen::Scripting::I_ScriptableType
+,   public Input::I_KeyPublisher
+,   public Input::I_MousePublisher
 {
     /// @name Types
     /// @{
@@ -171,18 +175,9 @@ public:
     static const std::string& getExtensionPointName();
     /// @}
 
-
     /// @name Events
     /// @{
 public:
-    // TODO: The I_WidgetService should subscribe to the I_InputService
-    // events.  If the widget service does not use the event, it should
-    // re-fire the event using these events.  Games that have GUI's should
-    // not use the input service events directly.  Instead, it should use
-    // these events.
-    key_event               onKeyEvent;
-    MouseMoveEvent_type     onMouseMoveEvent;
-    MouseClickEvent_type    onMouseClickEvent;
     ServiceEvent_type       onDestroyEvent;
     /// @}
 

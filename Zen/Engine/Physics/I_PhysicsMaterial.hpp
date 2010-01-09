@@ -63,7 +63,7 @@ public:
     virtual Math::Real getRestitution() = 0;
     virtual bool getAdvancedCollisionPrediction() = 0;
     virtual bool getCollidable() = 0;
-    
+
     virtual void setDynamicFriction(Math::Real _dynamicFriction) = 0;
     virtual void setStaticFriction(Math::Real _staticFriction) = 0;
     virtual void setRestitution(Math::Real _elasticity) = 0;
@@ -90,7 +90,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Physics
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_PhysicsMaterial is managed by a I_PhysicsZone
     template<>

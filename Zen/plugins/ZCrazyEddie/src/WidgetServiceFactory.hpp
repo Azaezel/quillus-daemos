@@ -47,7 +47,7 @@ public:
     /// @name I_WidgetServiceFactory implementation
     /// @{
 public:
-    virtual pWidgetService_type create(const std::string& _type, config_type& _config);
+    virtual pWidgetService_type create(const std::string& _type, config_type& _config, pScriptEngine_type _pScriptEngine);
     /// @}
 
     /// @name WidgetServiceFactory implementation

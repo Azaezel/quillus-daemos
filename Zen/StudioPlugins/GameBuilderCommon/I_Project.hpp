@@ -39,7 +39,7 @@ class I_ProjectListener;
 
 /// A project
 class GAMEBUILDERCOMMON_DLL_LINK I_Project
-:   public Zen::Studio::Workbench::I_Project
+:   public virtual Zen::Studio::Workbench::I_Project
 {
     /// @name Types
     /// @{
@@ -49,7 +49,7 @@ public:
     typedef Zen::Memory::managed_ptr<Zen::Spaces::ObjectModel::I_Subscription>  pSubscription_type;
     /// @}
 
-    /// @name I_Project interface
+    /// @name GameBuilder::I_Project interface
     /// @{
 public:
     /// Subscribe a listener to this project.
@@ -57,10 +57,10 @@ public:
     /// the listener goes out of scope the subscription also goes out
     /// of scope.  The listener should also retain a strong reference
     /// to the project.
-    /// @param _pListener - Unmanaged pointer to the listener.  The listener 
-    ///     MUST remain alive for at least as long as the document (which it 
-    ///     will if it keeps a strong reference to the project).  
-    ///     The listener MUST dereference the subscription before the listener 
+    /// @param _pListener - Unmanaged pointer to the listener.  The listener
+    ///     MUST remain alive for at least as long as the document (which it
+    ///     will if it keeps a strong reference to the project).
+    ///     The listener MUST dereference the subscription before the listener
     ///     is destroyed.
     /// @todo Should this be promoted to Workbench::I_Project?
     virtual pSubscription_type subscribe(pProjectListener_type _pListener, pFilter_type _pFilter = pFilter_type()) = 0;
@@ -75,7 +75,7 @@ public:
     /// @name 'Structors
     /// @{
 protected:
-             I_Project(const std::string& _name);
+             I_Project();
     virtual ~I_Project();
     /// @}
 

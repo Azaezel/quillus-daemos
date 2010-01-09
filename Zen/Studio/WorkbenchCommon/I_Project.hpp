@@ -1,5 +1,5 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// Zen Studio
+// Zen Studio Workbench
 //
 // Copyright (C) 2001 - 2009 Tony Richards
 //
@@ -50,6 +50,8 @@ class I_Document;
 class I_Workbench;
 
 /// Project interface.
+/// If you like, you can derive from Zen::Studio::Workbench::Project for a base
+/// implementation that does a lot of the default work, but it's not necessary.
 /// @note TR - This probably should not be a UserData, but possibly it should have
 /// a UserData.  Not sure yet.
 class WORKBENCHCOMMON_DLL_LINK I_Project
@@ -91,7 +93,12 @@ public:
     virtual pDatabaseConnection_type getDatabaseConnection() = 0;
 
     /// Get the control path for this project.
-    virtual const boost::filesystem::path& getControlPath() = 0;
+    /// The control path is the path to the .workbench folder for the project.
+    virtual const boost::filesystem::path& getControlPath() const = 0;
+
+    /// Get the file system path for this project.
+    /// The project path is the parent folder that contains all of the project source files.
+    virtual const boost::filesystem::path& getProjectPath() const = 0;
     /// @}
 
     /// @name Events

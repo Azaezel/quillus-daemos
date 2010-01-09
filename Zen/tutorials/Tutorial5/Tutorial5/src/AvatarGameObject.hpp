@@ -24,7 +24,7 @@
 //  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -37,9 +37,9 @@
 #include <Zen/Starter/Base/BaseCommon/I_BaseGameObject.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Physics/I_PhysicsJoint.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Game {
@@ -72,7 +72,7 @@ public:
              AvatarGameObject(GameClient& _client, Zen::Engine::Core::I_GameGroup& _group, const std::string& _name);
     virtual ~AvatarGameObject();
     /// @}
-	
+
 	/// @name Member variables
     /// @{
 	Zen::Math::Real												m_moveSpeed;
@@ -80,9 +80,9 @@ public:
 	Zen::Math::Real												m_turnSpeed;
 	Zen::Math::Quaternion4										m_orientation;
 private:
-    Zen::Engine::Physics::I_PhysicsZone::pCollisionShape_type    m_pShape;
-    Zen::Engine::Physics::I_PhysicsZone::wpPhysicsZone_type   m_pWorld;
-    Zen::Engine::Physics::I_PhysicsZone::pPhysicsJoint_type    m_pUpJoint;
+    Zen::Engine::Physics::I_PhysicsZone::pPhysicsActor_type     m_pActor;
+    Zen::Engine::Physics::I_PhysicsZone::wpPhysicsZone_type     m_pZone;
+    Zen::Engine::Physics::I_PhysicsZone::pPhysicsJoint_type     m_pUpJoint;
 	pPhysicsMaterial_type m_pAvatarMaterial;
     /// @}
 

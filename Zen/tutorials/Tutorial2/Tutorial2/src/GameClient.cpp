@@ -43,7 +43,7 @@
 #include <Zen/Engine/Core/I_ActionMap.hpp>
 #include <Zen/Engine/Core/I_GameObjectBehaviors.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
 
 #include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>

@@ -24,7 +24,7 @@
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -47,7 +47,7 @@
 #include <Zen/Engine/Core/I_ActionMap.hpp>
 #include <Zen/Engine/Core/I_GameObjectBehaviors.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
 
 #include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>
@@ -128,7 +128,7 @@ GameClient::init()
     m_baseClient.initTerrainService("ZTerrain");
 
     // Initialize the Input service
-    // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse 
+    // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse
     // combined input service.
     m_baseClient.initInputService("keyboard");
 
@@ -138,14 +138,14 @@ GameClient::init()
     // Create the script types
     createScriptTypes();
 
-    // Possibly the rest of this should be done later and we should show 
+    // Possibly the rest of this should be done later and we should show
     // an initial game screen or splash screens here.
 
     createActions();
     createDefaultMapping();
     createBehaviors();
 
-    // Normally, createScene() is done after other things like 
+    // Normally, createScene() is done after other things like
     // displaying some splash screens, etc.  But for now lets
     // just do it here.
     createScene();
@@ -269,7 +269,7 @@ GameClient::createScene()
     m_pPlayer->base().setPosition(146.0f, 101.0f, 221.0f, true);
 
 
-	//m_pPlayer->base().getCollisionShape()->setAngularMomentum(Zen::Math::Vector3(0.0f,0.0f,0.0f));
+	//m_pPlayer->base().getPhysicsActor()->setAngularVelocity(Zen::Math::Vector3(0.0f,0.0f,0.0f));
 
     Zen::Engine::Rendering::I_RenderingCanvas& canvas = m_baseClient.getRenderingCanvas();
 
@@ -365,9 +365,9 @@ GameClient::beforeRender(double _elapsedTime)
 
 	Zen::Math::Vector3 oldvel, oldangvel;
 
-    m_pPlayer->base().getCollisionShape()->getOrientation(m_pPlayer->m_orientation);
-    m_pPlayer->base().getCollisionShape()->getVelocity(oldvel);
-	oldangvel = m_pPlayer->base().getCollisionShape()->getAngularMomentum();
+    m_pPlayer->base().getPhysicsActor()->getOrientation(m_pPlayer->m_orientation);
+    m_pPlayer->base().getPhysicsActor()->getLinearVelocity(oldvel);
+	oldangvel = m_pPlayer->base().getPhysicsActor()->getAngularVelocity();
 
 	//really should rip this entire chunk out and replace it with a controledMovementBehavior (don't look for it, it's just a name atm)
     //
@@ -380,7 +380,7 @@ GameClient::beforeRender(double _elapsedTime)
 		Zen::Math::Vector3 deltaV(0.0f, _elapsedTime * m_pPlayer->m_stepHeight, _elapsedTime * m_pPlayer->m_moveSpeed);
         Zen::Math::Vector3 newvel = m_pPlayer->m_orientation.rotate(deltaV);
         newvel = newvel + oldvel;
-        m_pPlayer->base().getCollisionShape()->setVelocity(newvel);
+        m_pPlayer->base().getPhysicsActor()->setLinearVelocity(newvel);
     }
     if (m_moveZDelta < 0)
     {
@@ -388,7 +388,7 @@ GameClient::beforeRender(double _elapsedTime)
         Zen::Math::Vector3 deltaV(0.0f, _elapsedTime * m_pPlayer->m_stepHeight, _elapsedTime * -m_pPlayer->m_moveSpeed);
         Zen::Math::Vector3 newvel = m_pPlayer->m_orientation.rotate(deltaV);
         newvel = newvel+oldvel;
-        m_pPlayer->base().getCollisionShape()->setVelocity(newvel);
+        m_pPlayer->base().getPhysicsActor()->setLinearVelocity(newvel);
     }
 
     //
@@ -400,7 +400,7 @@ GameClient::beforeRender(double _elapsedTime)
         Zen::Math::Vector3 deltaV(0.0f,  _elapsedTime * -m_pPlayer->m_turnSpeed, 0.0f);
         Zen::Math::Vector3 newangvel = m_pPlayer->m_orientation.rotate(deltaV);
         newangvel = newangvel + oldangvel;
-        m_pPlayer->base().getCollisionShape()->setAngularMomentum(newangvel);
+        m_pPlayer->base().getPhysicsActor()->setAngularVelocity(newangvel);
     }
     if (m_moveXDelta < 0)
     {
@@ -408,13 +408,13 @@ GameClient::beforeRender(double _elapsedTime)
         Zen::Math::Vector3 deltaV(0.0f, _elapsedTime * m_pPlayer->m_turnSpeed, 0.0f);
         Zen::Math::Vector3 newangvel = m_pPlayer->m_orientation.rotate(deltaV);
         newangvel = newangvel + oldangvel;
-        m_pPlayer->base().getCollisionShape()->setAngularMomentum(newangvel);
+        m_pPlayer->base().getPhysicsActor()->setAngularVelocity(newangvel);
     }
 
 	// This updates all physics worlds we've created:
 	m_baseGame.getPhysicsService()->stepSimulation(_elapsedTime);
 
-	//m_pPlayer->base().getCollisionShape()->setOrientation(m_pPlayer->m_orientation);
+	//m_pPlayer->base().getPhysicsActor()->setOrientation(m_pPlayer->m_orientation);
 
     m_baseClient.getRenderingCanvas().selectCamera("chase").update();
 }
