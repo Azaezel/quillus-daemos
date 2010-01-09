@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WheelsClient", "WheelsClient\WheelsClient.vcproj", "{5A7D342F-E31A-4E61-BD1A-5416F6464577}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WheelsCommon", "WheelsCommon\WheelsCommon.vcproj", "{6A69F2C8-5376-445E-A1E0-F074A2D0142E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WheelsServer", "WheelsServer\WheelsServer.vcproj", "{69000C6C-332A-4D2E-A6FD-C581F7053C69}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A7D342F-E31A-4E61-BD1A-5416F6464577}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5A7D342F-E31A-4E61-BD1A-5416F6464577}.Debug|Win32.Build.0 = Debug|Win32
+		{5A7D342F-E31A-4E61-BD1A-5416F6464577}.Release|Win32.ActiveCfg = Release|Win32
+		{5A7D342F-E31A-4E61-BD1A-5416F6464577}.Release|Win32.Build.0 = Release|Win32
+		{6A69F2C8-5376-445E-A1E0-F074A2D0142E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6A69F2C8-5376-445E-A1E0-F074A2D0142E}.Debug|Win32.Build.0 = Debug|Win32
+		{6A69F2C8-5376-445E-A1E0-F074A2D0142E}.Release|Win32.ActiveCfg = Release|Win32
+		{6A69F2C8-5376-445E-A1E0-F074A2D0142E}.Release|Win32.Build.0 = Release|Win32
+		{69000C6C-332A-4D2E-A6FD-C581F7053C69}.Debug|Win32.ActiveCfg = Debug|Win32
+		{69000C6C-332A-4D2E-A6FD-C581F7053C69}.Debug|Win32.Build.0 = Debug|Win32
+		{69000C6C-332A-4D2E-A6FD-C581F7053C69}.Release|Win32.ActiveCfg = Release|Win32
+		{69000C6C-332A-4D2E-A6FD-C581F7053C69}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

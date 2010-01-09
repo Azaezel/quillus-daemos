@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ZSQLite" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Script file="lib_finder.script" />
+			<Target title="Debug-GCC">
+				<Option output="$(#ZEN.lib)/libZSQLite_d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="`pkg-config --libs boost`" />
+					<Add library="pthread" />
+					<Add library="Core_d" />
+				</Linker>
+			</Target>
+			<Target title="Release-GCC">
+				<Option output="$(#ZEN.lib)/libZSQLite" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Debug-MSVC5">
+				<Option output="$(#ZEN.lib)/ZSQLite_d" prefix_auto="1" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="msvc8" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="/MDd" />
+					<Add option="/arch:SSE2" />
+					<Add option="/Gd" />
+					<Add option="/RTCu" />
+					<Add option="/EHc" />
+					<Add option="/EHs" />
+					<Add option="/GR" />
+					<Add option="/Od" />
+					<Add option="/W3" />
+					<Add option="/DTHREADMODEL_WIN32" />
+					<Add option="/DHOST_WIN32" />
+					<Add directory="$(#WindowsPlatformSDK.include)" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add directory="$(#ZEN.include)" />
+			<Add directory="$(#BOOST.include)" />
+		</Compiler>
+		<Linker>
+			<Add directory="$(#BOOST.lib)" />
+			<Add directory="$(#ZEN.lib)" />
+		</Linker>
+		<Unit filename="../../../../plugins/ZSQLite/plugin.xml" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseColumn.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseColumn.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseCommand.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseCommand.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseConnection.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseConnection.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseDynamicQuery.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseDynamicQuery.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseQuery.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseQuery.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseResult.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseResult.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseRow.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseRow.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseService.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseService.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseServiceFactory.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseServiceFactory.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseStaticQuery.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseStaticQuery.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseTransaction.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/DatabaseTransaction.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/SQLiteTypes.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/SQLiteTypes.hpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/ZMySQLPlugin.cpp" />
+		<Unit filename="../../../../plugins/ZSQLite/src/sqlite.hpp" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1">
+				<lib name="boost" />
+			</lib_finder>
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

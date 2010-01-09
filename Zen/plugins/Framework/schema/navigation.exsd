@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by IndieZen C++ PDE -->
+<schema targetNamespace="Zen::Engine::Navigation">
+  <annotation>
+    <appInfo>
+      <meta.schema plugin="Framework" id="NavigationService" name="Navigation Service"/>
+    </appInfo>
+    <documentation>
+      For providing an implementation of a Zen::Engine::Navigation::I_NavigationService
+    </documentation>
+  </annotation>
+  <element name="extension">
+    <complexType>
+      <sequence>
+        <element ref="navigation-service" minOccurs="1" maxOccurs="1"/>
+      </sequence>
+      <attribute name="point" type="string" use="required">
+        <annotation>
+          <documentation>
+            A fully qualified identifier of the target extension.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="id" type="string">
+        <annotation>
+          <documentation>
+            An optional identifier of the extension instance.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="name" type="string">
+        <annotation>
+          <documentation>
+            An optional name of the extension instance.
+          </documentation>
+          <appInfo>
+            <meta.attribute translatable="true"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="navigation-service">
+    <complexType>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>
+            The fully qualified name of a class which implements Zen::Engine::Navigation::I_NavigationService.
+          </documentation>
+          <appInfo>
+            <meta.attribute kind="cpp" basedOn="Zen::Engine::Navigation::I_NavigationService"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+      <attribute name="type" type="string" use="required">
+        <annotation>
+          <documentation>
+            The type  of the navigation service.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+</schema>

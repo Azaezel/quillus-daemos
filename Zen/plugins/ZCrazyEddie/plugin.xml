@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZCrazyEddie"
+   name="CEGUI Plugin"
+   version="0.4.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="ZCrazyEddie">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+        point="Zen::Engine::Widgets::WidgetService"
+        id="cegui"
+        name="CEGUI Widget Service"
+        type="cegui">
+    <protocol-service
+          class="Zen::CrazyEddie::WidgetService">
+    </protocol-service>
+  </extension>
+
+</plugin>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="../../../build/CB/Core/Core.cbp" />
+		<Project filename="../../../build/CB/Engine/Engine.cbp" />
+		<Project filename="../../../build/CB/Enterprise/Enterprise.cbp">
+			<Depends filename="../../../build/CB/Core/Core.cbp" />
+		</Project>
+		<Project filename="../../../build/CB/ZenStudio/ZenStudio.cbp" active="1">
+			<Depends filename="../../../build/CB/Core/Core.cbp" />
+			<Depends filename="../../../build/CB/Engine/Engine.cbp" />
+			<Depends filename="../../../build/CB/Enterprise/Enterprise.cbp" />
+			<Depends filename="../../../build/CB/Workbench/Workbench.cbp" />
+			<Depends filename="../../../build/CB/WorkbenchClient/WorkbenchClient.cbp" />
+			<Depends filename="../../../build/CB/WorkbenchCommon/WorkbenchCommon.cbp" />
+			<Depends filename="../../../build/CB/WorkbenchModel/WorkbenchModel.cbp" />
+			<Depends filename="../../../build/CB/WorkbenchProtocol/WorkbenchProtocol.cbp" />
+			<Depends filename="../../../build/CB/WorkbenchServer/WorkbenchServer.cbp" />
+			<Depends filename="GameBuilder/GameBuilder.cbp" />
+			<Depends filename="GameBuilderCommon/GameBuilderCommon.cbp" />
+			<Depends filename="GameBuilderProtocol/GameBuilderProtocol.cbp" />
+			<Depends filename="GameBuilderModel/GameBuilderModel.cbp" />
+			<Depends filename="GameBuilderServer/GameBuilderServer.cbp" />
+			<Depends filename="WorldBuilder/WorldBuilder.cbp" />
+			<Depends filename="WorldBuilderCommon/WorldBuilderCommon.cbp" />
+			<Depends filename="WorldBuilderProtocol/WorldBuilderProtocol.cbp" />
+			<Depends filename="WorldBuilderModel/WorldBuilderModel.cbp" />
+			<Depends filename="WorldBuilderServer/WorldBuilderServer.cbp" />
+			<Depends filename="../../../Spaces/ObjectModel/ObjectModel.cbp" />
+			<Depends filename="../../../build/CB/plugins/ZOgre/ZOgre.cbp" />
+			<Depends filename="../../../build/CB/plugins/ZSQLite/ZSQLite.cbp" />
+			<Depends filename="../../../build/CB/plugins/ZBoostNetworking/ZBoostNetworking.cbp" />
+		</Project>
+		<Project filename="../../../build/CB/Workbench/Workbench.cbp">
+			<Depends filename="../../../build/CB/Core/Core.cbp" />
+			<Depends filename="../../../build/CB/Engine/Engine.cbp" />
+			<Depends filename="../../../build/CB/Enterprise/Enterprise.cbp" />
+			<Depends filename="../../../build/CB/WorkbenchCommon/WorkbenchCommon.cbp" />
+		</Project>
+		<Project filename="../../../build/CB/WorkbenchClient/WorkbenchClient.cbp" />
+		<Project filename="../../../build/CB/WorkbenchCommon/WorkbenchCommon.cbp">
+			<Depends filename="../../../build/CB/Core/Core.cbp" />
+		</Project>
+		<Project filename="../../../build/CB/WorkbenchModel/WorkbenchModel.cbp" />
+		<Project filename="../../../build/CB/WorkbenchProtocol/WorkbenchProtocol.cbp" />
+		<Project filename="../../../build/CB/WorkbenchServer/WorkbenchServer.cbp" />
+		<Project filename="GameBuilder/GameBuilder.cbp" />
+		<Project filename="GameBuilderCommon/GameBuilderCommon.cbp" />
+		<Project filename="GameBuilderProtocol/GameBuilderProtocol.cbp" />
+		<Project filename="GameBuilderModel/GameBuilderModel.cbp" />
+		<Project filename="GameBuilderServer/GameBuilderServer.cbp" />
+		<Project filename="WorldBuilder/WorldBuilder.cbp" />
+		<Project filename="WorldBuilderCommon/WorldBuilderCommon.cbp" />
+		<Project filename="WorldBuilderProtocol/WorldBuilderProtocol.cbp" />
+		<Project filename="WorldBuilderModel/WorldBuilderModel.cbp" />
+		<Project filename="WorldBuilderServer/WorldBuilderServer.cbp" />
+		<Project filename="../../../Spaces/ObjectModel/ObjectModel.cbp" />
+		<Project filename="../../../../Test/Test.cbp" />
+		<Project filename="../../../build/CB/plugins/ZOgre/ZOgre.cbp" />
+		<Project filename="../../../build/CB/plugins/ZSQLite/ZSQLite.cbp" />
+		<Project filename="../../../build/CB/plugins/ZBoostNetworking/ZBoostNetworking.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>

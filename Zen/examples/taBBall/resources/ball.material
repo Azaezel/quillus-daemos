@@ -1,0 +1,15 @@
+// wall material definition
+material ball
+{
+	// define one technique for rendering a ball
+	technique
+	{
+		// render a ball in one pass
+		pass
+		{
+			ambient 0.545 0.545 0
+			diffuse 0.545 0.545 0
+			specular 0.545 0.545 0 120
+		}
+	}
+}

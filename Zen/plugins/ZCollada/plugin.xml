@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZCollada"
+   name="Zen Collada Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.com">
+
+  <runtime>
+    <library name="ZCollada">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+        point="IndieZen::ResourceManager::Importer"
+        id="ColladaImporter"
+        name="IndieZen ZCollada Importer"
+        type="dae">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <importer-service
+          class="IndieZen::ZTrans::ColladaImporter"
+          type="dae">
+    </importer-service>
+  </extension>
+
+</plugin>

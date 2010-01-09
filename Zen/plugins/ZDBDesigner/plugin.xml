@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZDBDesigner"
+   name="IndieZen DBDesigner Plug-in"
+   version="0.3.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="ZDBDesigner">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+          point="Zen::Enterprise::Database::SchemaService"
+          id="ZSQLite"
+          name="Zen DBDesigner Service"
+          type="dbdesigner">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <database-service
+              class="Zen::DBDesigner::SchemaService"
+              type="dbdesigner">
+    </database-service>
+  </extension>
+
+</plugin>
