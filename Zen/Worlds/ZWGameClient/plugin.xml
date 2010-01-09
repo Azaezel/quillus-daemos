@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZWGameClient"
+   name="Zen Worlds Game Client"
+   version="0.6.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZWGameClient">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+      <import plugin="Framework"/>
+      <import plugin="ZInput"/>
+      <import plugin="ZLua"/>
+      <import plugin="ZNewton"/>
+      <import plugin="ZOgre"/>
+      <import plugin="ZCrazyEddie"/>
+	  <import plugin="ZMicroPather"/>
+    </requires>
+
+    <extension
+          point="Zen::Engine::Client::GameClient"
+          id="ZWGameClient"
+          name="Zen Worlds Game Client"
+          type="ZWGameClient">
+        <game-client
+              class="Zen::Worlds::GameClient">
+        </game-client>
+    </extension>
+
+</plugin>

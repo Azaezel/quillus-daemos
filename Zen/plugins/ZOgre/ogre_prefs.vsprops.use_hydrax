@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="ogre_prefs"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		PreprocessorDefinitions="USE_HYDRAX"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="Hydrax.lib"
+	/>
+	<UserMacro
+		Name="HYDRAX_HOME"
+		Value="D:\dev\Hydrax\Hydrax\"
+		PerformEnvironmentSet="true"
+	/>
+	<UserMacro
+		Name="HYDRAX_INCLUDE"
+		Value="$(HYDRAX_HOME)src"
+		PerformEnvironmentSet="true"
+	/>
+	<UserMacro
+		Name="HYDRAX_LIB"
+		Value="$(HYDRAX_HOME)bin\debug"
+		PerformEnvironmentSet="true"
+	/>
+</VisualStudioPropertySheet>

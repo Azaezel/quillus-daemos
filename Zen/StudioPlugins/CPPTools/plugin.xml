@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="CPPTools"
+   name="Zen Studio World Editor Plug-in"
+   version="0.3.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="CPPTools">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+    <import plugin="Workbench"/>
+  </requires>
+
+  <extension
+        point="Zen::Studio::Workbench::ProjectService"
+        id="CPPProject"
+        type="cpp_project">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <project-type
+          class="Zen::Studio::CPPProjectService"
+          type="cpp_project"
+		  name="C++ Project">
+      <document-type
+          name="C++ Source File"
+          file-extension="cpp" />
+      <document-type
+          name="C++ Header File"
+          file-extension="hpp" />
+      <document-type
+          name="C Source File"
+          file-extension="c" />
+      <document-type
+          name="C Header File"
+          file-extension="h" />
+    </project-type>
+  </extension>
+
+</plugin>

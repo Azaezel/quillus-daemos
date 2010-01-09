@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZBasicGameRules"
+   name="IndieZen Basic Game Rules Plug-in"
+   version="0.3.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZBasicGameRules">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+    </requires>
+
+    <extension
+          point="Zen::Scripting::Rules::RuleService"
+          id="ZLuaEngine"
+          name="Zen Basic Game Rules"
+          type="basic">
+        <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+        <rule-service
+              class="Zen::Engine::Rules::Simple"
+              >
+        </rule-service>
+    </extension>
+
+</plugin>

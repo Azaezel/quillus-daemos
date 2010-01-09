@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<application
+   id="ZenStudio"
+   name="Zen Studio"
+   version="0.6.0"
+   provider-name="IndieZen.org">
+
+  <plugin-path path="@INDIEZEN_PARENT@/Zen/plugins"/>
+  <plugin-path path="@INDIEZEN_PARENT@/Zen/Studio"/>
+  <plugin-path path="@INDIEZEN_PARENT@/Zen/StudioPlugins"/>
+  <module-path path="@DEV_BIN@"/>
+
+  <requires>
+    <import plugin="Workbench"/>
+    <import plugin="WorkbenchServer"/>
+    <import plugin="GameBuilder"/>
+    <import plugin="GameBuilderServer"/>
+    <import plugin="WorldBuilder"/>
+    <import plugin="WorldBuilderServer"/>
+    <import plugin="ArtLibrary"/>
+    <import plugin="ArtLibraryServer"/>
+    <import plugin="ZSQLite"/>
+    <import plugin="ZOgre"/>
+    <import plugin="ZBoostNetworking"/>
+  </requires>
+
+  <protocols>
+    <protocol type="tcp-binary" name="main" port="8321" comment="Main protocol adapter"/>
+  </protocols>
+
+  <applications>
+    <application type="WorkbenchServer" location="/workbench" />
+  </applications>
+  
+</application>

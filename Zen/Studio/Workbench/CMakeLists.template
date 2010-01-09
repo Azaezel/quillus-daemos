@@ -1,0 +1,70 @@
+cmake_minimum_required (VERSION 2.6) 
+
+project (Workbench)
+set ( PROJECT_PREFIX "Studio/Workbench" )
+
+if ( NOT INDIEZEN_PARENT)
+	find_path ( INDIEZEN_PARENT Zen .. ../.. ../../.. ENV )
+endif (NOT INDIEZEN_PARENT)
+
+set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
+list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
+
+Find_Package(IndieZen REQUIRED)
+Find_Package(Boost REQUIRED )
+
+#set(wxWidgets_ROOT_DIR "C:/wxWidgets-2.8.10")
+
+Find_Package(wxWidgets COMPONENTS aui adv base core propgrid REQUIRED)
+INCLUDE(${wxWidgets_USE_FILE})
+
+SET (LIB_TYPE SHARED)
+
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+# Include various modules of Zen Engine
+
+<%GroupList%>
+	
+set ( Workbench_SRC
+<%SourceList%>
+    )
+
+set (wxWidgets_USE_UNICODE TRUE)
+
+message("wx Flag: ${wxWidgets_DEFINITIONS} + ${wxWidgets_CXX_FLAGS} + ${wxWidgets_INCLUDE_DIRS}")
+
+add_definitions( -DWORKBENCH_EXPORTS ${wxWidgets_DEFINITIONS} ${wxWidgets_CXX_FLAGS} ${Zen_DEFINITIONS} )
+
+include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${wxWidgets_INCLUDE_DIRS} )
+
+link_directories ( ${DEV_LIB} ${wxWidgets_LIB_DIR} ${Boost_LIBRARY_DIRS} )
+
+add_library ( Workbench ${LIB_TYPE} ${Workbench_SRC} )
+
+add_dependencies(Workbench ZenCore ZenEngine ZenEnterprise WorkbenchCommon)
+
+target_link_libraries( Workbench WorkbenchCommon ${Boost_LIBRARIES} ${wxWidgets_LIBRARIES} )
+
+# TODO Only if using 2.8
+#target_link_libraries( Workbench debug wxcode_${wxWidgets_CONFIGURATION}28d_propgrid )
+#target_link_libraries( Workbench optimized wxcode_${wxWidgets_CONFIGURATION}28_propgrid )
+
+set_target_properties ( Workbench 
+						PROPERTIES
+						DEBUG_POSTFIX "_d"
+					)
+
+if (MSVC_IDE)
+    # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
+    set_target_properties ( Workbench PROPERTIES PREFIX "../../bin/" )
+	set_target_properties ( Workbench PROPERTIES IMPORT_PREFIX "../../lib/" )
+endif(MSVC_IDE)
+
+<%HeaderInstallDirectives%>
+
+install ( TARGETS
+	Workbench
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+)

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZODE"
+   name="IndieZen ODE Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZODE">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+    </requires>
+
+	<extension
+          point="Zen::Engine::Physics::PhysicsService"
+          id="ZODE"
+          name="IndieZen ODE Physics Service"
+          type="ZODE">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<physics-service
+              class="Zen::ZODE::PhysicsService"
+              type="ZODE">
+		</physics-service>
+	</extension>
+
+	<extension
+		point="Zen::Engine::Resource::ResourceService"
+		  id="ZODEResource"
+		  name="IndieZen ODE Resource Service"
+		  type="ZODE">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<resource-service
+			  class="Zen::ZODE::ResourceService"
+			  type="ZODE">
+		</resource-service>
+	</extension>
+
+</plugin>
