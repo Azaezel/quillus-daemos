@@ -1,0 +1,44 @@
+Developer roles
+
+Everything installs Zen Studio and required dependency binaries as well as Lua.
+
+Game Developer - Lua scripting
+
+	Install Release dependency DLL's
+	Install Release ZOSS DLL's
+	Install example and tutorial game binaries and scripts
+
+Game Developer - Lua scripting plus custom C++
+	Same as above plus:
+		Debug dependency DLL's (if DEBUG is chosen)
+		Debug ZOSS DLL's (if DEBUG is chosen)
+		ZOSS Headers
+		Dependency Headers
+
+Custom Game Engine Developer using Zen Engine framework
+	ZOSS Source
+	Dependency Headers
+	Dependency Debug and Relese binaries
+	
+Zen Engine framework / plugin developer
+	Dependency Headers
+	Dependency Debug and Relese binaries
+	ZOSS from Subversion
+
+[SVN]
+InstalledVersion=1.6.2
+	
+[Boost]
+InstalledVersion=1.35.0
+
+[Ogre]
+InstalledVersion=1.6.2
+
+[Lua]
+InstalledVersion=5.1.4
+
+[Newton]
+InstalledVersion=1.53
+
+[libxml2]
+InstalledVersion=2.6.31
