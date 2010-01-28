@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="GameBuilderServer" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Script file="lib_finder.script" />
+			<Target title="Debug-GCC">
+				<Option output="$(#ZEN.lib)/libGameBuilderServer_d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fPIC" />
+					<Add option="-D__WXGTK__" />
+				</Compiler>
+				<Linker>
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Release-GCC">
+				<Option output="$(#ZEN.lib)/libGameBuilderServer" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Debug-MSVC5">
+				<Option output="$(#ZEN.lib)/GameBuilderServer_d" prefix_auto="1" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="msvc8" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="/MDd" />
+					<Add option="/arch:SSE2" />
+					<Add option="/Gd" />
+					<Add option="/RTCu" />
+					<Add option="/EHc" />
+					<Add option="/EHs" />
+					<Add option="/GR" />
+					<Add option="/Od" />
+					<Add option="/W3" />
+					<Add option="/DTHREADMODEL_WIN32" />
+					<Add option="/DHOST_WIN32" />
+					<Add directory="$(#WindowsPlatformSDK.include)" />
+				</Compiler>
+				<Linker>
+					<Add library="libxml2" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-DZENCORE_EXPORTS" />
+			<Add directory="$(#ZEN.include)" />
+			<Add directory="$(#BOOST.include)" />
+		</Compiler>
+		<Linker>
+			<Add directory="$(#BOOST.lib)" />
+			<Add directory="$(#ZEN.lib)" />
+		</Linker>
+		<Unit filename="../../../GameBuilderServer/plugin.xml" />
+		<Unit filename="../../../GameBuilderServer/src/ExplorerNodeFactory.cpp" />
+		<Unit filename="../../../GameBuilderServer/src/ExplorerNodeFactory.hpp" />
+		<Unit filename="../../../GameBuilderServer/src/Folder.cpp" />
+		<Unit filename="../../../GameBuilderServer/src/Folder.hpp" />
+		<Unit filename="../../../GameBuilderServer/src/GameBuilderPlugin.cpp" />
+		<Unit filename="../../../GameBuilderServer/src/GameObjectType.cpp" />
+		<Unit filename="../../../GameBuilderServer/src/GameObjectType.hpp" />
+		<Unit filename="../../../GameBuilderServer/src/GameObjectTypeDocument.cpp" />
+		<Unit filename="../../../GameBuilderServer/src/GameObjectTypeDocument.hpp" />
+		<Unit filename="../../../GameBuilderServer/src/Project.cpp" />
+		<Unit filename="../../../GameBuilderServer/src/Project.hpp" />
+		<Unit filename="../../../GameBuilderServer/src/ProjectService.cpp" />
+		<Unit filename="../../../GameBuilderServer/src/ProjectService.hpp" />
+		<Unit filename="../../../GameBuilderServer/src/ProjectServiceFactory.cpp" />
+		<Unit filename="../../../GameBuilderServer/src/ProjectServiceFactory.hpp" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1">
+				<lib name="boost" />
+			</lib_finder>
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

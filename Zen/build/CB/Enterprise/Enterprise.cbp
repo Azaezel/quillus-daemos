@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Enterprise" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Script file="lib_finder.script" />
+			<Target title="Debug-GCC">
+				<Option output="$(#ZEN.lib)/libEnterprise_d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Release-GCC">
+				<Option output="$(#ZEN.lib)/Enterprise" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Debug-MSVC5">
+				<Option output="$(#ZEN.lib)/Enterprise_d" prefix_auto="1" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="/MDd" />
+					<Add option="/arch:SSE2" />
+					<Add option="/Gd" />
+					<Add option="/RTCu" />
+					<Add option="/EHc" />
+					<Add option="/EHs" />
+					<Add option="/GR" />
+					<Add option="/Od" />
+					<Add option="/W3" />
+					<Add option="/DTHREADMODEL_WIN32" />
+					<Add option="/DHOST_WIN32" />
+					<Add directory="$(#WindowsPlatformSDK.include)" />
+				</Compiler>
+				<Linker>
+					<Add library="libxml2" />
+					<Add library="Core_d.lib" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-DZENENTERPRISE_EXPORTS" />
+			<Add directory="$(#ZEN.include)" />
+			<Add directory="$(#BOOST.include)" />
+			<Add directory="$(#LIBXML2.include)" />
+		</Compiler>
+		<Linker>
+			<Add directory="$(#BOOST.lib)" />
+			<Add directory="$(#ZEN.lib)" />
+			<Add directory="$(#LIBXML2.lib)" />
+		</Linker>
+		<Unit filename="../../../Enterprise/AppServer/Configuration.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_ApplicationServer.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_ApplicationServerManager.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_ApplicationService.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_ApplicationServiceFactory.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_Message.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_MessageFactory.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_MessageHeader.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_MessageRegistry.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_MessageType.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_NumericTypeMessageRegistry.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_ProtocolManager.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_ProtocolService.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_ProtocolServiceFactory.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_Request.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_RequestHandler.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_ResourceLocation.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_Response.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_ResponseHandler.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/I_SessionEvent.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/ApplicationServer.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/ApplicationServer.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/ApplicationServerManager.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/ApplicationServerManager.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_ApplicationServer.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_ApplicationServerManager.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_ApplicationService.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_ApplicationServiceFactory.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_Message.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_MessageFactory.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_MessageHeader.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_MessageRegistry.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_MessageType.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_NumericTypeMessageRegistry.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_ProtocolManager.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_ProtocolService.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_ProtocolServiceFactory.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_Request.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_RequestHandler.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_ResourceLocation.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_Response.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/I_ResponseHandler.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/NumericTypeMessageRegistry.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/NumericTypeMessageRegistry.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/QueuedRequestHandler.hpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/ResourceLocation.cpp" />
+		<Unit filename="../../../Enterprise/AppServer/src/ResourceLocation.hpp" />
+		<Unit filename="../../../Enterprise/DataModel/Configuration.hpp" />
+		<Unit filename="../../../Enterprise/DataModel/I_DataElement.hpp" />
+		<Unit filename="../../../Enterprise/DataModel/I_DataElementCollection.hpp" />
+		<Unit filename="../../../Enterprise/DataModel/I_DataElementListener.hpp" />
+		<Unit filename="../../../Enterprise/DataModel/I_DataStructure.hpp" />
+		<Unit filename="../../../Enterprise/DataModel/I_DataStructureCollection.hpp" />
+		<Unit filename="../../../Enterprise/DataModel/element_container.hpp" />
+		<Unit filename="../../../Enterprise/DataModel/src/DataElement.cpp" />
+		<Unit filename="../../../Enterprise/DataModel/src/DataElement.hpp" />
+		<Unit filename="../../../Enterprise/DataModel/src/I_DataElement.cpp" />
+		<Unit filename="../../../Enterprise/DataModel/src/I_DataElementCollection.cpp" />
+		<Unit filename="../../../Enterprise/DataModel/src/I_DataElementListener.cpp" />
+		<Unit filename="../../../Enterprise/DataModel/src/I_DataStructure.cpp" />
+		<Unit filename="../../../Enterprise/DataModel/src/I_DataStructureCollection.cpp" />
+		<Unit filename="../../../Enterprise/Database/Configuration.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseClause.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseColumn.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseCommand.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseConnection.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseDynamicQuery.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseManager.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseQuery.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseResult.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseRow.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseSchema.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseSchemaReader.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseSchemaReaderFactory.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseSchemaWriter.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseSchemaWriterFactory.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseService.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseServiceFactory.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseStatement.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseStaticQuery.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_DatabaseTransaction.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_FilterClause.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_ImmutableDatabaseSchema.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_JoinClause.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MetaAttribute.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MetaAttributeIterator.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MetaField.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MetaFieldIterator.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MetaKey.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MetaTable.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MetaTableIterator.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MetaView.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MetaViewIterator.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_MutableDatabaseSchema.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_Persistable.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_SchemaService.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_SchemaServiceFactory.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_SelectClause.hpp" />
+		<Unit filename="../../../Enterprise/Database/I_SortClause.hpp" />
+		<Unit filename="../../../Enterprise/Database/src/DatabaseManager.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/DatabaseManager.hpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseClause.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseColumn.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseCommand.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseConnection.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseDynamicQuery.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseManager.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseQuery.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseResult.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseRow.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseSchema.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseSchemaReader.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseSchemaReaderFactory.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseSchemaWriter.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseSchemaWriterFactory.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseService.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseServiceFactory.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseStatement.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseStaticQuery.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_DatabaseTransaction.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_FilterClause.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_ImmutableDatabaseSchema.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_JoinClause.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MetaAttribute.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MetaAttributeIterator.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MetaField.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MetaFieldIterator.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MetaKey.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MetaTable.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MetaTableIterator.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MetaView.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MetaViewIterator.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_MutableDatabaseSchema.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_Persistable.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_SchemaService.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_SchemaServiceFactory.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_SelectClause.cpp" />
+		<Unit filename="../../../Enterprise/Database/src/I_SortClause.cpp" />
+		<Unit filename="../../../Enterprise/Networking/Configuration.hpp" />
+		<Unit filename="../../../Enterprise/Networking/Exceptions.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_AbstractNetworkAddressFactory.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_AbstractNetworkServiceFactory.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_Address.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_Endpoint.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_GameConnection.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_NetworkAddress.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_NetworkAddressFactory.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_NetworkConnection.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_NetworkConnectionListener.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_NetworkManager.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_NetworkReadReadyListener.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_NetworkService.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_NetworkServiceFactory.hpp" />
+		<Unit filename="../../../Enterprise/Networking/I_NetworkWriteReadyListener.hpp" />
+		<Unit filename="../../../Enterprise/Networking/src/AbstractNetworkAddressFactory.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/AbstractNetworkAddressFactory.hpp" />
+		<Unit filename="../../../Enterprise/Networking/src/I_AbstractNetworkAddressFactory.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/I_Address.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/I_Endpoint.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/I_NetworkAddress.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/I_NetworkAddressFactory.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/I_NetworkConnection.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/I_NetworkManager.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/I_NetworkService.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/I_NetworkServiceFactory.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/NetworkManager.cpp" />
+		<Unit filename="../../../Enterprise/Networking/src/NetworkManager.hpp" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1">
+				<lib name="libxml-2.0" />
+				<lib name="boost" />
+			</lib_finder>
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

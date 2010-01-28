@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ArtLibraryServer"
+   name="Zen Studio Art Library Server Plug-in"
+   version="0.6.0"
+   provider-name="IndieZen.com">
+
+    <runtime>
+        <library name="ArtLibraryServer">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+        <import plugin="Workbench"/>
+    </requires>
+
+    <extension
+            point="Zen::Studio::Workbench::ExplorerNode"
+            id="ArtLibrary::ArtFolder"
+            type="ArtLibrary::ArtFolder">
+        <explorer-node
+            class="ArtLibrary::ArtFolder"
+        />
+    </extension>
+
+    <extension
+            point="Zen::Studio::Workbench::ExplorerNode"
+            id="ArtLibrary::ArtAssetNode"
+            type="ArtLibrary::ArtAssetNode">
+        <explorer-node
+            class="ArtLibrary::ArtAssetNode"
+        />
+    </extension>
+
+</plugin>

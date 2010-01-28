@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZCam"
+   name="Zen Engine Camera Controller Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="ZCam">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+        point="Zen::Engine::Camera::CameraService"
+        id="ZCamService"
+        name="Camera Service"
+        type="orbit">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <camera-service
+          class="Zen::ZCam::CameraService"
+          type="orbit">
+    </camera-service>
+  </extension>
+
+</plugin>

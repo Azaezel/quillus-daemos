@@ -1,0 +1,59 @@
+cmake_minimum_required (VERSION 2.6) 
+
+project (ZenStudio)
+
+if ( NOT INDIEZEN_PARENT)
+	find_path ( INDIEZEN_PARENT Zen .. ../.. ../../.. ENV )
+endif (NOT INDIEZEN_PARENT)
+
+set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
+list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
+
+Find_Package(IndieZen REQUIRED)
+Find_Package(Boost REQUIRED COMPONENTS system filesystem )
+Find_Package(LibXml2 REQUIRED)
+
+Find_Package(wxWidgets COMPONENTS aui adv base core REQUIRED)
+INCLUDE(${wxWidgets_USE_FILE})
+
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+# Include various modules of Zen Engine
+
+<%GroupList%>
+	
+set ( ZenStudio_SRC
+<%SourceList%>
+    )
+
+add_definitions( -DZENSTUDIO_EXPORTS ${wxWidgets_DEFINITIONS} ${wxWidgets_CXX_FLAGS} ${Zen_DEFINITIONS})
+
+include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${wxWidgets_INCLUDE_DIRS} )
+
+link_directories ( ${DEV_LIB} ${wxWidgets_LIB_DIR} ${Boost_LIBRARY_DIRS} ${LibXML2_LIBRARY_DIRS} )
+
+add_executable ( ZenStudio ${BUILD_EXE_TYPE} ${ZenStudio_SRC} )
+
+add_dependencies(ZenStudio ZenCore ZenEngine ZenEnterprise Workbench )
+
+target_link_libraries( ZenStudio ZenCore ZenEngine ZenEnterprise Workbench ${Boost_LIBRARIES} ${wxWidgets_LIBRARIES} ${LIBXML2_LIBRARIES} )
+#target_link_libraries( ZenStudio debug wxcode_${wxWidgets_CONFIGURATION}28d_propgrid )
+#target_link_libraries( ZenStudio optimized wxcode_${wxWidgets_CONFIGURATION}28_propgrid )
+
+#
+
+set_target_properties ( ZenStudio 
+						PROPERTIES
+						DEBUG_POSTFIX "_d"
+					)
+
+configure_file(
+	${INDIEZEN_PARENT}/Zen/Studio/config.xml.template
+	${INDIEZEN_PARENT}/Zen/Studio/config.xml
+	@ONLY
+)					
+					
+if (MSVC_IDE)
+    # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
+    set_target_properties ( ZenStudio PROPERTIES PREFIX "../../bin/" )
+	set_target_properties ( ZenStudio PROPERTIES IMPORT_PREFIX "../../lib/" )
+endif(MSVC_IDE)

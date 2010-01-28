@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZMySQL", "ZMySQL.vcproj", "{7614D0AD-571E-4BBC-A25C-6B9BF46ECE3D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DF16DB5D-6A1F-49C4-B7E2-A502AD038CD0} = {DF16DB5D-6A1F-49C4-B7E2-A502AD038CD0}
+		{2FABABE6-4D34-4CA0-85EA-197440CDFA04} = {2FABABE6-4D34-4CA0-85EA-197440CDFA04}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZenCore", "..\..\build\MSVC8\Core\Core.vcproj", "{DF16DB5D-6A1F-49C4-B7E2-A502AD038CD0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZenEnterprise", "..\..\build\MSVC8\Enterprise\Enterprise.vcproj", "{2FABABE6-4D34-4CA0-85EA-197440CDFA04}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7614D0AD-571E-4BBC-A25C-6B9BF46ECE3D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7614D0AD-571E-4BBC-A25C-6B9BF46ECE3D}.Debug|Win32.Build.0 = Debug|Win32
+		{7614D0AD-571E-4BBC-A25C-6B9BF46ECE3D}.Release|Win32.ActiveCfg = Release|Win32
+		{7614D0AD-571E-4BBC-A25C-6B9BF46ECE3D}.Release|Win32.Build.0 = Release|Win32
+		{DF16DB5D-6A1F-49C4-B7E2-A502AD038CD0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DF16DB5D-6A1F-49C4-B7E2-A502AD038CD0}.Debug|Win32.Build.0 = Debug|Win32
+		{DF16DB5D-6A1F-49C4-B7E2-A502AD038CD0}.Release|Win32.ActiveCfg = Release|Win32
+		{DF16DB5D-6A1F-49C4-B7E2-A502AD038CD0}.Release|Win32.Build.0 = Release|Win32
+		{2FABABE6-4D34-4CA0-85EA-197440CDFA04}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2FABABE6-4D34-4CA0-85EA-197440CDFA04}.Debug|Win32.Build.0 = Debug|Win32
+		{2FABABE6-4D34-4CA0-85EA-197440CDFA04}.Release|Win32.ActiveCfg = Release|Win32
+		{2FABABE6-4D34-4CA0-85EA-197440CDFA04}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

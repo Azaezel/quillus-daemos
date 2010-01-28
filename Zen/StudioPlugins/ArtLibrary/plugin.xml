@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ArtLibrary"
+   name="Zen Studio Art Library Plug-in"
+   version="0.6.0"
+   provider-name="IndieZen.com">
+
+    <runtime>
+        <library name="ArtLibrary">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+        <import plugin="Workbench"/>
+        <import plugin="GameBuilder"/>
+    </requires>
+
+    <extension
+        point="Zen::Studio::Workbench::ContributorService"
+        id="ArtLibrary:ContributorService">
+        <contributor-service
+            class="ArtLibrary::ContributorService"
+        />
+    </extension>
+
+</plugin>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<application
+   id="ZGameLoader"
+   name="IndieZen Client Game Loader"
+   version="0.6.1"
+   provider-name="IndieZen.org">
+
+  <plugin-path path="@INDIEZEN_PARENT@/Zen/plugins"/>
+  <plugin-path path="@INDIEZEN_PARENT@/Zen/tutorials/Tutorial5"/>
+  <module-path path="@DEV_BIN@"/>
+
+  <requires>
+    <import plugin="Framework"/>
+    <import plugin="ZOgre"/>
+    <import plugin="ZInput"/>
+    <import plugin="ZLua"/>
+    <import plugin="ZNewton"/>
+    <import plugin="ZTerrain"/>
+    <import plugin="ZSky"/>
+  </requires>
+
+</application>

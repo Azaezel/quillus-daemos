@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="WorldEditor"
+   name="Zen Studio World Editor Plug-in"
+   version="0.3.0"
+   provider-name="IndieZen.com">
+
+  <runtime>
+    <library name="WorldEditor">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+    <import plugin="Workbench"/>
+  </requires>
+
+  <extension
+        point="Zen::Studio::Workbench::ProjectService"
+        id="WorldProject"
+        type="world">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <project
+          class="Zen::Studio::WorldProjectService"
+          type="world"
+		  name="World Project">
+      <document-type
+          name="World Zone"
+          file-extension="zone" />
+    </project>
+  </extension>
+
+</plugin>

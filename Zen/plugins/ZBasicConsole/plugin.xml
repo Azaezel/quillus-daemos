@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZBasicConsole"
+   name="IndieZen Basic Console Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZBasicConsole">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+    </requires>
+
+	<extension
+          point="Zen::Engine::Server::ConsoleService"
+          id="ZBasicConsole"
+          name="IndieZen Basic Console Service"
+          type="ConsoleService">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<sound-service
+              class="Zen::ZBasicConsole::ConsoleService"
+              type="ConsoleService">
+		</sound-service>
+	</extension>
+
+</plugin>

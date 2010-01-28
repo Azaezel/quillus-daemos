@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by IndieZen C++ PDE -->
+<schema targetNamespace="Zen::Studio::Workbench">
+  <annotation>
+    <appInfo>
+      <meta.schema plugin="Workbench" id="ProjectService" name="Workbench Project"/>
+    </appInfo>
+    <documentation>
+      For providing an implementation of a Zen::Studio::Workbench::I_ProjectService
+    </documentation>
+  </annotation>
+  <element name="extension">
+    <complexType>
+      <sequence>
+        <element ref="project-service" minOccurs="1" maxOccurs="1"/>
+      </sequence>
+      <attribute name="point" type="string" use="required">
+        <annotation>
+          <documentation>
+            A fully qualified identifier of the target extension-point.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="id" type="string">
+        <annotation>
+          <documentation>
+            An optional identifier of the extension instance.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="name" type="string">
+        <annotation>
+          <documentation>
+            An optional name of the extension instance.
+          </documentation>
+          <appInfo>
+            <meta.attribute translatable="true"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="project-type">
+    <complexType>
+      <sequence>
+        <element ref="document-type" minOccurs="1" maxOccurs="unbounded"/>
+      </sequence>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>
+            The fully qualified name of a class which implements Zen::Studio::Workbench::I_ProjectType.
+          </documentation>
+          <appInfo>
+            <meta.attribute kind="cpp" basedOn="Zen::Studio::Workbench::I_ProjectManager"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+      <attribute name="type" type="string" use="required">
+        <annotation>
+          <documentation>
+            Type of the Workbench Project.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="document-type">
+    <complexType>
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>
+            The short name of this document type.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="file-extension" type="string" use="required">
+        <annotation>
+          <documentation>
+            The identifier of this document, generally the file system extension.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>
+            The fully qualified name of a class which implements Zen::Studio::Workbench::I_DocumentService.
+          </documentation>
+          <appInfo>
+            <meta.attribute kind="cpp" basedOn="Zen::Studio::Workbench::I_DocumentService"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+      <attribute name="description" type="string" use="optional">
+        <annotation>
+          <documentation>
+            The description of this document type.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+</schema>

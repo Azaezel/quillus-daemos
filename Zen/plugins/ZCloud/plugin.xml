@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZCloud"
+   name="IndieZen Cloud Rendering Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+	<runtime>
+		<library name="ZCloud">
+			<export name="*"/>
+		</library>
+	</runtime>
+
+	<requires>
+		<import plugin="Framework"/>
+	</requires>
+
+	<extension
+          point="Zen::Engine::World::CloudService"
+          id="ZCloud"
+          name="IndieZen Cloud Rendering Service"
+          type="ZCloud">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<sound-service
+              class="Zen::ZCloud::CloudService"
+              type="ZCloud">
+		</sound-service>
+	</extension>
+
+	<extension
+          point="Zen::Engine::Resource::ResourceService"
+          id="ZCloud"
+          name="IndieZen Cloud Resource Service"
+          type="ZFMOD">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<sound-service
+              class="Zen::ZCloud::ResourceService"
+              type="ZCloud">
+		</sound-service>
+	</extension>
+
+</plugin>
