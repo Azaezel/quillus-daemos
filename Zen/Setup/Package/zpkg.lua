@@ -1,13 +1,4 @@
-require("svn") -- If you don't have this, you need to download it.
 require("lfs") -- Install Lua for Windows or liblus5.1-filesystem0
-
---[[
-t = svn.status(".")
-for k, v in pairs (t) do
-    print (k, v)
-end
-
-]]
 
 subversionProjects =
 {
@@ -30,6 +21,7 @@ subversionProjects =
 }
 
 function checkoutHandler(startArg)
+	require("svn");
     for project, info in pairs(subversionProjects) do
         print("Checking out " .. info.repo .. "/trunk")
         svn.checkout(info.repo .. "/trunk", project)
@@ -94,6 +86,7 @@ function exportHandler(startArg)
 end
 
 function svnInfoHandler(startArg)
+	require("svn");
     for project, info in pairs(subversionProjects) do
         print("Giving info about " .. info.repo .. "/trunk")
         t = svn.status(project)

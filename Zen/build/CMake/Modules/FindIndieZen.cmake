@@ -30,8 +30,17 @@ if (NOT DEV_LIB)
 endif (NOT DEV_LIB)
 
 if (NOT DEPENDENCIES_HOME)
-	set ( DEPENDENCIES_HOME "${INDIEZEN_PARENT}/dependencies/" )
-	message ( "-- Dependencies Home: ${DEPENDENCIES_HOME}" )
+    # If DEPENDENCIES_HOME environment is set, use it, otherwise default to 
+	# "${INDIEZEN_PARENT}/dependencies/"
+	message("DEPENDENCIES_HOME environment variable $ENV{DEPENDENCIES_HOME}")
+	#if (NOT "$ENV{DEPENDENCIES_HOME}") # -- this line doesn't work... fix it and we fix the problem
+	#	message("Defaulting DEPENDENCIES_HOME")
+	#	set ( DEPENDENCIES_HOME "${INDIEZEN_PARENT}/dependencies/" )
+	set (DEPENDENCIES_HOME "$ENV{DEPENDENCIES_HOME}")
+	if(NOT DEPENDENCIES_HOME)
+		set ( DEPENDENCIES_HOME "${INDIEZEN_PARENT}/dependencies/" )
+	endif()
+	message ( "-- Dependencies Home: ${DEPENDENCIES_HOME}" )		
 endif (NOT DEPENDENCIES_HOME)
 
 # Boost overrides
