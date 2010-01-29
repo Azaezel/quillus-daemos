@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Core Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -23,59 +23,65 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_SCRIPTING_I_SCRIPTABLE_TYPE_HPP_INCLUDED
-#define ZEN_SCRIPTING_I_SCRIPTABLE_TYPE_HPP_INCLUDED
+#ifndef ZEN_EVENT_I_ACTION_MAP_HPP_INCLUDED
+#define ZEN_EVENT_I_ACTION_MAP_HPP_INCLUDED
 
 #include "Configuration.hpp"
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Memory/managed_weak_ptr.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptModule.hpp>
+#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+#include <Zen/Core/Scripting/ObjectReference.hpp>
+
+#include <boost/any.hpp>
+#include <boost/function.hpp>
 
 #include <string>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Scripting {
+namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-class I_ObjectReference;
+class I_Action;
 
-/// @brief Implement this in classes that are scriptable
-/// @todo Rename this to I_Scriptable
-class SCRIPTING_DLL_LINK I_ScriptableType
+/// @brief Action interface.
+class EVENT_DLL_LINK I_ActionMap
+:   public Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<I_ScriptModule>     pScriptModule_type;
+    typedef boost::function<void(boost::any&)>                          ActionFunction_type;
+
+    typedef Zen::Memory::managed_ptr<I_Action>                          pAction_type;
+    typedef Zen::Memory::managed_weak_ptr<I_Action>                     wpAction_type;
     /// @}
 
-    /// @name I_ScriptableType interface
+    /// @name I_ActionMap interface
     /// @{
 public:
-    /// Get the name that the Script system uses for this class
-    /// The base framework interfaces implement this, but if you
-    /// want to create a derived class, override this method.
-    virtual const std::string& getScriptTypeName() = 0;
+    /// Create an action by name and bind it to a function that gets envoked when
+    /// the action occurs.
+    virtual void createAction(const std::string& _name, ActionFunction_type _function) = 0;
 
-    /// @brief Get the script object associated with this object
-    /// @return The script object associated with this object, but possibly NULL if this object
-    ///         was created before a script engine was registered.
-    virtual I_ObjectReference* getScriptObject() = 0;
+    /// Get an action by name.
+    virtual pAction_type operator[](const std::string& _name) = 0;
     /// @}
 
     /// @name 'Structors
     /// @{
 protected:
-             I_ScriptableType();
-    virtual ~I_ScriptableType();
+             I_ActionMap();
+    virtual ~I_ActionMap();
     /// @}
 
-};  // interface I_ScriptableType
+};  // interface I_ActionMap
+
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace Scripting
+}   // namespace Event
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_SCRIPTING_I_SCRIPTABLE_TYPE_HPP_INCLUDED
+#endif // ZEN_EVENT_I_ACTION_MAP_HPP_INCLUDED

@@ -38,12 +38,13 @@ namespace Scripting {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_ScriptType;
 
-
 // TR This is the old way. See http://www.indiezen.org/wiki/ticket/90 for more info
 //template<typename Object_type, typename pObject_type = Zen::Memory::managed_ptr<typename Object_type> >
 
-/// @brief ObjectReference
+/// Script wrapper for a C++ object.
 /// @see http://www.indiezen.org/wiki/ticket/90
+/// @todo Rename this to ScriptWrapper and change ScriptObjectReference_type to 
+///     ScriptWrapper_type.
 template<typename Object_type>
 class ObjectReference
 :   public I_ObjectReference
@@ -51,11 +52,13 @@ class ObjectReference
     /// @name Types
     /// @{
 public:
+    /// Type of pointer to the C++ object.  This might be a raw pointer or
+    /// it may be a managed pointer.
     /// @note If you get an error "pScriptObject_type if not a member of <class>
     ///     then you need to declare a pScriptObject_type typedef that is the
     ///     type of pointer normally used for the object.  This lets the 
     ///     Scripting framework identify the type of pointer.  Normally this
-    ///     is either a raw poniter or a managed pointer.
+    ///     is either a raw pointer or a managed pointer.
     typedef typename Object_type::pScriptObject_type            object_ptr_type;
     typedef Zen::Memory::managed_ptr<I_ScriptModule>            pScriptModule_type;
     typedef Zen::Memory::managed_ptr<I_ScriptType>              pScriptType_type;
