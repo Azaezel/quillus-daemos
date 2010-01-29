@@ -24,7 +24,9 @@
 #ifndef ZEN_SCRIPTING_SCRIPT_TYPE_IMPL_HPP_INCLUDED
 #define ZEN_SCRIPTING_SCRIPT_TYPE_IMPL_HPP_INCLUDED
 
-#include <Zen/Core/Scripting.hpp>
+#include <Zen/Core/Scripting/forward_declarations.hpp>
+#include <Zen/Core/Scripting/script_dispatch_helper.hpp>
+#include <Zen/Core/Scripting/script_method.hpp>
 
 #include <boost/typeof/typeof.hpp>
 
@@ -55,7 +57,7 @@ script_type<ScriptableClass_type>::addMethod(const std::string& _methodName, Met
     typedef script_method<ScriptableClass_type, Method_type, MethodReturn_type, DispatchHelper_type>
                                                                         ScriptMethod_type;
 
-    I_ScriptMethod* const pMethod = new ScriptMethod_type(_pFunction, get_dispatch_helper(_pFunction, _pFunction));
+    I_ScriptMethod* const pMethod = new ScriptMethod_type(_pFunction, get_dispatch_helper(_pFunction, _pFunction), m_typeName, _methodName);
 
     m_methods[_methodName] = pMethod;
 

@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Core Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,61 +20,52 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_SCRIPTING_I_SCRIPTABLE_TYPE_HPP_INCLUDED
-#define ZEN_SCRIPTING_I_SCRIPTABLE_TYPE_HPP_INCLUDED
+#ifndef ZEN_EVENT_EVENT_MANAGER_HPP_INCLUDED
+#define ZEN_EVENT_EVENT_MANAGER_HPP_INCLUDED
 
-#include "Configuration.hpp"
-
-#include <Zen/Core/Memory/managed_ptr.hpp>
-
-#include <Zen/Core/Scripting/I_ScriptModule.hpp>
-
-#include <string>
+#include "../I_EventManager.hpp"
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Scripting {
+namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-class I_ObjectReference;
+;
 
-/// @brief Implement this in classes that are scriptable
-/// @todo Rename this to I_Scriptable
-class SCRIPTING_DLL_LINK I_ScriptableType
+class EventManager
+:   public I_EventManager
 {
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<I_ScriptModule>     pScriptModule_type;
+    typedef pEventService_type::weak_ptr_type       wpEventService_type;
     /// @}
 
-    /// @name I_ScriptableType interface
+    /// @name I_EventManager implementation
     /// @{
 public:
-    /// Get the name that the Script system uses for this class
-    /// The base framework interfaces implement this, but if you
-    /// want to create a derived class, override this method.
-    virtual const std::string& getScriptTypeName() = 0;
+    virtual pEventService_type create(const std::string& _eventServiceName);
+    /// @}
 
-    /// @brief Get the script object associated with this object
-    /// @return The script object associated with this object, but possibly NULL if this object
-    ///         was created before a script engine was registered.
-    virtual I_ObjectReference* getScriptObject() = 0;
+    /// @name EventManager implementation
+    /// @{
+protected:
+    void destroy(wpEventService_type _pEventService);
     /// @}
 
     /// @name 'Structors
     /// @{
 protected:
-             I_ScriptableType();
-    virtual ~I_ScriptableType();
+    friend class I_EventManager;
+             EventManager();
+    virtual ~EventManager();
     /// @}
 
-};  // interface I_ScriptableType
+};  // class I_EventManager
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace Scripting
+}   // namespace Event
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_SCRIPTING_I_SCRIPTABLE_TYPE_HPP_INCLUDED
+#endif // ZEN_EVENT_EVENT_MANAGER_HPP_INCLUDED

@@ -100,17 +100,17 @@ public:
 
     /// Fires an Event.
     /// This should not be called by anything other than the object that owns the event.
-	void operator()(Parm1_type _parm)
-	{
+    void operator()(Parm1_type _parm)
+    {
         Threading::CriticalSection guard(m_pMutex);
 
         for( typename container_type::iterator iter = m_connections.begin(); 
             iter != m_connections.end(); 
             iter++)
-		{
-			(**iter)(_parm);
-		}
-	}
+        {
+            (**iter)(_parm);
+        }
+    }
 
 private:
     /// For internal use only.  This should only be called by the
@@ -141,7 +141,7 @@ public:
     /// @name Member Variables
     /// @{
 private:
-	container_type	m_connections;
+    container_type	m_connections;
     pMutex_type     m_pMutex;
     /// @}
 

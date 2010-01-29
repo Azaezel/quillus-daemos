@@ -57,6 +57,45 @@ public:
 	virtual void start();
 	virtual void stop();
 	virtual void join();
+    virtual ThreadId getCurrentThreadId() const;
+    virtual const ThreadId& getThreadId() const;
+    /// @}
+
+    /// @name Inner classes
+    /// @{
+public:
+    class NativeThreadId_posix
+    :   public I_Thread::ThreadId::I_NativeThreadId
+    {
+        /// @name Friend declarations
+        /// @{
+    private:
+        friend class Thread_posix;
+        /// @}
+
+        /// @name NativeThreadId_posix implementation
+        /// @{
+    public:
+        virtual bool operator==(const I_NativeThreadId&) const;
+        virtual bool operator!=(const I_NativeThreadId&) const;
+        virtual I_NativeThreadId* clone() const;
+        virtual std::string toString() const;
+        /// @}
+
+        /// @name 'Structors
+        /// @{
+    public:
+                 NativeThreadId_posix(::pthread_t const _id) : m_nativeThreadId(_id) {}
+        virtual ~NativeThreadId_posix() {}
+        /// @}
+
+        /// @name Member variables
+        /// @{
+    private:
+        const ::pthread_t m_nativeThreadId;
+        /// @}
+
+    };  // class NativeThreadId_posix
     /// @}
 
     /// @name 'Structors
@@ -77,6 +116,7 @@ private:
 private:
     I_Runnable*         m_pRunnable;
     ::pthread_t         m_nativeThread;
+    ThreadId            m_threadId;
     volatile bool       m_isStarted;
     volatile bool       m_isJoined;
 	/// @}
