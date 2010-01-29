@@ -24,7 +24,12 @@
 #ifndef ZEN_SCRIPTING_SCRIPT_MODULE_HPP_INCLUDED
 #define ZEN_SCRIPTING_SCRIPT_MODULE_HPP_INCLUDED
 
-#include <Zen/Core/Scripting.hpp>
+#include <Zen/Core/Scripting/forward_declarations.hpp>
+
+#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
+#include <Zen/Core/Scripting/I_ScriptModule.hpp>
+
+#include <boost/noncopyable.hpp>
 
 #include <string>
 #include <map>
@@ -33,13 +38,13 @@
 namespace Zen {
 namespace Scripting {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-;
 
 /// Helper class for defining script modules.
 /// This class is exposed publicly so that you can derive additional
 /// implementations from it or so you can use it as an example if
 /// you want to implement it a different way.
 class script_module
+:   public boost::noncopyable
 {
     /// @name Types
     /// @{

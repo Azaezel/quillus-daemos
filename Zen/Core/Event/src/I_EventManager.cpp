@@ -1,5 +1,5 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// Zen Game Engine Framework
+// Zen Core Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
 //
@@ -21,32 +21,32 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_SCRIPTING_HPP_INCLUDED
-#define ZEN_SCRIPTING_HPP_INCLUDED
+#include "../I_EventManager.hpp"
 
-#include <Zen/Core/Scripting/forward_declarations.hpp>
+#include "EventManager.hpp"
 
-// C++ framework API
-#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
-#include <Zen/Core/Scripting/I_ScriptingManager.hpp>
-#include <Zen/Core/Scripting/I_ScriptModule.hpp>
-#include <Zen/Core/Scripting/I_ScriptMethod.hpp>
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/I_ScriptableService.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+namespace Zen {
+namespace Event {
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_EventManager::I_EventManager()
+{
+}
 
-// template declarations and some template implementation
-#include <Zen/Core/Scripting/script_module.hpp>
-#include <Zen/Core/Scripting/script_method.hpp>
-#include <Zen/Core/Scripting/script_type_interface.hpp>
-#include <Zen/Core/Scripting/script_type.hpp>
-#include <Zen/Core/Scripting/script_convert_argument.hpp>
-#include <Zen/Core/Scripting/script_dispatch_helper.hpp>
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_EventManager::~I_EventManager()
+{
+}
 
-// template implementation
-#include <Zen/Core/Scripting/script_module_impl.hpp>
-#include <Zen/Core/Scripting/script_type_impl.hpp>
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_EventManager&
+I_EventManager::getSingleton()
+{
+    static EventManager sm_eventManager;
+    return sm_eventManager;
+}
 
-#endif
-
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+}   // namespace Event
+}   // namespace Zen
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

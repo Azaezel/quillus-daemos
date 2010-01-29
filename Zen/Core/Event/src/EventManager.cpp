@@ -21,66 +21,46 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_SCRIPTING_SCRIPT_CONVERT_ARGUMENT_HPP_INCLUDED
-#define ZEN_SCRIPTING_SCRIPT_CONVERT_ARGUMENT_HPP_INCLUDED
+#include "EventManager.hpp"
+#include "EventService.hpp"
 
-#include <Zen/Core/Math/Math.hpp>
-
-#include <boost/any.hpp>
+#include <boost/bind.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Scripting {
+namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-// rename to argument_from_script?
-
-template<typename Argument_type>
-struct script_convert_argument
+EventManager::EventManager()
 {
-    /// By default ActualArgument_type is Argument_type;
-    typedef Argument_type          type;
-
-    inline
-    type
-    operator()(boost::any& _parm)
-    {
-        return boost::any_cast<typename type>(_parm);
-    }
-};
+}
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-template<>
-struct script_convert_argument<int>
+EventManager::~EventManager()
 {
-    /// int argument types are converted to Real
-    typedef Zen::Math::Real                 type;
-
-    inline
-    type
-    operator()(boost::any& _parm)
-    {
-        return boost::any_cast<typename type>(_parm);
-    }
-};
+}
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-template<>
-struct script_convert_argument<boost::any>
+EventManager::pEventService_type
+EventManager::create(const std::string& _eventServiceName)
 {
-    /// int argument types are converted to Real
-    typedef boost::any                  type;
+    // TODO Handle _eventServiceName correctly.
+    EventService* pRawEventService = new EventService;
 
-    inline
-    type
-    operator()(boost::any& _parm)
-    {
-        return _parm;
-    }
-};
+    pEventService_type pEventService(pRawEventService, boost::bind(&EventManager::destroy, this, _1));
+
+    return pEventService;
+}
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace Scripting
+void
+EventManager::destroy(wpEventService_type _pEventService)
+{
+    EventService* pEventService = dynamic_cast<EventService*>(_pEventService.get());
+
+    delete pEventService;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+}   // namespace Event
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-#endif // ZEN_SCRIPTING_SCRIPT_CONVERT_ARGUMENT_HPP_INCLUDED
