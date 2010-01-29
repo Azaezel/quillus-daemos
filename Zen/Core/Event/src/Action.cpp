@@ -2,6 +2,7 @@
 // Zen Core Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -20,67 +21,74 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_SCRIPTING_SCRIPT_CONVERT_ARGUMENT_HPP_INCLUDED
-#define ZEN_SCRIPTING_SCRIPT_CONVERT_ARGUMENT_HPP_INCLUDED
+#include "Action.hpp"
 
-#include <Zen/Core/Math/Math.hpp>
+#include <Zen/Core/Utility/runtime_exception.hpp>
 
-#include <boost/any.hpp>
+#include <Zen/Core/Scripting/I_ScriptType.hpp>
+
+#include <iostream>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Scripting {
+namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-// rename to argument_from_script?
-
-template<typename Argument_type>
-struct script_convert_argument
+Action::Action(pScriptModule_type _pScriptModule, I_ActionMap::ActionFunction_type _function)
+:   m_pScriptModule(_pScriptModule)
+,   m_pScriptObject(NULL)
+,   m_function(_function)
 {
-    /// By default ActualArgument_type is Argument_type;
-    typedef Argument_type          type;
-
-    inline
-    type
-    operator()(boost::any& _parm)
-    {
-        return boost::any_cast<typename type>(_parm);
-    }
-};
+}
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-template<>
-struct script_convert_argument<int>
+Action::~Action()
 {
-    /// int argument types are converted to Real
-    typedef Zen::Math::Real                 type;
-
-    inline
-    type
-    operator()(boost::any& _parm)
-    {
-        return boost::any_cast<typename type>(_parm);
-    }
-};
+}
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-template<>
-struct script_convert_argument<boost::any>
+void
+Action::dispatch(boost::any& _parameter)
 {
-    /// int argument types are converted to Real
-    typedef boost::any                  type;
-
-    inline
-    type
-    operator()(boost::any& _parm)
+    try
     {
-        return _parm;
+        m_function(_parameter);
     }
-};
+    catch(boost::bad_any_cast _ex)
+    {
+        // TODO This should go to a log of some sort
+        std::cout << "Bad any_cast error while executing script action handler "
+            //<< getName()
+            << std::endl;
+    }
+}
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace Scripting
+static std::string sm_scriptTypeName("Action");
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+Action::getScriptTypeName()
+{
+    return sm_scriptTypeName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+Action::getScriptObject()
+{
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new Action::ScriptObjectReference_type
+            (m_pScriptModule, 
+            m_pScriptModule->getScriptType(getScriptTypeName()), 
+            getSelfReference().lock());
+    }
+
+    return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+}   // namespace Event
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-#endif // ZEN_SCRIPTING_SCRIPT_CONVERT_ARGUMENT_HPP_INCLUDED

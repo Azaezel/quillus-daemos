@@ -28,7 +28,12 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
-#include <Zen/Core/Scripting.hpp>
+#include <Zen/Core/Scripting/I_ScriptType.hpp>
+#include <Zen/Core/Scripting/I_ScriptMethod.hpp>
+#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+
+#include <Zen/Core/Scripting/forward_declarations.hpp>
+#include <Zen/Core/Scripting/script_type_interface.hpp>
 
 #include <boost/typeof/typeof.hpp>
 
@@ -39,7 +44,7 @@
 namespace Zen {
 namespace Scripting {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-class I_ScriptableType;
+;
 
 /// Helper template for defining scriptable types.
 template<typename ScriptableClass_type>

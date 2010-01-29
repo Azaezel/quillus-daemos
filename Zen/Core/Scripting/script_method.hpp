@@ -24,7 +24,13 @@
 #ifndef ZEN_SCRIPTING_SCRIPT_METHOD_HPP_INCLUDED
 #define ZEN_SCRIPTING_SCRIPT_METHOD_HPP_INCLUDED
 
-#include <Zen/Core/Scripting.hpp>
+#include <Zen/Core/Scripting/forward_declarations.hpp>
+#include <Zen/Core/Scripting/I_ScriptMethod.hpp>
+
+#include <Zen/Core/Utility/runtime_exception.hpp>
+
+#include <sstream>
+#include <string>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -45,7 +51,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-    script_method(Method_type _pFunction, DispatchHelper_type& _signature);
+    script_method(Method_type _pFunction, DispatchHelper_type& _signature, const std::string& _typeName, const std::string& _methodName);
     /// @}
 
     /// @name Member Variables
@@ -53,6 +59,8 @@ public:
 public:
     Method_type             m_pFunction;
     DispatchHelper_type&    m_dispatchHelper;
+    std::string             m_typeName;
+    std::string             m_methodName;
     /// @}
 
 };  // class script_method
@@ -60,18 +68,39 @@ public:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 template<class ScriptableClass_type, class Method_type, typename Return_type, class DispatchHelper_type>
 inline
-script_method<ScriptableClass_type, Method_type, Return_type, DispatchHelper_type>::script_method(Method_type _pFunction, DispatchHelper_type& _signature)
+script_method<ScriptableClass_type, Method_type, Return_type, DispatchHelper_type>::script_method(Method_type _pFunction, DispatchHelper_type& _signature, const std::string& _typeName, const std::string& _methodName)
 :   m_pFunction(_pFunction)
 ,   m_dispatchHelper(_signature)
+,   m_typeName(_typeName)
+,   m_methodName(_methodName)
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 template<typename ScriptableClass_type, class Method_type, typename Return_type, class DispatchHelper_type>
+inline
 boost::any
 script_method<ScriptableClass_type, Method_type, Return_type, DispatchHelper_type>::dispatch(I_ObjectReference* _pObject, std::vector<boost::any>& _parms)
 {
-    return m_dispatchHelper.dispatch(m_pFunction, _pObject, _parms);
+    if (m_dispatchHelper.getParameterCount() > _parms.size())
+    {
+        std::stringstream errorMessage;
+        errorMessage << "Error calling C++ method " << m_typeName << "::" << m_methodName << ": Not enough arguments.  Expected " 
+            <<  m_dispatchHelper.getParameterCount() << ", but got " << _parms.size();
+        throw Utility::runtime_exception(errorMessage.str());
+    }
+
+    try
+    {
+        return m_dispatchHelper.dispatch(m_pFunction, _pObject, _parms);
+    }
+    catch(Utility::runtime_exception& _ex)
+    {
+        std::stringstream errorMessage;
+        errorMessage << "Caught an exception in C++ method " << m_typeName << "::" << m_methodName << ": "
+            << _ex.what();
+        throw Utility::runtime_exception(errorMessage.str());
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

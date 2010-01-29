@@ -28,6 +28,15 @@
 #include "Thread_posix.hpp"
 
 #include "../I_Runnable.hpp"
+#include "../SpinLock.hpp"
+#include "../CriticalSection.hpp"
+
+#include <stdexcept>
+#include <sstream>
+#include <map>
+
+#include <unistd.h>
+#include <sys/errno.h>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -37,6 +46,7 @@ namespace Threading {
 Thread_posix::Thread_posix(I_Runnable *const _pRunnable)
 :   m_pRunnable(_pRunnable)
 ,   m_nativeThread()
+,   m_threadId()
 ,   m_isStarted(false)
 ,   m_isJoined(false)
 {
@@ -69,7 +79,7 @@ Thread_posix::start()
                 ErrMsg << "Thread_posix::Start(): pthread_create() failed, rc='"<<rc<<"'.";
                 throw std::runtime_error(ErrMsg.str());
             }
-            //m_ThreadId.m_pNativeThreadId = new NativeThreadId_posix(m_nativeThread);
+            m_threadId.m_pNativeThreadId = new NativeThreadId_posix(m_nativeThread);
             m_isStarted = true;
         }
         else
@@ -107,6 +117,20 @@ Thread_posix::join()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Thread::ThreadId
+Thread_posix::getCurrentThreadId() const
+{
+    return ThreadId(new NativeThreadId_posix(::pthread_self()));
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const I_Thread::ThreadId&
+Thread_posix::getThreadId() const
+{
+    return m_threadId;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 //DWORD WINAPI
 void*
 (Thread_posix::ThreadFunction(void* _pThis))
@@ -122,6 +146,38 @@ void*
     }
 
     return 0;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Thread_posix::NativeThreadId_posix::operator==(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+{
+    const NativeThreadId_posix* const pNativeThreadId_posix = static_cast<const NativeThreadId_posix*>(&_id);
+    return (pNativeThreadId_posix != NULL) && (::pthread_equal(m_nativeThreadId, pNativeThreadId_posix->m_nativeThreadId) != 0);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Thread_posix::NativeThreadId_posix::operator!=(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+{
+    const NativeThreadId_posix* const pNativeThreadId_posix = static_cast<const NativeThreadId_posix*>(&_id);
+    return (pNativeThreadId_posix == NULL) || (::pthread_equal(m_nativeThreadId, pNativeThreadId_posix->m_nativeThreadId) == 0);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Thread::ThreadId::I_NativeThreadId*
+Thread_posix::NativeThreadId_posix::clone() const
+{
+    return new NativeThreadId_posix(m_nativeThreadId);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+std::string
+Thread_posix::NativeThreadId_posix::toString() const
+{
+    std::ostringstream oStream;
+    oStream << std::hex << std::uppercase << "0x" << m_nativeThreadId;
+    return oStream.str();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -24,7 +24,7 @@
 #ifndef ZEN_SCRIPTING_SCRIPT_MODULE_IMPL_HPP_INCLUDED
 #define ZEN_SCRIPTING_SCRIPT_MODULE_IMPL_HPP_INCLUDED
 
-#include <Zen/Core/Scripting.hpp>
+#include <Zen/Core/Scripting/script_module.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -36,6 +36,7 @@ script_module::script_module(pScriptEngine_type _pScriptEngine, const std::strin
 ,   m_name(_name)
 ,   m_documentation(_documentation)
 ,   m_activated(false)
+,   m_scriptTypes()
 {
 }
 
