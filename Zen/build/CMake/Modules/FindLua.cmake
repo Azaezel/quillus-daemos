@@ -3,7 +3,7 @@
 #  LUA_INCLUDE_DIR - location of lua.h
 #  LUA_LIBRARIES   - List of libraries to link to when using Lua
 #  LUA_FOUND       - True if Lua was found.
-# LUA_CLIBS_DIR  - clibs directory on Windows
+#  LUA_CLIBS_DIR   - clibs directory on Windows
 IF (LUA_INCLUDE_DIR)
   	SET(LUA_FIND_QUIETLY TRUE)
 ENDIF (LUA_INCLUDE_DIR)

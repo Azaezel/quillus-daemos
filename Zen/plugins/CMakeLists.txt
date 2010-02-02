@@ -157,6 +157,20 @@ endif(OPENDE_FOUND)
 message("-- ZMicroPather")
 add_subdirectory(ZMicroPather)
 
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+# ZPython, but only if Python is found
+
+Find_Package(Python)
+
+if (PYTHON_FOUND)
+	message("-- ZPython ")
+	add_subdirectory(ZPython)
+else(PYTHON_FOUND)
+	message("ZPython will NOT be compiled. Python was not found.")
+endif(PYTHON_FOUND)
+
+
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 # These have not yet been ported.
 #  Please add them if you port them ;)
 #add_subdirectory( BasicNetworking )
@@ -174,5 +188,4 @@ add_subdirectory(ZMicroPather)
 #add_subdirectory( ZOpenAL )
 #add_subdirectory( ZPhysX )
 #add_subdirectory( ZPostgres )
-#add_subdirectory( ZPython )
 #add_subdirectory( ZRakNet )
