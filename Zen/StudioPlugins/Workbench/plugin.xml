@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="Workbench"
+   name="Zen Studio Workbench"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="Workbench">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <!-- Project Extension Points - Note that the Project extension point has embeded the  Document Type -->
+  <extension-point id="ProjectService" name="Zen Studio Project Service" schema="schema/project.exsd"/>
+
+  <extension-point id="ProjectWizardService" name="Zen Studio Project Wizard Service" schema="schema/projectWizard.exsd"/>
+  
+  <extension-point id="ExplorerNode" name="Zen Studio Explorer Node" schema="schema/node.exsd"/>
+  <extension-point id="SpreadSheetCell" name="Zen Studio Spread Sheet Cell" schema="schema/sscell.exsd"/>
+
+  <!-- deprecated
+  <extension-point id="ExplorerNodeActionService" name="Zen Studio Explorer Node Action Service" schema="schema/nodeAction.exsd"/>
+  -->
+
+  <extension-point id="ContributorService" name="Zen Studio Contributor Service" schema="schema/contributor.exsd"/>
+  
+</plugin>

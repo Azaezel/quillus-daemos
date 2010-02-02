@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="Framework"
+   name="Core IndieZen Framework Plugin"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="Framework">
+      <export name="*"/>
+    </library>
+  </runtime>
+	
+  <!-- Database Extension Points -->
+  <extension-point id="DatabaseService" name="Zen Enterprise Database Service" schema="schema/database.exsd"/>
+  <extension-point id="SchemaService" name="Zen Enterprise Database Schema Service" schema="schema/databaseschema.exsd"/>
+
+  <!-- Application Server Extension Points -->
+  <extension-point id="ApplicationService" name="Zen Enterprise Application Service" schema="schema/application.exsd"/>
+  <extension-point id="ProtocolService" name="Zen Enterprise Protocol Service" schema="schema/protocol.exsd"/>
+
+  <!-- Networking Extension Points -->
+  <extension-point id="NetworkService" name="IndieZen Network Service" schema="schema/network.exsd"/>
+  <extension-point id="NetworkAddress" name="IndieZen Network Address" schema="schema/address.exsd"/>
+
+  <!-- Rendering Extension Points -->
+  <extension-point id="RenderingService" name="IndieZen Rendering Service" schema="schema/rendering.exsd"/>
+  <extension-point id="SceneService" name="IndieZen Scene Service" schema="schema/scene.exsd"/>
+  <extension-point id="BoundingVolumeService" name="IndieZen Bounding Volume Service" schema="schema/boundingvolume.exsd"/>
+
+  <!-- Importer Extension Points -->
+  <extension-point id="Importer" name="IndieZen Importer" schema="schema/importer.exsd"/>
+
+  <!-- Camera Extension Points -->
+  <extension-point id="CameraService" name="IndieZen CameraService" schema="schema/camera.exsd"/>
+  
+  <!-- Input Extension Points -->
+  <extension-point id="InputService" name="IndieZen Input" schema="schema/input.exsd"/>
+
+  <!-- Resource Extension Points -->
+  <extension-point id="ResourceService" name="IndieZen Resources" schema="schema/resource.exsd"/>
+  
+  <!-- Game Client Extension Points -->
+  <extension-point id="GameClient" name="IndieZen Game Client" schema="schema/gameclient.exsd"/>
+	
+  <!-- Sound Extension Points -->
+  <extension-point id="SoundService" name="IndieZen Sound Service" schema="schema/sound.exsd"/>
+
+  <!-- Physics Extension Points -->
+  <extension-point id="PhysicsService" name="IndieZen Physics Service" schema="schema/physics.exsd"/>
+
+  <!-- Scripting Extension Points -->
+  <extension-point id="Engine" name="IndieZen Scripting Engine" schema="schema/scripting.exsd"/>    
+  
+  <!-- Widgets Extension Points -->
+  <extension-point id="WidgetService" name="IndieZen Widget Service" schema="schema/widgets.exsd"/>
+
+  <!-- Navigation Extension Points -->
+  <extension-point id="NavigationService" name="IndieZen Navigation Service" schema="schema/navigation.exsd"/>    
+
+  <!-- World Extension Points -->
+  <extension-point id="WorldService" name="IndieZen World Service" schema="schema/world.exsd"/>
+  <extension-point id="CloudService" name="IndieZen Cloud Service" schema="schema/cloud.exsd"/>
+  <extension-point id="TerrainService" name="IndieZen Terrain Service" schema="schema/terrain.exsd"/>
+  <extension-point id="SkyService" name="IndieZen Sky Service" schema="schema/sky.exsd"/>
+  <extension-point id="WaterService" name="IndieZen Water Service" schema="schema/water.exsd"/>
+
+  <!-- Server Extension Points -->
+  <extension-point id="ConsoleService" name="IndieZen Console Service" schema="schema/console.exsd"/>
+  <extension-point id="CommandLineParserService" name="IndieZen Command Line Parser Service" schema="schema/commandlineparser.exsd"/>
+  
+</plugin>

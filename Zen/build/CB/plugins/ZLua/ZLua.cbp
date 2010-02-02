@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ZLua" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Script file="lib_finder.script" />
+			<Target title="Debug-GCC">
+				<Option output="$(#ZEN.lib)/ZLua_d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="`pkg-config --libs boost`" />
+					<Add library="pthread" />
+					<Add library="Core_d" />
+				</Linker>
+			</Target>
+			<Target title="Release-GCC">
+				<Option output="$(#ZEN.lib)/ZLua" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Debug-MSVC5">
+				<Option output="$(#ZEN.lib)/ZLua_d" prefix_auto="1" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="msvc8" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="/MDd" />
+					<Add option="/arch:SSE2" />
+					<Add option="/Gd" />
+					<Add option="/RTCu" />
+					<Add option="/EHc" />
+					<Add option="/EHs" />
+					<Add option="/GR" />
+					<Add option="/Od" />
+					<Add option="/W3" />
+					<Add option="/DTHREADMODEL_WIN32" />
+					<Add option="/DHOST_WIN32" />
+					<Add directory="$(#WindowsPlatformSDK.include)" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add directory="$(#ZEN.include)" />
+			<Add directory="$(#BOOST.include)" />
+		</Compiler>
+		<Linker>
+			<Add option="`wx-config --libs`" />
+			<Add directory="$(#BOOST.lib)" />
+			<Add directory="$(#ZEN.lib)" />
+		</Linker>
+		<Unit filename="../../../../plugins/ZLua/plugin.xml" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaEngine.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaEngine.hpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaEngineFactory.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaEngineFactory.hpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaHeap.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaHeap.hpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaMethod.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaMethod.hpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaModule.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaModule.hpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaObject.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaObject.hpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaType.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaType.hpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaTypeMap.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/LuaTypeMap.hpp" />
+		<Unit filename="../../../../plugins/ZLua/src/ZLuaModule.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/ZLuaPlugin.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/ZLuaPlugin.hpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/BoolFunctionArgs.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/BoolFunctionNoArgs.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/IntFunctionArgs.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/IntFunctionNoArgs.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/ObjFunctionArgs.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/ObjFunctionNoArgs.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/StringFunctionArgs.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/StringFunctionNoArgs.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/VoidFunctionArgs.cpp" />
+		<Unit filename="../../../../plugins/ZLua/src/functions/VoidFunctionNoArgs.cpp" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1">
+				<lib name="boost" />
+				<lib name="lua5.1" />
+			</lib_finder>
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

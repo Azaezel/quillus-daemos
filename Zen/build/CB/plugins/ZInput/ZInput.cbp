@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ZInput" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Script file="lib_finder.script" />
+			<Target title="Debug-GCC">
+				<Option output="$(#ZEN.lib)/ZInput_d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="`pkg-config --libs boost`" />
+					<Add library="pthread" />
+					<Add library="Core_d" />
+				</Linker>
+			</Target>
+			<Target title="Release-GCC">
+				<Option output="$(#ZEN.lib)/ZInput" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Debug-MSVC5">
+				<Option output="$(#ZEN.lib)/ZInput_d" prefix_auto="1" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="msvc8" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="/MDd" />
+					<Add option="/arch:SSE2" />
+					<Add option="/Gd" />
+					<Add option="/RTCu" />
+					<Add option="/EHc" />
+					<Add option="/EHs" />
+					<Add option="/GR" />
+					<Add option="/Od" />
+					<Add option="/W3" />
+					<Add option="/DTHREADMODEL_WIN32" />
+					<Add option="/DHOST_WIN32" />
+					<Add directory="$(#WindowsPlatformSDK.include)" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add directory="$(#ZEN.include)" />
+			<Add directory="$(#BOOST.include)" />
+		</Compiler>
+		<Linker>
+			<Add option="`wx-config --libs`" />
+			<Add directory="$(#BOOST.lib)" />
+			<Add directory="$(#ZEN.lib)" />
+		</Linker>
+		<Unit filename="../../../../plugins/ZInput/Configuration.hpp" />
+		<Unit filename="../../../../plugins/ZInput/ZInputModule.hpp" />
+		<Unit filename="../../../../plugins/ZInput/plugin.xml" />
+		<Unit filename="../../../../plugins/ZInput/src/InputMap.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/InputMap.hpp" />
+		<Unit filename="../../../../plugins/ZInput/src/InputService.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/InputService.hpp" />
+		<Unit filename="../../../../plugins/ZInput/src/InputServiceFactory.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/InputServiceFactory.hpp" />
+		<Unit filename="../../../../plugins/ZInput/src/KeyEvent.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/KeyEvent.hpp" />
+		<Unit filename="../../../../plugins/ZInput/src/KeyModifierState.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/KeyModifierState.hpp" />
+		<Unit filename="../../../../plugins/ZInput/src/KeyState.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/KeyState.hpp" />
+		<Unit filename="../../../../plugins/ZInput/src/MouseClickEvent.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/MouseClickEvent.hpp" />
+		<Unit filename="../../../../plugins/ZInput/src/MouseMoveEvent.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/MouseMoveEvent.hpp" />
+		<Unit filename="../../../../plugins/ZInput/src/VectorEvent.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/VectorEvent.hpp" />
+		<Unit filename="../../../../plugins/ZInput/src/ZInputModule.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/ZInputPlugin.cpp" />
+		<Unit filename="../../../../plugins/ZInput/src/ZInputPlugin.hpp" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1">
+				<lib name="boost" />
+			</lib_finder>
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

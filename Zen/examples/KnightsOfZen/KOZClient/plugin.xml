@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="KOZClient"
+   name="Games by Sarge Knights of Zen Game Client"
+   version="0.1.0"
+   provider-name="GamesBySarge.com">
+
+  <runtime>
+    <library name="KOZClient">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+    <import plugin="ZOgre"/>
+  </requires>
+
+  <extension
+        point="Zen::Engine::Client::GameClient"
+        id="Pong"
+        name="Knights of Zen Game Client"
+        type="KOZClient">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <rendering-service
+          class="Zen::Knights::GameClient"
+          type="KOZClient">
+    </rendering-service>
+  </extension>
+
+</plugin>

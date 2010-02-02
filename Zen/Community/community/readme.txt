@@ -1,0 +1,1 @@
+This directory structure is for scripts.

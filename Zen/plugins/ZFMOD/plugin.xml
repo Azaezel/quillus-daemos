@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZFMOD"
+   name="IndieZen FMOD Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZFMOD">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+    </requires>
+
+	<extension
+          point="Zen::Engine::Sound::SoundService"
+          id="ZFMOD"
+          name="IndieZen FMOD Sound Service"
+          type="ZFMOD">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<sound-service
+              class="Zen::ZFMOD::SoundService"
+              type="ZFMOD">
+		</sound-service>
+	</extension>
+
+	<extension
+          point="Zen::Engine::Resource::ResourceService"
+          id="ZFMOD"
+          name="IndieZen FMOD Resource Service"
+          type="ZFMOD">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<sound-service
+              class="Zen::ZFMOD::ResourceService"
+              type="ZFMOD">
+		</sound-service>
+	</extension>
+
+</plugin>
