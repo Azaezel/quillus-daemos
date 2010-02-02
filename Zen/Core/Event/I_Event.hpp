@@ -37,6 +37,7 @@ namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_Connection;
 class I_Action;
+class I_EventQueue;
 
 /// @brief Event interface
 class EVENT_DLL_LINK I_Event
@@ -55,9 +56,12 @@ public:
     /// @{
 public:
     /// Connect an action to an event.
+    /// @param _pAction Action that will be invoked when the event is fired.
+    /// @param _queue The event queue that will be used to dispatch the action.
+    ///         If this parameter is NULL, the default event queue is used.
     /// @return I_Connection that represents the connected event and action.
     ///         Use this to disconnect the connection.
-    virtual I_Connection& connect(pAction_type _pAction) = 0;
+    virtual I_Connection& connect(pAction_type _pAction, I_EventQueue* _pQueue = NULL) = 0;
 
     /// Fire an event.
     /// This does not necessarily dispatch immediately if

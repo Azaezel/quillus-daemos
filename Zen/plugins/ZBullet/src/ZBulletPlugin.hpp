@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// Zen Community Framework
+// Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C)        2009 Brian Roberts
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,26 +21,48 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//	Matthew Alan Gray mgray@indiezen.org
+//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#include "../I_Request.hpp"
+#ifndef ZEN_ZBULLET_ZBULLET_PLUGIN_HPP_INCLUDED
+#define ZEN_ZBULLET_ZBULLET_PLUGIN_HPP_INCLUDED
+
+#include <Zen/Core/Plugins/I_Plugin.hpp>
+
+#include <Zen/Core/Plugins/I_ConfigurationElement.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Community {
-namespace Protocol {
+namespace ZBullet {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-I_Request::I_Request()
+
+class ZBulletPlugin
+:   public Plugins::I_Plugin
 {
-}
+    /// @name I_Plugin implementation
+    /// @{
+public:
+    virtual void initExtensionPoints();
+    virtual void initExtensions();
+    virtual Plugins::I_ClassFactory* getClassFactory(const Plugins::I_ConfigurationElement& _config);
+    /// @}
+
+    /// @name 'Structors
+    /// @{
+public:
+             ZBulletPlugin();
+    virtual ~ZBulletPlugin();
+    /// @}
+
+    /// @name Member variables
+    /// @{
+private:
+    /// @}
+
+};  // class ZBulletPlugin
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-I_Request::~I_Request()
-{
-}
+}   // namespace ZBullet
+}   // namespace Zen
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace Protocol
-}	// namespace Community
-}	// namespace Zen
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#endif // ZEN_ZBULLET_ZBULLET_PLUGIN_HPP_INCLUDED

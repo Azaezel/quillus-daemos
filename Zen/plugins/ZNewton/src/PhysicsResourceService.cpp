@@ -102,6 +102,13 @@ PhysicsResourceService::loadResource(config_type& _config)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+PhysicsResourceService::initialiseAllResourceGroups()
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 PhysicsResourceService::destroyResource(wpResource_type)
 {
     // TODO Call onDestroy and delete

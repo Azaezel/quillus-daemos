@@ -2,7 +2,7 @@
 // Zen Enterprise Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 // Copyright (C)        2009 Joshua Cassity
 //
 //  This software is provided 'as-is', without any express or implied
@@ -45,8 +45,17 @@
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
 #include <Zen/Core/Threading/MutexFactory.hpp>
+#include <Zen/Core/Threading/I_Mutex.hpp>
+#include <Zen/Core/Threading/CriticalSection.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptableService.hpp>
+
+#include <Zen/Enterprise/Networking/I_Endpoint.hpp>
+#include <Zen/Enterprise/Networking/I_Address.hpp>
+
+#include <Zen/Enterprise/Database/I_DatabaseManager.hpp>
+#include <Zen/Enterprise/Database/I_DatabaseService.hpp>
+#include <Zen/Enterprise/Database/I_DatabaseConnection.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -76,6 +85,7 @@ ApplicationServer::ApplicationServer()
 ,   m_pProtocolGuard(Threading::MutexFactory::create())
 ,   m_pApplicationGuard(Threading::MutexFactory::create())
 ,   m_pMessageRegistry_type(new NumericTypeMessageRegistry(), &destroy)
+,   m_databaseConnectionsMap()
 {
 }
 
@@ -272,6 +282,13 @@ ApplicationServer::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+ApplicationServer::pScriptEngine_type
+ApplicationServer::getDefaultScriptEngine()
+{
+    return m_pScriptEngine;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ApplicationServer::installProtocols(pConfig_type _pProtocolsConfig)
 {
@@ -463,6 +480,58 @@ ApplicationServer::installApplications(pConfig_type _pAppServicesConfig)
 	class ConfigVisitor
 	:	public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
 	{
+        class DatabaseVisitor
+        :   public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
+        {
+            typedef std::map<std::string, std::string>      config_type;
+
+            class DBConfigVisitor
+            :   public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
+            {
+            public:
+                virtual void begin() {}
+
+                virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element)
+                {
+                    m_config[_element.getAttribute("name")] = _element.getAttribute("value");
+                }
+
+                virtual void end() {}
+
+                DBConfigVisitor(config_type& _config)
+                :   m_config(_config)
+                {
+                }
+
+            private:
+                config_type&    m_config;
+
+            };  // class DBConfigVisitor
+
+        public:
+            virtual void begin() {}
+
+            virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element)
+            {
+                config_type config;
+
+                DBConfigVisitor visitor(config);
+                _element.getChildren("config", visitor);
+
+                m_pAppServer->createDatabaseEntry(_element.getAttribute("name"), config);
+            }
+
+            virtual void end() {}
+
+            DatabaseVisitor(ApplicationServer* _pAppServer)
+            :   m_pAppServer(_pAppServer)
+            {
+            }
+
+        private:
+            ApplicationServer*        m_pAppServer;
+
+        };  // class DatabaseVisitor
 	public:
 		virtual void begin() {}
 		
@@ -470,6 +539,9 @@ ApplicationServer::installApplications(pConfig_type _pAppServicesConfig)
 		{
 			Zen::Enterprise::AppServer::I_ApplicationServerManager& manager =
 				Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton();
+
+            DatabaseVisitor visitor(m_pAppServer);
+            _element.getChildren("database", visitor);
 
 			Zen::Enterprise::AppServer::I_ApplicationServerManager::pApplicationService_type
 				pApplicationService = manager.createApplicationService(*m_pAppServer, _element.getAttribute("type"));
@@ -483,13 +555,13 @@ ApplicationServer::installApplications(pConfig_type _pAppServicesConfig)
 
 		virtual void end() {}
 
-        ConfigVisitor(I_ApplicationServer* _pAppServer)
+        ConfigVisitor(ApplicationServer* _pAppServer)
         :   m_pAppServer(_pAppServer)
         {
         }
 
     private:
-        I_ApplicationServer*        m_pAppServer;
+        ApplicationServer*        m_pAppServer;
     };
 
     ConfigVisitor visitor(this);
@@ -742,6 +814,14 @@ ApplicationServer::handleRequest(pRequest_type _pRequest, pResponseHandler_type 
 {
     ResourceLocation* pDestination = dynamic_cast<ResourceLocation*>(_pRequest->getDestinationLocation().get());
 
+    // TODO: If _pRequest destination is not this server then the request is destined for
+    // another destination and it should be sent instead of dispatched.
+    std::cout << "Sending a request to " 
+        << _pRequest->getDestinationEndpoint()->getAddress().toString() 
+        << "/"
+        << pDestination->toString()
+        << std::endl;
+
     if (pDestination != NULL)
     {
         class HandleRequestTask
@@ -786,6 +866,25 @@ void
 ApplicationServer::handleSessionEvent(pSessionEvent_type _pSessionEvent)
 {
     throw Utility::runtime_exception("ApplicationServer::handleSessionEvent(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+ApplicationServer::pDatabaseConnection_type
+ApplicationServer::getDatabaseConnection(const std::string& _database,
+                                         Zen::Threading::I_Thread::ThreadId& _threadId)
+{
+    /// Do we need to guard this?
+
+    DatabaseConnectionsMap_type::iterator iter = m_databaseConnectionsMap.find(_database);
+    if( iter != m_databaseConnectionsMap.end() )
+    {
+        return iter->second->getConnection(_threadId);
+    }
+    else
+    {
+        return pDatabaseConnection_type();
+        // TODO Error?
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -840,6 +939,65 @@ void
 ApplicationServer::handleConfigureApplication(pApplicationService_type _pApplicationService, pConfig_type _pConfig)
 {
     _pApplicationService->setConfiguration(*_pConfig);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+ApplicationServer::DatabaseConnections::DatabaseConnections(pDatabaseService_type _pService,
+                                                            config_type _connectionConfig)
+:   m_pDatabaseService(_pService)
+,   m_connectionConfig(_connectionConfig)
+,   m_databaseConnections()
+,   m_databaseConnectionsMutex(Zen::Threading::MutexFactory::create())
+{
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+ApplicationServer::DatabaseConnections::~DatabaseConnections()
+{
+    Zen::Threading::MutexFactory::destroy(m_databaseConnectionsMutex);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+ApplicationServer::DatabaseConnections::pDatabaseConnection_type
+ApplicationServer::DatabaseConnections::getConnection(Zen::Threading::I_Thread::ThreadId& _threadId)
+{
+    Zen::Threading::CriticalSection guard(m_databaseConnectionsMutex);
+
+    DatabaseConnections_type::iterator iter = m_databaseConnections.find(_threadId);
+    if( iter != m_databaseConnections.end() )
+    {
+        return iter->second;
+    }
+    else
+    {
+        pDatabaseConnection_type pDatabaseConnection = m_pDatabaseService->connect(_threadId.toString(), m_connectionConfig);
+        m_databaseConnections[_threadId] = pDatabaseConnection;
+        return pDatabaseConnection;
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ApplicationServer::createDatabaseEntry(const std::string& _database, config_type& _config)
+{
+    DatabaseConnectionsMap_type::iterator iter = m_databaseConnectionsMap.find(_database);
+    if( iter == m_databaseConnectionsMap.end() )
+    {
+        typedef Zen::Memory::managed_ptr<Zen::Database::I_DatabaseService>  pDatabaseService_type;
+        pDatabaseService_type pDatabaseService = 
+            Zen::Database::I_DatabaseManager::getSingleton().createDatabaseService(
+                _database, 
+                _config
+            );
+
+        DatabaseConnections* pRaw = new DatabaseConnections(pDatabaseService, _config);
+        pDatabaseConnections_type pDatabaseConnections(pRaw);
+        m_databaseConnectionsMap[_database] = pDatabaseConnections;
+    }
+    else
+    {
+        // TODO Error?
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

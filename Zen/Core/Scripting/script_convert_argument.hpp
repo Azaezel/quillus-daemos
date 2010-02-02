@@ -45,7 +45,7 @@ struct script_convert_argument
     type
     operator()(boost::any& _parm)
     {
-        return boost::any_cast<typename type>(_parm);
+        return boost::any_cast<type>(_parm);
     }
 };
 
@@ -60,7 +60,7 @@ struct script_convert_argument<int>
     type
     operator()(boost::any& _parm)
     {
-        return boost::any_cast<typename type>(_parm);
+        return boost::any_cast<type>(_parm);
     }
 };
 

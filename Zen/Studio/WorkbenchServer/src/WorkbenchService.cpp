@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Studio Workbench Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -48,7 +48,6 @@
 #include <Zen/Studio/WorkbenchCommon/I_SpreadSheetCellFactory.hpp>
 
 #include <Zen/Studio/WorkbenchProtocol/I_WorkbenchProtocolManager.hpp>
-#include <Zen/Studio/WorkbenchProtocol/I_WorkbenchRequest.hpp>
 
 #include <Zen/Studio/WorkbenchModel/I_ProjectDomainObject.hpp>
 
@@ -117,28 +116,16 @@ WorkbenchService::stop()
 void
 WorkbenchService::handleMessage(pMessage_type _pMessage)
 {
-    // This should be a Workbench request coming from the client
-
-	I_WorkbenchRequest* pRequest = dynamic_cast<I_WorkbenchRequest*>(_pMessage.get());
-
-    if (pRequest)
-    {
-        throw Zen::Utility::runtime_exception("WorkbenchService::handleMessage(): Error, not implemented.");
-    }
-    else
-    {
-        // TODO Error!
-    }
+    // TODO Derive from scriptable_generic_service 
+    throw Utility::runtime_exception("WorkbenchService::handleMessage(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 WorkbenchService::handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler)
 {
-    if(_pRequest->getSourceEndpoint().isValid())
-    {
-        throw Zen::Utility::runtime_exception("WorkbenchService::handleRequest(): Error, not implemented.");
-    }
+    // TODO Derive from scriptable_generic_service 
+    throw Utility::runtime_exception("WorkbenchService::handleMessage(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

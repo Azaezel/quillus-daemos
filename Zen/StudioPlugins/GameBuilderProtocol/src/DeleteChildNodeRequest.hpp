@@ -19,7 +19,7 @@
 
 #include "../I_DeleteChildNodeRequest.hpp"
 
-#include "Message.hpp"
+#include "Request.hpp"
 
 #include <Zen/Enterprise/AppServer/I_MessageFactory.hpp>
 
@@ -39,7 +39,7 @@ namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class DeleteChildNodeRequest
 :   public I_DeleteChildNodeRequest
-,   public Message
+,   public Request
 {
     /// @name Types
     /// @{
@@ -86,12 +86,12 @@ protected:
              /// This constructor is used by the static create
              /// methods for creating outbound messages.
              DeleteChildNodeRequest(pEndpoint_type _pSourceEndpoint,
-                               pEndpoint_type _pDestinationEndpoint);
+                           pEndpoint_type _pDestinationEndpoint);
              /// This constructor is used by the message factory
              /// for creating inbound messages.
              DeleteChildNodeRequest(pMessageHeader_type _pMessageHeader,
-                               pEndpoint_type _pSourceEndpoint,
-                               pEndpoint_type _pDestinationEndpoint);
+                           pEndpoint_type _pSourceEndpoint,
+                           pEndpoint_type _pDestinationEndpoint);
     virtual ~DeleteChildNodeRequest();
     /// @}
 

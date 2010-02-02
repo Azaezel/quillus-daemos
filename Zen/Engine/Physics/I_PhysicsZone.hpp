@@ -107,8 +107,6 @@ public:
     /// Set the physics simulation for this zone.
 	virtual void stepSimulation(double _elapsedTime) = 0;
 
-    virtual void setZoneSize(const Math::Vector3& _min, const Math::Vector3& _max) = 0;
-
     /// Set the default gravity.
     /// @todo TR - Does this actually work?  If not then possibly should remove it.
     virtual void setGravity(const Math::Vector3& _grav) = 0;
@@ -183,7 +181,7 @@ public:
     /// @name 'Structors
     /// @{
 protected:
-             I_PhysicsZone();
+             I_PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max);
     virtual ~I_PhysicsZone();
     /// @}
 };  // interface I_PhysicsZone

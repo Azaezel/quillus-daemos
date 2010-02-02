@@ -78,6 +78,8 @@
 
 #include <Zen/Core/Threading/I_Thread.hpp>
 
+#include <Zen/Core/Utility/runtime_exception.hpp>
+
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/bind.hpp>

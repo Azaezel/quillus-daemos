@@ -25,6 +25,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifdef THREADMODEL_WIN32
 
+#include <assert.h>
+
 #include "Thread_win32.hpp"
 
 #include "../I_Runnable.hpp"
@@ -179,6 +181,15 @@ Thread_win32::NativeThreadId_win32::operator!=(const I_Thread::ThreadId::I_Nativ
 {
     const NativeThreadId_win32* const pNativeThreadId_win32 = dynamic_cast<const NativeThreadId_win32*>(&_id);
     return (pNativeThreadId_win32 == NULL) && (m_nativeThreadId == pNativeThreadId_win32->m_nativeThreadId);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Thread_win32::NativeThreadId_win32::operator <(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+{
+    const NativeThreadId_win32* const pNativeThreadId_win32 = dynamic_cast<const NativeThreadId_win32*>(&_id);
+    assert(pNativeThreadId_win32 != NULL);
+    return (m_nativeThreadId < pNativeThreadId_win32->m_nativeThreadId);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

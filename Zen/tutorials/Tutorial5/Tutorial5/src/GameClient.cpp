@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -60,7 +60,7 @@
 #include <Zen/Engine/Rendering/I_RenderableResource.hpp>
 
 #include <Zen/Engine/Input/I_InputService.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
+#include <Zen/Engine/Input/I_KeyMap.hpp>
 
 #include <Zen/Engine/World/I_TerrainService.hpp>
 #include <Zen/Engine/World/I_Terrain.hpp>
@@ -135,9 +135,6 @@ GameClient::init()
     // Initialize resources
     initResources();
 
-    // Create the script types
-    createScriptTypes();
-
     // Possibly the rest of this should be done later and we should show
     // an initial game screen or splash screens here.
 
@@ -200,6 +197,13 @@ void
 GameClient::run()
 {
     m_baseClient.run();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::activateGameClientScriptModule()
+{
+    createScriptTypes();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -318,10 +322,10 @@ void
 GameClient::createDefaultMapping()
 {
     // Map some keys to actions
-    m_baseClient.getInputMap().mapKeyInput("q", m_baseGame.getActionMap()["Quit"]);
+    m_baseClient.getKeyMap().mapKeyInput("q", m_baseGame.getActionMap()["Quit"]);
 
     // Using wasd for movement, using w to go forward
-    //m_base.getInputMap().mapKeyInput("w", m_base.getActionMap()["Move Forward"]);
+    //m_base.getKeyMap().mapKeyInput("w", m_base.getActionMap()["Move Forward"]);
 
 }
 

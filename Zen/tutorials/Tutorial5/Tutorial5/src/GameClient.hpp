@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -72,6 +72,7 @@ public:
     /// @{
 public:
     virtual const WindowHandle_type getHandle() const;
+    virtual void activateGameClientScriptModule();
     virtual bool init();
     virtual void run();
     /// @}

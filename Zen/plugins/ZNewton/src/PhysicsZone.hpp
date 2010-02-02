@@ -75,7 +75,6 @@ public:
     /// @{
 public:
     virtual int getDefaultMaterialID();
-    virtual void setZoneSize(const Math::Vector3& _min, const Math::Vector3& _max);
     virtual void setGravity(const Math::Vector3& _grav);
     virtual pPhysicsActor_type createActor();
     virtual pPhysicsMaterial_type createMaterial(bool _default);
@@ -96,6 +95,7 @@ public:
     virtual pCollisionShape_type createHeightFieldShapeFromSerialization(std::string _filename, const Math::Matrix4& _transform);
 
     void destroyCollisionShape(wpCollisionShape_type _wpCollisionShape);
+    void destroyPhysicsActor(wpPhysicsActor_type _wpPhysicsActor);
 
     void stepSimulation(double _elapsedTime);
     /// @}
@@ -144,14 +144,14 @@ private:
     /// @{
 public:
 private:
-    static dFloat rayCastFilter(const NewtonBody* _pBody, const dFloat* _pNormal, int _collisionId, void* _pUserData, dFloat _intersectDistance);
+    static Zen::Math::Real rayCastFilter(const NewtonBody* _pBody, const Zen::Math::Real* _pNormal, int _collisionId, void* _pUserData, Zen::Math::Real _intersectDistance);
     static unsigned int rayCastPrefilter(const NewtonBody* _pBody, const NewtonCollision* _pCollision, void* _pUserData);
     /// @}
 
     /// @name 'Structors
     /// @{
 public:
-             PhysicsZone();
+             PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max);
     virtual ~PhysicsZone();
     /// @}
 

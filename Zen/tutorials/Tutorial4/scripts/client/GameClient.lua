@@ -23,7 +23,7 @@ end
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 function GameClient:initialize()
-	rootGroup = self:getGame():getRootGroup()
+	rootGroup = self:getRootGroup()
 
 	self:createActions()
 	self:createDefaultMappings()
@@ -33,19 +33,32 @@ function GameClient:initialize()
 end
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+function GameClient:getRootGroup()
+    -- This is in Game now, not GameClient
+    return self:getGame():getRootGroup()
+end
+
+-- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+function GameClient:getActionMap(actionMapName)
+    -- This is in Game now, not GameClient
+    return self:getActionMap(actionMapName)
+end
+
+-- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 function GameClient:createActions()
     print("=============\nCreate Actions...\n============")
-    self:getGame():getActionMap():createAction("Test", GameClient.testAction, self)
+    self:getActionMap():createAction("Test", GameClient.testAction, self)
+    print("-------------\n")
 end
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 function GameClient:createDefaultMappings()
     print("=============\nCreate Default Key Mappings...\n============")
-    self:getInputMap():mapKeyInput("t", self:getGame():getActionMap():getAction("Test"))
-    self:getInputMap():mapKeyInput("a", self:getGame():getActionMap():getAction("Move Left"))
-    self:getInputMap():mapKeyInput("d", self:getGame():getActionMap():getAction("Move Right"))
-    self:getInputMap():mapKeyInput("w", self:getGame():getActionMap():getAction("Move Forward"))
-    self:getInputMap():mapKeyInput("s", self:getGame():getActionMap():getAction("Move Backward"))
+    self:getKeyMap():mapKeyInput("t", self:getActionMap():getAction("Test"))
+    self:getKeyMap():mapKeyInput("a", self:getActionMap():getAction("Move Left"))
+    self:getKeyMap():mapKeyInput("d", self:getActionMap():getAction("Move Right"))
+    self:getKeyMap():mapKeyInput("w", self:getActionMap():getAction("Move Forward"))
+    self:getKeyMap():mapKeyInput("s", self:getActionMap():getAction("Move Backward"))
 end
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-

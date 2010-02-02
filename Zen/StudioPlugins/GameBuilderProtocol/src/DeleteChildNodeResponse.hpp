@@ -19,7 +19,7 @@
 
 #include "../I_DeleteChildNodeResponse.hpp"
 
-#include "Message.hpp"
+#include "Response.hpp"
 
 #include <Zen/Enterprise/AppServer/I_MessageFactory.hpp>
 
@@ -39,7 +39,7 @@ namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class DeleteChildNodeResponse
 :   public I_DeleteChildNodeResponse
-,   public Message
+,   public Response
 {
     /// @name Types
     /// @{
@@ -68,6 +68,11 @@ public:
     virtual unsigned int getMessageId() const { return Message::getMessageId(); } 
     /// @}
 
+    /// @name Dominance for Response
+    /// @{
+public:
+    virtual unsigned int getRequestMessageId() const { return Response::getRequestMessageId(); }
+    /// @}
     /// @name Static methods
     /// @{
 public:
@@ -86,12 +91,12 @@ protected:
              /// This constructor is used by the static create
              /// methods for creating outbound messages.
              DeleteChildNodeResponse(pEndpoint_type _pSourceEndpoint,
-                               pEndpoint_type _pDestinationEndpoint);
+                           pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId);
              /// This constructor is used by the message factory
              /// for creating inbound messages.
              DeleteChildNodeResponse(pMessageHeader_type _pMessageHeader,
-                               pEndpoint_type _pSourceEndpoint,
-                               pEndpoint_type _pDestinationEndpoint);
+                           pEndpoint_type _pSourceEndpoint,
+                           pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId);
     virtual ~DeleteChildNodeResponse();
     /// @}
 

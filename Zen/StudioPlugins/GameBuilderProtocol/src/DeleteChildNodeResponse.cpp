@@ -39,16 +39,21 @@ DeleteChildNodeResponse::pMessageType_type DeleteChildNodeResponse::sm_pType;
 Zen::Enterprise::AppServer::I_MessageRegistry* DeleteChildNodeResponse::sm_pMessageRegistry = NULL;
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 DeleteChildNodeResponse::DeleteChildNodeResponse(pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint)
+                           pEndpoint_type _pDestinationEndpoint,
+                            unsigned int _requestMessageId)
 :   Message(createMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)
+,   Response(getMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId)
+        
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 DeleteChildNodeResponse::DeleteChildNodeResponse(pMessageHeader_type _pMessageHeader,
                              pEndpoint_type _pSourceEndpoint,
-                             pEndpoint_type _pDestinationEndpoint)
+                             pEndpoint_type _pDestinationEndpoint,
+                            unsigned int _requestMessageId)
 :   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
+,   Response(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId) 
 {
 }
 

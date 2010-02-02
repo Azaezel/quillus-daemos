@@ -56,6 +56,7 @@ public:
     virtual pPhysicsService_type getPhysicsService();
     virtual pPhysicsResourceService_type getPhysicsResourceService();
     virtual pPhysicsZone_type getCurrentPhysicsZone();
+    virtual void setCurrentPhysicsZone(pPhysicsZone_type _pPhysicsZone);
 
     virtual Core::I_ActionMap& getActionMap(const std::string& _actionMapName = "default");
 

@@ -53,7 +53,7 @@ public:
     virtual SessionState_type getSessionState() const;
     virtual boost::int32_t getSessionId() const;
     virtual const pEndpoint_type getEndpoint() const;
-    virtual pFutureAttribute_type getAttribute(const std::string& _key) const;
+    //virtual pFutureAttribute_type getAttribute(const std::string& _key) const;
     /// @}
 
     /// @name Session interface
@@ -75,7 +75,7 @@ protected:
     /// @name Member variables
     /// @{
 private:
-    pSessionService_type          m_pParent;
+    pSessionService_type        m_pParent;
     boost::int32_t              m_sessionId;
     SessionState_type           m_sessionState;
     const pEndpoint_type        m_pEndpoint;

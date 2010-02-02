@@ -49,6 +49,9 @@ public:
     /// @name I_Response interface.
     /// @{
 public:
+    /// Get the message Id associated with the request that 
+    /// resulted in this response.
+    virtual unsigned int getRequestMessageId() const = 0;
     /// @}
 
     /// @name Events

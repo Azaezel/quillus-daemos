@@ -41,6 +41,7 @@ Zen::Enterprise::AppServer::I_MessageRegistry* CreateChildNodeRequest::sm_pMessa
 CreateChildNodeRequest::CreateChildNodeRequest(pEndpoint_type _pSourceEndpoint,
                            pEndpoint_type _pDestinationEndpoint)
 :   Message(createMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)
+,   Request(getMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)        
 {
 }
 
@@ -49,6 +50,7 @@ CreateChildNodeRequest::CreateChildNodeRequest(pMessageHeader_type _pMessageHead
                              pEndpoint_type _pSourceEndpoint,
                              pEndpoint_type _pDestinationEndpoint)
 :   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
+,   Request(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
 {
 }
 

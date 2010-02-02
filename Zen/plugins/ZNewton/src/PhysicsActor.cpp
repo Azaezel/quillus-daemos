@@ -207,18 +207,26 @@ void
 PhysicsActor::setAutoFreeze(bool _bFreeze)
 {
     NewtonBodySetAutoFreeze(m_pActor, _bFreeze ? 1 : 0);
-    NewtonWorldUnfreezeBody(dynamic_cast<PhysicsZone*>(m_pZone.get())->getZonePtr(), m_pActor);
+    setActivationState(true);
     m_activationState = 1;
+}
+// http://newtondynamics.com/wiki/index.php5?title=NewtonBodySetFreezeTreshold
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsActor::setSleepingThresholds(float _minLinearMotion, float _minAngularMotion)
+{
+    //we'll stick with a default of 10 frames of motion since it's simpler to track distance/angle for most folks (that, and theres no equivalents in other engines I've found) -BJR
+    NewtonBodySetFreezeTreshold(m_pActor,_minLinearMotion,_minAngularMotion, 10);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 const Math::Real
 PhysicsActor::getMass()
 {
-    dFloat mass;
-    dFloat Ixx;
-    dFloat Iyy;
-    dFloat Izz;
+    Zen::Math::Real mass;
+    Zen::Math::Real Ixx;
+    Zen::Math::Real Iyy;
+    Zen::Math::Real Izz;
     NewtonBodyGetMassMatrix(m_pActor, &mass, &Ixx, &Iyy, &Izz);
 
     return mass;
@@ -258,9 +266,9 @@ PhysicsActor::setMass(float _mass)
 {
     // set the mass to zero to make this a static body.
     // set the mass to any positive value to make this a dynamic body.
-    dFloat Ixx = _mass * m_scaleX * m_scaleX;
-    dFloat Iyy = _mass * m_scaleY * m_scaleY;
-    dFloat Izz = _mass * m_scaleZ * m_scaleZ;
+    Zen::Math::Real Ixx = _mass * m_scaleX * m_scaleX;
+    Zen::Math::Real Iyy = _mass * m_scaleY * m_scaleY;
+    Zen::Math::Real Izz = _mass * m_scaleZ * m_scaleZ;
     NewtonBodySetMassMatrix(m_pActor, _mass, Ixx, Iyy, Izz);
 }
 
@@ -291,7 +299,7 @@ PhysicsActor::setPosition(const Math::Point3& _pos)
     //mat.identity();
     getOrientation(mat);
     mat.setPosition(_pos);
-    NewtonWorldUnfreezeBody(dynamic_cast<PhysicsZone*>(m_pZone.get())->getZonePtr(), m_pActor);
+    setActivationState(true);
     m_activationState = 1;
 
     NewtonBodySetMatrix(m_pActor, mat.m_array);
@@ -358,7 +366,7 @@ PhysicsActor::setOrientation(const Math::Matrix4& _orient)
     pos = getPosition();
     matrix.setPosition(pos);
 
-    NewtonWorldUnfreezeBody(dynamic_cast<PhysicsZone*>(m_pZone.get())->getZonePtr(), m_pActor);
+    setActivationState(true);
     m_activationState = 1;
 
     NewtonBodySetMatrix(m_pActor, matrix.m_array);
@@ -368,7 +376,7 @@ PhysicsActor::setOrientation(const Math::Matrix4& _orient)
 void
 PhysicsActor::setLinearVelocity(const Math::Vector3& _velocity)
 {
-    NewtonWorldUnfreezeBody(dynamic_cast<PhysicsZone*>(m_pZone.get())->getZonePtr(), m_pActor);
+    setActivationState(true);
     m_activationState = 1;
 
     NewtonBodySetVelocity(m_pActor, _velocity.m_array);
@@ -404,7 +412,7 @@ PhysicsActor::getAngularVelocity() const
 void
 PhysicsActor::setAngularVelocity(const Math::Vector3& _omega)
 {
-    NewtonWorldUnfreezeBody(dynamic_cast<PhysicsZone*>(m_pZone.get())->getZonePtr(), m_pActor);
+    setActivationState(true);
     m_activationState = 1;
 
     NewtonBodySetOmega(m_pActor, _omega.m_array);
@@ -429,7 +437,7 @@ PhysicsActor::setAngularDamping(const Math::Vector3& _damping)
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // set the transformation of a rigid body
 void 
-PhysicsActor::TransformCallback(const NewtonBody* _body, const dFloat* _matrix)
+PhysicsActor::TransformCallback(const NewtonBody* _body, const Zen::Math::Real* _matrix)
 {
     void* pBody = NewtonBodyGetUserData(_body);
     if (pBody != NULL)
@@ -609,6 +617,14 @@ PhysicsActor::applyForce(const Math::Vector3& _force)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+PhysicsActor::applyImpulse(const Math::Vector3& _force, const Math::Vector3& _worldPos)
+{
+    //todo: bullet needs it's force fed to it in local space coords
+     NewtonAddBodyImpulse(m_pActor, _force.m_array, _worldPos.m_array);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 PhysicsActor::applyTorque(const Math::Vector3& _torque)
 {
     NewtonBodyAddTorque(m_pActor, _torque.m_array);
@@ -619,7 +635,20 @@ void
 PhysicsActor::setActivationState(unsigned _state)
 {
     m_activationState = _state;
+    if (m_activationState)
+        NewtonWorldUnfreezeBody(dynamic_cast<PhysicsZone*>(m_pZone.get())->getZonePtr(), m_pActor);
+    else
+        NewtonWorldFreezeBody(dynamic_cast<PhysicsZone*>(m_pZone.get())->getZonePtr(), m_pActor);
 }
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+int
+PhysicsActor::getActivationState()
+{
+    m_activationState = NewtonBodyGetSleepingState(m_pActor);
+    return m_activationState;
+}
+
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZNewton

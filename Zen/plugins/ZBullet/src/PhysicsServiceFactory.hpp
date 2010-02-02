@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// Zen Community Framework
+// IndieZen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C)        2009 Brian Roberts
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,63 +21,51 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Matthew Alan Gray mgray@indiezen.org
+//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_COMMUNITY_SESSIONPROTOCOL_I_REQUEST_HPP_INCLUDED
-#define ZEN_COMMUNITY_SESSIONPROTOCOL_I_REQUEST_HPP_INCLUDED
+#ifndef ZEN_ZBULLET_PHYSICS_SERVICE_FACTORY_HPP_INCLUDED
+#define ZEN_ZBULLET_PHYSICS_SERVICE_FACTORY_HPP_INCLUDED
 
-#include "Configuration.hpp"
-
-#include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Memory/managed_weak_ptr.hpp>
-
-#include <Zen/Enterprise/AppServer/I_Request.hpp>
-
-#include "I_Message.hpp"
+#include <Zen/Engine/Physics/I_PhysicsServiceFactory.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Community {
-namespace Protocol {
+namespace ZBullet {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-class SESSIONPROTOCOL_DLL_LINK I_Request
-:   public Zen::Enterprise::AppServer::I_Request
-,   public virtual I_Message
+class PhysicsServiceFactory
+:   public Engine::Physics::I_PhysicsServiceFactory
 {
     /// @name Types
     /// @{
 public:
-    typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_Request>         pRequest_type;
-    typedef Zen::Memory::managed_weak_ptr<Zen::Enterprise::AppServer::I_Request>    wpRequest_type;
     /// @}
 
-    /// @name I_Request interface
+    /// @name I_PhysicsServiceFactory implementation
     /// @{
 public:
-    /// Get the message Id of this login request
-    virtual unsigned int getRequestId() const = 0;
+    virtual pPhysicsService_type create(const std::string& _type, Zen::Engine::Physics::I_PhysicsServiceFactory::config_type& _config);
+    virtual void destroy(wpPhysicsService_type _pService);
+    /// @}
+
+    /// @name Static Methods
+    /// @{
+public:
+    static PhysicsServiceFactory& getSingleton();
     /// @}
 
     /// @name 'Structors
     /// @{
 public:
-             I_Request();
-    virtual ~I_Request();
+             PhysicsServiceFactory();
+    virtual ~PhysicsServiceFactory();
     /// @}
 
-};  // interface I_Request
+};  // class PhysicsServiceFactory
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace Protocol
-}   // namespace Community
-namespace Memory {
-    // I_Request is managed by factory
-    template<>
-    struct is_managed_by_factory<Community::Protocol::I_Request> 
-        :   public boost::true_type{};
-}   // namespace Memory
+}   // namespace ZBullet
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_COMMUNITY_SESSIONPROTOCOL_I_REQUEST_HPP_INCLUDED
+#endif // ZEN_ZBULLET_PHYSICS_SERVICE_FACTORY_HPP_INCLUDED

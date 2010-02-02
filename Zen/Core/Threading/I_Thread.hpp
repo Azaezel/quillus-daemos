@@ -94,6 +94,7 @@ public:
         public:
             virtual bool operator==(const I_NativeThreadId& _otherId) const = 0;
             virtual bool operator!=(const I_NativeThreadId& _otherId) const = 0;
+            virtual bool operator<(const I_NativeThreadId& _otherId) const = 0;
             virtual I_NativeThreadId* clone() const = 0;
             virtual std::string toString() const = 0;
             /// @}
@@ -114,6 +115,7 @@ public:
         ThreadId& operator=  (const ThreadId& _otherId)       {delete m_pNativeThreadId; m_pNativeThreadId = _otherId.m_pNativeThreadId->clone(); return *this;}
         bool      operator== (const ThreadId& _otherId) const {return (m_pNativeThreadId == _otherId.m_pNativeThreadId) || ( m_pNativeThreadId &&  _otherId.m_pNativeThreadId && (*m_pNativeThreadId == *_otherId.m_pNativeThreadId));}
         bool      operator!= (const ThreadId& _otherId) const {return (m_pNativeThreadId != _otherId.m_pNativeThreadId) && (!m_pNativeThreadId || !_otherId.m_pNativeThreadId || (*m_pNativeThreadId != *_otherId.m_pNativeThreadId));}
+        bool      operator<  (const ThreadId& _otherId) const {return (m_pNativeThreadId <  _otherId.m_pNativeThreadId); }
                   operator std::string ()               const {return m_pNativeThreadId ? m_pNativeThreadId->toString() : "";}
         std::string toString()                          const {return m_pNativeThreadId ? m_pNativeThreadId->toString() : "";}
         /// @}

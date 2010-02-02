@@ -45,6 +45,7 @@ set ( ZEN_PROJECTS
 	Starter/Base/BaseCommon
 	Starter/Base/BaseClient
 	Starter/Base/ZGameLoader
+	Starter/Base/ZenServer
 	Spaces/ObjectModel
 	plugins
 )
@@ -164,6 +165,7 @@ if (ZEN_BUILD_ZEN_STUDIO)
     
         set(ZEN_EXPERIMENTAL_TESTS_PROJECTS
             tests/ScriptTest
+			tests/ScriptLoginTest
         )
         
         foreach(PROJECT_PATH ${ZEN_EXPERIMENTAL_TESTS_PROJECTS})

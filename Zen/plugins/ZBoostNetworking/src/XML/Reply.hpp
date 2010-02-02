@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Enterprise Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -64,8 +64,15 @@ public:
     virtual pEndpoint_type getDestinationEndpoint();
     virtual pResourceLocation_type getDestinationLocation();
     virtual pMessageHeader_type getMessageHeader() const;
+    virtual unsigned int getMessageId() const;
     virtual void serialize(pMessageHeader_type _pHeader, boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
+    /// @}
+
+    /// @name I_Response implementation
+    /// @{
+public:
+    virtual unsigned int getRequestMessageId() const;
     /// @}
 
     /// @name Reply implementation
@@ -84,7 +91,9 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             Reply(pEndpoint_type _pDestinationEndpoint, StatusType _status, const std::string& _body, const std::string& _contentType);
+             Reply(pEndpoint_type _pDestinationEndpoint, StatusType _status, 
+                 const std::string& _body, const std::string& _contentType, 
+                 unsigned int _requestMessageId);
              Reply();
     virtual ~Reply();
     /// }@
@@ -97,6 +106,7 @@ private:
     std::string         m_content;
 
     pEndpoint_type      m_pDestinationEndpoint;
+    unsigned int        m_requestMessageId;
 
     //Buffers_type        m_buffers;
 

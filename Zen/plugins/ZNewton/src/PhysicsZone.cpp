@@ -42,8 +42,9 @@
 namespace Zen {
 namespace ZNewton {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-PhysicsZone::PhysicsZone()
-:   m_pScriptModule(Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
+PhysicsZone::PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max)
+:   I_PhysicsZone(_min,_max)
+,   m_pScriptModule(Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
 ,   m_pScriptObject(NULL)
 {
     m_pZone = NewtonCreate(NULL, NULL);
@@ -53,6 +54,9 @@ PhysicsZone::PhysicsZone()
 
     NewtonSetFrictionModel(m_pZone, 1);
     NewtonSetSolverModel(m_pZone, 2);
+
+	// set the size of the world
+    NewtonSetWorldSize(m_pZone, _min.m_array, _max.m_array); 
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -69,18 +73,17 @@ PhysicsZone::getZonePtr(void)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsZone::setZonePtr(NewtonWorld* _pZone)
+{
+    m_pZone = (NewtonWorld*)_pZone;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int 
 PhysicsZone::getDefaultMaterialID()
 {
     return NewtonMaterialGetDefaultGroupID(m_pZone);
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-PhysicsZone::setZoneSize(const Math::Vector3& _min, const Math::Vector3& _max)
-{
-	// set the size of the world
-    NewtonSetWorldSize(m_pZone, _min.m_array, _max.m_array); 
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -249,8 +252,8 @@ PhysicsZone::rayCast(Math::Ray _ray, Math::Real _maxDistance, I_CollisionVisitor
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 //implement a ray cast filter
-dFloat 
-PhysicsZone::rayCastFilter(const NewtonBody* _pBody, const dFloat* _pNormal, int _collisionID, void* _pUserData, dFloat _intersectDistance)
+Zen::Math::Real 
+PhysicsZone::rayCastFilter(const NewtonBody* _pBody, const Zen::Math::Real* _pNormal, int _collisionID, void* _pUserData, Zen::Math::Real _intersectDistance)
 {
     PhysicsZone::RayCastResult* pCastquery = static_cast<PhysicsZone::RayCastResult*>(_pUserData);
     PhysicsActor* pRawPhysicsActor = static_cast<PhysicsActor*>(NewtonBodyGetUserData(_pBody));
@@ -397,9 +400,9 @@ PhysicsZone::createHeightFieldShapeFromRaw(std::string _filename, size_t _size, 
 
     // read the RAW file into a heightfield array
     // TODO - don't assume this is a 16-bit RAW file
-    dFloat heightScaleFactor = 65536.0f / _maxHeight;
+    Zen::Math::Real heightScaleFactor = 65536.0f / _maxHeight;
     // TODO - change to managed pointer:
-    dFloat* pHeightFieldArray = new dFloat[_size * _size];
+    Zen::Math::Real* pHeightFieldArray = new Zen::Math::Real[_size * _size];
     size_t row, column;
     for (row = 0; row < _size; row++)
     {
@@ -414,11 +417,11 @@ PhysicsZone::createHeightFieldShapeFromRaw(std::string _filename, size_t _size, 
 
     // now parse the array to create triangle vertices
     std::cout << "TreeCollision finished reading into Array.  Now assigning vertices for row ";
-    dFloat vertexArray[9];
-    const dFloat* pVertexArray = &vertexArray[0];
+    Zen::Math::Real vertexArray[9];
+    const Zen::Math::Real* pVertexArray = &vertexArray[0];
     size_t sizeMinusOne = _size - 1;
     size_t arrIndex;
-    int strideSize = sizeof(dFloat) * 3;
+    int strideSize = sizeof(Zen::Math::Real) * 3;
     for (row = 0; row < sizeMinusOne; row++)
     {
         std::cout << " " << row;
@@ -426,31 +429,31 @@ PhysicsZone::createHeightFieldShapeFromRaw(std::string _filename, size_t _size, 
         {
             arrIndex = column + (row * _size);
 
-            vertexArray[0] = (dFloat)column * _scaleXY;
+            vertexArray[0] = (Zen::Math::Real)column * _scaleXY;
             vertexArray[1] = pHeightFieldArray[arrIndex + _size];
-            vertexArray[2] = (dFloat)(row + 1.0f) * _scaleXY;
+            vertexArray[2] = (Zen::Math::Real)(row + 1.0f) * _scaleXY;
 
-            vertexArray[3] = (dFloat)(column + 1.0f) * _scaleXY;
+            vertexArray[3] = (Zen::Math::Real)(column + 1.0f) * _scaleXY;
             vertexArray[4] = pHeightFieldArray[arrIndex + 1];
-            vertexArray[5] = (dFloat)row * _scaleXY;
+            vertexArray[5] = (Zen::Math::Real)row * _scaleXY;
 
-            vertexArray[6] = (dFloat)column * _scaleXY;
+            vertexArray[6] = (Zen::Math::Real)column * _scaleXY;
             vertexArray[7] = pHeightFieldArray[arrIndex];
-            vertexArray[8] = (dFloat)row * _scaleXY;
+            vertexArray[8] = (Zen::Math::Real)row * _scaleXY;
 
             NewtonTreeCollisionAddFace(dynamic_cast<CollisionShape*>(pShape.get())->getShapePtr(), 3, pVertexArray, strideSize, 0);
 
-            vertexArray[0] = (dFloat)(column + 1.0f) * _scaleXY;
+            vertexArray[0] = (Zen::Math::Real)(column + 1.0f) * _scaleXY;
             vertexArray[1] = pHeightFieldArray[arrIndex + _size + 1];
-            vertexArray[2] = (dFloat)(row + 1.0f) * _scaleXY;
+            vertexArray[2] = (Zen::Math::Real)(row + 1.0f) * _scaleXY;
 
-            vertexArray[3] = (dFloat)(column + 1.0f) * _scaleXY;
+            vertexArray[3] = (Zen::Math::Real)(column + 1.0f) * _scaleXY;
             vertexArray[4] = pHeightFieldArray[arrIndex + 1];
-            vertexArray[5] = (dFloat)row * _scaleXY;
+            vertexArray[5] = (Zen::Math::Real)row * _scaleXY;
 
-            vertexArray[6] = (dFloat)column * _scaleXY;
+            vertexArray[6] = (Zen::Math::Real)column * _scaleXY;
             vertexArray[7] = pHeightFieldArray[arrIndex + _size];
-            vertexArray[8] = (dFloat)(row + 1.0f) * _scaleXY;
+            vertexArray[8] = (Zen::Math::Real)(row + 1.0f) * _scaleXY;
 
             NewtonTreeCollisionAddFace(dynamic_cast<CollisionShape*>(pShape.get())->getShapePtr(), 3, pVertexArray, strideSize, 0);
         }
@@ -554,10 +557,34 @@ PhysicsZone::destroyCollisionShape(wpCollisionShape_type _wpCollisionShape)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+PhysicsZone::destroyPhysicsActor(wpPhysicsActor_type _wpPhysicsActor)
+{
+    // TODO - remove appropriate entry from m_zoneSet
+    //m_zoneSet.erase(iter);
+
+    /// Fire the PhysicsZone's onDestroyEvent
+    _wpPhysicsActor->onDestroyEvent(_wpPhysicsActor);
+    
+    /// delete the PhysicsZone pointer
+    PhysicsActor* pPhysicsActor = dynamic_cast<PhysicsActor*>(_wpPhysicsActor.get());
+
+    if (pPhysicsActor)
+    {
+        delete pPhysicsActor;
+    }
+    else
+    {
+        throw Zen::Utility::runtime_exception("Zen::ZBullet::PhysicsZone::destroyPhysicsActor() : _wpPhysicsActor is an invalid PhysicsActor.");
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 PhysicsZone::stepSimulation(double _elapsedTime)
 {
-    NewtonUpdate(getZonePtr(), (dFloat)_elapsedTime);
+    NewtonUpdate(getZonePtr(), (Zen::Math::Real)_elapsedTime);
 }
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZNewton
 }   // namespace Zen

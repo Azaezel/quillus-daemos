@@ -36,12 +36,12 @@ I_DeleteChildNodeResponse::~I_DeleteChildNodeResponse()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_DeleteChildNodeResponse::pResponse_type
 I_DeleteChildNodeResponse::create(pEndpoint_type _pSourceEndpoint,
-					   pEndpoint_type _pDestinationEndpoint)
+					   pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId)			   
 {
     DeleteChildNodeResponse* pDeleteChildNodeResponse(new DeleteChildNodeResponse(_pSourceEndpoint,
-                                          _pDestinationEndpoint));
+                                          _pDestinationEndpoint, _requestMessageId));
 
-    return pResponse_type(pDeleteChildNodeResponse, DeleteChildNodeResponse::destroy);
+    return pResponse_type((Response*)pDeleteChildNodeResponse, DeleteChildNodeResponse::destroy);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

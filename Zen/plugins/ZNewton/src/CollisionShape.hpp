@@ -76,7 +76,7 @@ public:
     /// @name CollisionShape implementation
     /// @{
 private:
-    static void TransformCallback(const NewtonBody* _body, const dFloat* _matrix);
+    static void TransformCallback(const NewtonBody* _body, const Zen::Math::Real* _matrix);
     static void ApplyForceAndTorqueCallback(const NewtonBody* _pBody);
     static void ActivationStateCallback(const NewtonBody* body, unsigned state);
 
@@ -104,7 +104,7 @@ public:
 private:
     NewtonCollision*                        m_shape;
     wpPhysicsZone_type                     m_pZone;
-    dFloat                                  m_scaleX, m_scaleY, m_scaleZ;
+    Zen::Math::Real                                  m_scaleX, m_scaleY, m_scaleZ;
     Scripting::I_ObjectReference*           m_pScriptObject;
     std::string                             m_name;
 	Zen::Math::Real							m_minStrikeLen;

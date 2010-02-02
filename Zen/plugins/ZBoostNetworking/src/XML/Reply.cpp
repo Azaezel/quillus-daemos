@@ -101,9 +101,12 @@ public:
 } static sm_statusHeaderMap;
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Reply::Reply(pEndpoint_type _pDestinationEndpoint, StatusType _status, const std::string& _body, const std::string& _contentType)
+Reply::Reply(pEndpoint_type _pDestinationEndpoint, StatusType _status, 
+             const std::string& _body, const std::string& _contentType,
+             unsigned int _requestMessageId)
 :   m_pDestinationEndpoint(_pDestinationEndpoint)
 ,   m_content(_body)
+,   m_requestMessageId(_requestMessageId)
 {
     m_status = _status;
     //m_content = sm_statusReplyMap[_status];
@@ -117,6 +120,7 @@ Reply::Reply(pEndpoint_type _pDestinationEndpoint, StatusType _status, const std
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Reply::Reply()
+:   m_requestMessageId(0)
 {
 }
 
@@ -152,6 +156,24 @@ Reply::pMessageHeader_type
 Reply::getMessageHeader() const
 {
     throw Utility::runtime_exception("Reply::getMessageHeader(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+unsigned int 
+Reply::getMessageId() const
+{
+    static Zen::Threading::SpinLock sm_spinLock;
+    static unsigned int sm_lastId = 0;
+
+    Zen::Threading::xCriticalSection lock(sm_spinLock);
+    return ++sm_lastId;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+unsigned int
+Reply::getRequestMessageId() const
+{
+    return m_requestMessageId;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

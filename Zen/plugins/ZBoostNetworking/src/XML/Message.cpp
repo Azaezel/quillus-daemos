@@ -83,6 +83,17 @@ Message::getDestinationLocation()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+unsigned int 
+Message::getMessageId() const
+{
+    static Zen::Threading::SpinLock sm_spinLock;
+    static unsigned int sm_lastId = 0;
+
+    Zen::Threading::xCriticalSection lock(sm_spinLock);
+    return ++sm_lastId;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace XML
 }   // namespace AppServer
 }   // namespace Enterprise

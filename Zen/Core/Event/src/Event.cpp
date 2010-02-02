@@ -33,6 +33,7 @@
 #include "ScriptAction.hpp"
 
 #include "EventQueue.hpp"
+#include "EventService.hpp"
 
 #include <Zen/Core/Scripting/forward_declarations.hpp>
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
@@ -43,8 +44,8 @@
 namespace Zen {
 namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Event_impl::Event_impl(EventQueue& _queue)
-:   m_queue(_queue)
+Event_impl::Event_impl(EventService& _service)
+:   m_service(_service)
 ,   m_connections()
 ,   m_pMutex(Threading::MutexFactory::create())
 ,   m_pScriptObject(NULL)
@@ -113,17 +114,32 @@ Event_impl::getScriptObject()
 Event_impl::pScriptModule_type
 Event_impl::getScriptModule()
 {
-    return m_queue.getScriptModule();
+    return m_service.getScriptModule();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_Connection&
-Event_impl::connect(pAction_type _pAction)
+Event_impl::connect(pAction_type _pAction, I_EventQueue* _pQueue)
 {
     pConnection_type pConnection = new Connection_type(this, _pAction);
 
     Threading::CriticalSection guard(m_pMutex);
+
     m_connections.push_back(pConnection);
+    if (_pQueue)
+    {
+        EventQueue* pQueue = dynamic_cast<EventQueue*>(_pQueue);
+
+        if (pQueue)
+        {
+            m_queues.insert(pQueue);
+        }
+    }
+    else
+    {
+        // Dispatch to the default queue.
+        m_queues.insert(dynamic_cast<EventQueue*>(&m_service.getEventQueue("default")));
+    }
 
     return *pConnection;
 }
@@ -132,6 +148,10 @@ Event_impl::connect(pAction_type _pAction)
 void
 Event_impl::disconnect(Connection_impl* _pConnection)
 {
+    // TODO Keep a refrence count for the queues and
+    // when the last connection is disconnected for a
+    // given queue, remove it from the set.
+
     Threading::CriticalSection guard(m_pMutex);
 
     // TODO Optimize. This requires a linear lookup
@@ -145,7 +165,12 @@ Event_impl::disconnect(Connection_impl* _pConnection)
 void
 Event_impl::fireEvent(boost::any _argument)
 {
-    m_queue.queueEvent(this, _argument);
+    Threading::CriticalSection guard(m_pMutex);
+
+    for(Queues_type::iterator iter = m_queues.begin(); iter != m_queues.end(); iter++)
+    {
+        (*iter)->queueEvent(this, _argument);
+    }    
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -181,11 +206,12 @@ Event_impl::dispatch(boost::any _argument)
 I_Connection&
 Event_impl::connectScript(boost::any _scriptObject, boost::any _scriptFunction)
 {
-    ScriptAction* pRawAction = new ScriptAction(m_queue.getScriptObject()->getModule(),
+    ScriptAction* pRawAction = new ScriptAction(m_service.getScriptObject()->getModule(),
         _scriptObject, _scriptFunction);
 
     pAction_type pAction(pRawAction, boost::bind(&Event_impl::destroyScriptAction, this, _1));
-    return connect(pAction);
+
+    return connect(pAction, &m_service.getEventQueue("script"));
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

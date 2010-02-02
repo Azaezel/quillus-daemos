@@ -128,8 +128,8 @@ PhysicsMaterial::setDynamicFriction(Math::Real _dynamicFriction)
         pPhysicsMaterial_type pMaterial = *iter;
 
         NewtonMaterialSetDefaultFriction(m_pNewtonZone, pMaterial->getMaterialID(), m_id,
-            (dFloat)((m_staticFriction + pMaterial->getStaticFriction()) / 2.0f),
-            (dFloat)((m_dynamicFriction + pMaterial->getDynamicFriction()) / 2.0f));
+            (Zen::Math::Real)((m_staticFriction + pMaterial->getStaticFriction()) / 2.0f),
+            (Zen::Math::Real)((m_dynamicFriction + pMaterial->getDynamicFriction()) / 2.0f));
 
         iter++;
     }
@@ -160,8 +160,8 @@ PhysicsMaterial::setStaticFriction(Math::Real _staticFriction)
         pPhysicsMaterial_type pMaterial = *iter;
 
         NewtonMaterialSetDefaultFriction(m_pNewtonZone, pMaterial->getMaterialID(), m_id,
-            (dFloat)((m_staticFriction + pMaterial->getStaticFriction()) / 2.0f),
-            (dFloat)((m_dynamicFriction + pMaterial->getDynamicFriction()) / 2.0f));
+            (Zen::Math::Real)((m_staticFriction + pMaterial->getStaticFriction()) / 2.0f),
+            (Zen::Math::Real)((m_dynamicFriction + pMaterial->getDynamicFriction()) / 2.0f));
 
         iter++;
     }
@@ -187,7 +187,7 @@ PhysicsMaterial::setRestitution(Math::Real _restitution)
         pPhysicsMaterial_type pMaterial = *iter;
 
         NewtonMaterialSetDefaultElasticity(m_pNewtonZone, pMaterial->getMaterialID(), m_id,
-            (dFloat)((m_restitution + pMaterial->getRestitution()) / 2.0f));
+            (Zen::Math::Real)((m_restitution + pMaterial->getRestitution()) / 2.0f));
 
         iter++;
     }

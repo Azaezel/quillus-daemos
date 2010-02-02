@@ -46,6 +46,7 @@ namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 EventService::EventService()
 :   m_pScriptObject(NULL)
+,   m_pEventsMutex(Threading::MutexFactory::create())
 {
 }
 
@@ -69,6 +70,8 @@ EventService::~EventService()
             iter++;
         }
     }
+
+    Threading::MutexFactory::destroy(m_pEventsMutex);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -116,17 +119,17 @@ EventService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
     m_pScriptModule = &module;
 
     module.addType<I_EventService>(getScriptTypeName(), "Event Service")
+        .addMethod("createEvent", &I_EventService::createEvent)
+        .addMethod("getEvent", &I_EventService::getEvent)
         .addMethod("getEventQueue", &I_EventService::getEventQueue)
         .addMethod("getActionMap", &I_EventService::getActionMap)
         .createGlobalObject("eventService", this)
     ;
 
     // EventQueue
-    module.addType<I_EventQueue>("EventQueue", "Event Queue")
-        .addMethod("createEvent", &I_EventQueue::createEvent)
-        .addMethod("getEvent", &I_EventQueue::getEvent)
-        .addMethod("dispatchOneEvent", &I_EventQueue::dispatchOneEvent)
-        .addMethod("dispatchAllEvents", &I_EventQueue::dispatchAllEvents)
+    module.addType<EventQueue>("EventQueue", "Event Queue")
+        .addMethod("dispatchOneEvent", &EventQueue::dispatchOneEvent)
+        .addMethod("dispatchAllEvents", &EventQueue::dispatchAllEvents)
     ;
 
     // ActionMap
@@ -155,6 +158,38 @@ EventService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
     ;
 
     module.activate();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Event&
+EventService::createEvent(const std::string& _name)
+{
+    // Since getEvent() will create the event if
+    // it doesn't exist, just call it.
+    return getEvent(_name);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Event&
+EventService::getEvent(const std::string& _name)
+{
+    Threading::CriticalSection guard(m_pEventsMutex);
+
+    // TODO Make sure the event has been created.
+    Events_type::iterator iter = m_events.find(_name);
+    
+    if (iter == m_events.end())
+    {
+        Event_impl* pEvent = new Event_impl(*this);
+
+        m_events[_name] = pEvent;
+
+        return *pEvent;
+    }
+    else
+    {
+        return *iter->second;
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

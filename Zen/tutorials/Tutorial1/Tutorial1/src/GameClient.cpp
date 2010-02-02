@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -54,7 +54,7 @@
 #include <Zen/Engine/Rendering/I_RenderableResource.hpp>
 
 #include <Zen/Engine/Input/I_InputService.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
+#include <Zen/Engine/Input/I_KeyMap.hpp>
 
 #include <Zen/Engine/Camera/I_CameraManager.hpp>
 
@@ -120,8 +120,6 @@ GameClient::init()
     // TODO FIX THIS! :P
     base().initInputService("keyboard");
 
-    createScriptTypes();
-
     // Possibly the rest of this should be done later and we should show 
     // an initial game screen or splash screens here.
 
@@ -130,6 +128,17 @@ GameClient::init()
     createBehaviors();
     createScene();
 
+    Zen::Engine::Core::I_ActionMap& actionMap = game().getActionMap();
+    if (actionMap["onInitDone"].isValid())
+    {
+        std::cout << "hooking up onInitDone" << std::endl;
+        boost::any scriptObject(getScriptObject());
+        actionMap["onInitDone"]->dispatch(scriptObject);
+    }
+    else
+    {
+        std::cout << "Script didn't register handler for onInitDone" << std::endl;
+    }
     return true;
 }
 
@@ -138,6 +147,14 @@ void
 GameClient::run()
 {
     m_base.run();
+}
+
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::activateGameClientScriptModule()
+{
+    createScriptTypes();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -176,7 +193,7 @@ void
 GameClient::createDefaultMapping()
 {
     // Map some keys to actions
-    base().getInputMap().mapKeyInput("q", game().getActionMap()["Quit"]);
+    base().getKeyMap().mapKeyInput("q", game().getActionMap()["Quit"]);
 
 }
 

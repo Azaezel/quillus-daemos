@@ -35,6 +35,9 @@
 
 #include <Zen/Engine/Input/I_MouseClickEvent.hpp>
 
+#include <Zen/Engine/World/I_SkyService.hpp>
+#include <Zen/Engine/World/I_TerrainService.hpp>
+
 #include <Zen/Starter/Base/BaseClient/I_BaseGameClient.hpp>
 #include <Zen/Starter/Base/BaseCommon/I_BaseGame.hpp>
 
@@ -66,6 +69,9 @@ public:
     typedef std::list<GameObject*>                                          GameObjects_type;
 
     typedef Memory::managed_ptr<Enterprise::AppServer::I_ProtocolService>   pProtocolService_type;
+
+    typedef Zen::Engine::World::I_SkyService::pSky_type                     pSky_type;
+    typedef Zen::Engine::World::I_TerrainService::pTerrain_type             pTerrain_type;
     /// @}
 
     /// @name I_GameClient implementation
@@ -110,6 +116,14 @@ public:
 
     /// Implement this to create a default scene
     void createScene();
+
+    /// Implement this to create a skybox
+    /// TODO This eventually should return an I_Sky object via script.
+    void createSkybox(const std::string& _resource);
+
+    /// Implement this to create a terrain
+    /// TODO This eventually should return an I_Terrain object via script.
+    void createTerrain(const std::string& _resource);
 
     /// Initialize the client services.
     void initServices();
@@ -167,6 +181,9 @@ private:
 
     Engine::Base::I_BaseGameClient&         m_base;
     Engine::Base::I_BaseGame&               m_game;
+
+    pSky_type                               m_pSky;
+    pTerrain_type                           m_pTerrain;
 
     ScriptObjectReference_type*             m_pScriptObject;
 

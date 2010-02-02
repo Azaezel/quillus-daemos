@@ -36,12 +36,12 @@ I_CreateChildNodeRequest::~I_CreateChildNodeRequest()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_CreateChildNodeRequest::pRequest_type
 I_CreateChildNodeRequest::create(pEndpoint_type _pSourceEndpoint,
-					   pEndpoint_type _pDestinationEndpoint)
+					   pEndpoint_type _pDestinationEndpoint)			   
 {
     CreateChildNodeRequest* pCreateChildNodeRequest(new CreateChildNodeRequest(_pSourceEndpoint,
                                           _pDestinationEndpoint));
 
-    return pRequest_type(pCreateChildNodeRequest, CreateChildNodeRequest::destroy);
+    return pRequest_type((Request*)pCreateChildNodeRequest, CreateChildNodeRequest::destroy);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

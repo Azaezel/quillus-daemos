@@ -82,7 +82,7 @@ public:
     typedef Memory::managed_weak_ptr<I_GameClient>      wpService_type;
 
     typedef Event::Event<wpService_type>                serviceEvent_type;
-    typedef Zen::Math::Real                             frameDelta_type;
+    typedef double                                      frameDelta_type;
     typedef Event::Event<frameDelta_type>               frameEvent_type;
 
     typedef Memory::managed_ptr<I_GameClient>           pScriptObject_type;
@@ -124,6 +124,11 @@ public:
     /// @{
 public:
     serviceEvent_type   onDestroyEvent;
+
+    /// This event is fired before every frame is rendered
+    /// The payload is the number of elapsed seconds since
+    /// the previous frame event.
+    frameEvent_type     onBeforeFrameRenderedEvent;
 
     /// This event is fired after every frame is rendered
     /// The payload is the number of elapsed seconds since

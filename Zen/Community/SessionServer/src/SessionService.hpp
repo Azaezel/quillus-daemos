@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -37,6 +37,8 @@
 #include <Zen/Enterprise/Database/I_DatabaseConnection.hpp>
 
 #include <Zen/Community/SessionCommon/I_SessionService.hpp>
+
+#include <Zen/Community/SessionModel/I_AccountDataMap.hpp>
 
 #include <string>
 #include <map>
@@ -101,43 +103,17 @@ public:
     /// @name I_SessionService implementation
     /// @{
 public:
-#if 0   // deprecated
-    virtual void requestSession(pEndpoint_type _pDestinationEndpoint, 
+    virtual void requestLogin(pEndpoint_type _pDestinationEndpoint, 
                               const std::string& _name, 
-                              const std::string& _password,
-                              pResponseHandler_type _pResponseHandler);
-#endif  // deprecated
-
-    virtual pFutureSession_type requestSession(pEndpoint_type _pDestinationEndpoint, 
-                                             const std::string& _name, 
-                                             const std::string& _password);
+                              const std::string& _password);
+    virtual Event::I_Event& getSessionEvent();
     /// @}
 
-	/// @name SessionService implementation
-	/// @{
-public:
-    pFutureAttribute_type requestAttribute(const Common::I_Session& _session,
-                                           const std::string& _key);
-private:
-    void addConfig(const Zen::Plugins::I_ConfigurationElement& _element);
-	/// @}
-
-    /// @name DatabaseConfigVisitor declaration
+    /// @name SessionService implementation
     /// @{
 private:
-    struct DatabaseConfigVisitor
-    :   public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
-    {
-        virtual void begin();
-        virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element);
-        virtual void end();
-
-                 DatabaseConfigVisitor(SessionService& _service);
-        virtual ~DatabaseConfigVisitor();
-
-    private:
-        SessionService&   m_service;
-    };
+    void loadAccounts();
+    /// @}
 
     /// @name 'Structors
     /// @{
@@ -155,13 +131,6 @@ private:
 
     Handlers_type                                                   m_responseHandlers;
     Zen::Threading::I_Mutex*                                        m_pHandlersMutex;
-
-    std::string                                                     m_databaseName;
-    std::string                                                     m_databaseType;
-    std::map< std::string, std::string >                            m_databaseConfig;
-
-    Zen::Database::I_DatabaseManager::pDatabaseService_type         m_pDatabaseService;
-    Zen::Database::I_DatabaseConnection::pDatabaseConnection_type   m_pDatabaseConnection;
     /// @}
 
 };  // class SessionService

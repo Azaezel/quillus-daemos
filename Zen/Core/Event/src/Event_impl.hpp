@@ -26,11 +26,14 @@
 
 #include "../I_Event.hpp"
 
+#include <set>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class EventQueue;
+class EventService;
 class Connection_impl;
 
 /// @todo rename to Event when Event gets renamed to event<>
@@ -47,12 +50,13 @@ public:
     typedef Connection_type*                            pConnection_type;
     typedef std::list<pConnection_type>	                container_type;
     typedef Zen::Memory::managed_ptr<Scripting::I_ScriptModule> pScriptModule_type;
+    typedef std::set<EventQueue*>                       Queues_type;
     /// @}
 
     /// @name I_Event implementation
     /// @{
 public:
-    virtual I_Connection& connect(pAction_type _pAction);
+    virtual I_Connection& connect(pAction_type _pAction, I_EventQueue* _pQueue = NULL);
     virtual void fireEvent(boost::any _argument);
     /// @}
 
@@ -87,20 +91,23 @@ protected:
     /// @name 'Structors
     /// @{
 protected:
-             Event_impl(EventQueue& _queue);
+    friend class EventService;
+             Event_impl(EventService& _service);
     virtual ~Event_impl();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
-    /// Queue that owns this event.
-    EventQueue&                         m_queue;
+    /// Service that owns this event.
+    EventService&                       m_service;
 
     /// Connections for this event.
     container_type	                m_connections;
 
-    /// Mutex to guard m_connections.
+    Queues_type                         m_queues;
+
+    /// Mutex to guard m_connections and m_queues
     pMutex_type                         m_pMutex;
 
     /// Script Object wrapper.

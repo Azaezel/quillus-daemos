@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -59,7 +59,7 @@
 #include <Zen/Engine/Rendering/I_RenderableResource.hpp>
 
 #include <Zen/Engine/Input/I_InputService.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
+#include <Zen/Engine/Input/I_KeyMap.hpp>
 
 #include <Zen/Engine/World/I_TerrainService.hpp>
 #include <Zen/Engine/World/I_Terrain.hpp>
@@ -144,9 +144,6 @@ GameClient::init()
     // Initialize resources
     initResources();
 
-    // Create the script types
-    createScriptTypes();
-
     // Possibly the rest of this should be done later and we should show
     // an initial game screen or splash screens here.
 
@@ -158,6 +155,18 @@ GameClient::init()
     // displaying some splash screens, etc.  But for now lets
     // just do it here.
     createScene();
+
+    Zen::Engine::Core::I_ActionMap& actionMap = game().getActionMap();
+    if (actionMap["onInitDone"].isValid())
+    {
+        std::cout << "hooking up onInitDone" << std::endl;
+        boost::any scriptObject(getScriptObject());
+        actionMap["onInitDone"]->dispatch(scriptObject);
+    }
+    else
+    {
+        std::cout << "Script didn't register handler for onInitDone" << std::endl;
+    }
 
     m_baseClient.onBeforeFrameRenderedEvent.connect(boost::bind(&GameClient::beforeRender, this, _1));
 
@@ -217,13 +226,20 @@ GameClient::run()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+GameClient::activateGameClientScriptModule()
+{
+    createScriptTypes();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 GameClient::createScriptTypes()
 {
     // TODO Register additional script types here
 
     // Tell m_base we're done.  After the modules are activated then you cannot
     // modify any script types.
-    m_baseClient.activateScriptModules();
+    base().activateScriptModules();
 
     // Create the script object for this game client
     m_pScriptObject = new ScriptObjectReference_type
@@ -237,7 +253,10 @@ GameClient::createScene()
     // Resize the Physics Zone
     Zen::Math::Vector3 minSize(-2000.0f, -4000.0f, -2000.0f);
     Zen::Math::Vector3 maxSize( 2000.0f,  2000.0f,  2000.0f);
-    m_baseGame.getCurrentPhysicsZone()->setZoneSize(minSize, maxSize);
+
+    // Initialize the first world
+
+    m_baseGame.setCurrentPhysicsZone(m_baseGame.getPhysicsService()->createZone(minSize, maxSize));
 
     // Create the terrain
 
@@ -333,7 +352,7 @@ GameClient::createActions()
     m_baseGame.getActionMap().createAction("Move Right", boost::bind(&GameClient::moveRight, this, _1));
     m_baseGame.getActionMap().createAction("Move Forward", boost::bind(&GameClient::moveForward, this, _1));
     m_baseGame.getActionMap().createAction("Move Backward", boost::bind(&GameClient::moveBackward, this, _1));
-
+    std::cout << "Actions Created..." << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -341,7 +360,7 @@ void
 GameClient::createDefaultMapping()
 {
     // Map some keys to actions
-    m_baseClient.getInputMap().mapKeyInput("q", m_baseGame.getActionMap()["Quit"]);
+    m_baseClient.getKeyMap().mapKeyInput("q", m_baseGame.getActionMap()["Quit"]);
 
     // Using wasd for movement, using w to go forward
     //m_base.getInputMap().mapKeyInput("w", m_base.getActionMap()["Move Forward"]);

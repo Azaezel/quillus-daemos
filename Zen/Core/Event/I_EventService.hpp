@@ -42,6 +42,7 @@ namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_EventQueue;
 class I_ActionMap;
+class I_Event;
 
 /// Event Service.
 /// This is the top level service for handling event queues and action maps.
@@ -61,7 +62,20 @@ public:
     /// @name I_EventService interface
     /// @{
 public:
+    /// Create an event by name.
+    virtual I_Event& createEvent(const std::string& _name) = 0;
+
+    /// Get an event by name.
+    virtual I_Event& getEvent(const std::string& _name) = 0;
+
     /// Get an event queue by name.
+    /// There are two special event queues. "default" and "script".
+    /// The default event queue is used if I_Event::connect() has a NULL
+    /// for the event queue.  The script event queue is used as the default
+    /// event queue for scripted actions.  If either of these
+    /// event queues are created by either of these use cases, make
+    /// sure you process events on those queues, otherwise the queues will
+    /// fill up and consume memory.
     virtual I_EventQueue& getEventQueue(const std::string& _queueName) = 0;
 
     /// Get an action map by name.

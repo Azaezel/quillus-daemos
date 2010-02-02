@@ -81,6 +81,9 @@ public:
     /// Get the message header.
     virtual pMessageHeader_type getMessageHeader() const = 0;
 
+    /// Get the message Id of this message.
+    virtual unsigned int getMessageId() const = 0;
+
     /// Deserialize this message from an input archive.
     /// The protocol adapter deserializes the header, creates the appropriate message
     /// using the message registry, and then deserializes the rest of the message using

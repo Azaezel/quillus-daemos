@@ -38,6 +38,7 @@ namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class ActionMap;
 class EventQueue;
+class Event_impl;
 
 /// Event Service implementation.
 /// This class implements the basic event service.  Since I_EventService is not
@@ -50,6 +51,7 @@ class EventService
 public:
     typedef std::map<std::string, EventQueue*>          EventQueues_type;
     typedef std::map<std::string, ActionMap*>           ActionMaps_type;
+    typedef std::map<std::string, Event_impl*>          Events_type;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -68,6 +70,8 @@ public:
     /// @name I_EventService implementation
     /// @{
 public:
+    virtual I_Event& createEvent(const std::string& _name);
+    virtual I_Event& getEvent(const std::string& _name);
     virtual I_EventQueue& getEventQueue(const std::string& _queueName);
     virtual I_ActionMap& getActionMap(const std::string& _actionMapName);
     /// @}
@@ -95,6 +99,13 @@ private:
 
     EventQueues_type                    m_eventQueues;
     ActionMaps_type                     m_actionMaps;
+
+    /// Collection of all registered events.
+    Events_type                         m_events;
+
+    /// Mutex for guarding m_events
+    Threading::I_Mutex*                 m_pEventsMutex;
+
     /// @}
 
 };  // class EventService

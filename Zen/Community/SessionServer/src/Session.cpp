@@ -74,6 +74,8 @@ Session::getEndpoint() const
     return m_pEndpoint;
 }
 
+#if 0 // future implementation (need to refactor to make it use a listener instead 
+// of a future I think).
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Session::pFutureAttribute_type
 Session::getAttribute(const std::string& _key) const
@@ -90,6 +92,7 @@ Session::getAttribute(const std::string& _key) const
         throw Zen::Utility::runtime_exception("Session::getAttribute() : Invalid type.");
     }
 }
+#endif
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }	// namespace Server 

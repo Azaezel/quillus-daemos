@@ -33,7 +33,6 @@ namespace GameBuilder {
 
 class GAMEBUILDERPROTOCOL_DLL_LINK I_DeleteChildNodeRequest
 :   public Zen::Enterprise::AppServer::I_Request
-,   public virtual GameBuilder::I_Message
 {
     /// @name Types
     /// @{

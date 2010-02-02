@@ -117,6 +117,7 @@ public:
     virtual pPhysicsResourceService_type getPhysicsResourceService() = 0;
 
     virtual pPhysicsZone_type getCurrentPhysicsZone() = 0;
+    virtual void setCurrentPhysicsZone(pPhysicsZone_type _pPhysicsZone) = 0;
 
     /// Get the primary action map
     virtual Core::I_ActionMap& getActionMap(const std::string& _actionMapName = "default") = 0;

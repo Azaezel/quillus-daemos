@@ -45,46 +45,12 @@ EventQueue::EventQueue(EventService& _parent)
 :   m_parent(_parent)
 ,   m_pScriptObject(NULL)
 ,   m_eventQueue()
-,   m_pEventsMutex(Threading::MutexFactory::create())
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 EventQueue::~EventQueue()
 {
-    Threading::MutexFactory::destroy(m_pEventsMutex);
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-I_Event&
-EventQueue::createEvent(const std::string& _name)
-{
-    // Since getEvent() will create the event if
-    // it doesn't exist, just call it.
-    return getEvent(_name);
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-I_Event&
-EventQueue::getEvent(const std::string& _name)
-{
-    Threading::CriticalSection guard(m_pEventsMutex);
-
-    // TODO Make sure the event has been created.
-    Events_type::iterator iter = m_events.find(_name);
-    
-    if (iter == m_events.end())
-    {
-        Event_impl* pEvent = new Event_impl(*this);
-
-        m_events[_name] = pEvent;
-
-        return *pEvent;
-    }
-    else
-    {
-        return *iter->second;
-    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

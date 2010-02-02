@@ -46,8 +46,8 @@ SceneService::SceneService()
 {
     //m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "default");
     //Ogre::Root::getSingleton().initialise(false, "IndieZen Rendering Window");
-    //m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_EXTERIOR_CLOSE, "default");
-    m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "default");
+    m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_EXTERIOR_CLOSE, "default");
+    //m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "default");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

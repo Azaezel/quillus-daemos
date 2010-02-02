@@ -52,6 +52,7 @@ public:
     /// @name I_RenderingService implementation
     /// @{
 public:
+    void initialiseAllResourceGroups();
     virtual void addResourceLocation(const std::string& _path, const std::string& _type, 
         const std::string& _group, bool _recursive = false);
 

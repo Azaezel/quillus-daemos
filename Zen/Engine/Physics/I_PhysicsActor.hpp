@@ -146,6 +146,19 @@ public:
 
     virtual void applyTorque(const Math::Vector3& _torque) = 0;
     virtual void applyForce(const Math::Vector3& _force) = 0;
+    virtual void applyImpulse(const Math::Vector3& _force, const Math::Vector3& _worldPos) = 0;
+    //http://en.wikipedia.org/wiki/Damping
+    virtual const Math::Vector3 getAngularDamping() const = 0;
+    virtual void setAngularDamping(const Math::Vector3& _damping) = 0;
+    virtual const Math::Real getLinearDamping() const = 0;
+    virtual void setLinearDamping(float _damping) = 0;
+
+    //sets the minimum motion threshold at which an engine stops updating movement or even checking for it
+    virtual void setSleepingThresholds(float _minLinearMotion, float _minAngularMotion) = 0;
+    //force the physics engine to once more pay attention to a given object or force it to ignore it
+    virtual void setActivationState(unsigned _state) = 0;
+    //gets wether or not the engine consideres this object beneath it's notice for motion
+    virtual int getActivationState() = 0;
 
     /// @todo Use I_PhysicsGroup& instead of int.
 	virtual void setCollisionGroup(const int _group) = 0;

@@ -54,7 +54,6 @@ public:
     typedef Scripting::I_ScriptModule::pScriptType_type     pScriptType_type;
     typedef std::pair<Event_impl*, boost::any>              Event_type;
     typedef Threading::SynchronizedQueue<Event_type>        EventQueue_type;
-    typedef std::map<std::string, Event_impl*>              Events_type;
 
     typedef Memory::managed_ptr<Scripting::I_ScriptModule>  pScriptModule_type;
     /// @}
@@ -62,8 +61,6 @@ public:
     /// @name I_EventQueue implementation
     /// @{
 public:
-    virtual I_Event& createEvent(const std::string& _name);
-    virtual I_Event& getEvent(const std::string& _name);
     virtual bool dispatchOneEvent();
     virtual void dispatchAllEvents(bool _wait);
     /// @}
@@ -100,11 +97,6 @@ private:
 
     EventQueue_type                 m_eventQueue;
 
-    /// Collection of all registered events.
-    Events_type                     m_events;
-
-    /// Mutex for guarding m_events
-    Threading::I_Mutex*             m_pEventsMutex;
     // @}
 
 };  // class EventQueue

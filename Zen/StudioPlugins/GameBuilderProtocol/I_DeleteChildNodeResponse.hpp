@@ -33,7 +33,6 @@ namespace GameBuilder {
 
 class GAMEBUILDERPROTOCOL_DLL_LINK I_DeleteChildNodeResponse
 :   public Zen::Enterprise::AppServer::I_Response
-,   public virtual GameBuilder::I_Message
 {
     /// @name Types
     /// @{
@@ -45,7 +44,7 @@ public:
     /// @{
 public:
     static pResponse_type create(pEndpoint_type _pSourceEndpoint,
-                                pEndpoint_type _pDestinationEndpoint);
+                                pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId);
     /// @}
 
     /// @name 'Structors

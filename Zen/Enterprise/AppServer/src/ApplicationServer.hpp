@@ -2,7 +2,7 @@
 // Zen Enterprise Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 // Copyright (C)        2009 Joshua Cassity
 //
 //  This software is provided 'as-is', without any express or implied
@@ -30,6 +30,7 @@
 
 #include "../I_ApplicationServer.hpp"
 
+#include <Zen/Core/Threading/I_Thread.hpp>
 #include <Zen/Core/Threading/ThreadPool.hpp>
 
 #include <Zen/Core/Plugins/I_Configuration.hpp>
@@ -39,6 +40,10 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+    namespace Database {
+        class I_DatabaseService;
+        class I_DatabaseConnection;
+    }   // namespace Database
 namespace Enterprise {
 namespace AppServer {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -72,6 +77,7 @@ public:
     virtual Zen::Threading::I_Condition* start();
     virtual void stop();
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
+    virtual pScriptEngine_type getDefaultScriptEngine();
     virtual void installProtocols(pConfig_type _pProtocolsConfig);
     virtual void installProtocol(pProtocolService_type _pProtocolService, const std::string& _protocolName);
     virtual pProtocolService_type getProtocol(const std::string& _protocolName);
@@ -84,6 +90,7 @@ public:
     virtual void handleMessage(pMessage_type _pMessage);
     virtual void handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler);
     virtual void handleSessionEvent(pSessionEvent_type _pSessionEvent);
+    virtual pDatabaseConnection_type getDatabaseConnection(const std::string& _database, Zen::Threading::I_Thread::ThreadId& _threadId);
     /// @}
 
     /// @name ApplicationServer implementation
@@ -106,6 +113,47 @@ public:
     void handleConfigureApplication(pApplicationService_type _pApplicationService, pConfig_type _pConfig);
 
     Threading::ThreadPool& getSharedThreadPool() { return m_sharedThreadPool; }
+
+    typedef std::map<std::string,std::string> config_type;
+    void createDatabaseEntry(const std::string& _database, config_type& _config);
+    /// @}
+
+    /// @name Inner classes
+    /// @{
+private:
+    class DatabaseConnections
+    {
+        /// @name Types
+        /// @{
+    public:
+        typedef Zen::Memory::managed_ptr<Zen::Database::I_DatabaseService>              pDatabaseService_type;
+        typedef std::map<std::string,std::string>                                       config_type;
+        typedef Zen::Memory::managed_ptr<Zen::Database::I_DatabaseConnection>           pDatabaseConnection_type;
+        typedef std::map<Zen::Threading::I_Thread::ThreadId,pDatabaseConnection_type>   DatabaseConnections_type;
+        /// @}
+
+        /// @name DatabaseConnections implementation
+        /// @{
+    public:
+        pDatabaseConnection_type getConnection(Zen::Threading::I_Thread::ThreadId& _threadId);
+        /// @}
+
+        /// @name 'Structors
+        /// @{
+                 DatabaseConnections(pDatabaseService_type _pService, config_type _connectionConfig);
+                ~DatabaseConnections();
+        /// @}
+
+        /// @name Member Variables
+        /// @{
+    private:
+        pDatabaseService_type           m_pDatabaseService;
+        config_type                     m_connectionConfig;
+        DatabaseConnections_type        m_databaseConnections;
+        Zen::Threading::I_Mutex*        m_databaseConnectionsMutex;
+        /// @}
+
+    };  // class DatabaseConnections
     /// @}
 
     /// @name Events
@@ -154,6 +202,10 @@ private:
     ApplicationServices_type    m_applicationServices;
 
     pMessageRegistry_type       m_pMessageRegistry_type;
+
+    typedef Zen::Memory::managed_ptr<DatabaseConnections>       pDatabaseConnections_type;
+    typedef std::map<std::string, pDatabaseConnections_type>    DatabaseConnectionsMap_type;
+    DatabaseConnectionsMap_type m_databaseConnectionsMap;
     /// @}
 
 };  // interface I_ApplicationServer

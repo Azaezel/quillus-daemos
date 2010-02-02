@@ -19,7 +19,7 @@
 
 #include "../I_CreateChildNodeRequest.hpp"
 
-#include "Message.hpp"
+#include "Request.hpp"
 
 #include <Zen/Enterprise/AppServer/I_MessageFactory.hpp>
 
@@ -42,7 +42,7 @@ namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class CreateChildNodeRequest
 :   public I_CreateChildNodeRequest
-,   public Message
+,   public Request
 {
     /// @name Types
     /// @{
@@ -105,12 +105,12 @@ protected:
              /// This constructor is used by the static create
              /// methods for creating outbound messages.
              CreateChildNodeRequest(pEndpoint_type _pSourceEndpoint,
-                               pEndpoint_type _pDestinationEndpoint);
+                           pEndpoint_type _pDestinationEndpoint);
              /// This constructor is used by the message factory
              /// for creating inbound messages.
              CreateChildNodeRequest(pMessageHeader_type _pMessageHeader,
-                               pEndpoint_type _pSourceEndpoint,
-                               pEndpoint_type _pDestinationEndpoint);
+                           pEndpoint_type _pSourceEndpoint,
+                           pEndpoint_type _pDestinationEndpoint);
     virtual ~CreateChildNodeRequest();
     /// @}
 

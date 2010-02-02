@@ -90,6 +90,9 @@ public:
     virtual const Math::Real getLinearDamping() const;
     virtual void setLinearDamping(float _damping);
     virtual void setAutoFreeze(bool _bFreeze);
+    virtual void setSleepingThresholds(float _minLinearMotion, float _minAngularMotion);
+    void setActivationState(unsigned _state);
+    virtual int getActivationState();
 
     virtual void setAdvancedCollisionPrediction(bool _mode);
     virtual bool getAdvancedCollisionPrediction() const;
@@ -109,14 +112,13 @@ public:
     /// @name PhysicsActor implementation
     /// @{
 private:
-    static void TransformCallback(const NewtonBody* _body, const dFloat* _matrix);
+    static void TransformCallback(const NewtonBody* _body, const Zen::Math::Real* _matrix);
     static void ApplyForceAndTorqueCallback(const NewtonBody* _pBody);
     static void ActivationStateCallback(const NewtonBody* body, unsigned state);
 
     void applyForce(const Math::Vector3& _force);
+    void applyImpulse(const Math::Vector3& _force, const Math::Vector3& _worldPos);
     void applyTorque(const Math::Vector3& _torque);
-
-    void setActivationState(unsigned _state);
     /// @}
 public:
     /// @ For Internal Newton usage
@@ -143,7 +145,7 @@ private:
     NewtonBody*                             m_pActor;
     wpPhysicsZone_type                      m_pZone;
     pPhysicsMaterial_type                   m_material;
-    dFloat                                  m_scaleX, m_scaleY, m_scaleZ;
+    Zen::Math::Real                                  m_scaleX, m_scaleY, m_scaleZ;
     Scripting::I_ObjectReference*           m_pScriptObject;
     std::string                             m_name;
     Zen::Math::Real							     m_minStrikeLen;
@@ -269,6 +271,7 @@ public:
 
         virtual void setContactFrictionState(int _state, bool _primary = true)
         {
+            //http://www.newtondynamics.com/wiki/index.php5?title=NewtonMaterialSetContactFrictionState
             NewtonMaterialSetContactFrictionState(m_pMaterial, _state, _primary ? 0 : 1);
         }
 

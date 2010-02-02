@@ -31,7 +31,7 @@
 #include "Configuration.hpp"
 
 #include <Zen/Core/Math/Math.hpp>
-
+#include <Zen/Core/Math/Vector3.hpp>
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
 
@@ -70,7 +70,7 @@ public:
     /// @note Some physics plugins do not support muliple zones.  If
     ///     this is the case, the plugin should throw an exception
     ///     if an application attemts to create more than one zone.
-   	virtual pPhysicsZone_type createZone() = 0;
+   	virtual pPhysicsZone_type createZone(const Math::Vector3& _min, const Math::Vector3& _max) = 0;
 
     /// Step the physics simulations by the specified amount of time.
     /// This will step the physics simulations for all zones and will

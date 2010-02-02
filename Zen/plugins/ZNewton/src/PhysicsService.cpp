@@ -30,12 +30,14 @@
 #include <exception>
 #include <iostream>
 
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZNewton {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsService::PhysicsService()
 {
+
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -46,11 +48,11 @@ PhysicsService::~PhysicsService()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsService::pPhysicsZone_type
-PhysicsService::createZone(void)
+PhysicsService::createZone(const Math::Vector3& _min, const Math::Vector3& _max)
 {
     // TODO evaluate whether or not we should have an unregister function for removing worlds from the list.
 
-    PhysicsZone* pRawZone = new PhysicsZone();
+    PhysicsZone* pRawZone = new PhysicsZone(_min,_max);
     pPhysicsZone_type pZone = pPhysicsZone_type(pRawZone, boost::bind(&PhysicsService::onDestroyPhysicsZone, this, _1));
     m_zoneSet.insert(pZone);
 
@@ -67,7 +69,7 @@ PhysicsService::stepSimulation(double _elapsedTime)
     // TODO - iterate across the world list and allow them to update themselves.
     for (std::set<pPhysicsZone_type>::iterator iter = m_zoneSet.begin(); iter != m_zoneSet.end(); iter++)
     {
-        NewtonUpdate(dynamic_cast<PhysicsZone*>(iter->get())->getZonePtr(), (dFloat)_elapsedTime);
+        NewtonUpdate(dynamic_cast<PhysicsZone*>(iter->get())->getZonePtr(), (Zen::Math::Real)_elapsedTime);
     }
 }
 

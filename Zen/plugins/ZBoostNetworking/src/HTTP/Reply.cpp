@@ -261,6 +261,21 @@ Reply::getMessageHeader() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+unsigned int
+Reply::getMessageId() const
+{
+    // This really shouldn't be used for HTTP messages.
+    return 0;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+unsigned int
+Reply::getRequestMessageId() const
+{
+    // This really shouldn't be used for HTTP messages.
+    return 0;
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 Reply::serialize(pMessageHeader_type _pHeader, boost::archive::polymorphic_iarchive& _archive, const int _version)
 {

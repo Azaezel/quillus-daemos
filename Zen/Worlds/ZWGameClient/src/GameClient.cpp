@@ -52,6 +52,9 @@
 
 #include <Zen/Engine/Widgets/I_WidgetService.hpp>
 
+#include <Zen/Engine/World/I_Sky.hpp>
+#include <Zen/Engine/World/I_Terrain.hpp>
+
 #include <Zen/plugins/ZOgre/I_OgreRenderingCanvas.hpp>
 
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
@@ -92,6 +95,7 @@ GameClient::GameClient(WindowHandle_type _pParent)
 ,   m_pGUIManager(NULL)
 ,   m_moveDirection(0.0f, 0.0f, 0.0f)
 ,   m_zoomAmount(0.0f)
+,   m_pSky()
 {
     m_base.setWindowHandle(_pParent);
 }
@@ -187,9 +191,10 @@ GameClient::createScene()
     // Set the camera in the correct location
     Zen::Engine::Rendering::I_RenderingCanvas& canvas = base().getRenderingCanvas();
     Zen::Engine::Rendering::I_Camera& camera = canvas.selectCamera("default");
-    camera.setPosition(7.296f, 0.0262f, 30.0f);
+    //camera.setPosition(7.296f, 0.0262f, 30.0f);
+    camera.setPosition(146.0f, 101.0f, 221.0f);
     camera.setNearClipDistance(0.1f);
-    camera.setFarClipDistance(150.0f);
+    camera.setFarClipDistance(99999.0f*6.0f);
     camera.setAspectRatio((Zen::Math::Real)canvas.getWidth() / (Zen::Math::Real)canvas.getHeight());
     camera.setHorizontalFOV(Zen::Math::Degree(60));
 
@@ -484,6 +489,27 @@ const std::string&
 GameClient::getGameName() const
 {
     return m_gameName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::createSkybox(const std::string& _resource)
+{
+    Zen::Engine::World::I_SkyService::config_type config;
+    config["type"] = "skybox";
+    config["resourceName"] = _resource;
+
+    m_pSky = base().getSkyService().createSky(config);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::createTerrain(const std::string& _resource)
+{
+    Zen::Math::Matrix4 matXfm(Zen::Math::Matrix4::INIT_IDENTITY);
+
+    m_pTerrain = base().getTerrainService().createTerrain();
+    m_pTerrain->loadVisualization(_resource + ".cfg", matXfm);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

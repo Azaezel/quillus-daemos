@@ -374,10 +374,7 @@ BaseGame::initPhysicsService(const std::string& _type)
         std::cout << "Error: couldn't initPhysicsService()" << std::endl;
     }
 
-    // Initialize the first world
-    m_pPhysicsZone = getPhysicsService()->createZone();
-
-    std::cout << "Zone created, checking for scripting support." << std::endl;
+    std::cout << "Physics Service created, checking for scripting support." << std::endl;
 
     // Register the script engine with the Physics Manager
     if (m_pScriptEngine.isValid())
@@ -396,6 +393,12 @@ BaseGame::getCurrentPhysicsZone()
     return m_pPhysicsZone;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+BaseGame::setCurrentPhysicsZone(BaseGame::pPhysicsZone_type _pPhysicsZone)
+{
+    m_pPhysicsZone = _pPhysicsZone;
+}
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 BaseGame::initPhysicsResourceService(const std::string& _type)

@@ -39,16 +39,21 @@ CreateChildNodeResponse::pMessageType_type CreateChildNodeResponse::sm_pType;
 Zen::Enterprise::AppServer::I_MessageRegistry* CreateChildNodeResponse::sm_pMessageRegistry = NULL;
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 CreateChildNodeResponse::CreateChildNodeResponse(pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint)
+                           pEndpoint_type _pDestinationEndpoint,
+                            unsigned int _requestMessageId)
 :   Message(createMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)
+,   Response(getMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId)
+        
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 CreateChildNodeResponse::CreateChildNodeResponse(pMessageHeader_type _pMessageHeader,
                              pEndpoint_type _pSourceEndpoint,
-                             pEndpoint_type _pDestinationEndpoint)
+                             pEndpoint_type _pDestinationEndpoint,
+                            unsigned int _requestMessageId)
 :   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
+,   Response(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId) 
 {
 }
 

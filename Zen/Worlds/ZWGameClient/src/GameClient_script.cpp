@@ -25,6 +25,9 @@
 /// exposes GameClient to script.
 #include "GameClient.hpp"
 #include "GUIManager.hpp"
+#include "GameObject.hpp"
+
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
 
@@ -112,6 +115,47 @@ script_initPhysicsService(Zen::Scripting::I_ObjectReference* _pObject, std::vect
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 static void
+script_initTerrainService(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
+{
+    // Init the terrain service
+    std::string type = boost::any_cast<std::string>(_parms[0]);
+
+    sm_pTheOnlyGameClient->base().initTerrainService(type);
+ 
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static void
+script_createTerrain(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
+{
+    // Create a terrain object
+    std::string resource = boost::any_cast<std::string>(_parms[0]);
+
+    sm_pTheOnlyGameClient->createTerrain(resource);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static void
+script_initSkyService(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
+{
+    // Init the sky service
+    std::string type = boost::any_cast<std::string>(_parms[0]);
+
+    sm_pTheOnlyGameClient->base().initSkyService(type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static void
+script_createSkybox(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
+{
+    // Create a sky object
+    std::string resource = boost::any_cast<std::string>(_parms[0]);
+
+    sm_pTheOnlyGameClient->createSkybox(resource);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static void
 script_initInputService(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
 {
     // Init the input service
@@ -171,6 +215,10 @@ GameClient::activateGameClientScriptModule()
     // TODO Move these to game, not game client
     pGameClientScriptType->addMethod("initPhysicsService", "Initialize the physics service", &script_initPhysicsService);
     pGameClientScriptType->addMethod("initNavigationService", "Initialize the navigation service", &script_initNavigationService);
+    pGameClientScriptType->addMethod("initTerrainService", "Initialize the terrain service", &script_initTerrainService);
+    pGameClientScriptType->addMethod("initSkyService", "Initialize the sky service", &script_initSkyService);
+    pGameClientScriptType->addMethod("createSkybox", "Create a skybox", &script_createSkybox);
+    pGameClientScriptType->addMethod("createTerrain", "Create a terrain", &script_createTerrain);
 
     createScriptTypes();
 
@@ -198,6 +246,7 @@ GameClient::getScriptObject()
 void
 GameClient::createScriptTypes()
 {
+    GameObject::createScriptTypes(m_base.getScriptEnginePtr());
     // This is where you'd create script types that are outside of the base
     // script module.
 }

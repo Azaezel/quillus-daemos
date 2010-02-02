@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -37,14 +37,11 @@ namespace Zen {
 namespace Community {
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Session::Session(pSessionService_type _pParent,
-                 boost::int32_t _sessionId,
-                 SessionState_type _sessionState,
-                 pEndpoint_type _pEndpoint)
-:   m_pParent(_pParent)
-,   m_sessionId(_sessionId)
-,   m_sessionState(_sessionState)
-,   m_pEndpoint(_pEndpoint)
+Session::Session(SessionService& _parent, pEndpoint_type _pDestination)
+:   m_parent(_parent)
+,   m_pEndpoint(_pDestination)
+,   m_sessionId(0)
+,   m_sessionState(I_Session::INITIALIZED)
 {
 }
 
@@ -74,21 +71,27 @@ Session::getEndpoint() const
     return m_pEndpoint;
 }
 
+#if 0
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Session::pFutureAttribute_type
 Session::getAttribute(const std::string& _key) const
 {
-    SessionService* pService = 
-        dynamic_cast<SessionService*>(m_pParent.get());
+    return m_parent.requestAttribute(*this, _key);
+}
+#endif
 
-    if( pService != NULL )
-    {
-        return pService->requestAttribute(*this, _key);
-    }
-    else
-    {
-        throw Zen::Utility::runtime_exception("Session::getAttribute() : Invalid type.");
-    }
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Session::setSessionId(boost::int32_t _sessionId)
+{
+    m_sessionId = _sessionId;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Session::setSessionState(SessionState_type _sessionState)
+{
+    m_sessionState = _sessionState;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -33,12 +33,16 @@
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Plugins/I_Configuration.hpp>
 #include <Zen/Core/Threading/I_Condition.hpp>
+#include <Zen/Core/Threading/I_Thread.hpp>
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 
 #include <boost/noncopyable.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+    namespace Database {
+        class I_DatabaseConnection;
+    }   // namespace Database
 namespace Enterprise {
 namespace AppServer {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -78,6 +82,8 @@ public:
     typedef Memory::managed_ptr<I_ResourceLocation>         pResourceLocation_type;
     typedef Memory::managed_ptr<I_MessageRegistry>          pMessageRegistry_type;
 
+    typedef Memory::managed_ptr<Database::I_DatabaseConnection> pDatabaseConnection_type;
+
     typedef Zen::Plugins::I_ConfigurationElement::const_ptr_type    pConfig_type;
 
     typedef Zen::Memory::managed_ptr<Scripting::I_ScriptEngine>     pScriptEngine_type;
@@ -88,6 +94,8 @@ public:
     /// @{
 public:
     /// Start the application server.
+    /// @return the condition variable that indicates when the application server
+    ///     has fully started.
     virtual Zen::Threading::I_Condition* start() = 0;
 
     /// @brief Stop the application server.
@@ -104,6 +112,9 @@ public:
     ///             been created.  It will only prevent subsequent services from
     ///             using this script engine.
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine) = 0;
+
+    /// Get the default script engine.
+    virtual pScriptEngine_type getDefaultScriptEngine() = 0;
 
     /// Install multiple protocol services using the provided configuration.
     /// The provided configuration should have zero or more <protocol/> entries which
@@ -163,6 +174,9 @@ public:
     /// for that matter), or a login or logout request event, etc.
     /// @see I_SessionEvent
     virtual void handleSessionEvent(pSessionEvent_type _pSessionEvent) = 0;
+
+    /// Get the database connection for the current thread.
+    virtual pDatabaseConnection_type getDatabaseConnection(const std::string& _database, Zen::Threading::I_Thread::ThreadId& _threadId) = 0;
     /// @}
 
     /// @name Inner classes

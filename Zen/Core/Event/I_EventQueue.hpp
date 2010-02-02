@@ -43,7 +43,6 @@ namespace Zen {
 namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_Action;
-class I_Event;
 
 class EVENT_DLL_LINK I_EventQueue
 :   public Scripting::I_ScriptableType
@@ -61,12 +60,6 @@ public:
     /// @name I_EventQueue interface
     /// @{
 public:
-    /// Create an event by name.
-    virtual I_Event& createEvent(const std::string& _name) = 0;
-
-    /// Get an event by name.
-    virtual I_Event& getEvent(const std::string& _name) = 0;
-
     /// Dispatch the next event in this queue.
     /// Call this from the thread that needs to dispatch this
     /// event queue.
