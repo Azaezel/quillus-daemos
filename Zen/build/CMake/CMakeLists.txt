@@ -159,23 +159,22 @@ if (ZEN_BUILD_ZEN_STUDIO)
         endforeach(PROJECT_PATH)
     endif()
     
-    # Do the tests
-    option(ZEN_BUILD_EXPERIMENTAL_TESTS "Build Experimental Tests" FALSE)
-    if(ZEN_BUILD_EXPERIMENTAL_TESTS)
-    
-        set(ZEN_EXPERIMENTAL_TESTS_PROJECTS
-            tests/ScriptTest
-			tests/ScriptLoginTest
-        )
-        
-        foreach(PROJECT_PATH ${ZEN_EXPERIMENTAL_TESTS_PROJECTS})
-            message("-- ${PROJECT_PATH}")
-            add_subdirectory("${ZEN_HOME}/${PROJECT_PATH}" "${PROJECT_PATH}")
-        endforeach(PROJECT_PATH)
-    endif()
-    
 endif()
 
+# Do the experimental tests
+option(ZEN_BUILD_EXPERIMENTAL_TESTS "Build Experimental Tests" FALSE)
+if(ZEN_BUILD_EXPERIMENTAL_TESTS)
+
+	set(ZEN_EXPERIMENTAL_TESTS_PROJECTS
+		tests/ScriptTest
+			tests/ScriptLoginTest
+	)
+	
+	foreach(PROJECT_PATH ${ZEN_EXPERIMENTAL_TESTS_PROJECTS})
+		message("-- ${PROJECT_PATH}")
+		add_subdirectory("${ZEN_HOME}/${PROJECT_PATH}" "${PROJECT_PATH}")
+	endforeach(PROJECT_PATH)
+endif()
 
 # Do Zen Worlds (optionally)
 option(ZEN_BUILD_ZEN_WORLDS "Build Zen Worlds" FALSE)
