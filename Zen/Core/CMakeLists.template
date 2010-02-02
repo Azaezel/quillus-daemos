@@ -4,7 +4,7 @@ project (ZenCore)
 set ( PROJECT_PREFIX "Core" )
 
 if ( NOT INDIEZEN_PARENT)
-	find_path ( INDIEZEN_PARENT Zen .. ../.. ../../.. ENV )
+	find_path ( INDIEZEN_PARENT Zen .. ${CMAKE_CURRENT_SOURCE_DIR}/../.. ../.. ../../.. ENV )
 endif (NOT INDIEZEN_PARENT)
 
 set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
@@ -33,6 +33,8 @@ include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${LIBXML2_INCLUDE_
 link_directories ( ${DEV_LIB}  ${LibXML2_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS} )
 
 add_library ( ZenCore ${LIB_TYPE} ${ZenCore_SRC} )
+
+message("DEBUG: libxml2 libs: ${LIBXML2_LIBRARIES}")
 
 target_link_libraries( ZenCore ${LIBXML2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} )
 
