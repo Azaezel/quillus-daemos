@@ -34,7 +34,7 @@ add_library ( ZenEnterprise ${LIB_TYPE} ${ZenEnterprise_SRC} )
 
 add_dependencies(ZenEnterprise ZenCore)
 
-target_link_libraries( ZenEnterprise )
+target_link_libraries( ZenEnterprise ZenCore )
 
 set_target_properties ( ZenEnterprise 
 						PROPERTIES
