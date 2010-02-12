@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="WorkbenchCommon" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Script file="lib_finder.script" />
+			<Target title="Debug-GCC">
+				<Option output="$(#ZEN.lib)/libWorkbenchCommon_d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fPIC" />
+					<Add option="-D__WXGTK__" />
+				</Compiler>
+				<Linker>
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Release-GCC">
+				<Option output="$(#ZEN.lib)/libWorkbenchCommon" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Debug-MSVC5">
+				<Option output="$(#ZEN.lib)/WorkbenchCommon_d" prefix_auto="1" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="msvc8" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="/MDd" />
+					<Add option="/arch:SSE2" />
+					<Add option="/Gd" />
+					<Add option="/RTCu" />
+					<Add option="/EHc" />
+					<Add option="/EHs" />
+					<Add option="/GR" />
+					<Add option="/Od" />
+					<Add option="/W3" />
+					<Add option="/DTHREADMODEL_WIN32" />
+					<Add option="/DHOST_WIN32" />
+					<Add directory="$(#WindowsPlatformSDK.include)" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-DZENCORE_EXPORTS" />
+			<Add directory="$(#ZEN.include)" />
+			<Add directory="$(#BOOST.include)" />
+		</Compiler>
+		<Linker>
+			<Add directory="$(#BOOST.lib)" />
+			<Add directory="$(#ZEN.lib)" />
+		</Linker>
+		<Unit filename="../../../Studio/WorkbenchCommon/Configuration.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/II_ExplorerNode.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/II_ProjectTypes.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/II_SpreadSheetDocument.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_Document.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_DocumentType.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_DocumentWizardFactory.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_DocumentWizardManager.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_DocumentWizardService.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ExplorerModel.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ExplorerNode.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ExplorerNodeAction.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ExplorerNodeFactory.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ExplorerNodeType.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_Project.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectAction.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectExplorerController.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectExplorerModel.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectExplorerView.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectLocation.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectService.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectServiceFactory.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectServiceManager.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectType.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectTypes.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectWizardFactory.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectWizardManager.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectWizardService.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_ProjectWizardType.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SceneAction.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SceneController.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SceneModel.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SceneModelType.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SceneNode.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SceneView.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SpreadSheetAction.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SpreadSheetCell.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SpreadSheetController.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SpreadSheetDocument.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SpreadSheetDocumentFactory.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SpreadSheetDocumentType.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_SpreadSheetView.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_View.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/I_WorkbenchService.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/direct_explorer_node_action.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/generic_explorer_node_type.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/generic_scene_model_type.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/generic_spreadsheet_document_type.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/indirect_explorer_node_action.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/indirect_spread_sheet_action.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/DocumentType.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/DocumentType.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/DocumentWizardManager.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/DocumentWizardManager.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/II_ExplorerNode.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/II_ProjectTypes.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_Document.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_DocumentType.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_DocumentWizardFactory.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_DocumentWizardManager.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_DocumentWizardService.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ExplorerModel.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ExplorerNode.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ExplorerNodeAction.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ExplorerNodeFactory.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ExplorerNodeType.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_Project.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectAction.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectExplorerController.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectExplorerModel.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectExplorerView.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectLocation.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectService.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectServiceFactory.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectServiceManager.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectType.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectTypes.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectWizardFactory.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectWizardManager.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectWizardService.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_ProjectWizardType.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SceneController.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SceneModel.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SceneModelType.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SceneView.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SpreadSheetAction.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SpreadSheetCell.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SpreadSheetController.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SpreadSheetDocument.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SpreadSheetDocumentType.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_SpreadSheetView.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_View.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/I_WorkbenchService.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectExplorerModel.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectServiceManager.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectServiceManager.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectType.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectType.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectTypes.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectTypes.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectWizardManager.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectWizardManager.hpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectWizardType.cpp" />
+		<Unit filename="../../../Studio/WorkbenchCommon/src/ProjectWizardType.hpp" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1">
+				<lib name="boost" />
+			</lib_finder>
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

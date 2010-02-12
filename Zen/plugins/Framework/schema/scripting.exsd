@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by IndieZen C++ PDE -->
+<schema targetNamespace="Zen::Scripting">
+  <annotation>
+    <appInfo>
+      <meta.schema plugin="Framework" id="Scripting" name="Scripting Engine"/>
+    </appInfo>
+    <documentation>
+      For providing an implementation of a Zen::Scripting::I_ScriptEngine
+    </documentation>
+  </annotation>
+  <element name="extension">
+    <complexType>
+      <sequence>
+        <element ref="script-engine" minOccurs="1" maxOccurs="1"/>
+      </sequence>
+      <attribute name="point" type="string" use="required">
+        <annotation>
+          <documentation>
+            A fully qualified identifier of the target extension-point.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="id" type="string">
+        <annotation>
+          <documentation>
+            An optional identifier of the extension instance.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="name" type="string">
+        <annotation>
+          <documentation>
+            An optional name of the extension instance.
+          </documentation>
+          <appInfo>
+            <meta.attribute translatable="true"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="script-engine">
+    <complexType>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>
+            The fully qualified name of a class which implements IndieZen::Scripting::I_ScriptEngine.
+          </documentation>
+          <appInfo>
+            <meta.attribute kinda="cpp" basedOn="Zen::Scripting::I_ScriptEngine"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+      <attribute name="type" type="string" use="required">
+        <annotation>
+          <documentation>
+            The name of the script engine.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+</schema>

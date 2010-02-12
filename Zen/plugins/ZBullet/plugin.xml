@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZBullet"
+   name="IndieZen Bullet Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZBullet">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+    </requires>
+
+	<extension
+          point="Zen::Engine::Physics::PhysicsService"
+          id="ZBullet"
+          name="IndieZen Bullet Physics Service"
+          type="ZBullet">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<physics-service
+              class="Zen::ZBullet::PhysicsService"
+              type="ZBullet">
+		</physics-service>
+	</extension>
+
+	<extension
+		point="Zen::Engine::Resource::ResourceService"
+		  id="ZBulletResource"
+		  name="IndieZen Bullet Resource Service"
+		  type="ZBullet">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<resource-service
+			  class="Zen::ZBullet::ResourceService"
+			  type="ZBullet">
+		</resource-service>
+	</extension>
+
+</plugin>

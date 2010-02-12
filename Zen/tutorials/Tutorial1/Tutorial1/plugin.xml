@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="Tutorial1"
+   name="Zen Engine Game Client"
+   version="0.4.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="Tutorial1">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+    <import plugin="ZOgre"/>
+    <import plugin="ZCam"/>
+  </requires>
+
+  <extension
+        point="Zen::Engine::Client::GameClient"
+        id="Pong"
+        name="Zen Engine Game Client"
+        type="Tutorial1">
+    <game-client
+          class="Game::Client::GameClient">
+    </game-client>
+  </extension>
+
+</plugin>

@@ -1,0 +1,4 @@
+_d.lib
+_d.dll
+_d.exe
+28d

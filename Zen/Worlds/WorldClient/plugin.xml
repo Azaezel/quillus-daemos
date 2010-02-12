@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="WorldClient"
+   name="Zen Worlds Game Client"
+   version="0.4.0"
+   provider-name="GamesBySarge.com">
+
+  <runtime>
+    <library name="WorldClient">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+</plugin>

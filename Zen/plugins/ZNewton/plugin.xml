@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZNewton"
+   name="IndieZen Newton Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZNewton">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+    </requires>
+
+	<extension
+          point="Zen::Engine::Physics::PhysicsService"
+          id="ZNewton"
+          name="IndieZen Newton Physics Service"
+          type="ZNewton">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<physics-service
+              class="Zen::ZNewton::PhysicsService"
+              type="ZNewton">
+		</physics-service>
+	</extension>
+
+	<extension
+		point="Zen::Engine::Resource::ResourceService"
+		  id="ZNewtonResource"
+		  name="IndieZen Newton Resource Service"
+		  type="ZNewton">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<resource-service
+			  class="Zen::ZNewton::ResourceService"
+			  type="ZNewton">
+		</resource-service>
+	</extension>
+
+</plugin>

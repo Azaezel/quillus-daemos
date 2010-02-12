@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="GameBuilderServer"
+   name="Zen Studio Game Builder Server Plug-in"
+   version="0.5.0"
+   provider-name="IndieZen.com">
+
+    <runtime>
+        <library name="GameBuilderServer">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+        <import plugin="Workbench"/>
+    </requires>
+
+    <extension
+          point="Zen::Studio::Workbench::ProjectService"
+          id="GameBuilderProject"
+          type="gameBuilder">
+        <project-type
+              class="Zen::Studio::GameProjectService"
+              name="Game Project">
+            <document-type
+                name="Game Object Type"
+                file-extension="izgot" />
+        </project-type>
+    </extension>
+
+    <extension
+          point="Zen::Studio::Workbench::ProjectWizardService"
+          id="GameBuilderWizard"
+          type="gameWizard">
+        <project-type
+              class="Zen::Studio::GameProjectService"
+                  name="MMO RPG Game Wizard"
+    />
+    </extension>
+
+    <extension
+          point="Zen::Studio::Workbench::ExplorerNode"
+          id="GameBuilder::GameObjectType"
+          type="GameBuilder::GameObjectType">
+        <explorer-node
+            class="GameBuilder::GameObjectType"           
+           />
+    </extension>
+
+    <extension
+          point="Zen::Studio::Workbench::ExplorerNode"
+          id="GameBuilder::Project"
+          type="GameBuilder::Project">
+        <explorer-node
+           class="GameBuilder::Project"
+           />
+    </extension>
+
+    <extension
+            point="Zen::Studio::Workbench::ExplorerNode"
+            id="GameBuilder::Folder"
+            type="GameBuilder::Folder">
+        <explorer-node
+            class="GameBuilder::Folder"
+        />
+    </extension>
+
+    <extension
+            point="Zen::Studio::Workbench::SpreadSheetCell"
+            id="GameBuilder::TextCell"
+            type="GameBuilder::TextCell">
+        <explorer-node
+            class="GameBuilder::TextCell"
+        />
+    </extension>
+
+</plugin>

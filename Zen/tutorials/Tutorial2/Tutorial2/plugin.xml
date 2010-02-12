@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="Tutorial2"
+   name="Zen Engine Game Client"
+   version="0.6.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="Tutorial2">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+    <import plugin="ZOgre"/>
+    <import plugin="ZInput"/>
+    <import plugin="ZLua"/>
+    <import plugin="ZNewton"/>
+    <import plugin="ZTerrain"/>
+    <import plugin="ZSky"/>
+  </requires>
+
+  <extension
+        point="Zen::Engine::Client::GameClient"
+        id="Tutorial2"
+        name="Zen Engine Game Client"
+        type="Tutorial2">
+    <game-client
+          class="Game::Client::GameClient">
+    </game-client>
+  </extension>
+
+</plugin>

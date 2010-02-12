@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<application
+   id="ZGameLoader"
+   name="IndieZen Client Game Loader"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+  <plugin-path path="C:/dev/Zen/plugins"/>
+  <plugin-path path="C:/dev/Zen/examples/KnightsOfZen"/>
+  <module-path path="C:/dev/bin"/>
+
+` <requires>
+    <import plugin="ZOgre"/>
+    <import plugin="ZInput"/>
+    <import plugin="ZPython"/>
+    <import plugin="ZNewton"/>
+  </requires>
+
+</application>

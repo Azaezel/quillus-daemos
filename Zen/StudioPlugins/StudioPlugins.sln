@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CPPTools", "CPPTools\CPPTools.vcproj", "{BD41DEA2-F467-403B-8FC5-C24B0BFE53C1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RPGEditor", "RPGEditor\RPGEditor.vcproj", "{D6E58BBC-65B9-4FCB-8C92-F294D7B29349}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldBuilder", "WorldBuilder\WorldBuilder.vcproj", "{3D988E0B-66C8-4F17-BFC3-FC37D4FE397A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD41DEA2-F467-403B-8FC5-C24B0BFE53C1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BD41DEA2-F467-403B-8FC5-C24B0BFE53C1}.Debug|Win32.Build.0 = Debug|Win32
+		{BD41DEA2-F467-403B-8FC5-C24B0BFE53C1}.Release|Win32.ActiveCfg = Release|Win32
+		{BD41DEA2-F467-403B-8FC5-C24B0BFE53C1}.Release|Win32.Build.0 = Release|Win32
+		{D6E58BBC-65B9-4FCB-8C92-F294D7B29349}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D6E58BBC-65B9-4FCB-8C92-F294D7B29349}.Debug|Win32.Build.0 = Debug|Win32
+		{D6E58BBC-65B9-4FCB-8C92-F294D7B29349}.Release|Win32.ActiveCfg = Release|Win32
+		{D6E58BBC-65B9-4FCB-8C92-F294D7B29349}.Release|Win32.Build.0 = Release|Win32
+		{3D988E0B-66C8-4F17-BFC3-FC37D4FE397A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3D988E0B-66C8-4F17-BFC3-FC37D4FE397A}.Debug|Win32.Build.0 = Debug|Win32
+		{3D988E0B-66C8-4F17-BFC3-FC37D4FE397A}.Release|Win32.ActiveCfg = Release|Win32
+		{3D988E0B-66C8-4F17-BFC3-FC37D4FE397A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ZOgre" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Script file="lib_finder.script" />
+			<Target title="Debug-GCC">
+				<Option output="$(#ZEN.lib)/libZOgre_d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="`pkg-config --libs boost`" />
+					<Add library="pthread" />
+					<Add library="Core_d" />
+				</Linker>
+			</Target>
+			<Target title="Release-GCC">
+				<Option output="$(#ZEN.lib)/libZOgre" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Debug-MSVC5">
+				<Option output="$(#ZEN.lib)/ZOgre_d" prefix_auto="1" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="msvc8" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="/MDd" />
+					<Add option="/arch:SSE2" />
+					<Add option="/Gd" />
+					<Add option="/RTCu" />
+					<Add option="/EHc" />
+					<Add option="/EHs" />
+					<Add option="/GR" />
+					<Add option="/Od" />
+					<Add option="/W3" />
+					<Add option="/DTHREADMODEL_WIN32" />
+					<Add option="/DHOST_WIN32" />
+					<Add directory="$(#WindowsPlatformSDK.include)" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add directory="$(#ZEN.include)" />
+			<Add directory="$(#BOOST.include)" />
+			<Add directory="$(#OGRE.include)" />
+		</Compiler>
+		<Linker>
+			<Add option="`wx-config --libs`" />
+			<Add directory="$(#BOOST.lib)" />
+			<Add directory="$(#ZEN.lib)" />
+			<Add directory="$(#OGRE.lib)" />
+		</Linker>
+		<Unit filename="../../../../plugins/ZOgre/Configuration.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/I_OgreRenderingCanvas.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/ZOgreModule.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/plugin.xml" />
+		<Unit filename="../../../../plugins/ZOgre/src/AnimationState.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/AnimationState.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/AxisAlignedBoundingBox.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/AxisAlignedBoundingBox.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/AxisAlignedBoundingBoxSplitter.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/AxisAlignedBoundingBoxSplitter.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/AxisAlignedBoundingBoxTree.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/AxisAlignedBoundingBoxTreeNode.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/AxisAlignedBoundingBoxTreeNode.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/BoundingSphere.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/BoundingSphere.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/BoundingVolumeService.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/BoundingVolumeService.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/BoundingVolumeServiceFactory.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/BoundingVolumeServiceFactory.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/Camera.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/Camera.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/I_OgreRenderingCanvas.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/NullCamera.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/NullCamera.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/NullContext.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/NullLight.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/NullLight.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/Ogre.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ParticleSystem.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ParticleSystem.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/Plane.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/Plane.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/RenderingCanvas.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/RenderingCanvas.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/RenderingService.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/RenderingService.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/RenderingServiceFactory.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/RenderingServiceFactory.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/RenderingView.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/RenderingView.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ResourceEntity.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ResourceEntity.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ResourceService.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ResourceService.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ResourceServiceFactory.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ResourceServiceFactory.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/SceneNode.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/SceneNode.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/SceneService.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/SceneService.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/SceneServiceFactory.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/SceneServiceFactory.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/Sky.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/SkyService.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/SkyServiceFactory.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/Water.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/Water.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/WaterService.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/WaterService.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/WaterServiceFactory.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/WaterServiceFactory.hpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ZOgreModule.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ZOgrePlugin.cpp" />
+		<Unit filename="../../../../plugins/ZOgre/src/ZOgrePlugin.hpp" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1">
+				<lib name="boost" />
+				<lib name="OIS" />
+				<lib name="OGRE" />
+			</lib_finder>
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

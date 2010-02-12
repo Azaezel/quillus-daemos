@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by IndieZen C++ PDE -->
+<schema targetNamespace="Zen::Enterprise::Database">
+  <annotation>
+    <appInfo>
+      <meta.schema plugin="Framework" id="DatabaseService" name="Database Service"/>
+    </appInfo>
+    <documentation>
+      For providing an implementation of a Zen::Enterprise::Database::I_DatabaseService
+    </documentation>
+  </annotation>
+  <element name="extension">
+    <complexType>
+      <sequence>
+        <element ref="database-service" minOccurs="1" maxOccurs="1"/>
+      </sequence>
+      <attribute name="point" type="string" use="required">
+        <annotation>
+          <documentation>
+            A fully qualified identifier of the target extension-point.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="id" type="string">
+        <annotation>
+          <documentation>
+            An optional identifier of the extension instance.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="name" type="string">
+        <annotation>
+          <documentation>
+            An optional name of the extension instance.
+          </documentation>
+          <appInfo>
+            <meta.attribute translatable="true"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="database-service">
+    <complexType>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>
+            The fully qualified name of a class which implements Zen::Enterprise::Database::I_DatabaseService.
+          </documentation>
+          <appInfo>
+            <meta.attribute kinda="cpp" basedOn="Zen::Enterprise::Database::I_DatabaseService"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+      <attribute name="type" type="string" use="required">
+        <annotation>
+          <documentation>
+            The type of database service. TODO This should have something to do with URI, 
+possibly copy the I_Address extension point schema?
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+</schema>

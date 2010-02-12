@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="BasicNetworking"
+   name="Basic Networking Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="BasicNetworking">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+    <import plugin="Test"/>
+  </requires>
+
+  <extension
+        point="IndieZen::Networking::NetworkService"
+        id="BasicNetworkService"
+        name="IndieZen Basic Network Service"
+        type="Select2"> 
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <network-service
+          class="IndieZen::Networking::BasicNetworkService"
+          type="Select2">
+    </network-service>
+  </extension>
+
+  <extension
+      point="IndieZen::Networking::NetworkAddress"
+      id="BasicNetworkAddress"
+      name="IndieZen Basic TCP and UDP Network Address">
+    <network-address
+          class="IndieZen::Networking::BasicNetworkAddress">
+      <type uri="tcp://"/>
+      <type uri="udp://"/>
+    </network-address>
+  </extension>
+
+</plugin>
