@@ -30,8 +30,16 @@ if (NOT DEV_LIB)
 endif (NOT DEV_LIB)
 
 if (NOT DEPENDENCIES_HOME)
-	set ( DEPENDENCIES_HOME "${INDIEZEN_PARENT}/dependencies/" )
-	message ( "-- Dependencies Home: ${DEPENDENCIES_HOME}" )
+    # If DEPENDENCIES_HOME environment is set, use it, otherwise default to 
+	# "${INDIEZEN_PARENT}/dependencies/"
+	set (DEPENDENCIES_HOME "$ENV{DEPENDENCIES_HOME}")
+	if(NOT DEPENDENCIES_HOME)
+		set ( DEPENDENCIES_HOME "${INDIEZEN_PARENT}/dependencies/" )
+		set (DEPENDENCIES_HOW "Using Zen/..")
+	else()
+		set (DEPENDENCIES_HOW "Using environment DEPENDENCIES_HOME")
+	endif()
+	message ( "-- Dependencies Home: ${DEPENDENCIES_HOME} ${DEPENDENCIES_HOW}" )		
 endif (NOT DEPENDENCIES_HOME)
 
 # Boost overrides
@@ -61,19 +69,19 @@ IF (WIN32)
 	set (PC_LIBXML_INCLUDE_DIRS 
         "${INDIEZEN_PARENT}/libxml2-2.6.30+.win32/include" 
         "${INDIEZEN_PARENT}/libxml2/include" 
-        "${DEPENDENCIES_HOME}libxml2/include"
+        "${DEPENDENCIES_HOME}/libxml2/include"
         )
 	set (PC_LIBXML_LIBDIR 
         "${INDIEZEN_PARENT}/libxml2-2.6.30+.win32/lib"
         "${INDIEZEN_PARENT}/libxml2/lib"
-        "${DEPENDENCIES_HOME}libxml2/lib"
+        "${DEPENDENCIES_HOME}/libxml2/lib"
         "${INDIEZEN_PARENT}/lib"
         )
         
     set (PC_LIBXML_BINDIR
         "${INDIEZEN_PARENT}/libxml2-2.6.30+.win32/bin"
         "${INDIEZEN_PARENT}/libxml2/bin"
-        "${DEPENDENCIES_HOME}libxml2/bin"
+        "${DEPENDENCIES_HOME}/libxml2/bin"
         "${INDIEZEN_PARENT}/bin"
         )
 

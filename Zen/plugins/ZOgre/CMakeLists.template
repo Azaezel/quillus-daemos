@@ -34,7 +34,7 @@ add_library ( ZOgre ${LIB_TYPE} ${ZOgre_SRC} )
 
 add_dependencies( ZOgre ZenCore ZenEngine )
 
-target_link_libraries( ZOgre ${OGRE_LIBRARIES} )
+target_link_libraries( ZOgre ZenCore ZenEngine ${OGRE_LIBRARIES} )
 
 set_target_properties ( ZOgre 
 						PROPERTIES

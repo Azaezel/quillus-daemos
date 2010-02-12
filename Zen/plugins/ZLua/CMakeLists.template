@@ -34,7 +34,7 @@ add_library ( ZLua ${LIB_TYPE} ${ZLua_SRC} )
 
 add_dependencies( ZLua ZenCore )
 
-target_link_libraries( ZLua ${LUA_LIBRARY} )
+target_link_libraries( ZLua ZenCore ${LUA_LIBRARY} )
 
 set_target_properties ( ZLua 
 						PROPERTIES
