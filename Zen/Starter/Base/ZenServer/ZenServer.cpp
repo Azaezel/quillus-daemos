@@ -38,7 +38,6 @@
 #include <iostream>
 
 #include <stddef.h>
-#include <conio.h>
 
 namespace po = boost::program_options;
 
@@ -102,7 +101,7 @@ ZenServer::init(int _argc, const char* _argv[])
         ).normalize();
     Zen::Plugins::I_PluginManager::app_ptr_type pApp = Zen::Plugins::I_PluginManager::getSingleton().installApplication(configPath);
 
-    Zen::Enterprise::AppServer::I_ApplicationServerManager& manager = 
+    Zen::Enterprise::AppServer::I_ApplicationServerManager& manager =
         Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton();
 
     //~pApp->getConfiguration()->getConfigurationElement("protocols");
@@ -149,8 +148,6 @@ ZenServer::run()
     // TODO integrate with the console and wait until told to stop.
 
     std::cout << "Running.... press a key to terminate." << std::endl;
-
-    getch();
 
     return 0;
 }

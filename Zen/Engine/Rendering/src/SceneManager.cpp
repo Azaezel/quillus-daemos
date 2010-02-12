@@ -24,7 +24,8 @@
 
 #include "SceneManager.hpp"
 
-#include "../I_SceneServiceFactory.hpp"
+#include <Zen/Engine/Rendering/I_SceneServiceFactory.hpp>
+#include <Zen/Engine/Rendering/I_SceneService.hpp>
 
 #include <Zen/Core/Plugins/I_Configuration.hpp>
 #include <Zen/Core/Plugins/I_ConfigurationElement.hpp>
@@ -62,18 +63,59 @@ SceneManager::create(const std::string& _type)
 
     if (pFactory == NULL)
     {
-        // TODO Error
-        return pService;
+        std::stringstream errorMessage;
+        errorMessage << "Zen::Rendering::SceneManager::create() : Error: could not create service factory for type " << _type;
+
+        throw Utility::runtime_exception(errorMessage.str());
     }
 
-#if 0   // TODO 
-    if (m_pDefaultScriptEngine != NULL)
+    pService = m_sceneServiceCache.cacheService(_type, pFactory->create());
+
+    if (m_pDefaultScriptEngine.isValid())
     {
         registerScriptEngine(m_pDefaultScriptEngine, pService);
     }
-#endif
 
-    return m_sceneServiceCache.cacheService(_type, pFactory->create());
+    return pService;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
+{
+    ///registerScriptTypes(_pEngine);
+
+    /// Register all of the existing services
+    if(!m_pDefaultScriptEngine.isValid())
+    {
+        Threading::CriticalSection guard(m_sceneServiceCache.getLock());
+
+        for(scene_service_cache_type::iterator iter = m_sceneServiceCache.begin(); iter != m_sceneServiceCache.end(); iter++)
+        {
+            registerScriptEngine(_pEngine, iter->second);
+        }
+    }
+
+    m_pDefaultScriptEngine = _pEngine;
+    m_scriptTypesInitialized = false;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SceneManager::pScriptModule_type
+SceneManager::getDefaultScriptModule()
+{
+    return m_pModule;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneManager::registerScriptEngine(pScriptEngine_type _pEngine, pSceneService_type _pService)
+{
+    // Allow the scene service to append it's own meta data.
+    _pService->registerScriptEngine(_pEngine);
+
+    // 
+    //new I_RenderingService::ScriptObjectReference_type(m_pRenderingModule, m_pRenderingServiceType, _pService, "renderingService");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

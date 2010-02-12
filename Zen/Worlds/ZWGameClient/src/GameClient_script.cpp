@@ -244,9 +244,20 @@ GameClient::getScriptObject()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+GameClient::registerScriptEngine(pScriptEngine_type _pScriptEngine)
+{
+    // This isn't really used with the Base Starter kit since ZGameLoader 
+    // registers the script engine with the BaseGameClient.
+
+    // Just ignore this method.
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 GameClient::createScriptTypes()
 {
     GameObject::createScriptTypes(m_base.getScriptEnginePtr());
+
     // This is where you'd create script types that are outside of the base
     // script module.
 }

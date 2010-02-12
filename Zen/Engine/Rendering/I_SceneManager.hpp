@@ -32,6 +32,10 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+    namespace Scripting {
+        class I_ScriptEngine;
+        class I_ScriptModule;
+    }   // namespace Scripting
 namespace Engine {
 namespace Rendering {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -42,6 +46,9 @@ class RENDERING_DLL_LINK I_SceneManager
     /// @name Types
     /// @{
 public:
+    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptEngine> pScriptEngine_type;
+    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptModule> pScriptModule_type;
+
     typedef Memory::managed_ptr<I_SceneService>         pSceneService_type;
     typedef Memory::managed_weak_ptr<I_SceneService>    wpSceneService_type;
     /// @}
@@ -50,6 +57,18 @@ public:
     /// @{
 public:
     virtual pSceneService_type create(const std::string& _type) = 0;
+
+    /// Register the default script engine for all rendering services.
+    /// Every rendering service that has been created or is created in the future
+    /// will use this script engine.
+    /// @param _pEngine NULL to set the default engine to none, but doing so will
+    ///             not unregister the script engine to services that have already
+    ///             been created.  It will only prevent subsequent services from
+    ///             using this script engine.
+    virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine) = 0;
+
+    /// Get the default Rendering script module.
+    virtual pScriptModule_type getDefaultScriptModule() = 0;
     /// @}
 
     /// @name Static Methods

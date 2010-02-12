@@ -34,7 +34,7 @@ link_directories ( ${DEV_LIB}  ${LibXML2_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS} )
 
 add_library ( ZenCore ${LIB_TYPE} ${ZenCore_SRC} )
 
-target_link_libraries( ZenCore ${LIBXML2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} )
+target_link_libraries( ZenCore ${LIBXML2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} )
 
 set_target_properties ( ZenCore 
 						PROPERTIES

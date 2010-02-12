@@ -101,6 +101,8 @@ public:
 protected:
              I_RenderableResource();
     virtual ~I_RenderableResource();
+private:
+    I_RenderableResource(const I_RenderableResource& _copy) {}
     /// @}
 
 };  // interface I_RenderableResource

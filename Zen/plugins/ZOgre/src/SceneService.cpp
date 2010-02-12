@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -43,6 +43,9 @@ namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SceneService::SceneService()
 :   m_pScriptObject(NULL)
+,   m_pSceneManager(NULL)
+,   m_pModule(NULL)
+,   m_cameras()
 {
     //m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "default");
     //Ogre::Root::getSingleton().initialise(false, "IndieZen Rendering Window");
@@ -160,6 +163,20 @@ SceneService::onDestroyLight(wpLight_type& _wpLight)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneService::setSkyBox(bool _enable, const std::string& _materialName)
+{
+    m_pSceneManager->setSkyBox(_enable, _materialName);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SceneService::pSceneNode_type
+SceneService::createSceneNode(const std::string& _name)
+{
+    return createChildNode(_name);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Scripting::I_ObjectReference*
 SceneService::getScriptObject()
 {
@@ -168,10 +185,32 @@ SceneService::getScriptObject()
     {
         m_pScriptObject = new ScriptObjectReference_type(
             Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(),
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), 
+            getSelfReference().lock()
+        );
     }
 
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
+{
+    m_pModule = new Zen::Scripting::script_module(
+        _pScriptEngine,
+        "OgreSceneService"
+    );
+
+    m_pModule->addType<SceneService>("OgreSceneService", "OGRE Scene Service")
+        .addMethod("createSceneNode", &SceneService::createSceneNode)
+        .addMethod("createParticleSystem", &SceneService::createParticleSystem)
+        .addMethod("setSkyBox", &SceneService::setSkyBox)
+    ;
+
+    SceneNode::registerScriptModule(*m_pModule);
+    AttachableObject::registerScriptModule(*m_pModule);
+    ParticleSystem::registerScriptModule(*m_pModule);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

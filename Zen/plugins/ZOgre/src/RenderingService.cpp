@@ -37,6 +37,7 @@ namespace ZOgre {
 RenderingService::RenderingService()
 :   m_root(Ogre::Root::getSingleton())
 ,   m_pScriptObject(NULL)
+,   m_pModule(NULL)
 {
     std::cout << "new RenderingService" << std::endl;
 
@@ -66,8 +67,6 @@ RenderingService::RenderingService()
 RenderingService::~RenderingService()
 {
 }
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Zen::Engine::Rendering::I_Context*
@@ -115,10 +114,33 @@ RenderingService::getScriptObject()
     {
         m_pScriptObject = new ScriptObjectReference_type(
             Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(),
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), 
+            getSelfReference().lock()
+        );
     }
 
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+RenderingService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
+{
+    m_pModule = new Zen::Scripting::script_module(
+        _pScriptEngine,
+        "OgreRenderingService"
+    );
+
+    m_pModule->addType<RenderingService>("OgreRenderingService", "OGRE Rendering Service")
+        .addMethod("showConfigDialog", &RenderingService::showConfigDialog)
+    ;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+RenderingService::showConfigDialog()
+{
+    return m_root.showConfigDialog();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

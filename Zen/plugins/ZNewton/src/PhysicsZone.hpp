@@ -151,7 +151,7 @@ private:
     /// @name 'Structors
     /// @{
 public:
-             PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max);
+             PhysicsZone();
     virtual ~PhysicsZone();
     /// @}
 

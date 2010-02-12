@@ -29,7 +29,7 @@
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Event/Event.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+#include <Zen/Core/Scripting/I_ScriptableService.hpp>
 #include <Zen/Core/Scripting/ObjectReference.hpp>
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -54,7 +54,7 @@ class I_RenderingServiceFactory;
 /// Basic renderer interface
 /// This class
 class RENDERING_DLL_LINK I_RenderingService
-:   public virtual Zen::Scripting::I_ScriptableType
+:   public virtual Zen::Scripting::I_ScriptableService
 {
     /// @name Types
     /// @{

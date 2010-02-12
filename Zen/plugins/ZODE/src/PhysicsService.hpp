@@ -48,7 +48,7 @@ public:
     /// @name I_PhysicsService implementation
     /// @{
 public:
-    virtual pPhysicsZone_type createZone();
+   	virtual pPhysicsZone_type createZone(const Math::Vector3& _min, const Math::Vector3& _max);
 	virtual void stepSimulation(double _elapsedTime);
     /// @}
 

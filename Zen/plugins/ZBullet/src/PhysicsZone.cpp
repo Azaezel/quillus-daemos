@@ -36,14 +36,14 @@
 #include <boost/bind.hpp>
 #include <Zen/Core/Math/Vector4.hpp>
 
+#include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZBullet {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 //refnote: http://bulletphysics.org/mediawiki-1.5.8/index.php/Hello_World
 PhysicsZone::PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max)
-:   I_PhysicsZone(_min,_max)
-,   m_pScriptModule(Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
+:   m_pScriptModule(Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
 ,   m_pScriptObject(NULL)
 {
 
@@ -70,11 +70,11 @@ PhysicsZone::PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max)
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsZone::~PhysicsZone()
 {
-    delete m_pZone;
-    delete m_pSolver;
-    delete m_pDispatcher;
-    delete m_pCollisionConfiguration;
-    delete m_pBroadphase;
+    if (m_pZone!= NULL) delete m_pZone;
+    if (m_pSolver!= NULL) delete m_pSolver;
+    if (m_pDispatcher!= NULL) delete m_pDispatcher;
+    if (m_pCollisionConfiguration!= NULL) delete m_pCollisionConfiguration;
+    if (m_pBroadphase != NULL) delete m_pBroadphase;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -311,7 +311,10 @@ PhysicsZone::createNullShape()
 {
     CollisionShape* pRawPointer = new CollisionShape();
     pCollisionShape_type pShape(pRawPointer, boost::bind(&PhysicsZone::destroyCollisionShape, this, _1));
-    dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(NewtonCreateNull(m_pZone));
+
+    //bit of a hacktastic workaround, but see http://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=4461&hilit=btRigidBody+vs+btCollisionObject for intent
+    pRawPointer->setShapePtr(new btSphereShape(btScalar(1.)));
+    pRawPointer->setIsNUllShape(true);
     // TODO - set offsetMatrix (currently passing NULL, which centers the body at its origin)
     return pShape;
 }
@@ -322,7 +325,8 @@ PhysicsZone::createBoxShape(float _dx, float _dy, float _dz)
 {
     CollisionShape* pRawPointer = new CollisionShape();
     pCollisionShape_type pShape(pRawPointer, boost::bind(&PhysicsZone::destroyCollisionShape, this, _1));
-    dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(NewtonCreateBox(m_pZone, _dx, _dy, _dz, NULL));
+
+    pRawPointer->setShapePtr(new btBoxShape(btVector3(_dx,_dy,_dz)));
     // TODO - set offsetMatrix (currently passing NULL, which centers the body at its origin)
     return pShape;
 }
@@ -333,7 +337,9 @@ PhysicsZone::createOvoidShape(float _radiusX, float _radiusY, float _radiusZ)
 {
     CollisionShape* pRawPointer = new CollisionShape();
     pCollisionShape_type pShape(pRawPointer, boost::bind(&PhysicsZone::destroyCollisionShape, this, _1));
-    dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(NewtonCreateSphere(m_pZone, _radiusX, _radiusY, _radiusZ, NULL));
+
+    //seem to recall something about a multisphere shape being scalable in multiple directions... research further
+    pRawPointer->setShapePtr(new btSphereShape(btScalar(_radiusX)));
     // TODO - set offsetMatrix (currently passing NULL, which centers the body at its origin)
     return pShape;
 }
@@ -345,7 +351,8 @@ PhysicsZone::createCapsuleShape(float _radius, float _height)
 {
     CollisionShape* pRawPointer = new CollisionShape();
     pCollisionShape_type pShape(pRawPointer, boost::bind(&PhysicsZone::destroyCollisionShape, this, _1));
-    dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(NewtonCreateCapsule(m_pZone, _radius, _height, NULL));
+
+    pRawPointer->setShapePtr(new btCapsuleShape(_radius, _height));
     // TODO - set offsetMatrix (currently passing NULL, which centers the body at its origin)
     return pShape;
 }
@@ -402,18 +409,13 @@ PhysicsZone::createHeightFieldShapeFromRaw(std::string _filename, size_t _size, 
     CollisionShape* pRawPointer = new CollisionShape();
     pCollisionShape_type pShape(pRawPointer, boost::bind(&PhysicsZone::destroyCollisionShape, this, _1));
 
-    dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(NewtonCreateTreeCollision(m_pZone, NULL));
-    std::cout << "\nTreeCollision construction begun from RAW file..." << std::endl;
-    NewtonTreeCollisionBeginBuild((dynamic_cast<CollisionShape*>(pShape.get())->getShapePtr()));
-
     // TODO - verify the file is a RAW file
     FILE* file;
     file = fopen(_filename.c_str(), "rb");
     if( file== NULL )
-	{
+    {
         std::cout << "Error: could not open file " << _filename.c_str() << "in CollisionShape::initHeightFieldShape()." << std::endl;
-        
-            throw Zen::Utility::runtime_exception("Zen::ZBullet::PhysicsZone::createHeightFieldShapeFromRaw - Could not Open File!");
+        throw Zen::Utility::runtime_exception("Zen::ZBullet::PhysicsZone::createHeightFieldShapeFromRaw - Could not Open File!");
     }
 
     // read the RAW file into a heightfield array
@@ -428,89 +430,15 @@ PhysicsZone::createHeightFieldShapeFromRaw(std::string _filename, size_t _size, 
         for (column = 0; column < _size; column++)
         {
             fread(&height, sizeof(U16), 1, file);
-            pHeightFieldArray[column + (row * _size)] = height / heightScaleFactor;
+            pHeightFieldArray[column + (row * _size)] = height;
         }
     }
     fclose(file);
 
-    // now parse the array to create triangle vertices
-    std::cout << "TreeCollision finished reading into Array.  Now assigning vertices for row ";
-    Zen::Math::Real vertexArray[9];
-    const Zen::Math::Real* pVertexArray = &vertexArray[0];
-    size_t sizeMinusOne = _size - 1;
-    size_t arrIndex;
-    int strideSize = sizeof(Zen::Math::Real) * 3;
-    for (row = 0; row < sizeMinusOne; row++)
-    {
-        std::cout << " " << row;
-        for (column = 0; column < sizeMinusOne; column++)
-        {
-            arrIndex = column + (row * _size);
-
-            vertexArray[0] = (Zen::Math::Real)column * _scaleXY;
-            vertexArray[1] = pHeightFieldArray[arrIndex + _size];
-            vertexArray[2] = (Zen::Math::Real)(row + 1.0f) * _scaleXY;
-
-            vertexArray[3] = (Zen::Math::Real)(column + 1.0f) * _scaleXY;
-            vertexArray[4] = pHeightFieldArray[arrIndex + 1];
-            vertexArray[5] = (Zen::Math::Real)row * _scaleXY;
-
-            vertexArray[6] = (Zen::Math::Real)column * _scaleXY;
-            vertexArray[7] = pHeightFieldArray[arrIndex];
-            vertexArray[8] = (Zen::Math::Real)row * _scaleXY;
-
-            NewtonTreeCollisionAddFace(dynamic_cast<CollisionShape*>(pShape.get())->getShapePtr(), 3, pVertexArray, strideSize, 0);
-
-            vertexArray[0] = (Zen::Math::Real)(column + 1.0f) * _scaleXY;
-            vertexArray[1] = pHeightFieldArray[arrIndex + _size + 1];
-            vertexArray[2] = (Zen::Math::Real)(row + 1.0f) * _scaleXY;
-
-            vertexArray[3] = (Zen::Math::Real)(column + 1.0f) * _scaleXY;
-            vertexArray[4] = pHeightFieldArray[arrIndex + 1];
-            vertexArray[5] = (Zen::Math::Real)row * _scaleXY;
-
-            vertexArray[6] = (Zen::Math::Real)column * _scaleXY;
-            vertexArray[7] = pHeightFieldArray[arrIndex + _size];
-            vertexArray[8] = (Zen::Math::Real)(row + 1.0f) * _scaleXY;
-
-            NewtonTreeCollisionAddFace(dynamic_cast<CollisionShape*>(pShape.get())->getShapePtr(), 3, pVertexArray, strideSize, 0);
-        }
-    }
-
-    std::cout << "\nTreeCollision finished assigning vertices.\nNow beginning mesh optimization...\n\nPlease be patient, as this may take a few MINUTES depending on your computer." << std::endl;
-    // TODO - reset this to final parm of 1 to force optimization.  set to 0 for testing speed only.
-    NewtonTreeCollisionEndBuild(dynamic_cast<CollisionShape*>(pShape.get())->getShapePtr(), 1);
-    //NewtonTreeCollisionEndBuild(collision, 0);
-    std::cout << "TreeCollision finished optimizing.  Completed." << std::endl;
+    //btHeightfieldTerrainShape::btHeightfieldTerrainShape(int heightStickWidth, int heightStickLength,void* heightfieldData,btScalar maxHeight,int upAxis,bool useFloatData,bool flipQuadEdges)
+    dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(new btHeightfieldTerrainShape(_scaleXY,_scaleXY,&pHeightFieldArray,_maxHeight,0,true,false));
+//    std::cout << "\nTreeCollision finished assigning vertices.\nNow beginning mesh optimization...\n\nPlease be patient, as this may take a few MINUTES depending on your computer." << std::endl;
     delete pHeightFieldArray;
-
-    if (_bSerialize)
-    {
-	    //FILE* file;
-        //errno_t errcode;
-        std::string serializeFile = _filename;
-	    serializeFile.append(".collision");
-		file = fopen(serializeFile.c_str(), "wb");
-		if( file== NULL )
-		{
-            std::cout << "Error: could not open file " << _filename.c_str() << " for writing while serializing terrain." << std::endl;
-            throw Zen::Utility::runtime_exception("Zen::ZBullet::PhysicsZone::createHeightFieldShapeFromRaw - Could not Serialize File!");
-        }
-        std::cout << "\nTreeCollision serializing started to file " << serializeFile.c_str() << std::endl;
-	    NewtonTreeCollisionSerialize(dynamic_cast<CollisionShape*>(pShape.get())->getShapePtr(), ZBulletSerializeFile, file);
-        std::cout << "TreeCollision serializing completed." << std::endl;
-	    fclose(file);
-    }
-
-    /* this is not description logic
-    // Note: collision is deleted in attachBody() so do not use it after this function call.
-    if (!attachBody((btCollisionShape *)pShape->getShapePtr()))
-        return false;
-
-    btRigidBodySetMatrix(pShape->getActorPtr(), _transform.m_array);
-
-    return true;
-    */
 
     return pShape;
 }
@@ -532,9 +460,9 @@ PhysicsZone::createHeightFieldShapeFromSerialization(std::string _filename, cons
     CollisionShape* pRawPointer = new CollisionShape();
     pCollisionShape_type pShape(pRawPointer, boost::bind(&PhysicsZone::destroyCollisionShape, this, _1));
 
-    dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(NewtonCreateTreeCollision(m_pZone, NULL));
+    //dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(NewtonCreateTreeCollision(m_pZone, NULL));
 
-    dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(NewtonCreateTreeCollisionFromSerialization(m_pZone, NULL, ZBulletDeSerializeFile, file));
+    //dynamic_cast<CollisionShape*>(pShape.get())->setShapePtr(NewtonCreateTreeCollisionFromSerialization(m_pZone, NULL, ZBulletDeSerializeFile, file));
 	fclose (file);
     std::cout << "Finished loading TreeCollision from file." << std::endl;
     

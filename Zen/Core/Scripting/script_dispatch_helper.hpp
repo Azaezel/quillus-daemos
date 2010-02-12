@@ -30,9 +30,6 @@
 #define ZEN_SCRIPTING_MAX_SCRIPT_PARMS 10
 #endif
 
-#include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Memory/managed_weak_ptr.hpp>
-
 #include <Zen/Core/Scripting/script_convert_argument.hpp>
 
 #include <boost/preprocessor/repetition/enum_trailing_params.hpp>
@@ -48,8 +45,6 @@
 #include <boost/preprocessor/iterate.hpp>
 #include <boost/preprocessor/cat.hpp>
 
-#include <boost/type_traits/remove_reference.hpp>
-
 #include <boost/any.hpp>
 
 #include <sstream>
@@ -63,24 +58,6 @@ namespace Scripting {
 namespace detail {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ;
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-/// Template for determining if a pointer is a managed_ptr<Class_type>
-template<typename Class_type, typename Pointer_type>
-struct
-is_managed_pointer
-: public boost::false_type
-{
-};
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-/// Specialization for the case that the pointer is managed_ptr<Class_type>
-template<typename Class_type>
-struct
-is_managed_pointer<Class_type, Zen::Memory::managed_ptr<Class_type> >
-: public boost::true_type
-{
-};
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 /// Helper template for using the correct version of getRawObject or getObject
@@ -126,18 +103,6 @@ struct get_script_object_pointer<ScriptableClass_type, false, true>
     {
         return dynamic_cast<ScriptableClass_type*>(_pObject->getObject());
     }
-};
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-/// Is boost::true_type if Return_type implements I_ScriptableType
-template<typename Return_type>
-struct
-is_scriptable_type : public boost::is_base_of<I_ScriptableType,
-                        typename boost::remove_pointer<
-                            typename boost::remove_reference<Return_type>::type
-                        >::type
-                     >
-{
 };
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -190,53 +155,6 @@ script_override_return_type<Return_type, false, false, false, false, true>
     typedef Zen::Memory::managed_weak_ptr<I_ScriptableType>  type;
 };
 
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-/// Template to remove the managed_ptr<> wrapper of a class
-template<typename Return_type>
-struct
-removed_managed_ptr
-{
-    typedef Return_type             type;
-};
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-/// Template to help determine if a class is a managed_ptr<I_ScriptableType>
-template<typename Return_type>
-struct
-is_managed_scriptable_type 
-: public boost::false_type
-{
-};
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-/// Template specialization for the case where Return_type is a 
-/// managed_ptr of a class that derives from I_ScriptableType.
-template<typename Return_type>
-struct
-is_managed_scriptable_type<Zen::Memory::managed_ptr<Return_type> >
-:   public is_scriptable_type<Return_type>
-{
-};
-
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-/// Template to help determine if a class is a managed_weak_ptr<I_ScriptableType>
-template<typename Return_type>
-struct
-is_weak_ptr_scriptable_type 
-: public boost::false_type
-{
-};
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-/// Template specialization for the case where Return_type is a 
-/// managed_weak_ptr of a class that derives from I_ScriptableType.
-template<typename Return_type>
-struct
-is_weak_ptr_scriptable_type<Zen::Memory::managed_weak_ptr<Return_type> >
-:   public is_scriptable_type<Return_type>
-{
-};
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 } // namespace detail
@@ -511,7 +429,6 @@ public:
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#if 1
 namespace detail {
 
 template<typename Method_type, typename Return_type, typename OverrideReturn_type, class ScriptableClass_type BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class parmType)>
@@ -542,18 +459,6 @@ get_dispatch_helper(Method_type _function, Return_type(ScriptableClass_type::*_m
     return detail::get_dispatch_helper<Method_type, Return_type, typename script_override_return_type<Return_type>::type,
         ScriptableClass_type BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, parmType)>(_function, _method);
 }
-
-#else
-
-template<typename Method_type, typename Return_type, class ScriptableClass_type BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class parmType)>
-script_dispatch_helper<Method_type, Return_type, ScriptableClass_type>&
-get_dispatch_helper(Method_type _function, Return_type(ScriptableClass_type::*_method)(BOOST_PP_ENUM_PARAMS_Z(1, N, parmType)))
-{
-    static BOOST_PP_CAT(derived_dispatch_helper, N) <Method_type, Return_type, ScriptableClass_type BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, parmType)> tmp;
-    return tmp;
-}
-#endif
-
 
 
 #undef N

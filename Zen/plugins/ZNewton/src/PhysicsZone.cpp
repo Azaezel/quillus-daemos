@@ -42,9 +42,8 @@
 namespace Zen {
 namespace ZNewton {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-PhysicsZone::PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max)
-:   I_PhysicsZone(_min,_max)
-,   m_pScriptModule(Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
+PhysicsZone::PhysicsZone()
+:   m_pScriptModule(Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
 ,   m_pScriptObject(NULL)
 {
     m_pZone = NewtonCreate(NULL, NULL);
@@ -54,9 +53,12 @@ PhysicsZone::PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max)
 
     NewtonSetFrictionModel(m_pZone, 1);
     NewtonSetSolverModel(m_pZone, 2);
+    
+    Math::Vector3 min = Math::Vector3(-1000,-1000,-1000);
+    Math::Vector3 max = Math::Vector3(1000,1000,1000);
 
 	// set the size of the world
-    NewtonSetWorldSize(m_pZone, _min.m_array, _max.m_array); 
+    NewtonSetWorldSize(m_pZone, min.m_array, max.m_array);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

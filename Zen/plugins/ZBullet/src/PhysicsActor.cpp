@@ -65,6 +65,7 @@ PhysicsActor::PhysicsActor(wpPhysicsZone_type _zone)
 PhysicsActor::~PhysicsActor()
 {
     if (m_MotionState != NULL) delete m_MotionState;
+    if (m_pActor != NULL) delete m_pActor;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -134,7 +135,16 @@ PhysicsActor::attachBody(pCollisionShape_type _collision)
 
     m_pActor = new btRigidBody(rbInfo);
     m_pActor->setUserPointer(this);
-    m_pActor->setCollisionFlags(m_pActor->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+    //http://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=4461&hilit=btRigidBody+vs+btCollisionObject
+    //might rework this to be part of collisiongroups later
+    if (dynamic_cast<CollisionShape*>(_collision.get())->isNULLShape())
+    {
+        m_pActor->setCollisionFlags(m_pActor->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    }
+    else
+    {
+        m_pActor->setCollisionFlags(m_pActor->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+    }
     return true;
 }
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

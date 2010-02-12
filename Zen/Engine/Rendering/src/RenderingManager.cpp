@@ -80,12 +80,14 @@ RenderingManager::create(const std::string& _type)
         throw Utility::runtime_exception(errorMessage.str());
     }
 
+    pService = m_renderingServiceCache.cacheService(_type, pFactory->create());
+
     if (m_pDefaultScriptEngine.isValid())
     {
         registerScriptEngine(m_pDefaultScriptEngine, pService);
     }
 
-    return m_renderingServiceCache.cacheService(_type, pFactory->create());
+    return pService;
 
 }
 
@@ -121,7 +123,11 @@ RenderingManager::getDefaultScriptModule()
 void
 RenderingManager::registerScriptEngine(pScriptEngine_type _pEngine, pRenderingService_type _pService)
 {
-    new I_RenderingService::ScriptObjectReference_type(m_pRenderingModule, m_pRenderingServiceType, _pService, "renderingService");
+    // Allow the rendering service to append it's own meta data.
+    _pService->registerScriptEngine(_pEngine);
+
+    // 
+    //new I_RenderingService::ScriptObjectReference_type(m_pRenderingModule, m_pRenderingServiceType, _pService, "renderingService");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

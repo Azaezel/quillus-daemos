@@ -39,7 +39,7 @@ add_library ( BaseClient ${LIB_TYPE} ${BaseClient_SRC} )
 
 add_dependencies( BaseClient ZenCore ZenEngine BaseCommon )
 
-target_link_libraries( BaseClient ZenCore ZenEngine BaseCommon ${SDL_LIBRARY} )
+target_link_libraries( BaseClient ZenCore ZenEngine BaseCommon ${SDL_LIBRARY} ${Boost_LIBRARIES} )
 
 set_target_properties ( BaseClient 
 						PROPERTIES

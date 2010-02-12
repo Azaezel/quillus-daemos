@@ -37,11 +37,13 @@ namespace ZBullet {
 PhysicsJoint::PhysicsJoint(wpPhysicsZone_type _zone)
 :   m_pZone(_zone)
 {
+    m_pConstraint = NULL;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsJoint::~PhysicsJoint()
 {
+    if (m_pConstraint != NULL) delete m_pConstraint;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -55,7 +57,18 @@ PhysicsJoint::attachActor(PhysicsJoint::pPhysicsActor_type _shape)
 void
 PhysicsJoint::initUpVectorJoint(const Math::Vector3& _upVector)
 {
-    NewtonConstraintCreateUpVector(dynamic_cast<PhysicsZone*>(m_pShape->getPhysicsZone().get())->getZonePtr(), _upVector.m_array, dynamic_cast<PhysicsActor*>(m_pShape.get())->getActorPtr());
+    //reference: http://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=4457&hilit=keep+body+upright 
+    // and http://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=2027&hilit=+new+btGeneric6DofConstraint+
+    // see btRotationalLimitMotor::testLimitValue specificly
+
+    btTransform trans = btTransform(btQuaternion(_upVector.m_x,_upVector.m_y,_upVector.m_z));
+    m_pConstraint = new btGeneric6DofConstraint(*(static_cast<PhysicsActor*>(m_pShape.get())->getActorPtr()),
+        *(static_cast<PhysicsActor*>(m_pShape.get())->getActorPtr()), trans, trans.inverse(), false); 
+
+    m_pConstraint->setAngularLowerLimit(btVector3(FLT_MAX,0,0));
+    m_pConstraint->setAngularUpperLimit(btVector3(-FLT_MAX,0,0));
+
+    //NewtonConstraintCreateUpVector(dynamic_cast<PhysicsZone*>(m_pShape->getPhysicsZone().get())->getZonePtr(), _upVector.m_array, dynamic_cast<PhysicsActor*>(m_pShape.get())->getActorPtr());
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

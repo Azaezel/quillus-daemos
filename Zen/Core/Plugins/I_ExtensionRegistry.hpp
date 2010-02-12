@@ -137,7 +137,7 @@ public:
     /// @name 'Structors
     /// @{
 protected:
-			 I_ExtensionRegistry();
+                 I_ExtensionRegistry();
 	virtual ~I_ExtensionRegistry();
     /// @}
 

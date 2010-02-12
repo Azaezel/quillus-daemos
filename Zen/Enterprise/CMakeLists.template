@@ -11,7 +11,7 @@ set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRE
 list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
 
 Find_Package(IndieZen REQUIRED)
-Find_Package(Boost REQUIRED )
+Find_Package(Boost REQUIRED program_options)
 
 SET (LIB_TYPE SHARED)
 
@@ -34,7 +34,7 @@ add_library ( ZenEnterprise ${LIB_TYPE} ${ZenEnterprise_SRC} )
 
 add_dependencies(ZenEnterprise ZenCore)
 
-target_link_libraries( ZenEnterprise )
+target_link_libraries( ZenEnterprise ${Boost_LIBRARIES} )
 
 set_target_properties ( ZenEnterprise 
 						PROPERTIES

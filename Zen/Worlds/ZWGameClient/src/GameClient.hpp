@@ -74,19 +74,37 @@ public:
     typedef Zen::Engine::World::I_TerrainService::pTerrain_type             pTerrain_type;
     /// @}
 
+    /// @name I_BaseGameClient implementation
+    /// @{
+public:
+    virtual void activateGameClientScriptModule();
+    /// @}
+
     /// @name I_GameClient implementation
     /// @{
 public:
     virtual const WindowHandle_type getHandle() const;
-    virtual void activateGameClientScriptModule();
     virtual bool init();
     virtual void run();
+    virtual Engine::Widgets::I_WidgetService& getWidgetService();
+    virtual Engine::Rendering::I_RenderingCanvas& getRenderingCanvas();
+    virtual bool initRenderingService(const std::string& _type, const std::string& _title, int _xRes, int _yRes);
+    virtual bool initTerrainService(const std::string& _type);
+    virtual bool initSkyService(const std::string& _type);
+    virtual bool initInputService(const std::string& _type);
+    virtual bool initWidgetService(const std::string& _type);
     /// @}
 
     /// @name I_ScriptableType implementation
     /// @{
 public:
     virtual Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
+    /// @name I_ScriptableService implementation.
+    /// @{
+public:
+    virtual void registerScriptEngine(pScriptEngine_type _pScriptEngine);
     /// @}
 
     /// @name Script extensions.  All of these methods are

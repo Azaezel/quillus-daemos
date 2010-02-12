@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -26,6 +26,12 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Memory/managed_ptr.hpp>
+
+#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+#include <Zen/Core/Scripting/ObjectReference.hpp>
+
+
 #include <boost/noncopyable.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -37,13 +43,7 @@ namespace Rendering {
 
 /// Object that can be attached to a I_SceneNode
 class RENDERING_DLL_LINK I_AttachableObject
-:   public boost::noncopyable
 {
-    /// @name Types
-    /// @{
-public:
-    /// @}
-
     /// @name I_AttachableObject interface
     /// @{
 public:

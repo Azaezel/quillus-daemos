@@ -37,7 +37,7 @@ PhysicsMaterial::PhysicsMaterial(wpPhysicsZone_type _zone, bool _default)
 :   m_pZone(_zone)
 {
     m_pNewtonZone = dynamic_cast<PhysicsZone*>(m_pZone.get())->getZonePtr();
-    m_defaultGroupID = NULL;
+    m_defaultGroupID = 0;
 
     if (_default)
     {
@@ -45,7 +45,7 @@ PhysicsMaterial::PhysicsMaterial(wpPhysicsZone_type _zone, bool _default)
     }
     else
     {
-        m_id = ZBulletMaterialCreateGroupID(m_pNewtonZone);
+        m_id = m_pZone->getAllMaterials().size();
     }
 
     setCollidable(true);
@@ -53,7 +53,6 @@ PhysicsMaterial::PhysicsMaterial(wpPhysicsZone_type _zone, bool _default)
     setRestitution(0.25f);
     m_staticFriction = 1.0f;
     setDynamicFriction(0.7f);
-    setCallbacks();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

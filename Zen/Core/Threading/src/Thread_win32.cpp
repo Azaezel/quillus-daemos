@@ -77,7 +77,7 @@ Thread_win32::~Thread_win32()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef USE_CPP_THREADING
-extern "C" 
+extern "C"
 {
 void threadFunctionC(void* _pThis)
 {
@@ -185,7 +185,7 @@ Thread_win32::NativeThreadId_win32::operator!=(const I_Thread::ThreadId::I_Nativ
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
-Thread_win32::NativeThreadId_win32::operator <(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+Thread_win32::NativeThreadId_win32::operator<(const I_Thread::ThreadId::I_NativeThreadId& _id) const
 {
     const NativeThreadId_win32* const pNativeThreadId_win32 = dynamic_cast<const NativeThreadId_win32*>(&_id);
     assert(pNativeThreadId_win32 != NULL);

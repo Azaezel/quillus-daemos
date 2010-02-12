@@ -181,7 +181,7 @@ public:
     /// @name 'Structors
     /// @{
 protected:
-             I_PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max);
+             I_PhysicsZone();
     virtual ~I_PhysicsZone();
     /// @}
 };  // interface I_PhysicsZone

@@ -78,6 +78,7 @@ public:
     public:
         virtual bool operator==(const I_NativeThreadId&) const;
         virtual bool operator!=(const I_NativeThreadId&) const;
+        virtual bool operator<(const I_NativeThreadId& _otherId) const;
         virtual I_NativeThreadId* clone() const;
         virtual std::string toString() const;
         /// @}

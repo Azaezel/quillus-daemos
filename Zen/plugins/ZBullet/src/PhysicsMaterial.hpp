@@ -83,8 +83,6 @@ public:
     virtual void setMatMatrixCollidable(pPhysicsMaterial_type _material, bool _collide);
 
 	void setMatMatrixCallback(pPhysicsMaterial_type _material, int _fptrCallback);
-	void setCallbacks();
-
 	void generalCollisionAction();
 
     /// @}

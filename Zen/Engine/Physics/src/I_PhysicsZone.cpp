@@ -30,7 +30,7 @@ namespace Engine {
 namespace Physics {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-I_PhysicsZone::I_PhysicsZone(const Math::Vector3& _min, const Math::Vector3& _max)
+I_PhysicsZone::I_PhysicsZone()
 {
 }
 

@@ -68,10 +68,12 @@ public:
     /// @}
 
 public:
-    /// @ For Internal Newton usage
+    /// @ For Internal Bullet usage
     /// @{
     btCollisionShape* getShapePtr();
     void setShapePtr(btCollisionShape* _shape);
+    void setIsNUllShape(bool _isnull){m_IsNUllFlaged = _isnull;};
+    bool isNULLShape(){return m_IsNUllFlaged;};
     /// @}
 
     /// @name CollisionShape implementation
@@ -102,16 +104,16 @@ public:
     /// @name Member Variables
     /// @{
 private:
-    btCollisionShape*                        m_shape;
-    wpPhysicsZone_type                     m_pZone;
-    Zen::Math::Real                                  m_scaleX, m_scaleY, m_scaleZ;
-    Scripting::I_ObjectReference*           m_pScriptObject;
-    std::string                             m_name;
-	Zen::Math::Real							m_minStrikeLen;
-    unsigned                                m_activationState;
-	int										m_collisionGroup;
-
-	pOwningObject_type                      m_pOwner;
+    btCollisionShape*                   m_pShape;
+    wpPhysicsZone_type                  m_pZone;
+    Zen::Math::Real                     m_scaleX, m_scaleY, m_scaleZ;
+    Scripting::I_ObjectReference*       m_pScriptObject;
+    std::string                         m_name;
+    Zen::Math::Real                     m_minStrikeLen;
+    unsigned                            m_activationState;
+    int                                 m_collisionGroup;
+    bool                                m_IsNUllFlaged;    
+    pOwningObject_type                  m_pOwner;
     /// @}
 
 };  // class CollisionShape

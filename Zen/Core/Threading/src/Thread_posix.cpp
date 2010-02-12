@@ -37,6 +37,7 @@
 
 #include <unistd.h>
 #include <sys/errno.h>
+#include <assert.h>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -162,6 +163,15 @@ Thread_posix::NativeThreadId_posix::operator!=(const I_Thread::ThreadId::I_Nativ
 {
     const NativeThreadId_posix* const pNativeThreadId_posix = static_cast<const NativeThreadId_posix*>(&_id);
     return (pNativeThreadId_posix == NULL) || (::pthread_equal(m_nativeThreadId, pNativeThreadId_posix->m_nativeThreadId) == 0);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Thread_posix::NativeThreadId_posix::operator<(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+{
+    const NativeThreadId_posix* const pNativeThreadId_posix = dynamic_cast<const NativeThreadId_posix*>(&_id);
+    assert(pNativeThreadId_posix != NULL);
+    return (m_nativeThreadId < pNativeThreadId_posix->m_nativeThreadId);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

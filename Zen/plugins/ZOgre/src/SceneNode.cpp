@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -25,8 +25,10 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "SceneNode.hpp"
+#include "SceneService.hpp"
 #include "Camera.hpp"
 #include "ParticleSystem.hpp"
+#include "AttachableObject.hpp"
 
 #include <Zen/Core/Math/Matrix4.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
@@ -129,6 +131,18 @@ SceneNode::setScale(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SceneNode::pSceneNode_type
+SceneNode::createChildSceneNode(const std::string& _nodeName)
+{
+    Ogre::SceneNode* pRawNode = m_pNode->createChildSceneNode(_nodeName);
+    pSceneNode_type pSceneNode(new SceneNode(pRawNode), &SceneService::destroySceneNode);
+
+    return pSceneNode;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static Zen::Scripting::script_module* sm_pScriptModule = NULL;
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Scripting::I_ObjectReference*
 SceneNode::getScriptObject()
 {
@@ -136,11 +150,23 @@ SceneNode::getScriptObject()
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(), 
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+            sm_pScriptModule->getScriptModule(), 
+            sm_pScriptModule->getScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
     }
 
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneNode::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    sm_pScriptModule = &_module;
+
+    _module.addType<SceneNode>("SceneNode", "Scene Node")
+        .addMethod("createChildSceneNode", &SceneNode::createChildSceneNode)
+        .addMethod("attachObject", &SceneNode::scriptAttachObject1)
+    ;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

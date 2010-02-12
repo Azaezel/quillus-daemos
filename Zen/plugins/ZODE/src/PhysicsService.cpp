@@ -45,8 +45,10 @@ PhysicsService::~PhysicsService()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsService::pPhysicsZone_type
-PhysicsService::createZone()
+PhysicsService::createZone(const Math::Vector3& _min, const Math::Vector3& _max)
 {
+    // TODO What to do with _min and _max?  Does ODE use these?
+
     std::cout << "PhysicsService::createZone()" << std::endl;
     pPhysicsZone_type pZone = pPhysicsZone_type(new PhysicsZone(), boost::bind(&PhysicsService::onDestroyPhysicsZone, this, _1));
 

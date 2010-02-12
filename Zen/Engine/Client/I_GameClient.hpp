@@ -41,7 +41,7 @@
 
 #include <Zen/Core/Event/Event.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+#include <Zen/Core/Scripting/I_ScriptableService.hpp>
 #include <Zen/Core/Scripting/ObjectReference.hpp>
 
 #include <string>
@@ -59,12 +59,18 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Engine {
+    namespace Rendering {
+        class I_RenderingCanvas;
+    }   // namespace Rendering
+    namespace Widgets {
+        class I_WidgetService;
+    }   // namespace Widgets
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 /// Basic game client interface
 class CLIENT_DLL_LINK I_GameClient
-:   public virtual Zen::Scripting::I_ScriptableType
+:   public virtual Zen::Scripting::I_ScriptableService
 ,   public Memory::managed_self_ref<I_GameClient>
 {
     /// @name Types
@@ -87,22 +93,46 @@ public:
 
     typedef Memory::managed_ptr<I_GameClient>           pScriptObject_type;
     typedef Scripting::ObjectReference<I_GameClient>    ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                  ScriptWrapper_type;
+    typedef ScriptWrapper_type*                         pScriptWrapper_type;
     /// @}
 
     /// @name I_GameClient interface
     /// @{
 public:
-    /// Get the window handle
+    /// Get the window handle.
     virtual const WindowHandle_type getHandle() const = 0;
 
-    /// 
+    /// Activate the script module for the game developer
+    /// script module.
     virtual void activateGameClientScriptModule() = 0;
 
-    /// Initialize the Game Client
+    /// Initialize the Game Client.
     virtual bool init() = 0;
 
-    /// Run the Game Client
+    /// Run the Game Client.
     virtual void run() = 0;
+
+    /// Get the widget service.
+    virtual Widgets::I_WidgetService& getWidgetService() = 0;
+
+    /// Get the current rendering canvas.
+    virtual Rendering::I_RenderingCanvas& getRenderingCanvas() = 0;
+
+    /// Initialize the rendering service.
+    virtual bool initRenderingService(const std::string& _type, const std::string& _title, int _xRes, int _yRes) = 0;
+
+    /// Initialize the terrain service.
+    virtual bool initTerrainService(const std::string& _type) = 0;
+
+    /// Initialize the sky service.
+    virtual bool initSkyService(const std::string& _type) = 0;
+
+    /// Initialize the input service.
+    virtual bool initInputService(const std::string& _type) = 0;
+
+    /// Initialize the widget service.
+    virtual bool initWidgetService(const std::string& _type) = 0;
     /// @}
 
     /// @name I_ScriptableType implementation

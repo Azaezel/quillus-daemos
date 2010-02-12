@@ -52,7 +52,7 @@ PhysicsService::createZone(const Math::Vector3& _min, const Math::Vector3& _max)
 {
     // TODO evaluate whether or not we should have an unregister function for removing worlds from the list.
 
-    PhysicsZone* pRawZone = new PhysicsZone(_min,_max);
+    PhysicsZone* pRawZone = new PhysicsZone();
     pPhysicsZone_type pZone = pPhysicsZone_type(pRawZone, boost::bind(&PhysicsService::onDestroyPhysicsZone, this, _1));
     m_zoneSet.insert(pZone);
 

@@ -164,6 +164,7 @@ getGameClient(const std::string& _name)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+// TODO This type should be Starter.Base I_GameClient::ptr_type
 static Zen::Engine::Client::I_GameClientFactory::pGameClient_type sm_pGameClient;
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 static

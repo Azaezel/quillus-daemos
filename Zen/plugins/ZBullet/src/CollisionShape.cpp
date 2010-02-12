@@ -46,7 +46,7 @@ namespace Zen {
 namespace ZBullet {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 CollisionShape::CollisionShape()
-:   m_shape(NULL)
+:   m_pShape(NULL)
 ,   m_pScriptObject(NULL)
 ,   m_activationState(1)
 {
@@ -56,11 +56,13 @@ CollisionShape::CollisionShape()
     m_scaleZ = 1.0f;
 
     m_name = "";
+    m_IsNUllFlaged = false;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 CollisionShape::~CollisionShape()
 {
+    if (m_pShape != NULL) delete m_pShape;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -81,14 +83,14 @@ CollisionShape::getName()
 btCollisionShape*
 CollisionShape::getShapePtr()
 {
-    return m_shape;
+    return m_pShape;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 CollisionShape::setShapePtr(btCollisionShape* _shape)
 {
-    m_shape = _shape;
+    m_pShape = _shape;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

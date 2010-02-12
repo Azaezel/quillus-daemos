@@ -26,11 +26,13 @@
 
 #include "NullCamera.hpp"
 
-#include <Zen/Engine/Rendering/I_SceneService.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Core/Memory/managed_self_ref.hpp>
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
+
+#include <Zen/Engine/Rendering/I_SceneService.hpp>
 
 #include "Ogre.hpp"
 
@@ -41,7 +43,9 @@
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+;
 
+/// Wrapper for Ogre::SceneManager.
 class SceneService
 :   public Zen::Engine::Rendering::I_SceneService
 ,   public Memory::managed_self_ref<Zen::Engine::Rendering::I_SceneService>
@@ -49,6 +53,14 @@ class SceneService
     /// @name Types
     /// @{
 public:
+    typedef Zen::Memory::managed_ptr<SceneService>                      pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<SceneService>               ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                                  ScriptWrapper_type;
+    typedef ScriptWrapper_type*                                         pScriptWrapper_type;
+
+    typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptModule>    pScriptModule_type;
+    typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptEngine>    pScriptEngine_type;
+
     typedef Zen::Memory::managed_weak_ptr<Zen::Engine::Rendering::I_Light>  wpLight_type;
     /// @}
 
@@ -67,9 +79,24 @@ public:
     virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
+    /// @name I_ScriptableService implementation
+    /// @{
+public:
+    virtual void registerScriptEngine(pScriptEngine_type _pScriptEngine);
+    /// @}
+
     /// @name SceneService implementation
     /// @{
+public:
+    pSceneNode_type createSceneNode(const std::string& _name);
+
+    void setSkyBox(bool _enable, const std::string& _materialName);
+    /// @}
+
+    /// @name Static methods
+    /// @{
 private:
+    friend class SceneNode;
     static void destroySceneNode(wpSceneNode_type _pNode);
     static void destroyParticleSystem(wpParticleSystem_type _pParticleSystem);
     static void onDestroyLight(wpLight_type& _wpLight);
@@ -87,6 +114,7 @@ public:
 private:
     ScriptObjectReference_type*     m_pScriptObject;
     Ogre::SceneManager*             m_pSceneManager;
+    Zen::Scripting::script_module*  m_pModule;
 
     typedef std::map<std::string, Engine::Camera::I_Camera*>    cameras_type;
     cameras_type        m_cameras;

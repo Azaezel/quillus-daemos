@@ -153,7 +153,6 @@ public:
     /// Do this after all services have been initialized and your game client has
     /// completed adding new methods to the registered script types.
     virtual void activateScriptModules() = 0;
-
     /// @}
 
     /// @name I_BaseGameClient Getter methods

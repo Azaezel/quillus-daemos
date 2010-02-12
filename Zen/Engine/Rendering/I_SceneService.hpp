@@ -31,7 +31,7 @@
 #include <Zen/Core/Event/Event.hpp>
 #include <Zen/Core/Math/Math.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+#include <Zen/Core/Scripting/I_ScriptableService.hpp>
 #include <Zen/Core/Scripting/ObjectReference.hpp>
 
 #include <string>
@@ -50,7 +50,7 @@ class I_SceneServiceFactory;
 class I_ParticleSystem;
 
 class RENDERING_DLL_LINK I_SceneService
-:   public Zen::Scripting::I_ScriptableType
+:   public Zen::Scripting::I_ScriptableService
 {
     /// @name Types
     /// @{

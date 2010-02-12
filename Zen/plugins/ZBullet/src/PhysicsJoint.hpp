@@ -70,6 +70,7 @@ public:
 private:
     pPhysicsActor_type m_pShape;
     wpPhysicsZone_type m_pZone;
+    btGeneric6DofConstraint* m_pConstraint;
     /// @}
 
 };  // class PhysicsJoint

@@ -91,7 +91,6 @@ public:
     virtual void setAngularDamping(const Math::Vector3& _damping);
     virtual const Math::Real getLinearDamping() const;
     virtual void setLinearDamping(float _damping);
-    virtual void setAutoFreeze(bool _bFreeze);
     virtual void setSleepingThresholds(float _minLinearMotion, float _minAngularMotion);
     virtual void setActivationState(unsigned _state);
     virtual int getActivationState();

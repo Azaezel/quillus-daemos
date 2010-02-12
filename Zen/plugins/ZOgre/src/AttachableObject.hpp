@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,54 +20,68 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_ENGINE_RENDERING_I_PARTICLE_SYSTEM_HPP_INCLUDED
-#define ZEN_ENGINE_RENDERING_I_PARTICLE_SYSTEM_HPP_INCLUDED
-
-#include "Configuration.hpp"
-
-#include <Zen/Core/Memory/managed_ptr.hpp>
+#ifndef ZEN_ZOGRE_ATTACHABLE_OBJECT_HPP_INCLUDED
+#define ZEN_ZOGRE_ATTACHABLE_OBJECT_HPP_INCLUDED
 
 #include <Zen/Engine/Rendering/I_AttachableObject.hpp>
 
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+#include <Zen/Core/Utility/runtime_exception.hpp>
+#include <Zen/Core/Scripting.hpp>
+
+#include <OgreRoot.h>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Engine {
-namespace Rendering {
+namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-class RENDERING_DLL_LINK I_ParticleSystem
+class AttachableObject
 :   public virtual Zen::Engine::Rendering::I_AttachableObject
+,   public Zen::Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
 public:
+    typedef AttachableObject*                               pScriptObject_type;
+    typedef Scripting::ObjectReference<AttachableObject>    ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                      ScriptWrapper_type;
     /// @}
-    
-    /// @name I_ParticleSystem interface
+
+    /// @name I_AttachableObject implementation
     /// @{
 public:
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
+    /// @name Static methods
+    /// @{
+    static void registerScriptModule(Zen::Scripting::script_module& _module);
     /// @}
 
     /// @name 'Structors
     /// @{
 protected:
-             I_ParticleSystem();
-    virtual ~I_ParticleSystem();
+             AttachableObject();
+    virtual ~AttachableObject();
     /// @}
 
-};  // interface I_ParticleSystem
+    /// @name Member Variables
+    /// @{
+protected:
+    ScriptWrapper_type*     m_pScriptObject;
+    /// @}
+
+};  // class SceneNode
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace Rendering
-}   // namespace Engine
-namespace Memory {
-    // I_ParticleSystem is managed by factory
-    template<>
-    struct is_managed_by_factory<Zen::Engine::Rendering::I_ParticleSystem> : public boost::true_type{};
-}   // namespace Memory
+}   // namespace ZOgre
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_ENGINE_RENDERING_I_PARTICLE_SYSTEM_HPP_INCLUDED
+#endif // ZEN_ZOGRE_SCENE_NODE_HPP_INCLUDED
