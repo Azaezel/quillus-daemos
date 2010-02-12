@@ -11,12 +11,13 @@ ENDIF (PYTHON_INCLUDE_DIR)
 FIND_PATH(PYTHON_INCLUDE_DIR python.h
 	HINTS 
 	${DEPENDENCIES_HOME}/python/include
+	${DEPENDENCIES_HOME}/python26/include
 	/usr/include/python
 )
 
-FIND_LIBRARY(PYTHON_LIBRARY python26 
+FIND_LIBRARY(PYTHON_LIBRARY python26
 	HINTS
-	${DEV_LIB}
+	${DEPENDENCIES_HOME}/python26/libs
 	/usr/lib
 )
 
