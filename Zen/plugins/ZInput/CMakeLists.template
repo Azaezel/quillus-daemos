@@ -34,7 +34,7 @@ add_library ( ZInput ${LIB_TYPE} ${ZInput_SRC} )
 
 add_dependencies( ZInput ZenCore ZenEngine )
 
-target_link_libraries( ZInput ${OIS_LIBRARIES} )
+target_link_libraries( ZInput ZenCore ZenEngine ${OIS_LIBRARIES} )
 
 set_target_properties ( ZInput 
 						PROPERTIES
