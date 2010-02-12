@@ -34,7 +34,7 @@ add_library ( ZMicroPather ${LIB_TYPE} ${ZMicroPather_SRC} )
 
 add_dependencies( ZMicroPather ZenCore ZenEngine )
 
-target_link_libraries( ZMicroPather )
+target_link_libraries( ZMicroPather ZenCore ZenEngine )
 
 set_target_properties ( ZMicroPather 
 						PROPERTIES
