@@ -20,6 +20,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
+//  Jason Smith   jsmith@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef INDIEZEN_ZPYTHON_PYTHON_TYPE_HPP_INCLUDED
 #define INDIEZEN_ZPYTHON_PYTHON_TYPE_HPP_INCLUDED

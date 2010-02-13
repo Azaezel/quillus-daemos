@@ -2,6 +2,7 @@
 // IndieZen Game Engine Framework
 //
 // Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C)        2010 Jason Smith
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -69,7 +70,7 @@ PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const s
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(OBJECT_FUNCTION_ARGS)
+,   m_functionType(OBJ_FUNCTION_ARGS)
 ,   m_function2(_function)
 {
     init();
@@ -82,7 +83,7 @@ PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const s
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(OBJECT_FUNCTION_NO_ARGS)
+,   m_functionType(OBJ_FUNCTION_NO_ARGS)
 ,   m_function3(_function)
 {
     init();
@@ -116,7 +117,7 @@ PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const s
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const std::string& _docString, 
-                           Scripting::I_ScriptType::bool_function_no_args_type _function, PyCFunction _pCFunction)
+                           Scripting::I_ScriptType::bool_function_no_args_type  _function, PyCFunction _pCFunction)
 :   m_pType(_pType)
 ,   m_name(_name)
 ,   m_docString(_docString)
@@ -162,6 +163,19 @@ PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const s
 ,   m_pCFunction(_pCFunction)
 ,   m_functionType(INT_FUNCTION_ARGS)
 ,   m_function9(_function)
+{
+    init();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const std::string& _docString,
+                           Scripting::I_ScriptMethod* _function, PyCFunction _pCFunction)
+:   m_pType(_pType)
+,   m_name(_name)
+,   m_docString(_docString)
+,   m_pCFunction(_pCFunction)
+,   m_fucntionType(GENERIC_FUNCTION_ARGS)
+,   m_function10(_function)
 {
     init();
 }
@@ -239,6 +253,7 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
         case STRING_FUNCTION_ARGS:
         case BOOL_FUNCTION_ARGS:
         case INT_FUNCTION_ARGS:
+        case GENERIC_FUNCTION_ARGS:
             {
                 std::vector<boost::any> parms;
 
@@ -325,6 +340,10 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                 {
                     const int returnValue = m_function9(pObj, parms);
                     return PyLong_FromLong(returnValue);
+                }
+                else if (m_functionType == GENERIC_FUNCTION_ARGS)
+                {
+
                 }
 
             } // case All functions that take args
