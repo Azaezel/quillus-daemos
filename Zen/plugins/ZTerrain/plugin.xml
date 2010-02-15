@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZTerrain"
+   name="IndieZen Terrain Plug-in"
+   version="0.2.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZTerrain">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+    </requires>
+
+	<extension
+          point="Zen::Engine::World::TerrainService"
+          id="ZTerrain"
+          name="IndieZen Terrain Service"
+          type="ZTerrain">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<terrain-service
+              class="Zen::ZTerrain::TerrainService"
+              type="ZTerrain">
+		</terrain-service>
+	</extension>
+
+</plugin>

@@ -1,0 +1,14 @@
+material Default
+{
+	// define one technique for rendering a wall
+	technique
+	{
+		// render a wall in one pass
+		pass
+		{
+			ambient 0 0.545 0.545
+			diffuse 0 0.545 0.545
+			specular 0 0.545 0.545 120
+		}
+	}
+}

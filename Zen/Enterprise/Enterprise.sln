@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Database", "Database\Database.vcproj", "{C243F60A-CF80-46AC-865B-1047DC5ABBF4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Networking", "Networking\Networking.vcproj", "{104C0FA9-540A-4D10-A560-6889BE32A9C3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppServer", "AppServer\AppServer.vcproj", "{DBEFB4BE-AD2B-44FE-8331-0220BE8D6121}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C243F60A-CF80-46AC-865B-1047DC5ABBF4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C243F60A-CF80-46AC-865B-1047DC5ABBF4}.Debug|Win32.Build.0 = Debug|Win32
+		{C243F60A-CF80-46AC-865B-1047DC5ABBF4}.Release|Win32.ActiveCfg = Release|Win32
+		{C243F60A-CF80-46AC-865B-1047DC5ABBF4}.Release|Win32.Build.0 = Release|Win32
+		{104C0FA9-540A-4D10-A560-6889BE32A9C3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{104C0FA9-540A-4D10-A560-6889BE32A9C3}.Debug|Win32.Build.0 = Debug|Win32
+		{104C0FA9-540A-4D10-A560-6889BE32A9C3}.Release|Win32.ActiveCfg = Release|Win32
+		{104C0FA9-540A-4D10-A560-6889BE32A9C3}.Release|Win32.Build.0 = Release|Win32
+		{DBEFB4BE-AD2B-44FE-8331-0220BE8D6121}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DBEFB4BE-AD2B-44FE-8331-0220BE8D6121}.Debug|Win32.Build.0 = Debug|Win32
+		{DBEFB4BE-AD2B-44FE-8331-0220BE8D6121}.Release|Win32.ActiveCfg = Release|Win32
+		{DBEFB4BE-AD2B-44FE-8331-0220BE8D6121}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

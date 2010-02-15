@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="WorldBuilderServer"
+   name="Zen Studio World Builder Server Plug-in"
+   version="0.6.0"
+   provider-name="IndieZen.com">
+
+    <runtime>
+        <library name="WorldBuilderServer">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+        <import plugin="Workbench"/>
+    </requires>
+
+    <extension
+            point="Zen::Studio::Workbench::ExplorerNode"
+            id="WorldBuilder::ZoneFolder"
+            type="WorldBuilder::ZoneFolder">
+        <explorer-node
+            class="WorldBuilder::ZoneFolder"
+        />
+    </extension>
+
+    <extension
+            point="Zen::Studio::Workbench::ExplorerNode"
+            id="WorldBuilder::Zone"
+            type="WorldBuilder::Zone">
+        <explorer-node
+            class="WorldBuilder::Zone"
+        />
+    </extension>
+
+
+</plugin>

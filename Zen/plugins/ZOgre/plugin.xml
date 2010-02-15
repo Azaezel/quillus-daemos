@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZOgre"
+   name="IndieZen Ogre Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.com">
+
+  <runtime>
+    <library name="ZOgre">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+        point="Zen::Engine::Rendering::RenderingService"
+        id="ZOgreRender"
+        name="IndieZen Ogre Rendering Service"
+        type="ogre">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <rendering-service
+          class="Zen::ZOgre::RenderingService"
+          type="ogre">
+    </rendering-service>
+  </extension>
+
+  <extension
+        point="Zen::Engine::Rendering::SceneService"
+        id="ZOgreScene"
+        name="IndieZen Ogre Scene Service"
+        type="ogre">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <rendering-service
+          class="Zen::ZOgre::SceneService"
+          type="ogre">
+    </rendering-service>
+  </extension>
+
+  <extension
+		point="Zen::Engine::Rendering::BoundingVolumeService"
+		id="ZOgreBoundingVolume"
+		name="IndieZen Ogre Bounding Volume Service"
+		type="ogre">
+	  <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+	  <rendering-service
+			class="Zen::ZOgre::BoundingVolumeService"
+			type="ogre">
+	  </rendering-service>
+  </extension>
+
+  <extension
+      point="Zen::Engine::Resource::ResourceService"
+        id="ZOgreResource"
+        name="IndieZen Ogre Resource Service"
+        type="ogre">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <resource-service
+          class="Zen::ZOgre::ResourceService"
+          type="ogre">
+    </resource-service>
+  </extension>
+
+  <extension
+      point="Zen::Engine::World::WaterService"
+      id="ZOgreWater"
+      name="IndieZen Ogre Water Service"
+      type="ogre">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <water-service
+        class="Zen::ZOgre::WaterService"
+        type="ogre">
+    </water-service>
+  </extension>
+  
+</plugin>

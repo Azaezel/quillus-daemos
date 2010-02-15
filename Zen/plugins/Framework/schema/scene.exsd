@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by IndieZen C++ PDE -->
+<schema targetNamespace="Zen::Engine::Rendering">
+  <annotation>
+    <appInfo>
+      <meta.schema plugin="Framework" id="SceneService" name="Scene Service"/>
+    </appInfo>
+    <documentation>
+      For providing an implementation of a Zen::Engine::Rendering::I_SceneService
+    </documentation>
+  </annotation>
+  <element name="extension">
+    <complexType>
+      <sequence>
+        <element ref="scene-service" minOccurs="1" maxOccurs="1"/>
+      </sequence>
+      <attribute name="point" type="string" use="required">
+        <annotation>
+          <documentation>
+            A fully qualified identifier of the target extension-point.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="id" type="string">
+        <annotation>
+          <documentation>
+            An optional identifier of the extension instance.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="name" type="string">
+        <annotation>
+          <documentation>
+            An optional name of the extension instance.
+          </documentation>
+          <appInfo>
+            <meta.attribute translatable="true"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="scene-service">
+    <complexType>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>
+            The fully qualified name of a class which implements IndieZen::Rendering::I_SceneService.
+          </documentation>
+          <appInfo>
+            <meta.attribute kinda="cpp" basedOn="Zen::Engine::Rendering::I_SceneService"/>
+          </appInfo>
+        </annotation>
+      </attribute>
+      <attribute name="type" type="string" use="required">
+        <annotation>
+          <documentation>
+            The type of scene service.  For now this really isn't being used so you can
+leave it blank.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+</schema>

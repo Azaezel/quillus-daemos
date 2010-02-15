@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZOpenAL"
+   name="Zen Engine OpenAL Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.com">
+
+  <runtime>
+    <library name="ZOpenAL">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+        point="Zen::Engine::Sound::SoundService"
+        id="ZOpenALSound"
+        name="Zen Engine OpenAL Sound Service"
+        type="ZOpenAL">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <rendering-service
+          class="Zen::ZOpenAL::SoundService"
+          type="ZOpenAL">
+    </rendering-service>
+  </extension>
+
+  <extension
+      point="Zen::Engine::Resource::ResourceService"
+        id="ZOpenALResource"
+        name="Zen Engine OpenAL Resource Service"
+        type="ZOpenAL">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <resource-service
+          class="Zen::ZOpenAL::ResourceService"
+          type="ZOpenAL">
+    </resource-service>
+  </extension>
+  
+</plugin>

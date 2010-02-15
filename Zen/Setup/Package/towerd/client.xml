@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<application
+   id="ZGameLoader"
+   name="IndieZen Client Game Loader"
+   version="0.6.0"
+   provider-name="IndieZen.org">
+
+  <plugin-path path="%AppFolder%/Zen/plugins"/>
+  <plugin-path path="%AppFolder%/towerd/"/>
+  <module-path path="%AppFolder%/bin"/>
+
+  <requires>
+    <import plugin="Framework"/>
+	<import plugin="ZLua"/>
+  </requires>
+
+</application>

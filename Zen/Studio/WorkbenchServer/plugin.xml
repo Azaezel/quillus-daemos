@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="WorkbenchServer"
+   name="Zen Studio Workbench Server"
+   version="0.6.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="WorkbenchServer">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+    <import plugin="Workbench"/>
+    <import plugin="GameBuilder"/>
+  </requires>
+
+  <extension
+        point="Zen::Enterprise::AppServer::ApplicationService"
+        id="WorkbenchServer"
+        name="Zen Studio Workbench Server"
+        type="WorkbenchServer">
+    <application-service
+          class="Zen::Studio::Workbench::WorkbenchService">
+    </application-service>
+  </extension>
+
+</plugin>

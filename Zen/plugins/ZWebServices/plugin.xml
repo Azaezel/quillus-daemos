@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZWebServices"
+   name="IndieZen Web Services Plug-in"
+   version="0.4.0"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="ZWebServices">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+        point="Zen::Enterprise::AppServer::ApplicationService"
+        id="hello world"
+        name="Hello World Web Service"
+        type="hello">
+    <application-service
+          class="Zen::Enterprise::AppServer::HelloApplicationService"
+              >
+    </application-service>
+  </extension>
+
+</plugin>
