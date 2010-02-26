@@ -61,6 +61,7 @@ public:
     virtual void addMethod(const std::string& _name, const std::string& _docString, bool_function_args_type _function);
     virtual void addMethod(const std::string& _name, const std::string& _docString, int_function_no_args_type _function);
     virtual void addMethod(const std::string& _name, const std::string& _docString, int_function_args_type _function);
+    virtual void addMethod(const std::string& _name, const std::string& _docString, Scripting::I_ScriptMethod* _function);
     virtual void activate();
     /// @}
 
