@@ -21,6 +21,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
+//  Jason Smith jsmith@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PythonMethod.hpp"
 #include "PythonType.hpp"
@@ -343,10 +344,55 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                 }
                 else if (m_functionType == GENERIC_FUNCTION_ARGS)
                 {
+                    boost::any anyReturn = m_function10->dispatch(*pObj, parms);
 
+                    // TODO this is inefficient... do a map of functors instead.
+                    if(anyReturn.type() == typeid(void)
+                    {
+                        // no return, don't bother doing anything
+                        return Py_None;
+                    }
+                    else if(anyReturn.type() == typeid(Zen::Scripting::I_ObjectReference*))
+                    {
+                        // object
+                        pObjectReference_type pReturn = boost::any_cast<pObjectReference_type>(anyReturn);
+
+                        return dynamic_cast<PythonObject*>(pReturn.get())->get();
+                    }
+                    else if(anyReturn.type() == typeid(std::string))
+                    {
+                        std::string returnValue = boost::any_cast<std::string>(anyReturn);
+
+                        return PyString_FromString(returnValue.c_str());
+                    }
+                    else if(anyReturn.type() == typeid(bool))
+                    {
+                        bool returnValue = boost::any_cast<bool>(anyReturn);
+
+                        return returnValue ? Py_True : Py_False
+                    }
+                    else if(anyReturn.type() == typeid(int))
+                    {
+                        int returnValue = boost::any_Cast<int>(anyReturn);
+
+                        return PyLong_FromLong(returnValue);
+                    }
+                    else if(anyReturn.type() == typeid(Zen::Math::Real))
+                    {
+                        Zen::Math::Real returnValue = boost::any_cast<Zen::Math::Real>(anyReturn);
+
+                        return PyLong_FromLong(returnValue);
+                    }else
+                    {
+                        // TODO Make this error message a little more detailed
+                        throw Zen::Utility::runtime_exception("Script method returned unknown type.");
+                    }
+
+                    // TODO Throw an exception since the type wasn't valid
+                    return 0;
                 }
-
             } // case All functions that take args
+            break;
         } // switch(m_functionType)
     }
 

@@ -116,7 +116,6 @@ public:
     Scripting::I_ScriptType::bool_function_args_type        m_function7;
     Scripting::I_ScriptType::int_function_no_args_type      m_function8;
     Scripting::I_ScriptType::int_function_args_type         m_function9;
-
     Scripting::I_ScriptMethod*                              m_function10;
     /// }
 
