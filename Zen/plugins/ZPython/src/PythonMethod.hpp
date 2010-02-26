@@ -86,6 +86,7 @@ public:
     /// @{
 public:
     PythonType*     m_pType;
+    PyMethodDef*    m_pDef;
     std::string     m_name;
     std::string     m_docString;
     PyCFunction     m_pCFunction;
@@ -101,8 +102,8 @@ public:
         BOOL_FUNCTION_NO_ARGS,      // 6
         BOOL_FUNCTION_ARGS,         // 7
         INT_FUNCTION_NO_ARGS,       // 8
-        INT_FUNCTION_ARGS           // 9
-        GENERIC_FUCNTION_ARGS,      // 10
+        INT_FUNCTION_ARGS,          // 9
+        GENERIC_FUNCTION_ARGS,      // 10
     };
 
     FunctionType                                            m_functionType;

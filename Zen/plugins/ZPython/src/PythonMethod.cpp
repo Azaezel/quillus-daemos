@@ -175,7 +175,7 @@ PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const s
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_fucntionType(GENERIC_FUNCTION_ARGS)
+,   m_functionType(GENERIC_FUNCTION_ARGS)
 ,   m_function10(_function)
 {
     init();
@@ -228,7 +228,7 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
         case VOID_FUNCTION_NO_ARGS:
             m_function0(pObj);
             return Py_None;
-        case OBJECT_FUNCTION_NO_ARGS:
+        case OBJ_FUNCTION_NO_ARGS:
             {
                 pObjectReference_type const pObjReference = m_function3(pObj);
                 pScriptObject_type const pReturnObj = pObjReference->getScriptObject();
@@ -250,7 +250,7 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                 return PyLong_FromLong(returnValue);
             }
         case VOID_FUNCTION_ARGS:
-        case OBJECT_FUNCTION_ARGS:
+        case OBJ_FUNCTION_ARGS:
         case STRING_FUNCTION_ARGS:
         case BOOL_FUNCTION_ARGS:
         case INT_FUNCTION_ARGS:
@@ -320,7 +320,7 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                     m_function1(pObj, parms);
                     return Py_None;
                 }
-                else if (m_functionType == OBJECT_FUNCTION_ARGS)
+                else if (m_functionType == OBJ_FUNCTION_ARGS)
                 {
                     pObjectReference_type const pObjReference = m_function2(pObj, parms);
                     pScriptObject_type const pReturnObj = pObjReference->getScriptObject();
@@ -344,10 +344,10 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                 }
                 else if (m_functionType == GENERIC_FUNCTION_ARGS)
                 {
-                    boost::any anyReturn = m_function10->dispatch(*pObj, parms);
+                    boost::any anyReturn = m_function10->dispatch(pObj, parms);
 
                     // TODO this is inefficient... do a map of functors instead.
-                    if(anyReturn.type() == typeid(void)
+                    if(anyReturn.type() == typeid(void))
                     {
                         // no return, don't bother doing anything
                         return Py_None;
@@ -355,9 +355,10 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                     else if(anyReturn.type() == typeid(Zen::Scripting::I_ObjectReference*))
                     {
                         // object
-                        pObjectReference_type pReturn = boost::any_cast<pObjectReference_type>(anyReturn);
+                        pObjectReference_type pObjReference = boost::any_cast<pObjectReference_type>(anyReturn);
+                        pScriptObject_type const pReturnObj = pObjReference->getScriptObject();
 
-                        return dynamic_cast<PythonObject*>(pReturn.get())->get();
+                        return dynamic_cast<PythonObject*>(pReturnObj.get())->get();
                     }
                     else if(anyReturn.type() == typeid(std::string))
                     {
@@ -369,19 +370,21 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                     {
                         bool returnValue = boost::any_cast<bool>(anyReturn);
 
-                        return returnValue ? Py_True : Py_False
+                        return returnValue ? Py_True : Py_False;
                     }
                     else if(anyReturn.type() == typeid(int))
                     {
-                        int returnValue = boost::any_Cast<int>(anyReturn);
+                        int returnValue = boost::any_cast<int>(anyReturn);
 
                         return PyLong_FromLong(returnValue);
                     }
                     else if(anyReturn.type() == typeid(Zen::Math::Real))
                     {
                         Zen::Math::Real returnValue = boost::any_cast<Zen::Math::Real>(anyReturn);
-
-                        return PyLong_FromLong(returnValue);
+                        // TR - I don't like this because it means
+                        // we cannot support Real as a return type.
+                        // We'll fix it later.
+                        return PyLong_FromLong((long)returnValue);
                     }else
                     {
                         // TODO Make this error message a little more detailed

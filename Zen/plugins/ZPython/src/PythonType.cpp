@@ -46,7 +46,6 @@ PythonType::PythonType(PythonModule* _pModule, const std::string& _name, const s
     m_pClass = PyClass_New(pParent, m_pClassDict, pClassName);
 
     Py_DECREF(pClassName);
-#endif
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
