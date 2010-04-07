@@ -64,7 +64,8 @@ public:
     virtual pEndpoint_type getDestinationEndpoint();
     virtual pResourceLocation_type getDestinationLocation();
     virtual pMessageHeader_type getMessageHeader() const;
-    virtual unsigned int getMessageId() const;
+    virtual boost::uint32_t getMessageId() const;
+    virtual pMessageType_type getMessageType() const;
     virtual void serialize(pMessageHeader_type _pHeader, boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
     /// @}

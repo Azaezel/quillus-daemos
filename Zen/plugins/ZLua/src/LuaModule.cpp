@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// Zen Gaem Engine Framework
+// Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -66,16 +66,23 @@ LuaModule::~LuaModule()
 LuaModule::pScriptType_type
 LuaModule::createScriptType(const std::string& _typeName, const std::string& _docString, unsigned long _rawSize)
 {
-    LuaType* const pLuaType = new LuaType(this, _typeName, _docString, _rawSize);
+	// Make sure the script type doesn't already exist.  If it does, return it
+	// instead of creating a new one.
+	type_collection_type::iterator iter = m_types.find(_typeName);
 
-    //PyModule_AddObject(m_pModule, pLuaType->getName().c_str(), (PyObject *)pLuaType->getRawType());
+	if (iter != m_types.end())
+	{
+		return iter->second;
+	}
+
+	// The type doesn't exist so create it.
+    LuaType* const pLuaType = new LuaType(this, _typeName, _docString, _rawSize);
 
     pScriptType_type const pType(pLuaType,
         boost::bind(&LuaModule::onDestroyScriptType,this,_1));
 
     m_types[_typeName] = pType;
 
-    // TODO Retain a reference to this object?
     return pType;
 }
 

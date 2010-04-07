@@ -24,7 +24,7 @@ set ( ZSQLite_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZSQLITE_EXPORTS -DSQLITE_ENABLE_COLUMN_METADATA )
+add_definitions( -DZSQLITE_EXPORTS -DSQLITE_ENABLE_COLUMN_METADATA ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT}  )
 

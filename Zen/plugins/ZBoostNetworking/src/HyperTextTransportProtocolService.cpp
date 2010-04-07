@@ -24,6 +24,9 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
+
+#include <boost/asio.hpp>
+
 #include "HyperTextTransportProtocolService.hpp"
 
 #include "Endpoint.hpp"
@@ -147,6 +150,20 @@ HyperTextTransportProtocolService::sendTo(pMessage_type _pMessage, pEndpoint_typ
 {
     // This is intentionally not implemented as you cannot use sendTo for HTTP.
     throw Utility::runtime_exception("HyperTextTransportProtocolService::sendTo(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+HyperTextTransportProtocolService::getConnectedEvent()
+{
+    throw Utility::runtime_exception("HyperTextTransportProtocolService::getConnectedEvent(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+HyperTextTransportProtocolService::getDisconnectedEvent()
+{
+    throw Utility::runtime_exception("HyperTextTransportProtocolService::getConnectedEvent(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

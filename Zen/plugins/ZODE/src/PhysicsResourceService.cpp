@@ -91,6 +91,26 @@ PhysicsResourceService::loadResource(config_type& _config)
     {
         std::cout << "ZODE::loadResource() loading terrain..." << std::endl;
 
+        // TODO Use a better configuration type so we don't have to do all
+        // of these conversions.
+        const std::string terrainType = _config["terrainType"];
+
+        if (terrainType == "heightfield")
+        {
+        }
+        else
+        {
+            throw Zen::Utility::runtime_exception("Invalid terrainType specified.");
+        }
+
+#if 0
+        dGeomHeightfieldDataBuildShort(dHeightfieldDataID d,
+                                      const short *pHeightData,
+                                      int bCopyHeightData,
+                                      dReal width, dReal depth,
+                                      int widthSamples, int depthSamples,
+                                      dReal scale, dReal offset, dReal thickness, int bWrap);
+#endif
         // TODO - return an empty resource, since I don't know what to return here
         pResource_type emptyResource;
         return emptyResource;

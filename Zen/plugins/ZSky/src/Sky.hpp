@@ -41,9 +41,17 @@ class Sky
     /// @name Types
     /// @{
 public:
+    typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptModule>    pScriptModule_type;
+
     typedef Memory::managed_weak_ptr<Engine::World::I_Sky>           wpSky_type;
     typedef Memory::managed_ptr<Engine::Resource::I_Resource>            pResource_type;
     typedef Memory::managed_weak_ptr<Engine::Resource::I_Resource>       wpResource_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
     /// @name I_Sky implementation
@@ -68,6 +76,9 @@ public:
     /// @name Member Variables
     /// @{
 private:
+    pScriptModule_type              m_pScriptModule;
+    ScriptObjectReference_type*     m_pScriptObject;
+
     pResource_type m_pResource;
     /// @}
 

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -78,6 +78,7 @@ public:
     virtual void enableAllKeyMaps();
     virtual void disableAllKeyMaps();
 #endif
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
 protected:
     virtual void changeState(Engine::Input::I_KeyModifierState* _pState);
     /// @}

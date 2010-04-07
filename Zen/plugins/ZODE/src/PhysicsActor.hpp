@@ -1,7 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -20,6 +21,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef ZEN_ZODE_PHYSICS_ACTOR_HPP_INCLUDED
 #define ZEN_ZODE_PHYSICS_ACTOR_HPP_INCLUDED
@@ -32,7 +34,7 @@
 namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-;
+class PhysicsZone;
 
 class PhysicsActor
 :   public Engine::Physics::I_PhysicsActor
@@ -43,11 +45,17 @@ class PhysicsActor
 public:
     /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
     /// @name I_PhysicsActor implementation
     /// @{
 public:
-	virtual void setGameObject(pGameObject_type _pGameObject);
-	virtual pGameObject_type getGameObject();
+    virtual void setGameObject(pGameObject_type _pGameObject);
+    virtual pGameObject_type getGameObject();
     virtual void setCollisionShape(pCollisionShape_type _pCollisionShape);
     virtual pCollisionShape_type getCollisionShape();
     virtual void setMaterial(pPhysicsMaterial_type _material);
@@ -68,13 +76,22 @@ public:
     virtual const Math::Vector3 getTorque();
     virtual void applyTorque(const Math::Vector3& _torque);
     virtual void applyForce(const Math::Vector3& _force);
-	virtual void setCollisionGroup(const int _group);
-	virtual const int getCollisionGroup() const;
+    virtual void applyImpulse(const Math::Vector3& _force, const Math::Vector3& _worldPos);
+    virtual const Math::Vector3 getAngularDamping() const;
+    virtual void setAngularDamping(const Math::Vector3& _damping);
+    virtual const Math::Real getLinearDamping() const;
+    virtual void setLinearDamping(float _damping);
+    virtual void setSleepingThresholds(float _minLinearMotion, float _minAngularMotion);
+    virtual void setActivationState(unsigned _state);
+    virtual int getActivationState();
+    virtual void setCollisionGroup(const int _group);
+    virtual const int getCollisionGroup() const;
     /// @}
 
     /// @name PhysicsActor implementation
     /// @{
-private:
+public:
+    PhysicsZone& getParentZone();
     /// @}
 
     /// @name Event handlers
@@ -85,13 +102,14 @@ protected:
     /// @name 'Structors
     /// @{
 public:
-             PhysicsActor();
+             PhysicsActor(PhysicsZone& _parentZone);
     virtual ~PhysicsActor();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
+    PhysicsZone&            m_parentZone;
     /// @}
 
 };  // class PhysicsActor

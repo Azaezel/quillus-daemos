@@ -21,6 +21,8 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "Reply.hpp"
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
@@ -261,7 +263,7 @@ Reply::getMessageHeader() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned int
+boost::uint32_t
 Reply::getMessageId() const
 {
     // This really shouldn't be used for HTTP messages.
@@ -363,6 +365,13 @@ Reply::toBuffers(std::stringstream& _stream)
     _stream << "\r\n" << m_content;
 }
 #endif
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Reply::pMessageType_type
+Reply::getMessageType() const
+{
+    throw Zen::Utility::runtime_exception("HTTP::Reply::getMessageType() : Error, not implemented.");
+}
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace HTTP
 }   // namespace AppServer

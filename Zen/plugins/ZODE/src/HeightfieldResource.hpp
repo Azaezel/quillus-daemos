@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// Zen Enterprise Framework
+// Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -23,72 +23,80 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_ENTERPRISE_APPSERVER_UDP_ENDPOINT_HPP_INCLUDED
-#define ZEN_ENTERPRISE_APPSERVER_UDP_ENDPOINT_HPP_INCLUDED
+#ifndef ZEN_ZODE_HEIGHTFIELD_RESOURCE_HPP
+#define ZEN_ZODE_HEIGHTFIELD_RESOURCE_HPP
 
-#include <Zen/Enterprise/Networking/I_Endpoint.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+#include <Zen/Engine/Resource/I_CollisionResource.hpp>
 
-#include <boost/asio.hpp>
+#include <ode/ode.h>
+
+#include <vector>
+#include <map>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Enterprise {
-namespace AppServer {
-namespace UDP {
+namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class PhysicsActor;
 
-class Endpoint
-:   public Zen::Networking::I_Endpoint
+class HeightfieldResource
+:   virtual public Zen::Engine::Resource::I_CollisionResource
+,   public Zen::Memory::managed_self_ref<Zen::Engine::Resource::I_Resource>
 {
     /// @name Types
     /// @{
 public:
+    typedef std::map<std::string, std::string>  config_type;
     /// @}
 
-    /// @name I_Endpoint implementation
+    /// @name I_Resource implementation
     /// @{
 public:
-    virtual wpProtocolService_type getProtocolAdapter() const;
-
-    virtual const std::string& toString() const { return m_endpointString; }
-
-    virtual const Zen::Networking::I_Address& getAddress() const;
-
-    virtual void setIsLocal(bool _isLocal);
-
-    virtual bool isLocal() const;
     /// @}
 
-    /// @name Endpoint implementation
+    /// @name Getter / Setter
     /// @{
 public:
-    boost::asio::ip::udp::endpoint& getEndpoint();
+    /// @}
+
+    /// @name HeigthfieldResource implementation
+    /// @{
+public:
+    void initialize(PhysicsActor* _pActor);
     /// @}
 
     /// @name 'Structors
     /// @{
 public:
-             Endpoint();
-    explicit Endpoint(wpProtocolService_type _pProtocolAdapter, const boost::asio::ip::udp::endpoint& _endpoint, pAddress_type _pAddress);
-    virtual ~Endpoint();
+             HeightfieldResource(config_type& _config);
+    virtual ~HeightfieldResource();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
-    wpProtocolService_type          m_pProtocolAdapter;
-    boost::asio::ip::udp::endpoint  m_endpoint;
-    bool                            m_isLocal;
-    std::string                     m_endpointString;
+    std::string                     m_fileName;
+    Math::Real                      m_width;
+    Math::Real                      m_depth;
+    int                             m_widthSamples;
+    int                             m_depthSamples;
+    Math::Real                      m_scale;
+    Math::Real                      m_thickness;
+    bool                            m_wrap;
+
+    std::vector<boost::int16_t>     m_buffer;
+
+
+    dHeightfieldDataID              m_heightfieldDataId;
+    dGeomID                         m_heightfieldGeometryId;
     /// @}
 
-};  // Endpoint class
+};  // class HeightfieldResource
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace UDP
-}   // namespace AppServer
-}   // namespace Enterprise
+}   // namespace ZODE
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_ENTERPRISE_APPSERVER_UDP_ENDPOINT_HPP_INCLUDED
+#endif // ZEN_ZODE_HEIGHTFIELD_RESOURCE_HPP

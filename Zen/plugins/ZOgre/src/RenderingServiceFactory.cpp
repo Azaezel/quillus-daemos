@@ -61,10 +61,6 @@ RenderingServiceFactory::create()
 
     pRenderingService_type pService(pRawService, boost::bind(&RenderingServiceFactory::destroy, this, _1));
 
-    wpRenderingService_type pWeakPtr(pService);
-
-    pRawService->setSelfReference(pWeakPtr);
-
     return pService;
 }
 

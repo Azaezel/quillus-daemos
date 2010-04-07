@@ -65,6 +65,7 @@ public:
 
     /// Connect to an endpoint.
     /// This connection is not connected yet.
+    /// This establishes a TCP connection to a server.
     void connect(pEndpoint_type _pEndpoint);
 
     /// The connection is "connected" so start processing it 

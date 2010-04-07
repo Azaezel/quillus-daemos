@@ -31,6 +31,7 @@
 #include "../../XML/I_XMLRequest.hpp"
 
 #include <boost/shared_ptr.hpp>
+#include <boost/cstdint.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -57,7 +58,8 @@ public:
     virtual pEndpoint_type getDestinationEndpoint() { return Message::getDestinationEndpoint(); }
     virtual pResourceLocation_type getDestinationLocation() { return Message::getDestinationLocation(); }
     virtual pMessageHeader_type getMessageHeader() const;
-    virtual unsigned int getMessageId() const { return Message::getMessageId(); }
+    virtual pMessageType_type getMessageType() const;
+    virtual boost::uint32_t getMessageId() const { return Message::getMessageId(); }
     virtual void serialize(pMessageHeader_type _pHeader, boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
     /// @}

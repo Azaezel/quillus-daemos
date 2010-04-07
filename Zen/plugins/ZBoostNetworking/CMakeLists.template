@@ -26,7 +26,7 @@ set ( ZBoostNetworking_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZBOOSTNETWORKING_EXPORTS )
+add_definitions( -DZBOOSTNETWORKING_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIRS} ${INDIEZEN_PARENT} )
 

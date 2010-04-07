@@ -24,7 +24,7 @@ set ( ZLua_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZLUA_EXPORTS )
+add_definitions( -DZLUA_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${LUA_INCLUDE_DIR} )
 

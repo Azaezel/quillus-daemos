@@ -110,8 +110,8 @@ Scripting::I_ObjectReference*
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(), 
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultRenderingScriptModule(), 
+            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultRenderingScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
     }
 
     return m_pScriptObject;

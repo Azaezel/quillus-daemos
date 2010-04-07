@@ -28,7 +28,8 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
-#include <boost/spirit/core.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_scanner.hpp>
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/array.hpp>
@@ -52,8 +53,8 @@ public:
 
     typedef char                                    char_t;
     typedef boost::array<char, 8192>::iterator      iterator_t;
-    typedef boost::spirit::scanner<iterator_t>      scanner_t;
-    typedef boost::spirit::rule<scanner_t>          rule_t;
+    typedef boost::spirit::classic::scanner<iterator_t>      scanner_t;
+    typedef boost::spirit::classic::rule<scanner_t>          rule_t;
     /// @}
 
     /// @name RequestParser implementation

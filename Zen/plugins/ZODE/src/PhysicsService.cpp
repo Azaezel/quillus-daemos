@@ -24,6 +24,10 @@
 #include "PhysicsService.hpp"
 #include "PhysicsZone.hpp"
 
+#include <Zen/Core/Scripting.hpp>
+
+#include <Zen/Engine/Physics/I_PhysicsManager.hpp>
+
 #include <boost/bind.hpp>
 #include <exception>
 #include <iostream>
@@ -33,6 +37,8 @@ namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsService::PhysicsService()
+:   m_pScriptModule(Zen::Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
+,   m_pScriptObject(NULL)
 {
     std::cout << "PhysicsService::PhysicsService()" << std::endl;
 }
@@ -44,13 +50,31 @@ PhysicsService::~PhysicsService()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+PhysicsService::getScriptObject()
+{
+    // TODO Make thread safe?
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptObjectReference_type
+            (m_pScriptModule, m_pScriptModule->getScriptType(getScriptTypeName()), getSelfReference().lock());
+    }
+
+    return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsService::pPhysicsZone_type
-PhysicsService::createZone(const Math::Vector3& _min, const Math::Vector3& _max)
+PhysicsService::createZone()
 {
     // TODO What to do with _min and _max?  Does ODE use these?
 
     std::cout << "PhysicsService::createZone()" << std::endl;
-    pPhysicsZone_type pZone = pPhysicsZone_type(new PhysicsZone(), boost::bind(&PhysicsService::onDestroyPhysicsZone, this, _1));
+    PhysicsZone* pRaw = new PhysicsZone();
+    pPhysicsZone_type pZone = pPhysicsZone_type(
+        pRaw, 
+        boost::bind(&PhysicsService::onDestroyPhysicsZone, this, _1)
+    );
 
     // Make sure getWeak() works correctly.  I've had problems with it in the past.
     std::cout << "PhysicsService::createZone(): Checking weak pointer" << std::endl;
@@ -58,6 +82,8 @@ PhysicsService::createZone(const Math::Vector3& _min, const Math::Vector3& _max)
     std::cout << "PhysicsService::createZone(): Weak pointer is good" << std::endl;
 
     m_zones.insert(pZone.getWeak());
+    pRaw->setSelfReference(pZone.getWeak());
+
     std::cout << "PhysicsService::createZone(): Done" << std::endl;
 
     return pZone;

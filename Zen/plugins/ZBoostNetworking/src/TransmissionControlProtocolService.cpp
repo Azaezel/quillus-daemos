@@ -24,6 +24,9 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
+// This must be included first thanks to some Winblows crap.
+#include <boost/asio.hpp>
+
 #include "TransmissionControlProtocolService.hpp"
 
 #include "Endpoint.hpp"
@@ -35,6 +38,9 @@
 #include <Zen/Core/Threading/CriticalSection.hpp>
 
 #include <Zen/Core/Plugins/I_ConfigurationElement.hpp>
+
+#include <Zen/Core/Event/I_Event.hpp>
+#include <Zen/Core/Event/I_EventService.hpp>
 
 #include <Zen/Enterprise/AppServer/I_Message.hpp>
 #include <Zen/Enterprise/AppServer/I_MessageFactory.hpp>
@@ -48,6 +54,9 @@
 
 #include <boost/archive/polymorphic_binary_oarchive.hpp>
 #include <boost/archive/polymorphic_binary_iarchive.hpp>
+
+#include <boost/iostreams/device/array.hpp>
+#include <boost/iostreams/stream.hpp>
 
 #include <iostream>
 
@@ -109,61 +118,95 @@ TransmissionControlProtocolService::resolveEndpoint(const std::string& _address,
 {
     boost::asio::ip::tcp::resolver resolver(m_ioService);
     // TODO _address and _port or v4() and m_port?
-    boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), m_port);
+    boost::asio::ip::tcp::resolver::query query(_address, _port);
     boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(query);
 
-    return pEndpoint_type(new Endpoint(getSelfReference(), endpoint), boost::bind(&TransmissionControlProtocolService::destroyEndpoint, this, _1));
+    pEndpoint_type pEndpoint(new Endpoint(getSelfReference(), endpoint), boost::bind(&TransmissionControlProtocolService::destroyEndpoint, this, _1));
+
+    // Default to true.  Generally an endpoint is outbound when resolveEndpoint()
+    // is called.  Since "listen()" is not a valid method (listen ports are 
+    // determined by the configuration) then we probably aren't ever creating
+    // a non-local endpoint.
+    pEndpoint->setIsLocal(false);
+    return pEndpoint;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 TransmissionControlProtocolService::sendTo(pMessage_type _pMessage, pEndpoint_type _pEndpoint)
 {
+    // TODO Push onto a queue and handle in a worker thread?
     {
-        Threading::CriticalSection lock(m_pConnectionsGuard);
-
         typedef Memory::managed_ptr<Endpoint> pConcreteEndpoint_type;
         pConcreteEndpoint_type pEndpoint(_pEndpoint.as<pConcreteEndpoint_type>());
 
-        ConnectionMap_type::iterator iter = m_connectionMap.find(pEndpoint->getEndpoint());
+        pConnection_type pConnection;
 
-        if (iter != m_connectionMap.end())
+        // Find or create the connection.
         {
-            // TODO Create a task to handle this asynchronously?
-            std::stringstream buffer;
+            Threading::CriticalSection lock(m_pConnectionsGuard);
 
-            boost::archive::polymorphic_binary_oarchive archive(buffer,
-                                                                boost::archive::no_header |
-                                                                boost::archive::no_tracking);
+            // Find the connection associated with this endpoint.
+            ConnectionMap_type::iterator iter = m_connectionMap.find(pEndpoint->getEndpoint());
 
-            // Serialize the header
-            // TODO Handle the version correctly
-            _pMessage->getMessageHeader()->serialize(archive, 0);
-
-            // Serialize the rest of the message
-            _pMessage->serialize(archive, 0);
-
-            iter->second->write(buffer.str().c_str(), (boost::uint32_t)buffer.str().length());
-        }
-        else
-        {
-            if (m_isServer)
+            if (iter == m_connectionMap.end())
             {
-                // TODO Error?
-                return;
+                if (m_isServer)
+                {
+                    // TODO Error?
+                    return;
+                }
+
+                pConnection = m_pNewConnection;
+
+                createConnection();
+
+                // Assume this is an outbound endpoint.
+                pEndpoint->setIsLocal(false);
+
+                m_connectionMap[pEndpoint->getEndpoint()] = pConnection;
+                pConnection->connect(_pEndpoint);
             }
-
-            pConnection_type pConnection = m_pNewConnection;
-
-            createConnection();
-
-            m_connectionMap[pEndpoint->getEndpoint()] = pConnection;
-            pConnection->connect(_pEndpoint);
+            else
+            {
+                pConnection = iter->second;
+            }
         }
+
+        // TODO Create a task to handle this asynchronously?
+        std::stringstream buffer;
+
+        boost::archive::polymorphic_binary_oarchive archive(buffer,
+                                                            boost::archive::no_header |
+                                                            boost::archive::no_tracking);
+
+        // Serialize the header
+        // TODO Handle the version correctly
+        _pMessage->getMessageHeader()->serialize(archive, 0);
+
+        // Serialize the rest of the message
+        _pMessage->serialize(archive, 0);
+
+        pConnection->write(buffer.str().c_str(), (boost::uint32_t)buffer.str().length());
+
     }
 
     // Make sure the threads have been started.
     startThreads();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+TransmissionControlProtocolService::getConnectedEvent()
+{
+    return getApplicationServer().getEventService()->getEvent("TransmissionControlProtocolService/connectedEvent");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+TransmissionControlProtocolService::getDisconnectedEvent()
+{
+    return getApplicationServer().getEventService()->getEvent("TransmissionControlProtocolService/disconnectedEvent");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -222,9 +265,9 @@ TransmissionControlProtocolService::start()
 
         // Asyncronously accept a new connection
         asyncAccept();
-
-        startThreads();
     }
+    
+    startThreads();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -296,10 +339,21 @@ TransmissionControlProtocolService::startThreads()
             {
                 try
                 {
-                    m_ioService.run();
+                    boost::system::error_code ec;
+                    m_ioService.run(ec);
+                    
+                    if( ec )
+                    {
+                        std::cout << "ASIO Error: " << ec << std::endl;
+                    }
+                }
+                catch(std::exception& _ex)
+                {
+                    std::cout << "Exception in ASIO loop: " << _ex.what() << std::endl;
                 }
                 catch(...)
                 {
+                    std::cout << "Unknown exception in ASIO loop" << std::endl;
                 }
             }
         }
@@ -329,6 +383,8 @@ TransmissionControlProtocolService::startThreads()
         pThread->start();
     }
 
+    m_threadsStarted = true;
+
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -339,6 +395,9 @@ TransmissionControlProtocolService::handleAccept(const boost::system::error_code
     {
         // The new connection is now connected, so start it.
         pEndpoint_type pEndpoint(new Endpoint(getSelfReference(), m_endpoint), boost::bind(&TransmissionControlProtocolService::destroyEndpoint, this, _1));
+
+        // This endpoint is not local since it was established from an accept.
+        pEndpoint->setIsLocal(false);
 
         m_pNewConnection->start(pEndpoint);
 
@@ -392,13 +451,48 @@ TransmissionControlProtocolService::onDisconnected(pConnection_type _pConnection
     typedef Memory::managed_ptr<Endpoint>   pConcreteEndpoint_type;
 
     m_connectionMap.erase(_pConnection->getPeer().as<pConcreteEndpoint_type>()->getEndpoint());
+
+    // Dispatch this event.
+    getDisconnectedEvent().fireEvent(_pConnection->getPeer());
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 TransmissionControlProtocolService::onHandleMessage(pConnection_type  _pConnection, TCP::MessageBuffer& _message)
 {
-    std::stringbuf buffer;
+#if 1
+    boost::iostreams::stream<boost::iostreams::array> 
+        stream(_message.getBody(), _message.getBodyLength());
+
+    boost::archive::polymorphic_binary_iarchive archive(stream, 
+                                                        boost::archive::no_header |
+                                                        boost::archive::no_tracking);
+
+
+    
+    // Deserialize the header
+    I_Message::pMessageHeader_type pHeader = getApplicationServer().getMessageRegistry()->getMessageHeader(archive);
+
+    // Construct the appropriate message
+    // The way we're doing it now, we don't know which one of these to call
+    // create() or createResponse().
+    // If we put that detail in the header somehow, then we can either call
+    // the correct method... *or* we can let the create() method figure it out.
+    pMessage_type pMessage = pHeader->getMessageType()->getMessageFactory()
+        ->create(
+            pHeader, 
+            _pConnection->getPeer(), 
+            pEndpoint_type()
+        );
+
+    // Deserialize the message
+    pMessage->serialize(pHeader, archive, 0);
+
+    // Send the message to the application server
+    getApplicationServer().handleMessage(pMessage);
+#else
+    std::stringbuf buffer(std::ios_base::in|std::ios_base::binary);
+
     buffer.pubsetbuf(_message.getBody(), _message.getBodyLength());
 
     std::stringstream stream;
@@ -412,16 +506,22 @@ TransmissionControlProtocolService::onHandleMessage(pConnection_type  _pConnecti
 
     
     // Deserialize the header
-    I_Message::pMessageHeader_type pHeader = m_pMessageRegistry->getMessageHeader(archive);
+    I_Message::pMessageHeader_type pHeader = getApplicationServer().getMessageRegistry()->getMessageHeader(archive);
 
     // Construct the appropriate message
-    pMessage_type pMessage = pHeader->getMessageType()->getMessageFactory()->create(pHeader, _pConnection->getPeer(), pEndpoint_type());
+    pMessage_type pMessage = pHeader->getMessageType()->getMessageFactory()
+        ->create(
+            pHeader, 
+            _pConnection->getPeer(), 
+            pEndpoint_type()
+        );
 
     // Deserialize the message
     pMessage->serialize(pHeader, archive, 0);
 
     // Send the message to the application server
     getApplicationServer().handleMessage(pMessage);
+#endif
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

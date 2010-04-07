@@ -24,9 +24,9 @@
 #ifndef ZEN_ENTERPRISE_APPSERVER_HTTP_REQUEST_GRAMMAR_HPP_INCLUDED
 #define ZEN_ENTERPRISE_APPSERVER_HTTP_REQUEST_GRAMMAR_HPP_INCLUDED
 
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/dynamic.hpp>
-#include <boost/spirit/utility/chset.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_dynamic.hpp>
+#include <boost/spirit/include/classic_chset.hpp>
 
 #include <boost/array.hpp>
 
@@ -39,19 +39,19 @@ namespace HTTP {
 class RequestParserState;
 
 struct RequestGrammar
-:   public boost::spirit::grammar<RequestGrammar>
+:   public boost::spirit::classic::grammar<RequestGrammar>
 {
     /// @name Types
     /// @{
 public:
-    typedef RequestGrammar                          self_t;
-    typedef char                                    char_t;
-    typedef boost::array<char, 8192>::iterator      iterator_t;
-    typedef boost::spirit::scanner<iterator_t>      scanner_t;
-    typedef boost::spirit::rule<scanner_t>          rule_t;
+    typedef RequestGrammar                          		self_t;
+    typedef char                                    		char_t;
+    typedef boost::array<char, 8192>::iterator      		iterator_t;
+    typedef boost::spirit::classic::scanner<iterator_t>     scanner_t;
+    typedef boost::spirit::classic::rule<scanner_t>         rule_t;
 
-    typedef boost::spirit::chset<unsigned char>     chset_t;
-    typedef boost::spirit::chlit<unsigned char>     chlit_t;
+    typedef boost::spirit::classic::chset<unsigned char>	chset_t;
+    typedef boost::spirit::classic::chlit<unsigned char>    chlit_t;
     /// @}
 
     /// @name Scanner
@@ -63,7 +63,7 @@ public:
         /// @name definition implementation
         /// @{
     public:
-        boost::spirit::rule<ScannerT> const&
+        boost::spirit::classic::rule<ScannerT> const&
         start() const { return request_parser; }
         /// @}
 
@@ -76,7 +76,7 @@ public:
         /// @name Rules 
         /// @{
     public:
-        boost::spirit::rule<ScannerT>
+        boost::spirit::classic::rule<ScannerT>
             method_name,
             initial_line, host_line, host_name, port_number,
             generic_header_line, header_line, header_lines,

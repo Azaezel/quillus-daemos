@@ -28,6 +28,8 @@
 
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
 
+#include <ode/ode.h>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZODE {
@@ -43,11 +45,17 @@ class PhysicsMaterial
 public:
     /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
     /// @name I_PhysicsMaterial implementation
     /// @{
 public:
-    virtual int getMaterialID();
-    virtual int getDefaultMaterialID();
+    virtual int getMaterialId();
+    virtual int getDefaultMaterialId();
 
     virtual Math::Real getDynamicFriction();
     virtual Math::Real getStaticFriction();
@@ -63,16 +71,29 @@ public:
     virtual void setIgnoreCollision(pPhysicsMaterial_type _material);
     /// @}
 
+    /// @name Static methods
+    /// @{
+private:
+    static int getNewMaterialId();
+    /// @}
+
     /// @name 'Structors
     /// @{
 public:
-             PhysicsMaterial();
+             PhysicsMaterial(bool _isDefault);
     virtual ~PhysicsMaterial();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
+    unsigned int                        m_id;
+    dSurfaceParameters                  m_surfaceParameters;
+    Zen::Math::Real                     m_dynamicFriction;
+    bool                                m_isCollidable;
+
+    pScriptModule_type                  m_pScriptModule;
+    ScriptObjectReference_type*         m_pScriptObject;
     /// @}
 
 };  // class PhysicsMaterial

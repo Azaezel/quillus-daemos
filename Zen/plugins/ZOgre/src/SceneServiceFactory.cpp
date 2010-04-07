@@ -54,15 +54,11 @@ SceneServiceFactory::instance()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Engine::Rendering::I_SceneServiceFactory::pSceneService_type
-SceneServiceFactory::create()
+SceneServiceFactory::create(const std::string& _name, int _sceneType)
 {
-    SceneService* pRawService = new SceneService();
+    SceneService* pRawService = new SceneService(_name, _sceneType);
 
     pSceneService_type pService(pRawService, boost::bind(&SceneServiceFactory::destroy, this, _1));
-
-    wpSceneService_type pWeakPtr(pService);
-
-    pRawService->setSelfReference(pWeakPtr);
 
     return pService;
 }

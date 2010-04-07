@@ -27,7 +27,7 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
-#include <boost/spirit/core.hpp>
+#include <boost/spirit/include/classic_core.hpp>
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/array.hpp>

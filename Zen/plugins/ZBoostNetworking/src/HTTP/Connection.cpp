@@ -21,6 +21,8 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "Connection.hpp"
 #include "RequestHandler.hpp"
 #include "Reply.hpp"

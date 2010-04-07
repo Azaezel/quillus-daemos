@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// Zen Engine Framework
+// Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,69 +21,49 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_ZODE_PHYSICS_SERVICE_HPP_INCLUDED
-#define ZEN_ZODE_PHYSICS_SERVICE_HPP_INCLUDED
+#ifndef ZEN_ZLUA_CONFIG_HPP_INCLUDED
+#define ZEN_ZLUA_CONFIG_HPP_INCLUDED
 
-#include <Zen/Core/Memory/managed_self_ref.hpp>
+#include <Zen/Core/Memory/managed_ptr.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsService.hpp>
+#include <boost/any.hpp>
 
-#include <set>
+#include <string>
+#include <map>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace ZODE {
+namespace ZLua {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+;
 
-class PhysicsService
-:   public Engine::Physics::I_PhysicsService
+/// Light wrapper of a map of strings with string as the key type.
+/// This is used by LuaEngine to convert a Lua table into a
+/// std::map<std::string, std::string>.  The Lua table must have
+/// keys of string types and the values can be of any type but is
+/// converted to a string.
+/// @see new_Config
+class Config
 {
-    /// @name Types
-    /// @{
 public:
-    typedef std::set<wpPhysicsZone_type>            ZoneCollection_type;
-    /// @}
+	typedef Zen::Memory::managed_ptr<Config>   pScriptObject_type;
+	typedef std::map<std::string, std::string>config_type;
 
-    /// @name I_ScriptableType implementation
-    /// @{
-public:
-    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
-    /// @}
+             Config();
+             Config(const Config& _right);
+	virtual ~Config();
 
-    /// @name I_PhysicsService implementation
-    /// @{
-public:
-   	virtual pPhysicsZone_type createZone();
-	virtual void stepSimulation(double _elapsedTime);
-    /// @}
+	std::string get(const std::string& _key);
+	void set(const std::string& _key, boost::any _value);
+	Config& operator=(const Config& _right);
 
-    /// @name PhysicsService implementation
-    /// @{
-public:
-    void onDestroyPhysicsZone(wpPhysicsZone_type _wpPhysicsZone);
-    /// @}
+	config_type	m_config;
 
-    /// @name 'Structors
-    /// @{
-public:
-             PhysicsService();
-    virtual ~PhysicsService();
-    /// @}
-
-    /// @name Member Variables
-    /// @{
-private:
-    ZoneCollection_type         m_zones;
-
-    pScriptModule_type          m_pScriptModule;
-    ScriptObjectReference_type* m_pScriptObject;
-    /// @}
-
-};  // class PhysicsService
+};	// class Config
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace ZODE
-}   // namespace Zen
+}	// namespace ZLua
+}	// namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_ZODE_PHYSICS_SERVICE_HPP_INCLUDED
+#endif	// ZEN_ZLUA_CONFIG_HPP_INCLUDED

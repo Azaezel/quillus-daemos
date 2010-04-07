@@ -24,7 +24,7 @@ set ( ZInput_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZINPUT_EXPORTS )
+add_definitions( -DZINPUT_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${OIS_INCLUDE_DIR} )
 

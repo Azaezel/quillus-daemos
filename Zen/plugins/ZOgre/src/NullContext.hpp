@@ -21,8 +21,8 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_ZOGRE_NULL_CAMERA_HPP_INCLUDED
-#define ZEN_ZOGRE_NULL_CAMERA_HPP_INCLUDED
+#ifndef ZEN_ZOGRE_NULL_CONTEXT_HPP_INCLUDED
+#define ZEN_ZOGRE_NULL_CONTEXT_HPP_INCLUDED
 
 #include <Zen/Engine/Rendering/I_Context.hpp>
 
@@ -35,7 +35,7 @@ namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class NullContext
-    : public Zen::Engine::Rendering::I_Context
+:   public Zen::Engine::Rendering::I_Context
 {
     /// @name I_Context interface
     /// @{
@@ -64,7 +64,10 @@ public:
     }
     /// @}
 
-    NullContext(parent_window_handle_type _pParent)
+    /// @name 'Structors
+    /// @{
+public:
+    NullContext(Zen::Scripting::script_module& _module, parent_window_handle_type _pParent)
     :   m_bIsFullScreen(false)
 #ifdef WIN32
     ,   m_pParent(_pParent)
@@ -72,13 +75,37 @@ public:
     ,   m_parent(_pParent)
 #endif
     ,   m_pHandle(NULL)
+    ,   m_module(_module)
+    ,   m_pScriptObject(NULL)
     {
     }
 
     virtual ~NullContext()
     {
     }
+    /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Scripting::I_ObjectReference* getScriptObject()
+    {
+        // TODO Make thread safe?
+        if (m_pScriptObject == NULL)
+        {
+            m_pScriptObject = new ScriptObjectReference_type(
+                m_module.getScriptModule(),
+                m_module.getScriptModule()->getScriptType(getScriptTypeName()),
+                this
+            );
+        }
+        return m_pScriptObject;
+    }
+    /// @}
+
+    /// @name Member Variables
+    /// @{
+public:
     bool    m_bIsFullScreen;
 
 #ifdef WIN32
@@ -90,6 +117,10 @@ public:
 #endif
 
     window_handle_type  m_pHandle;
+private:
+    ScriptObjectReference_type*     m_pScriptObject;
+    Zen::Scripting::script_module&  m_module;
+    /// @}
 
 };  // class NulLContext
 
@@ -99,4 +130,4 @@ public:
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_ZOGRE_NULL_CAMERA_HPP_INCLUDED
+#endif // ZEN_ZOGRE_NULL_CONTEXT_HPP_INCLUDED

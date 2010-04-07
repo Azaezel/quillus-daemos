@@ -24,7 +24,7 @@ set ( ZOgre_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZOGRE_EXPORTS )
+add_definitions( -DZOGRE_EXPORTS ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${OGRE_INCLUDE_DIR} )
 

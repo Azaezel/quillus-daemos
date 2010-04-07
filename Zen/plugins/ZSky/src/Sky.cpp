@@ -25,7 +25,12 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "Sky.hpp"
+
+#include <Zen/Core/Scripting/I_ScriptType.hpp>
+
 #include <Zen/Engine/Resource/I_Resource.hpp>
+
+#include <Zen/Engine/World/I_WorldManager.hpp>
 
 #include <boost/bind.hpp>
 
@@ -34,12 +39,28 @@ namespace Zen {
 namespace ZSky {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Sky::Sky()
+:   m_pScriptModule(Engine::World::I_WorldManager::getSingleton().getDefaultWorldScriptModule())
+,   m_pScriptObject(NULL)
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Sky::~Sky()
 {
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+Sky::getScriptObject()
+{
+    // TODO Make thread safe?
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptObjectReference_type
+            (m_pScriptModule, m_pScriptModule->getScriptType(getScriptTypeName()), getSelfReference().lock());
+    }
+
+    return m_pScriptObject;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

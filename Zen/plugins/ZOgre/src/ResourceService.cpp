@@ -51,7 +51,7 @@ ResourceService::ResourceService()
 {
     m_pGroupInitLock = Threading::MutexFactory::create();
 
-    m_pSceneManager = m_root.getSceneManager("default");
+    //m_pSceneManager = m_root.getSceneManager("default");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -92,11 +92,12 @@ ResourceService::loadResource(config_type& _config)
 
     // TODO Maintain a pointer to this object
 
-    // TODO Don't assume this is a renderable mesh.
     if (_config["type"] == "entity")
     {
-        Ogre::Entity* pEntity = m_pSceneManager->createEntity(_config["label"], _config["fileName"]);
-        ResourceEntity* pRawPointer = new ResourceEntity(pEntity, m_pSceneManager);
+        Ogre::SceneManager* pScene = m_root.getSceneManager(_config["scene"]);
+
+        Ogre::Entity* pEntity = pScene->createEntity(_config["label"], _config["fileName"]);
+        ResourceEntity* pRawPointer = new ResourceEntity(pEntity,pScene);
         pResource_type pResourceEntity(pRawPointer, boost::bind(&ResourceService::destroyResource, this, _1));
         wpResource_type pWeakPtr(pResourceEntity);
         pRawPointer->setSelfReference(pWeakPtr);
@@ -105,8 +106,10 @@ ResourceService::loadResource(config_type& _config)
     }
     else if (_config["type"] == "terrain")
     {
+        Ogre::SceneManager* pScene = m_root.getSceneManager(_config["scene"]);
+
         std::cout << "ZOgre::loadResource() loading terrain..." << std::endl;
-        m_pSceneManager->setWorldGeometry(_config["fileName"]);
+        pScene->setWorldGeometry(_config["fileName"]);
 
         // return an empty resource, since there's no ogre Entity created by setWorldGeometry()
         pResource_type emptyResource;
@@ -114,8 +117,10 @@ ResourceService::loadResource(config_type& _config)
     }
     else if (_config["type"] == "skybox")
     {
+        Ogre::SceneManager* pScene = m_root.getSceneManager(_config["scene"]);
+
         std::cout << "ZOgre::loadResource() loading skybox..." << std::endl;
-        m_pSceneManager->setSkyBox(true, _config["resourceName"], 99999*3, true);
+        pScene->setSkyBox(true, _config["resourceName"], 99999*3, true);
 
         // return an empty resource, since there's no ogre Entity created by setSkyBox()
         pResource_type emptyResource;

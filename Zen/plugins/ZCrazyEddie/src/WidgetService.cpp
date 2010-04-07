@@ -101,16 +101,19 @@ WidgetService::~WidgetService()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 WidgetService::initialise(Zen::Engine::Rendering::I_View& _view,
-                          Zen::Engine::Input::I_InputService& _input)
+                          Zen::Engine::Input::I_MousePublisher* _pMousePublisher,
+                          Zen::Engine::Input::I_KeyPublisher* _pKeyPublisher)
 {
     // Connect the input events to the handlers
-    _input.onMouseMoveEvent.connect(boost::bind(&WidgetService::handleMouseMoveEvent, this, _1));
-    _input.onMouseClickEvent.connect(boost::bind(&WidgetService::handleMouseClickEvent, this, _1));
-    _input.onKeyEvent.connect(boost::bind(&WidgetService::handleKeyPressed, this, _1));
+    _pMousePublisher->onMouseMoveEvent.connect(boost::bind(&WidgetService::handleMouseMoveEvent, this, _1));
+    _pMousePublisher->onMouseClickEvent.connect(boost::bind(&WidgetService::handleMouseClickEvent, this, _1));
+    _pKeyPublisher->onKeyEvent.connect(boost::bind(&WidgetService::handleKeyPressed, this, _1));
 
     m_pWidgetRenderer.reset(new WidgetRenderer(_view));
 
     // TODO handle the case where m_pWidgetSystem may be initialized more than once.
+    assert(m_pWidgetSystem == NULL);
+
     std::cout << "Initialzing CEGUI Widget System" << std::endl;
     m_pWidgetSystem = &CEGUI::System::getSingleton();
 
@@ -313,7 +316,8 @@ WidgetService::hideMouseCursor()
 #ifdef WIN32
     ::ShowCursor(false);
 #else
-    SDL_ShowCursor(SDL_DISABLE);
+    // TR - Why is this deadlocking?
+    //SDL_ShowCursor(SDL_DISABLE);
 #endif
 }
 
@@ -525,7 +529,7 @@ WidgetService::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
     // If the shift key is down, the mouse moves the camera, otherwise the mouse moves
     // the direction that the player is facing.
     //Zen::Engine::Rendering::I_Camera& camera = m_gameClient.base().getRenderingCanvas().getCurrentCamera();
-    
+
     if (!handled)
     {
         // If the event wasn't handled, forward it to the widget service event.

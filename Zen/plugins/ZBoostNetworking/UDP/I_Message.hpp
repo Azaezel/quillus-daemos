@@ -30,6 +30,8 @@
 
 #include <Zen/Enterprise/AppServer/I_Message.hpp>
 
+#include <boost/cstdint.hpp>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Enterprise {
@@ -45,7 +47,7 @@ class ZBOOSTNETWORKING_DLL_LINK I_Message
 public:
     /// Every single message created on the client has a unique message Id.
     /// This method returns that value.
-    virtual unsigned int getMessageID() const = 0;
+    virtual boost::uint32_t getMessageID() const = 0;
 
     virtual unsigned int getServiceID() const = 0;
     /// @}

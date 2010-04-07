@@ -73,6 +73,14 @@ public:
     virtual Engine::Rendering::I_Camera& selectCamera(const std::string& _name);
 
     virtual void querySceneNodes(Math::Real _x, Math::Real _y, I_SceneNodeVisitor& _visitor);
+
+    virtual void pumpSystemMessages();
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
     /// @name I_OgreRenderingCanvas implementation
@@ -93,7 +101,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             RenderingCanvas(RenderingView* _pView);
+             RenderingCanvas(Zen::Scripting::script_module& _module, RenderingView* _pView);
     virtual ~RenderingCanvas();
 
     /// @name Member Variables
@@ -115,16 +123,11 @@ private:
     //pCamera_type        m_pCameraController;
     //std::string         m_strCameraType;
 
-#if 0 // deprecated
-    // TODO This should be abstracted into an I_InputManager
-    OIS::InputManager*  m_pInputManager;
-
-    // TODO This should be abstracted into an I_InputService
-    OIS::Keyboard*      m_pKeyboard;
-#endif // deprecated 
-
     std::map< std::string, bool >   m_compositors;
     bool                            m_isCompositorManagerInitialized;
+
+    ScriptObjectReference_type*     m_pScriptObject;
+    Zen::Scripting::script_module&  m_module;
     /// @}
 
 };  // class RenderingCanvas

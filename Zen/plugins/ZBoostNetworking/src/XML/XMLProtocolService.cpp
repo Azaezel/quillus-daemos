@@ -28,6 +28,8 @@
 #define NOMINMAX
 #endif
 
+#include <boost/asio.hpp>
+
 #include "XMLProtocolService.hpp"
 
 #include "Endpoint.hpp"
@@ -151,6 +153,20 @@ XMLProtocolService::sendTo(pMessage_type _pMessage, pEndpoint_type _pEndpoint)
 {
     // TODO Implement
     throw Utility::runtime_exception("XMLProtocolService::sendTo(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+XMLProtocolService::getConnectedEvent()
+{
+    throw Utility::runtime_exception("XMLProtocolService::getConnectedEvent(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+XMLProtocolService::getDisconnectedEvent()
+{
+    throw Utility::runtime_exception("XMLProtocolService::getConnectedEvent(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

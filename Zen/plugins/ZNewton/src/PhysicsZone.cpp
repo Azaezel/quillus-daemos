@@ -100,6 +100,13 @@ PhysicsZone::setGravity(const Math::Vector3& _grav)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsZone::setZoneSize(const Math::Vector3& _min, const Math::Vector3& _max)
+{
+	// set the size of the world
+    NewtonSetWorldSize(m_pZone, _min.m_array, _max.m_array);
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsZone::pPhysicsActor_type 
 PhysicsZone::createActor()
 {

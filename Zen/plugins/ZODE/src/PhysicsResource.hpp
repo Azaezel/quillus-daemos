@@ -25,7 +25,7 @@
 #define ZEN_ZODE_PHYSICS_RESOURCE_HPP_INCLUDED
 
 #include <Zen/Core/Memory/managed_self_ref.hpp>
-#include <Zen/Engine/Resource/I_Resource.hpp>
+#include <Zen/Engine/Resource/I_CollisionResource.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -33,7 +33,7 @@ namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class PhysicsResource
-:   virtual public Zen::Engine::Resource::I_Resource
+:   virtual public Zen::Engine::Resource::I_CollisionResource
 ,   public Zen::Memory::managed_self_ref<Zen::Engine::Resource::I_Resource>
 {
     /// @name I_Resource implementation

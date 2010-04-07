@@ -27,13 +27,22 @@
 namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-CollisionShape::CollisionShape()
+CollisionShape::CollisionShape(dGeomID _geometryId)
+:   m_geometryId(_geometryId)
 {
+    if( m_geometryId != NULL )
+    {
+        dGeomSetData(m_geometryId, this);
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 CollisionShape::~CollisionShape()
 {
+    if( m_geometryId != NULL )
+    {
+        dGeomDestroy( m_geometryId );
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

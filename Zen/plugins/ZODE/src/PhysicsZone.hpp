@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -46,13 +46,15 @@ class PhysicsZone
     /// @{
 public:
     typedef Zen::Memory::managed_ptr<Scripting::I_ScriptModule>                 pScriptModule_type;
+
+    typedef std::map<int, pPhysicsMaterial_type>                                Materials_type;
     /// @}
 
     /// @name I_PhysicsZone implementation
     /// @{
 public:
 	virtual void stepSimulation(double _elapsedTime);
-    virtual void setZoneSize(const Math::Vector3& _min, const Math::Vector3& _max);
+    virtual void setBoundary(const Math::Vector3& _min, const Math::Vector3& _max);
     virtual void setGravity(const Math::Vector3& _grav);
     virtual pPhysicsActor_type createActor();
     virtual pPhysicsMaterial_type createMaterial(bool _default = false);
@@ -76,6 +78,18 @@ public:
     virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
+    /// @name PhysicsZone implementation
+    /// @{
+public:
+    dSpaceID getSpaceId();
+    /// @}
+
+    /// @name Static methods
+    /// @{
+public:
+    static void destroyMaterial(wpPhysicsMaterial_type _pMaterial);
+    /// @}
+
     /// @name 'Structors
     /// @{
 public:
@@ -87,6 +101,9 @@ public:
     /// @{
 private:
     dWorldID                            m_worldId;
+    dSpaceID                            m_spaceId;
+
+    Materials_type                      m_materials;
 
     pScriptModule_type                  m_pScriptModule;
     ScriptObjectReference_type*         m_pScriptObject;
