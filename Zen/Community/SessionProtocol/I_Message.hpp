@@ -2,7 +2,7 @@
 // Zen Community Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -37,6 +37,7 @@ namespace Zen {
 namespace Community {
 namespace Protocol {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class I_MessageType;
 
 class SESSIONPROTOCOL_DLL_LINK I_Message
 :   public virtual Zen::Enterprise::AppServer::I_Message
@@ -49,9 +50,6 @@ public:
     /// @name I_Message interface
     /// @{
 public:
-    /// Every single message created on the client has a unique message Id.
-    /// This method returns that value.
-    virtual unsigned int getMessageId() const = 0;
     /// @}
 
     /// @name 'Structors

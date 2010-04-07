@@ -26,19 +26,18 @@
 #ifndef ZEN_COMMUNITY_SESSIONSERVER_SESSION_SERVICE_HPP_INCLUDED
 #define ZEN_COMMUNITY_SESSIONSERVER_SESSION_SERVICE_HPP_INCLUDED
 
-#include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Memory/managed_weak_ptr.hpp>
-#include <Zen/Core/Memory/managed_self_ref.hpp>
+#include <Zen/Enterprise/AppServer/scriptable_generic_service.hpp>
 
-#include <Zen/Enterprise/AppServer/I_ApplicationService.hpp>
-#include <Zen/Enterprise/AppServer/I_ApplicationServer.hpp>
+#include <Zen/Community/SessionCommon/I_SessionService.hpp>
 
 #include <Zen/Enterprise/Database/I_DatabaseManager.hpp>
 #include <Zen/Enterprise/Database/I_DatabaseConnection.hpp>
 
-#include <Zen/Community/SessionCommon/I_SessionService.hpp>
-
 #include <Zen/Community/SessionModel/I_AccountDataMap.hpp>
+#include <Zen/Community/SessionModel/I_AccountDomainObject.hpp>
+#include <Zen/Community/SessionModel/I_AccountDataCollection.hpp>
+
+#include <boost/cstdint.hpp>
 
 #include <string>
 #include <map>
@@ -54,27 +53,27 @@ namespace Zen {
 namespace Community {
     namespace Common {
         class I_Attribute;
+        class I_AccountView;
     }   // namespace Common
+    namespace Session {
+        class I_AccountDomainObject;
+    }   // namespace Session
 namespace Server {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-;
+class Session;
 
 class SessionService
-:   public Zen::Community::Common::I_SessionService
-,   public Zen::Memory::managed_self_ref<Common::I_SessionService>
+:   public Zen::Enterprise::AppServer::scriptable_generic_service
+        <Zen::Community::Common::I_SessionService, SessionService>
 {
     /// @name Types
     /// @{
 public:
-    typedef Zen::Plugins::I_ConfigurationElement::const_ptr_type    pConfig_type;
+    typedef Zen::Memory::managed_ptr<Zen::Community::Session::I_AccountDomainObject>    pAccount_type;
+    typedef std::map<std::string, pAccount_type>                                        UsersToAccount_type;
 
-    typedef Zen::Memory::managed_ptr<Zen::Networking::I_Endpoint>   pEndpoint_type;
-
-    typedef std::map<unsigned int, pResponseHandler_type>           Handlers_type;
-
-    typedef Zen::Memory::managed_ptr<Common::I_Attribute>           pAttribute_type;
-    typedef Zen::Event::future_return_value<pAttribute_type>        FutureAttribute_type;
-    typedef Zen::Memory::managed_ptr<FutureAttribute_type>          pFutureAttribute_type;
+    typedef Memory::managed_ptr<Common::I_AccountView>                                  pAccountView_type;
+    typedef Memory::managed_weak_ptr<Common::I_AccountView>                             wpAccountView_type;
     /// @}
 
     /// @name I_StartupShutdownParticipant implementation
@@ -87,17 +86,17 @@ public:
     virtual void stop();
     /// @}
 
-    /// @name I_RequestHandler implementation
+    /// @name I_ScriptableType
     /// @{
 public:
-    virtual void handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler);
+    virtual const std::string& getScriptTypeName();
+    virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
-    /// @name I_ApplicationService implementation
+    /// @name I_ScriptableService implementation
     /// @{
 public:
-    virtual Zen::Enterprise::AppServer::I_ApplicationServer& getApplicationServer();
-    virtual void handleMessage(pMessage_type _pMessage);
+    virtual void registerScriptEngine(pScriptEngine_type _pScriptEngine);
     /// @}
 
     /// @name I_SessionService implementation
@@ -106,13 +105,26 @@ public:
     virtual void requestLogin(pEndpoint_type _pDestinationEndpoint, 
                               const std::string& _name, 
                               const std::string& _password);
+    virtual Common::I_Session& getSession(boost::uint64_t _sessionId);
     virtual Event::I_Event& getSessionEvent();
     /// @}
 
     /// @name SessionService implementation
     /// @{
 private:
+    pScriptModule_type getScriptModule();
+
     void loadAccounts();
+
+    void handleLoginRequest(pRequest_type _pRequest, pResponseHandler_type);
+
+    boost::uint32_t generateSessionId();
+    /// @}
+
+    /// @name Static methods
+    /// @{
+public:
+    static void destroyAccountView(wpAccountView_type _pAccountView);
     /// @}
 
     /// @name 'Structors
@@ -126,11 +138,22 @@ protected:
     /// @name Member Variables
     /// @{
 private:
-    Zen::Enterprise::AppServer::I_ApplicationServer&                m_appServer;
-    Zen::Threading::ThreadPool*                                     m_pThreadPool;
+    pScriptEngine_type                                  m_pScriptEngine;
+    Zen::Scripting::script_module*                      m_pScriptModule;
+    Scripting::I_ObjectReference*                       m_pScriptObject;
+    const Zen::Plugins::I_ConfigurationElement*         m_pDatabaseConfig;
 
-    Handlers_type                                                   m_responseHandlers;
-    Zen::Threading::I_Mutex*                                        m_pHandlersMutex;
+    pAccountView_type                                   m_pAccountView;
+
+    UsersToAccount_type                                 m_usersMap;
+    
+    typedef std::map<boost::uint64_t, Session*>         SessionIdSession_type;
+    SessionIdSession_type                               m_sessions;
+
+    Session*                                            m_pRootSession;
+
+    boost::uint32_t                                     m_lastSessionId;
+    Zen::Threading::I_Mutex*                            m_pSesssionIdMutex;
     /// @}
 
 };  // class SessionService

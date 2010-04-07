@@ -10,12 +10,22 @@ endif (NOT INDIEZEN_PARENT)
 set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
 list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
 
-set ( ZEN_COMMUNITY_PROJECTS 
+set ( ZEN_COMMUNITY_PROJECTS
+    AccountClient
+    AccountCommon
+    AccountProtocol
+    AccountServer
+    AccountModel
     SessionClient
     SessionCommon
     SessionProtocol
     SessionServer
     SessionModel
+    ChatClient
+    ChatCommon
+    ChatProtocol
+    ChatServer
+    ChatModel	
 )
 
 foreach(PROJECT_PATH ${ZEN_COMMUNITY_PROJECTS})

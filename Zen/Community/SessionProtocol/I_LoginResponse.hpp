@@ -2,7 +2,7 @@
 // Zen Community Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -47,19 +47,46 @@ namespace Protocol {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class SESSIONPROTOCOL_DLL_LINK I_LoginResponse
-:   public Zen::Enterprise::AppServer::I_Response
+:   public virtual Zen::Enterprise::AppServer::I_Response
 {
     /// @name Types
     /// @{
 public:
     typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_Response>   pResponse_type;
+
+    /// Session State.
+    enum SessionState_type
+    {
+        INITIALIZED,
+        CONNECTED,
+        NOT_AUTHORIZED,
+        DISCONNECTED
+    };
+    /// @}
+
+    /// @name Getter / Setter methods
+    /// @{
+public:
+    /// Get the status element.
+    virtual const I_LoginResponse::SessionState_type& getStatus() const = 0;
+    
+    /// Set the status element value.
+    virtual void setStatus(const I_LoginResponse::SessionState_type& _status) = 0;
+
+    /// Get the sessionId element.
+    virtual const boost::uint32_t& getSessionId() const = 0;
+    
+    /// Set the sessionId element value.
+    virtual void setSessionId(const boost::uint32_t& _sessionId) = 0;
     /// @}
 
     /// @name Static methods
     /// @{
 public:
     static pResponse_type create(pEndpoint_type _pSourceEndpoint,
-                                pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId);
+                                pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId);
+
+    static pMessageType_type getStaticMessageType();
     /// @}
 
     /// @name 'Structors

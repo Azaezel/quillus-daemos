@@ -2,7 +2,7 @@
 // Zen Community Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -50,7 +50,10 @@ public:
     /// @name I_MessageFactory implementation
     /// @{
 public:
-    virtual pMessage_type create(pMessageHeader_type _pMessageHeader, pEndpoint_type _pSourceEndpoint, pEndpoint_type _pDestinationEndpoint);
+    virtual pMessage_type create(pMessageHeader_type _pMessageHeader, 
+                pEndpoint_type _pSourceEndpoint, 
+                pEndpoint_type _pDestinationEndpoint);
+
     /// @}
 
     /// @name MessageFactory implementation

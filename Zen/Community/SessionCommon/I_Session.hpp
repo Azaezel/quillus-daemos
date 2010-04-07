@@ -75,7 +75,7 @@ public:
     virtual SessionState_type getSessionState() const = 0;
 
     /// Get the session identifier.
-    virtual boost::int32_t getSessionId() const = 0;
+    virtual boost::uint32_t getSessionId() const = 0;
 
     /// Get the session endpoint.
     virtual const pEndpoint_type getEndpoint() const = 0;

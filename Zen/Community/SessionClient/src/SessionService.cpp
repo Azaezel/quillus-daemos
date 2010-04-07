@@ -32,8 +32,10 @@
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
-#include <Zen/Core/Event/I_EventManager.hpp>
-#include <Zen/Core/Event/I_EventService.hpp>
+#include <Zen/Core/Event/I_Event.hpp>
+#include <Zen/Core/Event/I_Action.hpp>
+#include <Zen/Core/Event/I_ActionMap.hpp>
+#include <Zen/Core/Event/I_Connection.hpp>
 
 #include <Zen/Community/SessionProtocol/I_SessionProtocolManager.hpp>
 
@@ -48,7 +50,10 @@ namespace Community {
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SessionService::SessionService(Zen::Enterprise::AppServer::I_ApplicationServer& _appServer)
-:   scriptable_generic_service(_appServer)
+:   Zen::Enterprise::AppServer::scriptable_generic_service <Zen::Community::Common::I_SessionService, SessionService>(_appServer)
+,   m_pScriptObject(NULL)
+,   m_pScriptModule(NULL)
+,   m_pScriptEngine()
 {
 }
 
@@ -94,17 +99,17 @@ SessionService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
     m_pScriptEngine = _pScriptEngine;
 
     // TODO change this so the Community module can be shared
-    static Zen::Scripting::script_module module(_pScriptEngine, "Community");
+    m_pScriptModule = new Zen::Scripting::script_module(_pScriptEngine, "Community");
 
-    m_pScriptModule = &module;
-
-    module.addType<SessionService>(getScriptTypeName(), "Session Service")
-        .addMethod("login", &SessionService::scriptLogin)
+    m_pScriptModule->addType<SessionService>(getScriptTypeName(), "Session Client Service")
+        .addMethod("requestLogin", &SessionService::scriptLogin)
         .addMethod("getSessionEvent", &SessionService::getSessionEvent)
         .createGlobalObject("sessionClient", this)
     ;
 
-    module.activate();
+    Session::registerScriptModule(*m_pScriptModule);
+
+    m_pScriptModule->activate();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -127,6 +132,21 @@ SessionService::prepareToStart(Zen::Threading::ThreadPool& _threadPool)
 void
 SessionService::start()
 {
+    // Create some actions.
+    getApplicationServer().getEventService()->getActionMap("SessionClient").createAction("onDisconnected", boost::bind(&SessionService::handleOnDisconnected, this, _1));
+
+    // Connect this the sessionClient protocol onDisconnected event to this
+    // services onDisconnected action.
+    // TODO We need m_pOnDisconnectedConnection if we disconnect from this event.
+    //m_pOnDisconnectedConnection = 
+        getApplicationServer().getProtocol("sessionClient")->getDisconnectedEvent()
+            .connect
+            (
+                (getApplicationServer().getEventService()->getActionMap("SessionClient"))["onDisconnected"].getSelfReference().lock(), 
+                &getApplicationServer().getEventService()->getEventQueue("script")
+            );
+
+    // Allow the super class to start up.
     super::start();
 }
 
@@ -150,10 +170,27 @@ SessionService::requestLogin(pEndpoint_type _pDestinationEndpoint,
                            const std::string& _name,
                            const std::string& _password)
 {
-    Session* pSession = new Session(*this, _pDestinationEndpoint);
+    // Create a new local Session object for storing the session state.
+    Session* pSession;
 
-    m_sessions.insert(pSession);
+    // TODO Guard
+    // Create a map of destination endpoint to session.
+    EndpointIndex_type::iterator iter = m_endpointIndex.find(_pDestinationEndpoint);
 
+    if(iter == m_endpointIndex.end())
+    {
+        // For now this is assuming one session per endpoint but that
+        // is a bad assumption.
+        // TODO Improve this logic so that it's one session per endpoint + name
+        pSession = new Session(*this, _pDestinationEndpoint);
+        m_endpointIndex[_pDestinationEndpoint] = pSession;
+    }
+    else
+    {
+        pSession = dynamic_cast<Session*>(iter->second);
+    }
+
+    // Create a login request using pSession as the payload.
     Zen::Enterprise::AppServer::create_request<Protocol::I_LoginRequest, Session*>
         request(_pDestinationEndpoint, pSession);
 
@@ -165,11 +202,17 @@ SessionService::requestLogin(pEndpoint_type _pDestinationEndpoint,
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Common::I_Session&
+SessionService::getSession(boost::uint64_t _sessionId)
+{
+    throw Zen::Utility::runtime_exception("SessionService::getSession() : Error, this is not implemented for the client, and should never be called.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Event::I_Event&
 SessionService::getSessionEvent()
 {
-    return Zen::Event::I_EventManager::getSingleton().create("eventService")
-        ->createEvent("SessionService::Client::SessionEvent");
+    return  getApplicationServer().getEventService()->createEvent("SessionService::Client::SessionEvent");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -180,6 +223,25 @@ SessionService::scriptLogin(const std::string& _server, const std::string& _port
     pEndpoint_type pEndpoint = getApplicationServer().getProtocol("sessionClient")
         ->resolveEndpoint(_server, _port);
     
+    // TODO make sure this endpoint doesn't already exist in m_endpointIndex
+    // TODO Guard for m_endpointIndex
+    AddressIndex_type::iterator iter = m_addressIndex.find(pEndpoint->toString());
+    if (iter != m_addressIndex.end())
+    {
+        // This is an address that has already been used, so re-use
+        // the original one.
+        pEndpoint = iter->second;
+    }
+    else
+    {
+        // This is a new address, save the endpoint.
+        m_addressIndex[pEndpoint->toString()] = pEndpoint;
+    }
+
+    // TODO Save the endpoint and associate it with this server and port?
+    
+    // For now lets just assume we only have one "scriptLogin" request.
+
     requestLogin(pEndpoint, _name, _password);
 }
 
@@ -187,7 +249,60 @@ SessionService::scriptLogin(const std::string& _server, const std::string& _port
 void
 SessionService::handleLoginResponse(pResponse_type _pResponse, Protocol::I_LoginRequest& _request, Session* _pSession)
 {
-    pLoginResponse_type pReponse = _pResponse.as<pLoginResponse_type>();
+    // _pSession is the payload associated with the original _request.
+    // Handle this response.
+
+    Protocol::I_LoginResponse* pResponse =
+        dynamic_cast<Protocol::I_LoginResponse*>(_pResponse.get());
+
+    // TODO Create an index of sessionId to Session*
+    // Hack?
+    _pSession->setSessionState(static_cast<Common::I_Session::SessionState_type>(pResponse->getStatus()));
+    if (pResponse->getStatus() == Protocol::I_LoginResponse::CONNECTED)
+    {
+        _pSession->setSessionId(pResponse->getSessionId());
+        
+        // TODO Guard
+        m_sessionIdIndex[pResponse->getSessionId()] = _pSession;
+    }
+
+    // Notify that the session status has changed.
+    boost::any anySession(_pSession->getScriptObject());
+    getSessionEvent().fireEvent(anySession);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SessionService::handleOnDisconnected(boost::any _anyEndpoint)
+{
+    // When an endpoint is disconnected, see if there's a session associated with it.
+    // TODO Handle the case of multiple sessions connected to the same endpoint.
+
+    pEndpoint_type pEndpoint = boost::any_cast<pEndpoint_type>(_anyEndpoint);
+
+    EndpointIndex_type::iterator iter = m_endpointIndex.find(pEndpoint);
+
+    if (iter != m_endpointIndex.end())
+    {
+        // If there is a session associated with this endpoint, it's not valid anymore, 
+        // so mark it as DISCONNECTED and fire the session change event.
+        Common::I_Session* const pSession = iter->second;
+        if (pSession != NULL)
+        {
+            Session* const pSessionImpl = dynamic_cast<Session*>(pSession);
+            pSessionImpl->setSessionState(Common::I_Session::DISCONNECTED);
+            boost::any anySession(pSessionImpl->getScriptObject());
+            getSessionEvent().fireEvent(anySession);
+        }
+        else
+        {
+            // Error
+        }
+    }
+    else
+    {
+        // Error?
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

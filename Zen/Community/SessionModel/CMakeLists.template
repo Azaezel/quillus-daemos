@@ -24,7 +24,7 @@ set ( SessionModel_SRC
 <%SourceList%>
     )
 
-add_definitions( -DSESSIONMODEL_EXPORTS )
+add_definitions( -DSESSIONMODEL_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${LIBXML2_INCLUDE_DIR} )
 
@@ -34,7 +34,7 @@ add_library ( SessionModel ${LIB_TYPE} ${SessionModel_SRC} )
 
 add_dependencies(SessionModel ZenCore ZenEnterprise)
 
-target_link_libraries( SessionModel )
+target_link_libraries( SessionModel ZenCore ZenEnterprise )
 
 set_target_properties ( SessionModel 
 						PROPERTIES

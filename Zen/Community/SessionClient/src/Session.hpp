@@ -26,6 +26,8 @@
 #ifndef ZEN_COMMUNITY_SESSIONCLIENT_SESSION_HPP_INCLUDED
 #define ZEN_COMMUNITY_SESSIONCLIENT_SESSION_HPP_INCLUDED
 
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Community/SessionCommon/I_Session.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -33,27 +35,41 @@ namespace Zen {
 namespace Community {
     namespace Common {
         class I_SessionService;
-        class I_SessionListener;
     }   // namespace Common
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class SessionService;
 
-/// Session Session
+/// Session.
+/// This represents a stateful session.
+/// @note Should this be scriptable or should Common::I_Session be scriptable?
+///     For now I think it should be here, since the server side currently
+///     is not scriptable.
 class Session
-:   Common::I_Session
+:   public Common::I_Session
+,   public Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<Common::I_SessionListener>      pSessionListener_type;
+    typedef Session*                                        pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<Session>        ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                      ScriptWrapper_type;
+    typedef ScriptWrapper_type*                             pScriptWrapper_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
     /// @name I_Session implementation
     /// @{
 public:
     virtual SessionState_type getSessionState() const;
-    virtual boost::int32_t getSessionId() const;
+    virtual boost::uint32_t getSessionId() const;
     virtual const pEndpoint_type getEndpoint() const;
     //virtual pFutureAttribute_type getAttribute(const std::string& _key) const;
     /// @}
@@ -61,8 +77,10 @@ public:
     /// @name Session implementation
     /// @{
 public:
-    void setSessionId(boost::int32_t _sessionId);
+    void setSessionId(boost::uint32_t _sessionId);
     void setSessionState(SessionState_type _sessionState);
+    static void registerScriptModule(Zen::Scripting::script_module& _module);
+    int scriptGetSessionState();
     /// @}
 
     /// @name 'Structors
@@ -82,6 +100,8 @@ private:
 
     boost::int32_t              m_sessionId;
     SessionState_type           m_sessionState;
+
+    pScriptWrapper_type         m_pScriptObject;
     /// @}
 
 };  // class Session
