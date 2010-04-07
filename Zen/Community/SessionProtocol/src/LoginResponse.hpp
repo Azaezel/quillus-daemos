@@ -2,7 +2,7 @@
 // Zen Community Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -33,6 +33,7 @@
 #include "Response.hpp"
 
 #include <Zen/Enterprise/AppServer/I_MessageFactory.hpp>
+#include <Zen/Enterprise/AppServer/I_MessageType.hpp>
 
 #include <boost/serialization/string.hpp>
 #include <string>
@@ -60,7 +61,6 @@ class LoginResponse
     /// @{
 public:
     enum { type = 102 };  // TODO Should we be hardcoding this?
-    typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_MessageType>         pMessageType_type;
     
     typedef Zen::Memory::managed_weak_ptr<Zen::Enterprise::AppServer::I_Response>    wpResponse_type;
     /// @}
@@ -80,7 +80,8 @@ public:
     /// @name I_Message implementation
     /// @{
 public:
-    virtual unsigned int getMessageId() const { return Message::getMessageId(); } 
+    virtual boost::uint32_t getMessageId() const { return Message::getMessageId(); } 
+    virtual pMessageType_type getMessageType() const { return getStaticMessageType(); }
     /// @}
 
     /// @name Dominance for Response
@@ -88,14 +89,32 @@ public:
 public:
     virtual unsigned int getRequestMessageId() const { return Response::getRequestMessageId(); }
     /// @}
+    /// @name Getter / Setter methods
+    /// @{
+public:
+    /// Get the status element.
+    virtual const I_LoginResponse::SessionState_type& getStatus() const;
+    
+    /// Set the status element value.
+    virtual void setStatus(const I_LoginResponse::SessionState_type& _status);
+
+    /// Get the sessionId element.
+    virtual const boost::uint32_t& getSessionId() const;
+    
+    /// Set the sessionId element value.
+    virtual void setSessionId(const boost::uint32_t& _sessionId);
+    /// @}
+
     /// @name Static methods
     /// @{
 public:
     static void registerMessage(Zen::Enterprise::AppServer::I_ApplicationServer& _appServer);
 
-    static pMessageHeader_type createMessageHeader();
+    static pMessageHeader_type createMessageHeader(boost::uint32_t _messageId, boost::uint32_t _requestId);
 
     static void destroy(wpResponse_type _wpResponse);
+    
+    static pMessageType_type getStaticMessageType();    
     /// @}
     
     /// @name 'Structors
@@ -106,12 +125,12 @@ protected:
              /// This constructor is used by the static create
              /// methods for creating outbound messages.
              LoginResponse(pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId);
+                           pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId);
              /// This constructor is used by the message factory
              /// for creating inbound messages.
              LoginResponse(pMessageHeader_type _pMessageHeader,
                            pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId);
+                           pEndpoint_type _pDestinationEndpoint);
     virtual ~LoginResponse();
     /// @}
 
@@ -123,6 +142,8 @@ private:
     static pMessageType_type                                sm_pType;
     static Zen::Enterprise::AppServer::I_MessageRegistry*   sm_pMessageRegistry;
    
+    SessionState_type m_status;
+    boost::uint32_t m_sessionId;
     
     /// @}
 

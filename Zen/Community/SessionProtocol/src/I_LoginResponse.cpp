@@ -2,7 +2,7 @@
 // Zen Community Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -49,12 +49,19 @@ I_LoginResponse::~I_LoginResponse()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_LoginResponse::pResponse_type
 I_LoginResponse::create(pEndpoint_type _pSourceEndpoint,
-					   pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId)			   
+					   pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId)			   
 {
     LoginResponse* pLoginResponse(new LoginResponse(_pSourceEndpoint,
                                           _pDestinationEndpoint, _requestMessageId));
 
     return pResponse_type((Response*)pLoginResponse, LoginResponse::destroy);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_LoginResponse::pMessageType_type
+I_LoginResponse::getStaticMessageType()			   
+{
+    return LoginResponse::sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

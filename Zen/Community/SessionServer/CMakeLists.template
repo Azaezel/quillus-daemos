@@ -32,9 +32,9 @@ link_directories ( ${DEV_LIB} ${Boost_LIBRARY_DIRS} )
 
 add_library ( SessionServer ${LIB_TYPE} ${SessionServer_SRC} )
 
-add_dependencies(SessionServer ZenCore ZenEngine ZenEnterprise SessionCommon SessionProtocol SessionModel )
+add_dependencies(SessionServer ZenCore ZenEngine ZenEnterprise AccountCommon SessionCommon SessionProtocol SessionModel )
 
-target_link_libraries(SessionServer ZenCore ZenEngine ZenEnterprise SessionCommon SessionProtocol SessionModel ${Boost_LIBRARIES} )
+target_link_libraries(SessionServer ZenCore ZenEngine ZenEnterprise AccountCommon SessionCommon SessionProtocol SessionModel ${Boost_LIBRARIES} )
 
 set_target_properties ( SessionServer
 						PROPERTIES

@@ -21,7 +21,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//	Matthew Alan Gray mgray@indiezen.org
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "Session.hpp"
@@ -37,11 +37,11 @@ namespace Zen {
 namespace Community {
 namespace Server {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Session::Session(pSessionService_type _pParent,
-                 boost::int32_t _sessionId,
+Session::Session(SessionService& _parent,
+                 boost::uint32_t _sessionId,
                  SessionState_type _sessionState,
                  pEndpoint_type _pEndpoint)
-:   m_pParent(_pParent)
+:   m_session(_parent)
 ,   m_sessionId(_sessionId)
 ,   m_sessionState(_sessionState)
 ,   m_pEndpoint(_pEndpoint)
@@ -61,7 +61,7 @@ Session::getSessionState() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-boost::int32_t
+boost::uint32_t
 Session::getSessionId() const
 {
     return m_sessionId;

@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -23,11 +23,18 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_COMMUNITY_CHAT_CLIENT_CHAT_SERVICE_HPP_INCLUDED
-#define ZEN_COMMUNITY_CHAT_CLIENT_CHAT_SERVICE_HPP_INCLUDED
+#ifndef ZEN_COMMUNITY_CHATCLIENT_CHAT_SERVICE_HPP_INCLUDED
+#define ZEN_COMMUNITY_CHATCLIENT_CHAT_SERVICE_HPP_INCLUDED
+
+#include "ChannelModelProxy.hpp"
+
+#include <Zen/Enterprise/AppServer/scriptable_generic_service.hpp>
 
 #include <Zen/Community/ChatCommon/I_ChatService.hpp>
 
+#include <boost/cstdint.hpp>
+
+#include <string>
 #include <map>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -38,61 +45,90 @@ namespace Zen {
     namespace Networking {
         class I_Endpoint;
     }   // namespace Networking
-    namespace Enterprise {
-        namespace AppServer {
-            class I_ApplicationServer;
-        }   // namespace AppServer
-    }   // namespace Enterprise
 namespace Community {
-namespace Chat {
+    namespace Common {
+        class I_ChannelView;
+    }   // namespace Common
+    namespace Protocol {
+        class I_SubscribeChannelModelRequest;
+        class I_UnsubscribeChannelModelRequest;
+        class I_CreateChannelRequest;
+        class I_ReadChannelRequest;
+        class I_UpdateChannelRequest;
+        class I_DeleteChannelRequest;
+    }   // namespace Protocol
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class ChatService
-:   public Common::I_ChatService
+:   public Zen::Enterprise::AppServer::scriptable_generic_service
+        <Zen::Community::Common::I_ChatService, ChatService>
 {
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<Networking::I_Endpoint>     pEndpoint_type;
-    typedef std::map<unsigned int, pResponseHandler_type>   Handlers_type;
+    typedef Zen::Memory::managed_ptr<Common::I_ChannelView>             pChannelView_type;
     /// @}
 
     /// @name I_StartupShutdownParticipant implementation
     /// @{
 public:
     virtual void setConfiguration(const Zen::Plugins::I_ConfigurationElement& _config);
-    virtual Threading::I_Condition* prepareToStart(Threading::ThreadPool& _threadPool);
+    virtual Zen::Threading::I_Condition* prepareToStart(Zen::Threading::ThreadPool& _threadPool);
     virtual void start();
-    virtual Threading::I_Condition* prepareToStop();
+    virtual Zen::Threading::I_Condition* prepareToStop();
     virtual void stop();
     /// @}
 
-    /// @name I_RequestHandler implementation
+    /// @name I_ScriptableType
     /// @{
 public:
-    virtual void handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler);
+    virtual const std::string& getScriptTypeName();
+    virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
-    /// @name I_ApplicationService implementation
+    /// @name I_ScriptableService implementation
     /// @{
 public:
-    virtual Zen::Enterprise::AppServer::I_ApplicationServer& getApplicationServer();
-    virtual void handleMessage(pMessage_type _pMessage);
+    virtual void registerScriptEngine(pScriptEngine_type _pScriptEngine);
     /// @}
 
     /// @name I_ChatService implementation
     /// @{
 public:
-    virtual pFutureChatSession_type connect(pSession_type _pSession);
+    virtual pFutureChannelModel_type createChannelModel();
+    virtual pFutureChannelController_type createChannelController(Common::I_ChannelModel& _model);
+
+    virtual boost::uint32_t getAccessFlags() const;
+    virtual void setAccessFlags(boost::uint32_t _accessFlags);
+    virtual const Common::I_Account& getOwner() const;
+    virtual void setOwner(const Common::I_Account& _owner);
+    virtual const Common::I_Group& getGroup() const;
+    virtual void setGroup(const Common::I_Group& _group);
     /// @}
 
     /// @name ChatService implementation
     /// @{
+public:
+    const std::string& getDatabaseConnectionName() const;
+
+    void handleSubscribeChannelModelResponse(pResponse_type _pResponse, Protocol::I_SubscribeChannelModelRequest& _request, ChannelModelProxy::ProxySubscription* _pProxySubscription);
+    void handleUnsubscribeChannelModelResponse(pResponse_type _pResponse, Protocol::I_UnsubscribeChannelModelRequest& _request, pChannelView_type _pChannelView);
+
+    void handleCreateChannelResponse(pResponse_type _pResponse, Protocol::I_CreateChannelRequest& _request, ChannelModelProxy::ProxyChannel* _pProxyChannel);
+    void handleReadChannelResponse(pResponse_type _pResponse, Protocol::I_ReadChannelRequest& _request, ChannelModelProxy::ProxyChannel* _pProxyChannel);
+    void handleUpdateChannelResponse(pResponse_type _pResponse, Protocol::I_UpdateChannelRequest& _request, ChannelModelProxy::ProxyChannel* _pProxyChannel);
+    void handleDeleteChannelResponse(pResponse_type _pResponse, Protocol::I_DeleteChannelRequest& _request, ChannelModelProxy::ProxyChannel* _pProxyChannel);
+
+    void handleChannelModelUpdateMessage(pMessage_type _pMessage);
+
 private:
-    void requestChatSession(pEndpoint_type _pDestinationEndpoint,
-                            pSession_type _pSession,
-                            pResponseHandler_type _pResponseHandler);
+    pScriptModule_type getScriptModule();
+    /// @}
+
+    /// @name Static methods
+    /// @{
+public:
     /// @}
 
     /// @name 'Structors
@@ -103,24 +139,24 @@ protected:
     virtual ~ChatService();
     /// @}
 
-    /// @name Member variables
+    /// @name Member Variables
     /// @{
 private:
-    Zen::Enterprise::AppServer::I_ApplicationServer&    m_appServer;
-    Zen::Threading::ThreadPool*                         m_pThreadPool;
+    pScriptEngine_type                                  m_pScriptEngine;
+    Zen::Scripting::script_module*                      m_pScriptModule;
+    Scripting::I_ObjectReference*                       m_pScriptObject;
+    const Zen::Plugins::I_ConfigurationElement*         m_pDatabaseConfig;
 
-    /// Map from MessageID() to the response handler
-    Handlers_type                                       m_responseHandlers;
-    Zen::Threading::I_Mutex*                            m_pHandlersMutex;
+    pChannelModel_type                                  m_pChannelModel;
+    pChannelController_type                             m_pChannelController;
     /// @}
 
 };  // class ChatService
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Client
-}   // namespace Chat
 }   // namespace Community
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_COMMUNITY_CHAT_CLIENT_CHAT_SERVICE_HPP_INCLUDED
+#endif // ZEN_COMMUNITY_CHATCLIENT_CHAT_SERVICE_HPP_INCLUDED

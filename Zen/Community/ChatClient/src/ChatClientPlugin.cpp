@@ -2,7 +2,7 @@
 // Zen Community Framework
 //
 // Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +21,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//	Matthew Alan Gray mgray@indiezen.org
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include <Zen/Core/Plugins/Utilities.hpp>
 
@@ -30,5 +30,5 @@
 IMPLEMENT_SINGLE_ZEN_PLUGIN(ChatClientModule, ChatClientPlugin)
 
 BEGIN_ZEN_EXTENSION_MAP(ChatClientPlugin)
-    ZEN_EXTENSION("Zen::Enterprise::AppServer::ApplicationService", &Zen::Community::Chat::Client::ChatServiceFactory::getSingleton())
+    ZEN_EXTENSION("Zen::Enterprise::AppServer::ApplicationService", &Zen::Community::Client::ChatServiceFactory::getSingleton())
 END_ZEN_EXTENSION_MAP()

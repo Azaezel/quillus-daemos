@@ -2,7 +2,7 @@
 // Zen Community Framework
 //
 // Copyright (C) 2001 - 2010 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -45,7 +45,7 @@ namespace Protocol {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class Message
-:   public virtual Zen::Community::Protocol::I_Message
+:   public Zen::Community::Protocol::I_Message
 {
     /// @name Types
     /// @{
@@ -65,13 +65,15 @@ public:
     /// @name I_Message implementation
     /// @{
 public:
-    virtual unsigned int getMessageId() const;
+    virtual boost::uint32_t getMessageId() const;
+    virtual pMessageType_type getMessageType() const;
     /// @}
 
     /// @name Static methods
     /// @{
 public:
     static void destroyMessageFactory(wpMessageFactory_type _wpMessageFactory);
+    static boost::uint32_t getNewMessageId();
     /// @}
 
     /// @name 'Structors

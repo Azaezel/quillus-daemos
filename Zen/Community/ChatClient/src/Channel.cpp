@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -26,25 +26,21 @@
 
 #include "Channel.hpp"
 
+#include "ChatService.hpp"
+
 #include <Zen/Core/Utility/runtime_exception.hpp>
-
-#include <Zen/Community/ChatCommon/I_Users.hpp>
-#include <Zen/Community/ChatCommon/I_ChannelInfo.hpp>
-#include <Zen/Community/ChatCommon/I_ChannelSession.hpp>
-#include <Zen/Community/ChatCommon/I_ChannelPermissions.hpp>
-
-#include <Zen/Spaces/ObjectModel/I_ObjectType.hpp>
-#include <Zen/Spaces/ObjectModel/I_Filter.hpp>
-
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Community {
-namespace Chat {
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Channel::Channel(const std::string& _name)
-:   m_name(_name)
+Channel::Channel(ChatService& _parent)
+:   m_parent(_parent)
+,   m_channelId(0)
+,   m_name()
+,   m_description()
+,   m_pScriptObject(NULL)
 {
 }
 
@@ -54,51 +50,143 @@ Channel::~Channel()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Channel::pObjectCollection_type
-Channel::getChildObjects(pObjectType_type _pType,
-                         pFilter_type _pFilter)
+boost::uint64_t
+Channel::getChannelId()
 {
-    throw Zen::Utility::runtime_exception("Not implemented.");
+    return m_channelId;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-const std::string&
-Channel::getName() const
+const std::string
+Channel::getChannelName()
 {
     return m_name;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Channel::pFutureUsers_type
-Channel::getUsers()
+void
+Channel::setChannelId(boost::uint64_t _channelId)
 {
-    throw Zen::Utility::runtime_exception("Not implemented.");
+    m_channelId = _channelId;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Channel::pFutureChannelInfo_type
-Channel::getInfo()
+void
+Channel::setChannelName(const std::string& _name)
 {
-    throw Zen::Utility::runtime_exception("Not implemented.");
+    m_name = _name;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Channel::pFutureChannelSession_type
-Channel::join()
+const std::string
+Channel::getChannelDescription()
 {
-    throw Zen::Utility::runtime_exception("Not implemented.");
+    return m_description;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Channel::pFutureChannelPermissions_type
-Channel::getPermissions()
+void 
+Channel::setChannelDescription(const std::string& _description)
 {
-    throw Zen::Utility::runtime_exception("Not implemented.");
+    m_description = _description;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace Client
-}   // namespace Chat
-}   // namespace Community
-}   // namespace Zen
+Channel::pFutureChannelMemberModel_type 
+Channel::createChannelMemberModel()
+{
+    throw Zen::Utility::runtime_exception("Channel::createChannelMemberModel() : Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Channel::pFutureChannelMemberController_type 
+Channel::createChannelMemberController(Common::I_ChannelMemberModel& _model)
+{
+    throw Zen::Utility::runtime_exception("Channel::createChannelMemberController() : Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static Zen::Scripting::script_module* sm_pScriptModule = NULL;
+static std::string sm_scriptTypeName("Channel");
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Channel::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    sm_pScriptModule = &_module;
+
+    sm_pScriptModule->addType<Channel>(sm_scriptTypeName, "Channel")
+        .addMethod("getChannelId", &Channel::getChannelId)
+        .addMethod("getChannelName", &Channel::getChannelName)
+        .addMethod("getChannelDescription", &Channel::getChannelDescription)
+    ;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+Channel::getScriptTypeName()
+{
+    return sm_scriptTypeName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Scripting::I_ObjectReference*
+Channel::getScriptObject()
+{
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptWrapper_type(sm_pScriptModule->getScriptModule(),
+            sm_pScriptModule->getScriptModule()->getScriptType(getScriptTypeName()),
+            getSelfReference().lock()
+        );
+    }
+
+    return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+boost::uint32_t 
+Channel::getAccessFlags() const
+{
+    throw Zen::Utility::runtime_exception("ChatService::getAccessFlags() : Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+Channel::setAccessFlags(boost::uint32_t _accessFlags)
+{
+    throw Zen::Utility::runtime_exception("ChatService::setAccessFlags() : Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const Common::I_Account&
+Channel::getOwner() const
+{
+    throw Zen::Utility::runtime_exception("ChatService::getOwner() : Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+Channel::setOwner(const Common::I_Account& _owner)
+{
+    throw Zen::Utility::runtime_exception("ChatService::setOwner() : Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const Common::I_Group&
+Channel::getGroup() const
+{
+    throw Zen::Utility::runtime_exception("ChatService::getGroup() : Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+Channel::setGroup(const Common::I_Group& _group)
+{
+    throw Zen::Utility::runtime_exception("ChatService::setGroup() : Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+}	// namespace Client 
+}	// namespace Community
+}	// namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -2,8 +2,8 @@
 <?indiezen version="1.0"?>
 <plugin
    id="SessionServer"
-   name="Zen Worlds Session Server"
-   version="0.4.0"
+   name="Zen Community Session Server"
+   version="0.6.2"
    provider-name="IndieZen.org">
 
   <runtime>
@@ -14,16 +14,15 @@
 
   <requires>
     <import plugin="Framework"/>
-    <import plugin="ZSQLite"/>
   </requires>
 
   <extension
         point="Zen::Enterprise::AppServer::ApplicationService"
         id="SessionServer"
-        name="Zen Worlds Session Server"
+        name="Zen Community Session Server"
         type="SessionServer">
     <application-service
-          class="Worlds::SessionService">
+          class="Community::SessionService">
     </application-service>
   </extension>
 

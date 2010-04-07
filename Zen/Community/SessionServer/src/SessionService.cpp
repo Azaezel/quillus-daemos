@@ -26,8 +26,18 @@
 #include "SessionService.hpp"
 #include "Session.hpp"
 #include "Attribute.hpp"
+#include "AccountView.hpp"
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
+
+#include <Zen/Core/Event/I_EventManager.hpp>
+#include <Zen/Core/Event/I_EventService.hpp>
+
+#include <Zen/Core/Threading/I_Mutex.hpp>
+#include <Zen/Core/Threading/MutexFactory.hpp>
+#include <Zen/Core/Threading/CriticalSection.hpp>
+
+#include <Zen/Core/Plugins/I_ConfigurationElement.hpp>
 
 #include <Zen/Enterprise/Networking/I_Endpoint.hpp>
 
@@ -41,8 +51,10 @@
 #include <Zen/Community/SessionProtocol/I_LoginRequest.hpp>
 #include <Zen/Community/SessionProtocol/I_LoginResponse.hpp>
 
-#include <Zen/Community/SessionModel/I_AccountDataCollection.hpp>
-#include <Zen/Community/SessionModel/I_AccountDomainObject.hpp>
+#include <Zen/Community/AccountCommon/I_AccountView.hpp>
+#include <Zen/Community/AccountCommon/I_AccountModel.hpp>
+
+#include <boost/bind.hpp>
 
 #include <iostream>
 
@@ -52,84 +64,224 @@ namespace Community {
 namespace Server {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SessionService::SessionService(Zen::Enterprise::AppServer::I_ApplicationServer& _appServer)
-:   m_appServer(_appServer)
-,   m_pThreadPool(NULL)
-,   m_pHandlersMutex(Zen::Threading::MutexFactory::create())
+:   Zen::Enterprise::AppServer::scriptable_generic_service<Zen::Community::Common::I_SessionService, SessionService>(_appServer)
+,   m_pScriptObject(NULL)
+,   m_pSesssionIdMutex(Threading::MutexFactory::create())
+,   m_lastSessionId(0)
+,   m_pAccountView(new AccountView(), &destroyAccountView)
+,   m_pRootSession(new Session(*this,0,Session::CONNECTED,pEndpoint_type()))
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SessionService::~SessionService()
 {
-    Zen::Threading::MutexFactory::destroy(m_pHandlersMutex);
+    Threading::MutexFactory::destroy(m_pSesssionIdMutex);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+SessionService::getScriptTypeName()
+{
+    static std::string sm_name("SessionServer");
+    return sm_name;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+SessionService::getScriptObject()
+{
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptWrapper_type(getScriptModule(),
+            getScriptModule()->getScriptType(getScriptTypeName()),
+            this
+            );
+    }
+
+    return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SessionService::pScriptModule_type
+SessionService::getScriptModule()
+{
+    return m_pScriptModule->getScriptModule();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SessionService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
+{
+    m_pScriptEngine = _pScriptEngine;
+
+    // TODO change this so the Community module can be shared
+    static Zen::Scripting::script_module module(_pScriptEngine, "Community");
+
+    m_pScriptModule = &module;
+
+    module.addType<SessionService>(getScriptTypeName(), "Session Server Service")
+        //.addMethod("login", &SessionService::scriptLogin)
+        //.addMethod("getSessionEvent", &SessionService::getSessionEvent)
+        .createGlobalObject("sessionServer", this)
+    ;
+
+    module.activate();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 SessionService::setConfiguration(const Zen::Plugins::I_ConfigurationElement& _config)
 {
-    // TODO Get configuration information
+    super::setConfiguration(_config);
+
+    /// TODO Get database name from configuration data? -- mgray 02/22/2010
+    m_pDatabaseConfig = _config.getChild("database");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Zen::Threading::I_Condition*
 SessionService::prepareToStart(Zen::Threading::ThreadPool& _threadPool)
 {
-    m_pThreadPool = &_threadPool;
+    Zen::Community::Protocol::I_SessionProtocolManager::getSingleton().install(getApplicationServer());
 
-    Zen::Community::Protocol::I_SessionProtocolManager::getSingleton().install(m_appServer);
+    registerRequestHandler(Protocol::I_LoginRequest::getStaticMessageType(), 
+        boost::bind(&SessionService::handleLoginRequest, this, _1, _2));
 
-    // Ready to go, so don't bother returning a condition variable
-    return NULL;
+    //getApplicationServer().registerDefaultSessionService(getSelfReference().lock());
+
+    return super::prepareToStart(_threadPool);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 SessionService::start()
 {
-    // TODO Get the app server database and load the entire Account table
-    // into memory.
+    // Instead of accessing the database, take m_pAccountView
+    // and subscribe to an I_AccountModel from the Account services.
+//    typedef Memory::managed_ptr<Common::I_AccountModel> pAccountModel_type;
+//    Common::I_AccountService::pFutureAccountModel_type pFutureModel =
+//        getApplicationServer().getDefaultAccountService()
+//            ->createAccountModel();
+//
+//    pFutureModel->getValue()->subscribe(*m_pRootSession, m_pAccountView);
+
+    super::start();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Zen::Threading::I_Condition*
 SessionService::prepareToStop()
 {
-    return NULL;
+    return super::prepareToStop();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 SessionService::stop()
 {
+    super::stop();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-SessionService::handleMessage(pMessage_type _pMessage)
-{
-    throw Utility::runtime_exception("SessionService::handleMessage(): Error, not implemented.");
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-SessionService::handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler)
+SessionService::handleLoginRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler)
 {
     Protocol::I_LoginRequest* pRequest =
         dynamic_cast<Protocol::I_LoginRequest*>(_pRequest.get());
 
     if( pRequest != NULL )
     {
-        // TODO Handle this
-        throw Zen::Utility::runtime_exception("SessionService::handleRequest(): Error, not implemented");
-    }
-}
+        // TODO Should we allow duplicate logins?
 
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Enterprise::AppServer::I_ApplicationServer&
-SessionService::getApplicationServer()
-{
-    return m_appServer;
+        // Create response
+        Zen::Memory::managed_ptr<Protocol::I_LoginResponse> pResponse
+            (
+                Protocol::I_LoginResponse::create(
+                    pRequest->getDestinationEndpoint(),
+                    pRequest->getSourceEndpoint(),
+                    pRequest->getMessageId()
+                )
+            );
+
+        AccountView* pAccountView = dynamic_cast<AccountView*>(m_pAccountView.get());
+
+        bool success = false;
+        if( pAccountView != NULL )
+        {
+            success = pAccountView->authenticate(
+                pRequest->getUserId(),
+                pRequest->getPassword()
+            );
+        }
+
+        if( success )
+        {
+            pResponse->setStatus(Protocol::I_LoginResponse::CONNECTED);
+
+            Session* pSession = new Session(
+                *this, 
+                generateSessionId(),
+                /// TODO This is a hack that only works because the
+                /// I_Session::SessionState_type and I_LoginResponse::SessionState_type
+                /// enums are identical.  If one changes, the other one needs
+                /// to be updated -- either that, or we find the *right* way
+                /// to perform the following below -- mgray 02/22/2010
+                static_cast<Session::SessionState_type>(pResponse->getStatus()), 
+                pResponse->getSourceEndpoint()
+            );
+
+            Zen::Threading::CriticalSection guard(m_pSesssionIdMutex);
+            m_sessions[pSession->getSessionId()] = pSession;
+
+            pResponse->setSessionId(pSession->getSessionId());
+        }
+        else
+        {
+            pResponse->setStatus(Protocol::I_LoginResponse::NOT_AUTHORIZED);
+        }
+#if 0
+        UsersToAccount_type::const_iterator iter = m_usersMap.find(pRequest->getUserId());
+        if( iter != m_usersMap.end() )
+        {
+            if( iter->second->getPassword().getStringValue() == 
+                pRequest->getPassword() )
+            {
+                pResponse->setStatus(Protocol::I_LoginResponse::CONNECTED);
+
+                Session* pSession = new Session(
+                    *this, 
+                    generateSessionId(),
+                    /// TODO This is a hack that only works because the
+                    /// I_Session::SessionState_type and I_LoginResponse::SessionState_type
+                    /// enums are identical.  If one changes, the other one needs
+                    /// to be updated -- either that, or we find the *right* way
+                    /// to perform the following below -- mgray 02/22/2010
+                    static_cast<Session::SessionState_type>(pResponse->getStatus()), 
+                    pResponse->getSourceEndpoint()
+                );
+
+                Zen::Threading::CriticalSection guard(m_pSesssionIdMutex);
+                m_sessions[pSession->getSessionId()] = pSession;
+
+                pResponse->setSessionId(pSession->getSessionId());
+            }
+            else
+            {
+                pResponse->setStatus(Protocol::I_LoginResponse::NOT_AUTHORIZED);
+            }
+        }
+        else
+        {
+            pResponse->setStatus(Protocol::I_LoginResponse::NOT_AUTHORIZED);
+        }
+#endif  // 0
+        
+        // Handle the response.
+        _pResponseHandler->handleResponse(
+            pResponse.as<Protocol::I_LoginResponse::pResponse_type>()
+        );
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -144,11 +296,24 @@ SessionService::requestLogin(pEndpoint_type _pDestinationEndpoint,
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Common::I_Session&
+SessionService::getSession(boost::uint64_t _sessionId)
+{
+    SessionIdSession_type::iterator iter = m_sessions.find(_sessionId);
+    if( iter != m_sessions.end() )
+    {
+        return *iter->second;
+    }
+
+    throw Zen::Utility::runtime_exception("SessionService::getSession() : Error, session is not valid.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Event::I_Event&
 SessionService::getSessionEvent()
 {
-    // TODO Return the model session event.
-    throw Zen::Utility::runtime_exception("SessionService::getSessionEvent(): Error, not implemented");
+    return Zen::Event::I_EventManager::getSingleton().create("eventService")
+        ->createEvent("SessionService::Server::SessionEvent");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -157,17 +322,14 @@ SessionService::loadAccounts()
 {
     using namespace Zen::Community::Session;
 
-    throw Zen::Utility::runtime_exception("SessionService::loadAccounts(): Error, not implemented");
+    m_usersMap.clear();
 
-    // TODO get the database connection name.
-
-    // TODO Implement a MVC and load all of the accounts into
-    // the model.
-#if 0
-
-    I_AccountDataMap::pFutureAccountDataCollection_type accountDC
-        = I_AccountDataMap::create(getApplicationServer().getDatabaseConnection("todo"))
-        ->getAll();
+    I_AccountDataMap::pFutureAccountDataCollection_type accountDC =
+        I_AccountDataMap::create(
+            getApplicationServer().getDatabaseConnection(
+                m_pDatabaseConfig->getAttribute("connection")
+            )
+        )->getAll();
 
     class AccountVisitor
     :   public I_AccountDataCollection::I_CollectionVisitor
@@ -179,30 +341,44 @@ SessionService::loadAccounts()
 
         virtual void visit(I_AccountDataCollection::pAccountDomainObject_type _pDomainObject)
         {
-
+            m_usersMap[_pDomainObject->getUser().getStringValue()] =
+                _pDomainObject;
         }
 
         virtual void end()
         {
         }
 
-        AccountVisitor()
-        :   m_request(_request)
-        ,   m_loginSuccess(false)
+        AccountVisitor(UsersToAccount_type& _usersMap)
+        :   m_usersMap(_usersMap)
         {
         }
 
     private:
-        Protocol::I_LoginRequest&           m_request;
-        bool                                m_loginSuccess;
+        UsersToAccount_type&                m_usersMap;
     };
 
 
     // Get the accounts.  There should be only one (or none)
-    AccountVisitor accountVisitor();
+    AccountVisitor accountVisitor(m_usersMap);
     accountDC->getValue()->getAll(accountVisitor);
-#endif
+}
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+boost::uint32_t
+SessionService::generateSessionId()
+{
+    static Zen::Threading::SpinLock sm_spinLock;
+
+    Zen::Threading::xCriticalSection lock(sm_spinLock);
+    return m_lastSessionId = ++m_lastSessionId == 0 ? 1 : m_lastSessionId;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SessionService::destroyAccountView(wpAccountView_type _pAccountView)
+{
+    delete dynamic_cast<AccountView*>(_pAccountView.get());
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

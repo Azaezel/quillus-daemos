@@ -71,6 +71,9 @@ public:
                               const std::string& _name, 
                               const std::string& _password) = 0;
 
+    /// Request an existing session by Id.
+    virtual I_Session& getSession(boost::uint64_t _sessionId) = 0;
+
     /// Get the session event.
     /// The payload is an I_Session.
     virtual Event::I_Event& getSessionEvent() = 0;

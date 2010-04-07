@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="SessionClient"
+   name="Zen Community Account Client"
+   version="0.6.2"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="AccountClient">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+        point="Zen::Enterprise::AppServer::ApplicationService"
+        id="AccountClient"
+        name="Zen Community Client"
+        type="AccountClient">
+    <application-service
+          class="Community::AccountService">
+    </application-service>
+  </extension>
+
+</plugin>

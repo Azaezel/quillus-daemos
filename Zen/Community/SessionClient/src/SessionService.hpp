@@ -26,16 +26,20 @@
 #ifndef ZEN_COMMUNITY_SESSIONCLIENT_SESSION_SERVICE_HPP_INCLUDED
 #define ZEN_COMMUNITY_SESSIONCLIENT_SESSION_SERVICE_HPP_INCLUDED
 
-#include <Zen/Enterprise/AppServer/scriptable_generic_service.hpp>
+#include <Zen/Core/Event/I_EventManager.hpp>
+#include <Zen/Core/Event/I_EventService.hpp>
 
-#include <Zen/Core/Event/future_return_value.hpp>
+#include <Zen/Enterprise/AppServer/scriptable_generic_service.hpp>
 
 #include <Zen/Community/SessionCommon/I_SessionService.hpp>
 
 #include <Zen/Community/SessionProtocol/I_LoginRequest.hpp>
 #include <Zen/Community/SessionProtocol/I_LoginResponse.hpp>
 
+#include <boost/cstdint.hpp>
+
 #include <set>
+#include <map>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -55,11 +59,6 @@ class SessionService
     /// @name Types
     /// @{
 public:
-    /// Super class.
-    typedef Zen::Enterprise::AppServer::scriptable_generic_service
-        <Zen::Community::Common::I_SessionService, SessionService>
-                                                        super;
-
     /// For now pSession_type is a raw pointer.
     /// The session is never destroyed until the system is shutdown.
     typedef Common::I_Session*                          pSession_type;
@@ -95,6 +94,9 @@ public:
     virtual void requestLogin(pEndpoint_type _pDestinationEndpoint, 
                               const std::string& _name, 
                               const std::string& _password);
+private:
+    virtual Common::I_Session& getSession(boost::uint64_t _sessionId);
+public:
     virtual Event::I_Event& getSessionEvent();
     /// @}
 
@@ -108,6 +110,8 @@ public:
 
     typedef Protocol::I_LoginResponse::pResponse_type pLoginResponse_type;
     void handleLoginResponse(pResponse_type _pResponse, Protocol::I_LoginRequest& _request, Session* _pSession);
+
+    void handleOnDisconnected(boost::any _anyEndpoint);
     /// @}
 
     /// @name 'Structors
@@ -124,7 +128,18 @@ private:
     pScriptEngine_type                                  m_pScriptEngine;
     Zen::Scripting::script_module*                      m_pScriptModule;
     Scripting::I_ObjectReference*                       m_pScriptObject;
+
     Sessions_type                                       m_sessions;
+
+    typedef std::map<boost::uint32_t, pSession_type>    SessionIdIndex_type;
+    SessionIdIndex_type                                 m_sessionIdIndex;
+
+    typedef std::map<pEndpoint_type, pSession_type>     EndpointIndex_type;
+    EndpointIndex_type                                  m_endpointIndex;
+
+    typedef std::map<std::string, pEndpoint_type>       AddressIndex_type;
+    AddressIndex_type                                   m_addressIndex;
+
     /// @}
 
 };  // class SessionService

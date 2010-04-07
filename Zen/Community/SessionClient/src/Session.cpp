@@ -21,7 +21,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//	Matthew Alan Gray mgray@indiezen.org
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "Session.hpp"
@@ -42,6 +42,7 @@ Session::Session(SessionService& _parent, pEndpoint_type _pDestination)
 ,   m_pEndpoint(_pDestination)
 ,   m_sessionId(0)
 ,   m_sessionState(I_Session::INITIALIZED)
+,   m_pScriptObject(NULL)
 {
 }
 
@@ -58,7 +59,14 @@ Session::getSessionState() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-boost::int32_t
+int
+Session::scriptGetSessionState()
+{
+    return static_cast<int>(getSessionState());
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+boost::uint32_t
 Session::getSessionId() const
 {
     return m_sessionId;
@@ -82,7 +90,7 @@ Session::getAttribute(const std::string& _key) const
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-Session::setSessionId(boost::int32_t _sessionId)
+Session::setSessionId(boost::uint32_t _sessionId)
 {
     m_sessionId = _sessionId;
 }
@@ -92,6 +100,42 @@ void
 Session::setSessionState(SessionState_type _sessionState)
 {
     m_sessionState = _sessionState;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static Zen::Scripting::script_module* sm_pScriptModule = NULL;
+static std::string sm_scriptTypeName("Session");
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Session::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    sm_pScriptModule = &_module;
+
+    sm_pScriptModule->addType<Session>(sm_scriptTypeName, "Session")
+        .addMethod("getSessionState", &Session::scriptGetSessionState)
+    ;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+Session::getScriptTypeName()
+{
+    return sm_scriptTypeName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Scripting::I_ObjectReference*
+Session::getScriptObject()
+{
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptWrapper_type(sm_pScriptModule->getScriptModule(),
+            sm_pScriptModule->getScriptModule()->getScriptType(getScriptTypeName()),
+            this
+        );
+    }
+
+    return m_pScriptObject;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
