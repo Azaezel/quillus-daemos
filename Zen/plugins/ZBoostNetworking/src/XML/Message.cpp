@@ -23,6 +23,8 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "Message.hpp"
 
 #include <Zen/Enterprise/Networking/I_Endpoint.hpp>
@@ -83,7 +85,7 @@ Message::getDestinationLocation()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned int 
+boost::uint32_t
 Message::getMessageId() const
 {
     static Zen::Threading::SpinLock sm_spinLock;

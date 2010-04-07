@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// Zen Enterprise Framework
+// Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,59 +21,53 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#include <boost/asio.hpp>
-
-#include "../../I_WebResponse.hpp"
-
-#include <Zen/Core/Memory/managed_weak_ptr.hpp>
-
-#include <Zen/Enterprise/Networking/I_Endpoint.hpp>
-
-#include "Reply.hpp"
+#include "Config.hpp"
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Enterprise {
-namespace AppServer {
+namespace ZLua {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-I_WebResponse::I_WebResponse()
+Config::Config()
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-I_WebResponse::~I_WebResponse()
+Config::Config(const Config& _right)
 {
+	*this = _right;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Config::~Config()
+{
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+std::string
+Config::get(const std::string& _key)
+{
+	return m_config[_key];
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-destroyResponse(Memory::managed_weak_ptr<I_Response> _wpResponse)
+Config::set(const std::string& _key, boost::any _value)
 {
-    HTTP::Reply* pReply = dynamic_cast<HTTP::Reply*>(_wpResponse.get());
-
-    if (pReply)
-    {
-        delete pReply;
-    }
-    else
-    {
-        // TODO Error
-    }
+	// TODO Have a lookup map of supported script types to
+	// convert _value to a string.
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-I_WebResponse::pResponse_type
-I_WebResponse::createResponse(pEndpoint_type _pDestinationEndpoint, StatusType _status, const std::string& _body, const std::string& _contentType)
+Config&
+Config::operator=(const Config& _right)
 {
-    HTTP::Reply* pReply = new HTTP::Reply(_pDestinationEndpoint, _status, _body, _contentType);
+	// I think a map operator= copies correctly.
+	m_config = _right.m_config;
 
-    pResponse_type pResponse(pReply, destroyResponse);
-
-    return pResponse;
+	return *this;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace AppServer
-}   // namespace Enterprise
-}   // namespace Zen
+}	// namespace ZLua
+}	// namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

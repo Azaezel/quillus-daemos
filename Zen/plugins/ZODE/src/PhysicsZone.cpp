@@ -1,7 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -20,9 +21,14 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "PhysicsZone.hpp"
+#include "PhysicsActor.hpp"
+#include "PhysicsMaterial.hpp"
+
+#include <Zen/Core/Math/Vector3.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
 
@@ -37,8 +43,11 @@ namespace ZODE {
 PhysicsZone::PhysicsZone()
 :   m_pScriptModule(Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
 ,   m_pScriptObject(NULL)
+,   m_spaceId(0)
+,   m_materials()
 {
     m_worldId = dWorldCreate();
+    m_spaceId = dSimpleSpaceCreate(m_spaceId);
 
 }
 
@@ -52,7 +61,7 @@ PhysicsZone::~PhysicsZone()
 void
 PhysicsZone::stepSimulation(double _elapsedTime)
 {
-    dWorldStep(m_worldId, _elapsedTime);
+    dWorldStep(m_worldId, (dReal)_elapsedTime);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -64,9 +73,15 @@ PhysicsZone::getDefaultMaterialID()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-PhysicsZone::setZoneSize(const Math::Vector3& _min, const Math::Vector3& _max)
+PhysicsZone::setBoundary(const Math::Vector3& _min, const Math::Vector3& _max)
 {
-    throw Utility::runtime_exception("PhysicsZone::setZoneSize(): Error, not implemented.");
+    // TODO Convert _min and _max to center and extents
+    Math::Vector3 center = _min + (_max - _min) / 2;
+
+    Math::Vector3 extents(_max - _min);
+
+    // TODO don't hard-code the dept to be 4.
+    m_spaceId = dQuadTreeSpaceCreate(m_spaceId, center.m_array, extents.m_array, 4);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -77,17 +92,57 @@ PhysicsZone::setGravity(const Math::Vector3& _grav)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+destroyActor(Zen::Memory::managed_weak_ptr<Zen::Engine::Physics::I_PhysicsActor> _pActor)
+{
+    delete dynamic_cast<PhysicsActor*>(_pActor.get());
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsZone::pPhysicsActor_type
 PhysicsZone::createActor()
 {
-    throw Utility::runtime_exception("PhysicsZone::createActor(): Error, not implemented.");
+    pPhysicsActor_type pActor = pPhysicsActor_type(
+        new PhysicsActor(*this),
+        destroyActor
+    );
+
+    return pActor;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsZone::destroyMaterial(wpPhysicsMaterial_type _pMaterial)
+{
+    PhysicsMaterial* pRaw = 
+        dynamic_cast<PhysicsMaterial*>(_pMaterial.get());
+
+    if( pRaw != NULL )
+    {
+        delete pRaw;
+    }
+    else
+    {
+        throw Zen::Utility::runtime_exception("PhysicsZone::destroyMaterial() : Invalid type.");
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsZone::pPhysicsMaterial_type
 PhysicsZone::createMaterial(bool _default)
 {
-    throw Utility::runtime_exception("PhysicsZone::createMaterial(): Error, not implemented.");
+    PhysicsMaterial* pRaw = new PhysicsMaterial(_default);
+
+    pPhysicsMaterial_type pMaterial(
+        pRaw,
+        &destroyMaterial
+    );
+
+    pRaw->setSelfReference(pMaterial.getWeak());
+
+    m_materials[pMaterial->getMaterialId()] = pMaterial;
+
+    return pMaterial;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -157,7 +212,7 @@ PhysicsZone::createCapsuleShape(float _radius, float _height)
 PhysicsZone::pCollisionShape_type
 PhysicsZone::createHeightFieldShapeFromRaw(std::string _filename, size_t _size, float _maxHeight, float _scaleXY, const Math::Matrix4& _transform, bool _bSerialize)
 {
-    throw Utility::runtime_exception("PhysicsZone::createHeightFieldShapeFromRaw(): Error, not implemented.");
+	throw Utility::runtime_exception("PhysicsZone::createHeightFieldShapeFromRaw(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -179,6 +234,13 @@ PhysicsZone::pCollisionShape_type
 PhysicsZone::createTreeCollisionShape(std::string _filename)
 {
     throw Utility::runtime_exception("PhysicsZone::createTreeCollisionShape(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+dSpaceID
+PhysicsZone::getSpaceId()
+{
+    return m_spaceId;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

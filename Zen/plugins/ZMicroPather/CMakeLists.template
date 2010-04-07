@@ -24,7 +24,7 @@ set ( ZMicroPather_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZMICROPATHER_EXPORTS )
+add_definitions( -DZMICROPATHER_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 

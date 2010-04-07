@@ -37,23 +37,40 @@ namespace ZOgre {
 class NullLight
 :   public Engine::Rendering::I_Light
 {
+    /// @name Types
+    /// @{
+public:
+    typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptModule>    pScriptModule_type;
+    typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptEngine>    pScriptEngine_type;
+    /// @}
+
     /// @name I_Light implementation
     /// @{
 public:
     virtual void setPosition(float _x, float _y, float _z);
     /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
     /// @name 'Structors
     /// @{
 public:
-             NullLight(Ogre::Light* _pCamera);
+             NullLight(Zen::Scripting::script_module& _module, Ogre::Light* _pCamera);
     virtual ~NullLight();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
-    Ogre::Light*        m_pLight;
+    ScriptObjectReference_type*     m_pScriptObject;
+
+    Ogre::Light*                    m_pLight;
+
+    Zen::Scripting::script_module&  m_module;
     /// @}
 
 };  // class NullLight

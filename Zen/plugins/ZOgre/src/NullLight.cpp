@@ -28,8 +28,10 @@
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-NullLight::NullLight(Ogre::Light* _pLight)
-:   m_pLight(_pLight)
+NullLight::NullLight(Zen::Scripting::script_module& _module, Ogre::Light* _pLight)
+:   m_module(_module)
+,   m_pLight(_pLight)
+,   m_pScriptObject(NULL)
 {
 }
 
@@ -43,6 +45,22 @@ void
 NullLight::setPosition(float _x, float _y, float _z)
 {
     m_pLight->setPosition(_x, _y, _z);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+NullLight::getScriptObject()
+{
+    // TODO Make thread safe?
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptObjectReference_type(
+            m_module.getScriptModule(),
+            m_module.getScriptModule()->getScriptType(getScriptTypeName()),
+            getSelfReference().lock()
+        );
+    }
+    return m_pScriptObject;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

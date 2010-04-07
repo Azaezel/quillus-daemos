@@ -23,6 +23,8 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #if 1
 #define BOOST_SPIRIT_DEBUG
 #endif
@@ -81,7 +83,7 @@ RequestHandler::parse(iterator_t _begin, iterator_t _end)
 
     std::for_each(_begin, _end, std::cout << boost::lambda::_1);
 
-    boost::spirit::parse_info<iterator_t> info = boost::spirit::parse(_begin, _end, m_grammar);
+    boost::spirit::classic::parse_info<iterator_t> info = boost::spirit::classic::parse(_begin, _end, m_grammar);
 
     // TODO Read some more if not all of it was read.
 }

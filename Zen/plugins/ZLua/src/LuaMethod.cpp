@@ -27,6 +27,7 @@
 #include "LuaObject.hpp"
 #include "LuaTypeMap.hpp"
 #include "LuaEngine.hpp"
+#include "Config.hpp"
 
 #include <Zen/Core/Math/Matrix4.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
@@ -330,6 +331,26 @@ LuaMethod::operator()(lua_State* L)
 
                                     // Note that we're pushing a pointer, not a copy of the object
                                     parms.push_back(pPoint3);
+
+                                    // Pop the table and the two meta tables
+                                    lua_pop(L, 3);
+                                    assert(tmpTop == lua_gettop(L));
+                                    continue;
+                                }
+
+                                // Check to see if the argument is a Config type.
+                                lua_pop(L, 1);
+                                lua_getfield(L, LUA_REGISTRYINDEX, "Config");
+                                if (lua_rawequal(L, -1, -2))
+                                {
+                                	// Get the user data, which is a Config*
+                                    Config* pConfig = (Config*)lua_touserdata(L, -3);
+
+                                    // Push the value onto the list of arguments being passed
+                                    // to the function being called by Lua.
+                                    // Note that we're pushing a <b>pointer</b>, of the
+                                    // std::map<std::string, std::string> and not the value.
+                                    parms.push_back(&pConfig->m_config);
 
                                     // Pop the table and the two meta tables
                                     lua_pop(L, 3);

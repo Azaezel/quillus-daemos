@@ -28,6 +28,8 @@
 
 #include <Zen/Enterprise/AppServer/I_Message.hpp>
 
+#include <boost/cstdint.hpp>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Enterprise {
@@ -44,7 +46,7 @@ public:
     virtual pEndpoint_type getSourceEndpoint();
     virtual pEndpoint_type getDestinationEndpoint();
     virtual pResourceLocation_type getDestinationLocation();
-    virtual unsigned int getMessageId() const;
+    virtual boost::uint32_t getMessageId() const;
     virtual void serialize(boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
     /// @}

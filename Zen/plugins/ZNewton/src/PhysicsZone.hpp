@@ -76,6 +76,7 @@ public:
 public:
     virtual int getDefaultMaterialID();
     virtual void setGravity(const Math::Vector3& _grav);
+    virtual void setZoneSize(const Math::Vector3& _min, const Math::Vector3& _max);
     virtual pPhysicsActor_type createActor();
     virtual pPhysicsMaterial_type createMaterial(bool _default);
     virtual pPhysicsJoint_type createJoint();

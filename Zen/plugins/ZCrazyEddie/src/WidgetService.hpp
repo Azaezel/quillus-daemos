@@ -75,7 +75,9 @@ public:
     /// @name I_WidgetService implementation
     /// @{
 public:
-    virtual void initialise(Zen::Engine::Rendering::I_View& _view, Zen::Engine::Input::I_InputService& _input);
+    virtual void initialise(Zen::Engine::Rendering::I_View& _view,
+            Zen::Engine::Input::I_MousePublisher* _pMousePublisher,
+            Zen::Engine::Input::I_KeyPublisher* _pKeyPublisher);
     virtual Zen::Engine::Widgets::I_FontService& getFontService();
     virtual Zen::Engine::Widgets::I_Widget& getWidget(const std::string& _path, bool _absolute = false);
     virtual void switchRoot(const std::string& _root);

@@ -24,7 +24,7 @@ set ( ZNewton_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZNEWTON_EXPORTS )
+add_definitions( -DZNEWTON_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${NEWTON_INCLUDE_DIR} )
 

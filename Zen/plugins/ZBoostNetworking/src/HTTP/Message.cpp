@@ -81,7 +81,7 @@ Message::getDestinationLocation()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned int 
+boost::uint32_t
 Message::getMessageId() const
 {
     static Zen::Threading::SpinLock sm_spinLock;

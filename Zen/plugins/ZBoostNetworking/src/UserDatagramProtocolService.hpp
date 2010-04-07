@@ -50,6 +50,9 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+    namespace Event {
+        class I_Event;
+    }   // namespace Event
 namespace Enterprise {
 namespace AppServer {
 namespace UDP {
@@ -91,6 +94,8 @@ public:
     virtual void setConfiguration(const Zen::Plugins::I_ConfigurationElement& _config);
     virtual pEndpoint_type resolveEndpoint(const std::string& _address, const std::string& _port);
     virtual void sendTo(pMessage_type _pMessage, pEndpoint_type _pEndpoint);
+    virtual Event::I_Event& getConnectedEvent();
+    virtual Event::I_Event& getDisconnectedEvent();
     /// @}
 
     /// @name I_UDPService implementation

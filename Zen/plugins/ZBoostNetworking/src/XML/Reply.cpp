@@ -23,6 +23,8 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "Reply.hpp"
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
@@ -159,11 +161,11 @@ Reply::getMessageHeader() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned int 
+boost::uint32_t
 Reply::getMessageId() const
 {
     static Zen::Threading::SpinLock sm_spinLock;
-    static unsigned int sm_lastId = 0;
+    static boost::uint32_t sm_lastId = 0;
 
     Zen::Threading::xCriticalSection lock(sm_spinLock);
     return ++sm_lastId;
@@ -202,6 +204,13 @@ Reply::toBuffers(std::stringstream& _stream)
     }
 
     _stream << "\r\n" << m_content;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Reply::pMessageType_type
+Reply::getMessageType() const
+{
+    throw Zen::Utility::runtime_exception("XML::Reply::getMessageType() : Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

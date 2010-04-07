@@ -64,7 +64,7 @@ public:
     /// @name UDP::I_Message implementation
     /// @{
 public:
-    virtual unsigned int getMessageID() const;
+    virtual boost::uint32_t getMessageID() const;
 
     virtual unsigned int getServiceID() const;
     /// @}
@@ -72,7 +72,7 @@ public:
     /// @name Message implementation
     /// @{
 public:
-    static unsigned int getNewMessageID();
+    static boost::uint32_t getNewMessageID();
     /// @}
 
     /// @name 'Structors

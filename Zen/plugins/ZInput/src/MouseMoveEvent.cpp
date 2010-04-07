@@ -75,21 +75,21 @@ MouseMoveEvent::getZDelta()
 int
 MouseMoveEvent::getX()
 {
-    return m_event.state.X.abs;
+    return m_event.state.X.abs - m_event.state.X.rel;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int
 MouseMoveEvent::getY()
 {
-    return m_event.state.Y.abs;
+    return m_event.state.Y.abs - m_event.state.Y.rel;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int
 MouseMoveEvent::getZ()
 {
-    return m_event.state.Z.abs;
+    return m_event.state.Z.abs - m_event.state.Z.rel;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

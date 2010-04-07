@@ -24,7 +24,7 @@ set ( ZTerrain_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZTERRAIN_EXPORTS )
+add_definitions( -DZTERRAIN_EXPORTS ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 

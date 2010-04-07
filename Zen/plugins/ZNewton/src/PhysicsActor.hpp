@@ -145,7 +145,7 @@ private:
     NewtonBody*                             m_pActor;
     wpPhysicsZone_type                      m_pZone;
     pPhysicsMaterial_type                   m_material;
-    Zen::Math::Real                                  m_scaleX, m_scaleY, m_scaleZ;
+    Zen::Math::Real                         m_scaleX, m_scaleY, m_scaleZ;
     Scripting::I_ObjectReference*           m_pScriptObject;
     std::string                             m_name;
     Zen::Math::Real							     m_minStrikeLen;
@@ -154,7 +154,8 @@ private:
     Math::Vector3                           m_torque;
 	 pOwningObject_type                      m_pOwner;
     pCollisionShape_type                    m_CollisionShape;
-
+    bool                                    m_IsStatic;
+    Zen::Math::Real                         m_mass;
     /// @}
 
     /// @name Inner Classes

@@ -23,12 +23,15 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
 
 #include "Endpoint.hpp"
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
 #include <Zen/Enterprise/Networking/I_Address.hpp>
+
+#include <sstream>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -41,7 +44,11 @@ Endpoint::Endpoint(wpProtocolService_type _pProtocolAdapter,
                    pAddress_type _pAddress)
 :   m_pProtocolAdapter(_pProtocolAdapter)
 ,   m_endpoint(_endpoint)
+,   m_isLocal(false)
 {
+    std::stringstream endpointStream;
+    endpointStream << _endpoint;
+    m_endpointString = endpointStream.str();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -73,6 +80,20 @@ const Zen::Networking::I_Address&
 Endpoint::getAddress() const
 {
     throw Zen::Utility::runtime_exception("Not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Endpoint::setIsLocal(bool _isLocal)
+{
+    m_isLocal = _isLocal;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Endpoint::isLocal() const
+{
+    return m_isLocal;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

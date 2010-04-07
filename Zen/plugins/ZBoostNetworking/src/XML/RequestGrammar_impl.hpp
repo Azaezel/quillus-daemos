@@ -32,10 +32,10 @@
 
 #include <boost/bind.hpp>
 
-#include <boost/spirit/utility/confix.hpp>
-#include <boost/spirit/utility/escape_char.hpp>
-#include <boost/spirit/utility/lists.hpp>
-#include <boost/spirit/core/primitives/primitives.hpp>
+#include <boost/spirit/include/classic_confix.hpp>
+#include <boost/spirit/include/classic_escape_char.hpp>
+#include <boost/spirit/include/classic_lists.hpp>
+#include <boost/spirit/include/classic_primitives.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -64,21 +64,21 @@ BOOST_SPIRIT_DEBUG_RULE(request_parser);
 #endif
 
     method_name =
-        boost::spirit::str_p("GET")             [boost::bind(&RequestParserState::get, &_self.m_parserState, _1, _2)]
-        |   boost::spirit::str_p("POST")
-        |   boost::spirit::str_p("HEAD")
+        boost::spirit::classic::str_p("GET")             [boost::bind(&RequestParserState::get, &_self.m_parserState, _1, _2)]
+        |   boost::spirit::classic::str_p("POST")
+        |   boost::spirit::classic::str_p("HEAD")
     ;
 
     url =
-            !boost::spirit::str_p("http:/")
-        >>  *(boost::spirit::anychar_p - spaces)
+            !boost::spirit::classic::str_p("http:/")
+        >>  *(boost::spirit::classic::anychar_p - spaces)
     ;
 
     http_version =
-            boost::spirit::str_p("HTTP/")
-        >>  boost::spirit::int_p
-        >>  boost::spirit::str_p(".")
-        >>  boost::spirit::int_p
+            boost::spirit::classic::str_p("HTTP/")
+        >>  boost::spirit::classic::int_p
+        >>  boost::spirit::classic::str_p(".")
+        >>  boost::spirit::classic::int_p
     ;
 
     initial_line =
@@ -87,7 +87,7 @@ BOOST_SPIRIT_DEBUG_RULE(request_parser);
         >>  url                                 [boost::bind(&RequestParserState::url, &_self.m_parserState, _1, _2)]
         >>  spaces
         >>  http_version
-        >>  boost::spirit::eol_p
+        >>  boost::spirit::classic::eol_p
     ;
 
     host_name =
@@ -96,36 +96,36 @@ BOOST_SPIRIT_DEBUG_RULE(request_parser);
     ;
 
     port_number =
-        boost::spirit::int_p
+        boost::spirit::classic::int_p
     ;
 
     host_line =
-            boost::spirit::str_p("Host: ")
+            boost::spirit::classic::str_p("Host: ")
         >>  host_name
-        >>  boost::spirit::str_p(":")
+        >>  boost::spirit::classic::str_p(":")
         >>  port_number
-        >>  boost::spirit::eol_p
+        >>  boost::spirit::classic::eol_p
     ;
 
     anything_but_colon =
-        *(boost::spirit::anychar_p - boost::spirit::str_p(":") - boost::spirit::eol_p)
+        *(boost::spirit::classic::anychar_p - boost::spirit::classic::str_p(":") - boost::spirit::classic::eol_p)
     ;
 
     anything_but_crlf =
-        *(boost::spirit::anychar_p - boost::spirit::eol_p)
+        *(boost::spirit::classic::anychar_p - boost::spirit::classic::eol_p)
     ;
 
     spaces =
-        *boost::spirit::space_p
+        *boost::spirit::classic::space_p
     ;
 
     generic_header_line =
             anything_but_colon
         >>  spaces
-        >>  boost::spirit::str_p(":")
+        >>  boost::spirit::classic::str_p(":")
         >>  spaces
         >>  anything_but_crlf
-        >>  boost::spirit::eol_p
+        >>  boost::spirit::classic::eol_p
     ;
 
     header_line =
@@ -140,7 +140,7 @@ BOOST_SPIRIT_DEBUG_RULE(request_parser);
     request_parser =
             initial_line
         >>  header_lines
-        >>  boost::spirit::eol_p                [boost::bind(&RequestParserState::done, &_self.m_parserState, _1, _2)]
+        >>  boost::spirit::classic::eol_p                [boost::bind(&RequestParserState::done, &_self.m_parserState, _1, _2)]
     ;
 }
 

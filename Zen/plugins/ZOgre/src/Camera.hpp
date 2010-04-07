@@ -63,6 +63,12 @@ public:
     virtual Math::Ray getViewportRay(int _x, int _y);
     /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
     /// @name Camera implementation
     /// @{
 public:
@@ -75,7 +81,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             Camera(RenderingCanvas& _canvas, Ogre::Camera& _camera, const std::string& _name);
+             Camera(Zen::Scripting::script_module& _module, RenderingCanvas& _canvas, Ogre::Camera& _camera, const std::string& _name);
     virtual ~Camera();
     /// @}
 
@@ -86,6 +92,9 @@ private:
     Ogre::Camera&           m_camera;
     std::string             m_name;
     Ogre::SceneNode*        m_pSceneNode;
+
+    ScriptObjectReference_type*     m_pScriptObject;
+    Zen::Scripting::script_module&  m_module;
     /// @}
 
 };  // class Camera

@@ -27,7 +27,6 @@
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Memory/managed_self_ref.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -39,7 +38,6 @@ namespace ZODE {
 
 class PhysicsResourceService
 :   public Engine::Resource::I_ResourceService
-,   public Memory::managed_self_ref<Engine::Resource::I_ResourceService>
 {
     /// @name Types
     /// @{

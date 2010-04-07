@@ -28,6 +28,8 @@
 
 #include <Zen/Engine/Physics/I_CollisionShape.hpp>
 
+#include <ode/ode.h>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZODE {
@@ -56,13 +58,14 @@ private:
     /// @name 'Structors
     /// @{
 public:
-             CollisionShape();
+             CollisionShape(dGeomID _geometryId);
     virtual ~CollisionShape();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
+    dGeomID             m_geometryId;
     /// @}
 
 };  // class CollisionShape

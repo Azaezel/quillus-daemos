@@ -95,7 +95,7 @@ endif(LUA_FOUND)
 
 #TODO Move this to FindNewton.cmake ?
 find_path ( NEWTON_INCLUDE_DIR Newton.h HINTS ${INDIEZEN_PARENT}/newtonSDK/sdk /usr/include /usr/local/include )
-find_library ( NEWTON_LIBRARIES Newton HINTS ${INDIEZEN_PARENT}/newtonSDK/sdk /usr/lib /usr/local/lib )
+find_library ( NEWTON_LIBRARIES Newton HINTS ${INDIEZEN_PARENT}/newtonSDK/sdk/dll /usr/lib /usr/local/lib )
 
 if (NEWTON_INCLUDE_DIR AND NEWTON_LIBRARIES)
 	message("-- ZNewton")
@@ -154,6 +154,19 @@ else(OPENDE_FOUND)
     message("-- ZODE will NOT be compiled.  ODE was not found.")
 endif(OPENDE_FOUND)
 
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+# ZBULLET but only if BULLET is found
+Find_Package(BULLET)
+
+if (BULLET_FOUND)
+    message("-- ZBULLET (${BULLET_FOUND}, ${BULLET_LIBRARIES})")
+    add_subdirectory(ZBULLET)
+else(BULLET_FOUND)
+    message("-- ZBULLET will NOT be compiled.  BULLET was not found.")
+endif(BULLET_FOUND)
+
+
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 message("-- ZMicroPather")
 add_subdirectory(ZMicroPather)
 

@@ -31,39 +31,39 @@
 #include "NullCamera.hpp"
 #include "NullLight.hpp"
 
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
-
 #include <Zen/Engine/Rendering/I_RenderingManager.hpp>
 
 #include <boost/bind.hpp>
+
+static bool sm_bCreated = false;
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-SceneService::SceneService()
+SceneService::SceneService(const std::string& _name, int _sceneType)
 :   m_pScriptObject(NULL)
 ,   m_pSceneManager(NULL)
-,   m_pModule(NULL)
 ,   m_cameras()
 {
-    //m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "default");
-    //Ogre::Root::getSingleton().initialise(false, "IndieZen Rendering Window");
-    m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_EXTERIOR_CLOSE, "default");
-    //m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "default");
+    assert(!sm_bCreated);
+    sm_bCreated = true;
+    std::cout << "OGRE: Ogre::Root::getSingleton().createSceneManager(_sceneType, _name);" << std::endl;
+    m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(_sceneType, _name);
+    assert(m_pSceneManager != NULL);
+
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SceneService::~SceneService()
 {
-    std::cout << "SceneService::~SceneService()" << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SceneService::pLight_type
 SceneService::createLight(const std::string& _type, const std::string& _name)
 {
-    NullLight* pRawLight = new NullLight(m_pSceneManager->createLight(_name));
+    NullLight* pRawLight = new NullLight(*m_pModule, m_pSceneManager->createLight(_name));
 
     pLight_type pLight(pRawLight, onDestroyLight);
 
@@ -184,33 +184,19 @@ SceneService::getScriptObject()
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(),
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), 
+            m_pModule->getScriptModule(),
+            m_pModule->getScriptModule()->getScriptType(getScriptTypeName()),
             getSelfReference().lock()
         );
     }
-
     return m_pScriptObject;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-SceneService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
+SceneService::registerScriptModule(Zen::Scripting::script_module& _scriptModule)
 {
-    m_pModule = new Zen::Scripting::script_module(
-        _pScriptEngine,
-        "OgreSceneService"
-    );
-
-    m_pModule->addType<SceneService>("OgreSceneService", "OGRE Scene Service")
-        .addMethod("createSceneNode", &SceneService::createSceneNode)
-        .addMethod("createParticleSystem", &SceneService::createParticleSystem)
-        .addMethod("setSkyBox", &SceneService::setSkyBox)
-    ;
-
-    SceneNode::registerScriptModule(*m_pModule);
-    AttachableObject::registerScriptModule(*m_pModule);
-    ParticleSystem::registerScriptModule(*m_pModule);
+    m_pModule = &_scriptModule;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

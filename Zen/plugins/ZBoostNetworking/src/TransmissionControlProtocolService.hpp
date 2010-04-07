@@ -34,6 +34,8 @@
 #include <Zen/Core/Threading/I_Thread.hpp>
 #include <Zen/Core/Threading/I_Mutex.hpp>
 
+#include <Zen/Core/Event/I_Event.hpp>
+
 #include <Zen/Enterprise/AppServer/I_ProtocolService.hpp>
 
 #include <boost/noncopyable.hpp>
@@ -73,6 +75,8 @@ public:
     virtual I_ApplicationServer& getApplicationServer();
     virtual pEndpoint_type resolveEndpoint(const std::string& _address, const std::string& _port);
     virtual void sendTo(pMessage_type _pMessage, pEndpoint_type _pEndpoint);
+    virtual Event::I_Event& getConnectedEvent();
+    virtual Event::I_Event& getDisconnectedEvent();
     /// @}
 
     /// @name I_StartupShutdownParticipant implementation
@@ -96,7 +100,12 @@ public:
     void asyncAccept();
     void destroyEndpoint(wpEndpoint_type _pEndpoint);
 
+    /// This is called by the connection after it has established
+    /// a TCP connection to a server.
     void onConnected(pConnection_type _pConnection);
+
+    /// This is called by the connection after it has lost a
+    /// connection to the server.
     void onDisconnected(pConnection_type _pConnection);
     void onHandleMessage(pConnection_type  _pConnection, TCP::MessageBuffer& _message);
 

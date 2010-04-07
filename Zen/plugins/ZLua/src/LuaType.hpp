@@ -54,6 +54,10 @@ public:
     /// @name I_ScriptType implementation
     /// @{
 public:
+    virtual pScriptModule_type getScriptModule();
+    virtual const std::string& getTypeName();
+    virtual const std::string& getDocumentation();
+
     virtual void addMethod(const std::string& _name, const std::string& _docString, void_function_no_args_type _function);
     virtual void addMethod(const std::string& _name, const std::string& _docString, void_function_args_type _function);
     virtual void addMethod(const std::string& _name, const std::string& _docString, object_function_args_type _function);

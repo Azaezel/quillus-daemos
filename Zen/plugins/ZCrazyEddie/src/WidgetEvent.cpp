@@ -29,7 +29,7 @@
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
-#include <Zen/Engine/Core/I_Action.hpp>
+#include <Zen/Core/Event/I_Action.hpp>
 
 #include <CEGUI/CEGUI.h>
 

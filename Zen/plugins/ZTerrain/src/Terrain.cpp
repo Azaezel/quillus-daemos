@@ -90,6 +90,7 @@ Terrain::loadVisualization(const std::string& _ogreSpecificConfigFileName, const
     // TODO - other scene managers may not accept heightFields for terrains
     Zen::Engine::Resource::I_ResourceService::config_type renderingConfig;
     renderingConfig["type"] = "terrain";
+    renderingConfig["scene"] = "default";
     renderingConfig["fileName"] = _ogreSpecificConfigFileName;
     setResource(m_pTerrainService->getRenderingResourceService()->loadResource(renderingConfig));
 
@@ -100,6 +101,12 @@ Terrain::loadVisualization(const std::string& _ogreSpecificConfigFileName, const
 bool
 Terrain::loadPhysicsFromRaw(const std::string& _rawFileName, size_t _size, float _maxHeight, float _scaleXY, const Math::Matrix4& _transform, bool _bSerialize)
 {
+	Zen::Engine::Resource::I_ResourceService::config_type config;
+
+	config["fileName"] = _rawFileName;
+
+	m_pTerrainService->getPhysicsResourceService()->loadResource(config);
+
     Zen::Engine::World::I_Terrain::pPhysicsActor_type pActor = m_pTerrainService->getPhysicsZone()->createActor();
     pActor->setCollisionShape(
         m_pTerrainService->getPhysicsZone()->createHeightFieldShapeFromRaw(_rawFileName, _size, _maxHeight, _scaleXY, _transform, _bSerialize)

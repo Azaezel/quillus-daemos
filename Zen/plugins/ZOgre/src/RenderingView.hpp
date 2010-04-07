@@ -54,6 +54,12 @@ public:
     virtual bool initCanvas();
     /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
     /// @name I_OgreView implementation
     /// @{
 public:
@@ -69,7 +75,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             RenderingView(Zen::Engine::Rendering::I_Context& _context, const std::string& _windowName, unsigned int _width, unsigned int _height);
+             RenderingView(Zen::Scripting::script_module& _module, Zen::Engine::Rendering::I_Context& _context, const std::string& _windowName, unsigned int _width, unsigned int _height);
     virtual ~RenderingView();
     /// @}
 
@@ -81,6 +87,9 @@ private:
     Ogre::RenderWindow*         m_pRenderWindow;
 
     RenderingCanvas*            m_pCanvas;
+
+    ScriptObjectReference_type*     m_pScriptObject;
+    Zen::Scripting::script_module&  m_module;
     /// @}
 
 };  // class RenderingView

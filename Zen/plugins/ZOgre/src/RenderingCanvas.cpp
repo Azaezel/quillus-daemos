@@ -35,6 +35,7 @@
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
 #include <OgreRenderSystem.h>
+#include <OgreWindowEventUtilities.h>
 
 #include <stddef.h>
 #include <iostream>
@@ -44,31 +45,55 @@
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-RenderingCanvas::RenderingCanvas(RenderingView* _pView)
+RenderingCanvas::RenderingCanvas(Zen::Scripting::script_module& _module, RenderingView* _pView)
 :   m_root(Ogre::Root::getSingleton())
 ,   m_pRenderingView(_pView)
 ,   m_pCurrentCamera(NULL)
 ,   m_isCompositorManagerInitialized(false)
 ,   m_compositors()
+,   m_pScriptObject(NULL)
+,   m_module(_module)
 {
     // Get the default scene manager
+    std::cout << "OGRE: Ogre::Root::getSingleton().getSceneManager(\"default\");" << std::endl;
     m_pSceneManager = Ogre::Root::getSingleton().getSceneManager("default");
+
+    assert(m_pSceneManager != NULL);
+
+    std::cout << "Using scene type " << m_pSceneManager->getTypeName() << std::endl;
 
     // Create the default camera
     createCamera("default");
 
+    std::cout << "adding Viewport" << std::endl;
+    std::cout << "OGRE: Ogre::RenderWindow::addViewPort(&m_pCurrentCamera->getOgreCamera());" << std::endl;
     m_pViewPort = _pView->getRenderWindow().addViewport(&m_pCurrentCamera->getOgreCamera());
+
+    //m_pSceneManager->setViewport(m_pViewPort);
+
+    //// Select the camera, just in case somehow another camera was created.
+    //std::cout << "selectCamera" << std::endl;
+    //selectCamera("default");
 
     // HACK Why do we have to do this on Linux?
     if (Ogre::Root::getSingleton().getRenderSystem()->_getViewport() == NULL)
     {
         std::cout << "RenderingCanvas::RenderingCanvas(): Warning!  OGRE RenderSystem viewPort was not set.  Why not?" << std::endl;
+        std::cout << "OGRE: Ogre::Root::getSingleton().getRenderSystem()->_setViewport(m_pViewPort);" << std::endl;
         Ogre::Root::getSingleton().getRenderSystem()->_setViewport(m_pViewPort);
         assert(m_pViewPort);
         std::cout << "Set OGRE RenderSystem viewPort." << std::endl;
     }
 
-    m_pViewPort->setBackgroundColour(Ogre::ColourValue(0.0f, 0.0f, 0.0f));
+    // HACK This should only be done for windows apps
+    Ogre::RenderSystem* const pRenderSystem = Ogre::Root::getSingleton().getRenderSystem();
+    pRenderSystem->setWaitForVerticalBlank(false);
+    m_pRenderingView->getRenderWindow().setActive(true);
+    m_pRenderingView->getRenderWindow().setVisible(true);
+
+    std::cout << "setting background color" << std::endl;
+    std::cout << "OGRE: Ogre::Viewport::setBackgroundColour(Ogre::ColourValue(0.5f, 0.0f, 0.0f));" << std::endl;
+    m_pViewPort->setBackgroundColour(Ogre::ColourValue(0.5f, 0.0f, 0.0f));
 
     m_pSceneManager->setAmbientLight(Ogre::ColourValue(0.75f, 0.75f, 0.75f));
 
@@ -112,9 +137,12 @@ void
 RenderingCanvas::resize(int _x, int _y, int _width, int _height)
 {
     std::cout << "RenderingCanvas::resize(): " << _x << " " << _y << " " << _width << " " << _height << std::endl;
+    std::cout << "OGRE: Ogre::RenderWindow::reposition(_x, _y);" << std::endl;
     m_pRenderingView->getRenderWindow().reposition(_x, _y);
+    std::cout << "OGRE: Ogre::RenderWindow::resize(_width, _height);" << std::endl;
     m_pRenderingView->getRenderWindow().resize(_width, _height);
 
+    std::cout << "OGRE: Ogre::RenderWindow::windowMovedOrResized();" << std::endl;
     m_pRenderingView->getRenderWindow().windowMovedOrResized();
 
     std::cout << "RenderingCanvas::resize(): done" << std::endl;
@@ -157,7 +185,8 @@ RenderingCanvas::renderScene()
         }
     }
 
-    m_root.renderOneFrame();
+    bool rc = m_root.renderOneFrame();
+    assert(rc);
 
 }
 
@@ -216,16 +245,27 @@ RenderingCanvas::createCamera(const std::string& _name)
     if (iter == m_cameras.end())
     {
         // Camera wasn't found, so create it
-        Camera* pCamera = new Camera(*this, *m_pSceneManager->createCamera(_name), _name);
+        std::cout << "OGRE: Ogre::SceneManager::createCamera(_name);" << std::endl;
+        Ogre::Camera* pOgreCamera = m_pSceneManager->createCamera(_name);
+        assert(pOgreCamera);
+
+        Camera* pCamera = new Camera(m_module, *this, *pOgreCamera, _name);
+
+        assert(pCamera);
 
         // Default the aspect ratio
-        pCamera->setAspectRatio((Ogre::Real)getWidth() / (Ogre::Real)getHeight());
+        //pCamera->setAspectRatio((Ogre::Real)getWidth() / (Ogre::Real)getHeight());
 
         // If the current camera hasn't been set, set it
         if (m_pCurrentCamera == NULL)
         {
             m_pCurrentCamera = pCamera;
         }
+        //else
+        //{
+            // temporary
+            //assert(false);
+        //}
 
         m_cameras[_name] = pCamera;
 
@@ -257,11 +297,13 @@ RenderingCanvas::selectCamera(const std::string& _name)
 {
     // TODO Guard, or possibly limit this call to only be used by the rendering thread
 
+    std::cout << "m_cameras.find" << std::endl;
     Cameras_type::iterator iter = m_cameras.find(_name);
 
     // Find the camera
     if (iter == m_cameras.end())
     {
+        std::cout << "Not found" << std::endl;
         // Oops, it wasn't found... throw an error.
 
         std::stringstream errorMessage;
@@ -270,9 +312,14 @@ RenderingCanvas::selectCamera(const std::string& _name)
     }
     else
     {
+        assert(m_pViewPort);
+
+        std::cout << "found it, getting the ogre camera" << std::endl;
         // Set the current camera for this viewport
+        std::cout << "OGRE: Ogre::Viewport::setCamera(&iter->second->getOgreCamera());" << std::endl;
         m_pViewPort->setCamera(&iter->second->getOgreCamera());
 
+        std::cout << "setting m_pCurrentCamera" << std::endl;
         m_pCurrentCamera = iter->second;
 
         return *iter->second;
@@ -406,6 +453,29 @@ RenderingCanvas::disableCompositor(const std::string& _name)
     {
         throw Zen::Utility::runtime_exception("RenderingCanvas::disableCompositor() : Uninitialized compositor.");
     }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+RenderingCanvas::pumpSystemMessages()
+{
+    Ogre::WindowEventUtilities::messagePump();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+RenderingCanvas::getScriptObject()
+{
+    // TODO Make thread safe?
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptObjectReference_type(
+            m_module.getScriptModule(),
+            m_module.getScriptModule()->getScriptType(getScriptTypeName()),
+            this
+        );
+    }
+    return m_pScriptObject;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

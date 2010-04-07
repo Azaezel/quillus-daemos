@@ -107,6 +107,10 @@ InputService::InputService(config_type &_config)
 
     m_pMouse = static_cast<OIS::Mouse*>(m_pInputManager->createInputObject(OIS::OISMouse, true));
     m_pMouse->setEventCallback(this);
+
+    /// TODO This is a hack.
+    m_pMouse->getMouseState().width = 800;
+    m_pMouse->getMouseState().height = 600;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -348,6 +352,14 @@ InputService::destroy(wpKeyMap_type _pKeyMap)
     }
 }
 #endif
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static Zen::Scripting::script_module* sm_pScriptModule = NULL;
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+InputService::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    sm_pScriptModule = &_module;
+}
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Scripting::I_ObjectReference*
@@ -356,9 +368,10 @@ InputService::getScriptObject()
     // TODO Make thread safe?
     if (m_pScriptObject == NULL)
     {
-        m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Input::I_InputServiceManager::getSingleton().getDefaultScriptModule(),
-            Engine::Input::I_InputServiceManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+        m_pScriptObject = new ScriptWrapper_type(sm_pScriptModule->getScriptModule(),
+            sm_pScriptModule->getScriptModule()->getScriptType(getScriptTypeName()),
+            this->getSelfReference().lock()
+        );
     }
 
     return m_pScriptObject;

@@ -25,8 +25,7 @@
 #define ZEN_ZOGRE_RESOURCE_SERVICE_HPP_INCLUDED
 
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
-
-#include <Zen/Core/Memory/managed_self_ref.hpp>
+#include <Zen/Engine/Rendering/I_RenderingService.hpp>
 
 #include <OgreRoot.h>
 
@@ -40,8 +39,13 @@ namespace ZOgre {
 
 class ResourceService
 :   public Engine::Resource::I_ResourceService
-,   public Memory::managed_self_ref<Engine::Resource::I_ResourceService>
 {
+    /// @name Types
+    /// @{
+public:
+    typedef Memory::managed_ptr<Engine::Rendering::I_RenderingService>  pSceneService_type;
+    /// @}
+
     /// @name I_RenderingService implementation
     /// @{
 public:
@@ -86,7 +90,7 @@ private:
     ScriptObjectReference_type* m_pScriptObject;
 
     Threading::I_Mutex*         m_pGroupInitLock;
-    Ogre::SceneManager*         m_pSceneManager;
+    //Ogre::SceneManager*         m_pSceneManager;
     /// @}
 
 };  // class RenderingService

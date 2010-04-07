@@ -70,9 +70,10 @@ public:
     virtual ~MessageBuffer();
 
 private:
+    boost::uint32_t                     m_bodyLength;
     union
     {
-        boost::uint32_t                 m_bodyLength;
+        boost::uint32_t                 m_encodedBodyLength;
         char                            m_data[HEADER_LENGTH + MAX_BODY_LENGTH];
     };
 

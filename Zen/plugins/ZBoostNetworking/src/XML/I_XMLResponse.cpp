@@ -23,6 +23,9 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+#include <boost/asio.hpp>
+
 #include "../../XML/I_XMLResponse.hpp"
 
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>

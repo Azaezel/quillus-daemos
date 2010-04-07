@@ -48,6 +48,9 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+    namespace Event {
+        class I_Event;
+    }   // namespace Event
 namespace Enterprise {
 namespace AppServer {
 namespace HTTP {
@@ -80,6 +83,8 @@ public:
     virtual I_ApplicationServer& getApplicationServer();
     virtual pEndpoint_type resolveEndpoint(const std::string& _address, const std::string& _port);
     virtual void sendTo(pMessage_type _pMessage, pEndpoint_type _pEndpoint);
+    virtual Event::I_Event& getConnectedEvent();
+    virtual Event::I_Event& getDisconnectedEvent();
     /// @}
 
     /// @name I_StartupShutdownParticipant implementation

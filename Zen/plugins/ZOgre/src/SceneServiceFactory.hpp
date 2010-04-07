@@ -37,7 +37,7 @@ class SceneServiceFactory
     /// @name I_SceneServiceFactory implementation
     /// @{
 public:
-    virtual pSceneService_type create();
+    virtual pSceneService_type create(const std::string& _name, int _sceneType);
     /// @}
 
     /// @name SceneServiceFactory implementation

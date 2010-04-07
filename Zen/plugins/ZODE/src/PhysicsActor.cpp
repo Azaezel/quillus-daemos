@@ -1,7 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -20,9 +21,16 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PhysicsActor.hpp"
 #include "PhysicsZone.hpp"
+#include "HeightfieldResource.hpp"
+
+#include <Zen/Engine/Resource/I_CollisionResource.hpp>
+
+#include <Zen/Engine/Physics/I_CollisionShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
 
 #include <iostream>
 #include <cstddef>
@@ -31,13 +39,21 @@
 namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-PhysicsActor::PhysicsActor()
+PhysicsActor::PhysicsActor(PhysicsZone& _parentZone)
+:   m_parentZone(_parentZone)
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsActor::~PhysicsActor()
 {
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Scripting::I_ObjectReference*
+PhysicsActor::getScriptObject()
+{
+    throw Utility::runtime_exception("PhysicsActor::getScriptObject(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -58,6 +74,19 @@ PhysicsActor::getGameObject()
 void
 PhysicsActor::setCollisionShape(pCollisionShape_type _pCollisionShape)
 {
+    if (_pCollisionShape->getType() == Zen::Engine::Physics::I_CollisionShape::HEIGHTFIELD_SHAPE)
+    {
+        // TODO This might require two dynamic casts. 
+        Zen::Engine::Resource::I_CollisionResource* pCollisionResource = dynamic_cast<Zen::Engine::Resource::I_CollisionResource*>(_pCollisionShape.get());
+        HeightfieldResource* pHeightfield = dynamic_cast<HeightfieldResource*>(pCollisionResource);
+
+        if (pHeightfield)
+        {
+            pHeightfield->initialize(this);
+        }
+
+        return;
+    }
     throw Utility::runtime_exception("PhysicsActor::setCollisionShape(): Error, not implemented.");
 }
 
@@ -196,6 +225,62 @@ PhysicsActor::applyForce(const Math::Vector3& _force)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+PhysicsActor::applyImpulse(const Math::Vector3& _force, const Math::Vector3& _worldPos)
+{
+    throw Utility::runtime_exception("PhysicsActor::applyImpulse(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const Math::Vector3 
+PhysicsActor::getAngularDamping() const
+{
+    throw Utility::runtime_exception("PhysicsActor::getAngularDamping(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+PhysicsActor::setAngularDamping(const Math::Vector3& _damping)
+{
+    throw Utility::runtime_exception("PhysicsActor::setAngularDamping(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const Math::Real 
+PhysicsActor::getLinearDamping() const
+{
+    throw Utility::runtime_exception("PhysicsActor::getLinearDamping(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+PhysicsActor::setLinearDamping(float _damping)
+{
+    throw Utility::runtime_exception("PhysicsActor::setLinearDamping(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+PhysicsActor::setSleepingThresholds(float _minLinearMotion, float _minAngularMotion)
+{
+    throw Utility::runtime_exception("PhysicsActor::setSleepingThresholds(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+PhysicsActor::setActivationState(unsigned _state)
+{
+    throw Utility::runtime_exception("PhysicsActor::setActivationState(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+int 
+PhysicsActor::getActivationState()
+{
+    throw Utility::runtime_exception("PhysicsActor::getActivationState(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 PhysicsActor::setCollisionGroup(const int _group)
 {
     throw Utility::runtime_exception("PhysicsActor::setCollisionGroup(): Error, not implemented.");
@@ -206,6 +291,13 @@ const int
 PhysicsActor::getCollisionGroup() const
 {
     throw Utility::runtime_exception("PhysicsActor::getCollisionGroup(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+PhysicsZone&
+PhysicsActor::getParentZone()
+{
+    return m_parentZone;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
