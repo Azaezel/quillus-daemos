@@ -85,10 +85,10 @@ public:
     /// @name Member Variables
     /// @{
 public:
-    LuaType*     m_pType;
+    LuaType*        m_pType;
     std::string     m_name;
     std::string     m_docString;
-    lua_CFunction     m_pCFunction;
+    lua_CFunction   m_pCFunction;
 
     enum FunctionTypes
     {

@@ -2,6 +2,7 @@
 // IndieZen Game Engine Framework
 //
 // Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C)        2010 Jason Smith
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -20,6 +21,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
+//  Jason Smith jsmith@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PythonMethod.hpp"
 #include "PythonType.hpp"
@@ -69,7 +71,7 @@ PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const s
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(OBJECT_FUNCTION_ARGS)
+,   m_functionType(OBJ_FUNCTION_ARGS)
 ,   m_function2(_function)
 {
     init();
@@ -82,7 +84,7 @@ PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const s
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(OBJECT_FUNCTION_NO_ARGS)
+,   m_functionType(OBJ_FUNCTION_NO_ARGS)
 ,   m_function3(_function)
 {
     init();
@@ -116,7 +118,7 @@ PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const s
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const std::string& _docString, 
-                           Scripting::I_ScriptType::bool_function_no_args_type _function, PyCFunction _pCFunction)
+                           Scripting::I_ScriptType::bool_function_no_args_type  _function, PyCFunction _pCFunction)
 :   m_pType(_pType)
 ,   m_name(_name)
 ,   m_docString(_docString)
@@ -162,6 +164,19 @@ PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const s
 ,   m_pCFunction(_pCFunction)
 ,   m_functionType(INT_FUNCTION_ARGS)
 ,   m_function9(_function)
+{
+    init();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+PythonMethod::PythonMethod(PythonType* _pType, const std::string& _name, const std::string& _docString,
+                           Scripting::I_ScriptMethod* _function, PyCFunction _pCFunction)
+:   m_pType(_pType)
+,   m_name(_name)
+,   m_docString(_docString)
+,   m_pCFunction(_pCFunction)
+,   m_functionType(GENERIC_FUNCTION_ARGS)
+,   m_function10(_function)
 {
     init();
 }
@@ -213,7 +228,7 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
         case VOID_FUNCTION_NO_ARGS:
             m_function0(pObj);
             return Py_None;
-        case OBJECT_FUNCTION_NO_ARGS:
+        case OBJ_FUNCTION_NO_ARGS:
             {
                 pObjectReference_type const pObjReference = m_function3(pObj);
                 pScriptObject_type const pReturnObj = pObjReference->getScriptObject();
@@ -235,10 +250,11 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                 return PyLong_FromLong(returnValue);
             }
         case VOID_FUNCTION_ARGS:
-        case OBJECT_FUNCTION_ARGS:
+        case OBJ_FUNCTION_ARGS:
         case STRING_FUNCTION_ARGS:
         case BOOL_FUNCTION_ARGS:
         case INT_FUNCTION_ARGS:
+        case GENERIC_FUNCTION_ARGS:
             {
                 std::vector<boost::any> parms;
 
@@ -304,7 +320,7 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                     m_function1(pObj, parms);
                     return Py_None;
                 }
-                else if (m_functionType == OBJECT_FUNCTION_ARGS)
+                else if (m_functionType == OBJ_FUNCTION_ARGS)
                 {
                     pObjectReference_type const pObjReference = m_function2(pObj, parms);
                     pScriptObject_type const pReturnObj = pObjReference->getScriptObject();
@@ -326,8 +342,60 @@ PythonMethod::operator ()(PyObject* _pObj, PyObject* _pArgs)
                     const int returnValue = m_function9(pObj, parms);
                     return PyLong_FromLong(returnValue);
                 }
+                else if (m_functionType == GENERIC_FUNCTION_ARGS)
+                {
+                    boost::any anyReturn = m_function10->dispatch(pObj, parms);
 
+                    // TODO this is inefficient... do a map of functors instead.
+                    if(anyReturn.type() == typeid(void))
+                    {
+                        // no return, don't bother doing anything
+                        return Py_None;
+                    }
+                    else if(anyReturn.type() == typeid(Zen::Scripting::I_ObjectReference*))
+                    {
+                        // object
+                        pObjectReference_type pObjReference = boost::any_cast<pObjectReference_type>(anyReturn);
+                        pScriptObject_type const pReturnObj = pObjReference->getScriptObject();
+
+                        return dynamic_cast<PythonObject*>(pReturnObj.get())->get();
+                    }
+                    else if(anyReturn.type() == typeid(std::string))
+                    {
+                        std::string returnValue = boost::any_cast<std::string>(anyReturn);
+
+                        return PyString_FromString(returnValue.c_str());
+                    }
+                    else if(anyReturn.type() == typeid(bool))
+                    {
+                        bool returnValue = boost::any_cast<bool>(anyReturn);
+
+                        return returnValue ? Py_True : Py_False;
+                    }
+                    else if(anyReturn.type() == typeid(int))
+                    {
+                        int returnValue = boost::any_cast<int>(anyReturn);
+
+                        return PyLong_FromLong(returnValue);
+                    }
+                    else if(anyReturn.type() == typeid(Zen::Math::Real))
+                    {
+                        Zen::Math::Real returnValue = boost::any_cast<Zen::Math::Real>(anyReturn);
+                        // TR - I don't like this because it means
+                        // we cannot support Real as a return type.
+                        // We'll fix it later.
+                        return PyLong_FromLong((long)returnValue);
+                    }else
+                    {
+                        // TODO Make this error message a little more detailed
+                        throw Zen::Utility::runtime_exception("Script method returned unknown type.");
+                    }
+
+                    // TODO Throw an exception since the type wasn't valid
+                    return 0;
+                }
             } // case All functions that take args
+            break;
         } // switch(m_functionType)
     }
 
