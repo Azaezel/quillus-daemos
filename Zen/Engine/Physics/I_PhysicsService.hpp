@@ -30,12 +30,20 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Core/Math/Math.hpp>
-#include <Zen/Core/Math/Vector3.hpp>
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
 
 #include <Zen/Core/Event/Event.hpp>
+
+#include <Zen/Core/Math/Math.hpp>
+#include <Zen/Core/Math/Vector3.hpp>
+
+#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+#include <Zen/Core/Scripting/ObjectReference.hpp>
+
+#include <boost/noncopyable.hpp>
+#include <string>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -46,18 +54,32 @@ namespace Physics {
 class I_PhysicsZone;
 
 class PHYSICS_DLL_LINK I_PhysicsService
+:   public virtual Zen::Scripting::I_ScriptableType
+,   public Zen::Memory::managed_self_ref<I_PhysicsService>
+,   boost::noncopyable
 {
     /// @name Types
     /// @{
 public:
     typedef std::string                                    index_type;
+
+    typedef Zen::Memory::managed_ptr<I_PhysicsService>          pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<I_PhysicsService>   ScriptObjectReference_type;
+
     typedef Memory::managed_ptr<I_PhysicsService>          pPhysicsService_type;
     typedef Memory::managed_weak_ptr<I_PhysicsService>     wpPhysicsService_type;
+
     typedef Event::Event<wpPhysicsService_type>            serviceEvent_type;
     typedef Zen::Math::Real                                frameDelta_type;
     typedef Event::Event<frameDelta_type>                  frameEvent_type;
     typedef Memory::managed_ptr<I_PhysicsZone>            pPhysicsZone_type;
     typedef Memory::managed_weak_ptr<I_PhysicsZone>       wpPhysicsZone_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_PhysicsService interface
@@ -69,8 +91,8 @@ public:
     /// interact with actors within another zone.
     /// @note Some physics plugins do not support muliple zones.  If
     ///     this is the case, the plugin should throw an exception
-    ///     if an application attemts to create more than one zone.
-   	virtual pPhysicsZone_type createZone(const Math::Vector3& _min, const Math::Vector3& _max) = 0;
+    ///     if an application attempts to create more than one zone.
+    virtual pPhysicsZone_type createZone() = 0;
 
     /// Step the physics simulations by the specified amount of time.
     /// This will step the physics simulations for all zones and will

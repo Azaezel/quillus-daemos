@@ -36,6 +36,7 @@
 #include <Zen/Core/Plugins/ServiceCache.hpp>
 
 #include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting/script_module.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -91,7 +92,7 @@ private:
     pScriptEngine_type              m_pDefaultScriptEngine;
     bool                            m_scriptTypesInitialized;
 
-    pScriptModule_type              m_pPhysicsModule;
+    Zen::Scripting::script_module*	m_pPhysicsModule;
     pScriptType_type                m_pPhysicsServiceType;
     pScriptType_type                m_pPhysicsZoneType;
     pScriptType_type                m_pPhysicsActorType;

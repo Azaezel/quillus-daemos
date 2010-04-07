@@ -24,21 +24,17 @@
 #ifndef ZEN_ENGINE_RENDERING_RENDERING_MANAGER_HPP_INCLUDED
 #define ZEN_ENGINE_RENDERING_RENDERING_MANAGER_HPP_INCLUDED
 
+#include <Zen/Core/Scripting.hpp>
+
 #include "../I_RenderingManager.hpp"
 
 #include "../I_RenderingServiceFactory.hpp"
 #include "../I_RenderingService.hpp"
 
-#include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Plugins/ServiceCache.hpp>
-
-#include <Zen/Core/Scripting/ObjectReference.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-    namespace Scripting {
-        class I_ScriptType;
-    }   // namespace Scripting
 namespace Engine {
 namespace Rendering {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -49,9 +45,6 @@ class RenderingManager
     /// @name Types
     /// @{
 public:
-    typedef Scripting::ObjectReference<I_RenderingService>                      renderingServiceObjectReference_type;
-    typedef Zen::Memory::managed_ptr<renderingServiceObjectReference_type>      pRenderingServiceObjectReference_type;
-    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptType>                   pScriptType_type;
     typedef Zen::Plugins::ServiceCache<I_RenderingService>                      RenderingServiceCache_type;
     /// @}
 
@@ -60,17 +53,14 @@ public:
 public:
     virtual pRenderingService_type create(const std::string& _type);
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
-    virtual pScriptModule_type getDefaultScriptModule();
+    virtual pScriptModule_type getDefaultRenderingScriptModule();
     /// @}
 
     /// @name Additional Implementation
     /// @{
 private:
-    /// Register the script classes with the scripting engine
-    void registerScriptTypes(pScriptEngine_type _pEngine);
-
-    /// Register a service with a script engine
-    void registerScriptEngine(pScriptEngine_type _pEngine, pRenderingService_type _pService);
+    /// Register the script module with all of the previously created rendering services.
+    void registerRenderingScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -89,12 +79,7 @@ private:
 
     bool                            m_scriptTypesInitialized;
 
-    pScriptModule_type              m_pRenderingModule;
-    pScriptType_type                m_pRenderingServiceType;
-    pScriptType_type                m_pSceneServiceType;
-    pScriptType_type                m_pSceneNodeType;
-    pScriptType_type                m_pRenderableResourceType;
-    pRenderingServiceObjectReference_type   m_pRenderingServiceObjectReference;
+    Zen::Scripting::script_module*  m_pRenderingModule;
     /// @}
 
 };	// class RenderingManager

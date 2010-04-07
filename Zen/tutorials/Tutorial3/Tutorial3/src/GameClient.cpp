@@ -40,7 +40,9 @@
 #include <Zen/Core/Scripting/ObjectReference.hpp>
 
 #include <Zen/Engine/Core/I_GameGroup.hpp>
-#include <Zen/Engine/Core/I_ActionMap.hpp>
+
+#include <Zen/Core/Event/I_ActionMap.hpp>
+
 #include <Zen/Engine/Core/I_GameObjectBehaviors.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsActor.hpp>
@@ -125,10 +127,10 @@ GameClient::init()
     initPhysics();
 
     // For some reason the sky service must be initialized after physics
-    m_base.initSkyService("ZSky");
+    game().initSkyService("ZSky");
 
     // Terrain must be initialized after physics
-    m_base.initTerrainService("ZTerrain");
+    game().initTerrainService("ZTerrain");
 
     // Initialize the Input service
     // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse
@@ -236,16 +238,22 @@ GameClient::initRenderingService(const std::string& _type, const std::string& _t
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
+GameClient::initRenderingResourceService(const std::string& _type)
+{
+    return m_base.initRenderingResourceService(_type);
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
 GameClient::initTerrainService(const std::string& _type)
 {
-    return m_base.initTerrainService(_type);
+    return game().initTerrainService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 GameClient::initSkyService(const std::string& _type)
 {
-    return m_base.initSkyService(_type);
+    return game().initSkyService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -291,18 +299,21 @@ GameClient::createScene()
     // Resize the Physics World
     Zen::Math::Vector3 minSize(-2000.0f, -4000.0f, -2000.0f);
     Zen::Math::Vector3 maxSize( 2000.0f,  2000.0f,  2000.0f);
-    game().getCurrentPhysicsZone()->setZoneSize(minSize, maxSize);
+    game().getCurrentPhysicsZone()->setBoundary(minSize, maxSize);
 
     // Create the terrain
 
-    base().getTerrainService().setPhysicsZone(game().getCurrentPhysicsZone());
+    game().getTerrainService()->setPhysicsZone(game().getCurrentPhysicsZone());
 
     // load our terrain
     Zen::Math::Matrix4 matXfm(Zen::Math::Matrix4::INIT_IDENTITY);
     matXfm.setXYZRotation(Zen::Math::Degree(0), Zen::Math::Degree(0),Zen::Math::Degree(0));
     matXfm.setPosition(0.0f, 0.0f, 0.0f);
 
-    m_pTerrain = m_base.getTerrainService().createTerrain();
+    // TODO Change according to Tutorial4
+    //m_pTerrain = m_base.getTerrainService().createTerrain();
+    throw Zen::Utility::runtime_exception("GameClient::createScene(): Error, not implemented");
+
     const std::string terrainConfig("terrain.cfg");
     m_pTerrain->loadVisualization(terrainConfig, matXfm);
     // NOTE - you will need to use loadPhysicsFromRaw() one time (below) to create the collision
@@ -320,10 +331,10 @@ GameClient::createScene()
     Zen::Engine::World::I_SkyService::config_type skyConfig;
     skyConfig["type"] = "skybox";
     skyConfig["resourceName"] = "SteveCube";
-    m_pSky = m_base.getSkyService().createSky(skyConfig);
+    m_pSky = game().getSkyService()->createSky(skyConfig);
 
-    m_base.getSceneService().setAmbientLight(0.8f, 0.8f, 0.8f, 1.0f);
-    Zen::Engine::Rendering::I_SceneService::pLight_type pLight = m_base.getSceneService().createLight("default", "Light");
+    m_base.getSceneService()->setAmbientLight(0.8f, 0.8f, 0.8f, 1.0f);
+    Zen::Engine::Rendering::I_SceneService::pLight_type pLight = m_base.getSceneService()->createLight("default", "Light");
     pLight->setPosition(500.0f, 500.0f, 500.0f);
 
 }

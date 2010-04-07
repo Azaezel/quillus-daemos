@@ -26,6 +26,11 @@
 
 #include "../I_EventManager.hpp"
 
+#include <Zen/Core/Threading/I_Mutex.hpp>
+
+#include <map>
+#include <string>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Event {
@@ -38,7 +43,8 @@ class EventManager
     /// @name Types
     /// @{
 public:
-    typedef pEventService_type::weak_ptr_type       wpEventService_type;
+    typedef pEventService_type::weak_ptr_type               wpEventService_type;
+    typedef std::map<std::string, wpEventService_type>      EventServices_type;
     /// @}
 
     /// @name I_EventManager implementation
@@ -59,6 +65,13 @@ protected:
     friend class I_EventManager;
              EventManager();
     virtual ~EventManager();
+    /// @}
+
+    /// @name Member Variables
+    /// @{
+private:
+    EventServices_type                      m_eventServices;
+    Threading::I_Mutex*                     m_pEventServicesMutex;
     /// @}
 
 };  // class I_EventManager

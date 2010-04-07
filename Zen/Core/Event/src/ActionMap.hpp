@@ -57,12 +57,10 @@ public:
     /// @name I_ActionMap implementation
     /// @{
 public:
-    /// Create an acion by name and bind it to a function that gets envoked when
-    /// the action occurs.
-    virtual void createAction(const std::string& _name, ActionFunction_type _function);
-
-    /// Get an action by name.
-    virtual pAction_type operator[](const std::string& _name);
+    virtual I_Action& createAction(const std::string& _name, ActionFunction_type _function);
+    virtual bool actionExists(const std::string& _name);
+    virtual I_Action& getAction(const std::string& _name);
+    virtual I_Action& operator[](const std::string& _name);
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -76,13 +74,12 @@ public:
     /// @{
 public:
     /// Script specific create action.
-    void createScriptAction(const std::string& _name, boost::any _object, boost::any _function);
+    I_Action& createScriptAction(const std::string& _name, boost::any _object, boost::any _function);
 
     void destroyScriptAction(pAction_type::weak_ptr_type _wpAction);
 
     void destroyAction(pAction_type::weak_ptr_type _wpAction);
 
-    pAction_type getAction(const std::string& _name);
     /// @}
 
     /// @name Event handlers

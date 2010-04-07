@@ -120,7 +120,7 @@ script_initTerrainService(Zen::Scripting::I_ObjectReference* _pObject, std::vect
     // Init the terrain service
     std::string type = boost::any_cast<std::string>(_parms[0]);
 
-    sm_pTheOnlyGameClient->base().initTerrainService(type);
+    sm_pTheOnlyGameClient->game().initTerrainService(type);
  
 }
 
@@ -141,7 +141,7 @@ script_initSkyService(Zen::Scripting::I_ObjectReference* _pObject, std::vector<b
     // Init the sky service
     std::string type = boost::any_cast<std::string>(_parms[0]);
 
-    sm_pTheOnlyGameClient->base().initSkyService(type);
+    sm_pTheOnlyGameClient->game().initSkyService(type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

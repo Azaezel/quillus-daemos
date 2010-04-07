@@ -26,22 +26,19 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Engine/Client/I_GameClient.hpp>
-
 #include <Zen/Core/Math/Math.hpp>
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
 
+#include <Zen/Core/Scripting.hpp>
+
+#include <Zen/Engine/Client/I_GameClient.hpp>
+
 #include <boost/any.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-    namespace Scripting {
-        class I_ScriptEngine;
-        class I_ScriptModule;
-        class I_ScriptType;
-    }   // namespace Scripting
 namespace Engine {
     namespace Rendering {
         class I_Context;
@@ -56,8 +53,6 @@ namespace Engine {
     }   // namespace Camera
     namespace World {
         class I_WaterService;
-        class I_TerrainService;
-        class I_SkyService;
     }   // namespace World
     namespace Resource {
         class I_ResourceService;
@@ -87,6 +82,7 @@ namespace Base {
 
 /// Base Game Engine Client
 class BASECLIENT_DLL_LINK I_BaseGameClient
+:   public Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
@@ -95,7 +91,6 @@ public:
     typedef Event::Event<FrameDelta_type>                       FrameEvent_type;
 
     typedef Memory::managed_ptr<Scripting::I_ScriptEngine>      pScriptEngine_type;
-    typedef Memory::managed_ptr<Scripting::I_ScriptModule>      pScriptModule_type;
     typedef Memory::managed_ptr<Scripting::I_ScriptType>        pScriptType_type;
     /// @}
 
@@ -135,12 +130,6 @@ public:
 
     /// @brief Initialize the water service
     virtual bool initWaterService(const std::string& _type) = 0;
-
-    /// @brief Initialize the terrain service
-    virtual bool initTerrainService(const std::string& _type) = 0;
-
-    /// @brief Initialize the sky service
-    virtual bool initSkyService(const std::string& _type) = 0;
 
     /// @brief Initialize the widgets service
     virtual bool initWidgetService(const std::string& _type) = 0;
@@ -185,7 +174,8 @@ public:
     ///         I_BaseGameClient object.
     virtual Resource::I_ResourceService& getRenderingResourceService() = 0;
 
-    virtual Rendering::I_SceneService& getSceneService() = 0;
+    typedef Memory::managed_ptr<Rendering::I_SceneService>      pSceneService_type;
+    virtual pSceneService_type getSceneService() = 0;
 
     virtual Input::I_InputService& getInputService() = 0;
 
@@ -193,8 +183,6 @@ public:
     virtual Rendering::I_RenderingCanvas& getRenderingCanvas() = 0;
 
     virtual World::I_WaterService& getWaterService() = 0;
-    virtual World::I_TerrainService& getTerrainService() = 0;
-    virtual World::I_SkyService& getSkyService() = 0;
 
     virtual Widgets::I_WidgetService& getWidgetService() = 0;
 

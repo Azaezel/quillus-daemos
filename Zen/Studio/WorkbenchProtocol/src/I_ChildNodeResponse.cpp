@@ -49,12 +49,19 @@ I_ChildNodeResponse::~I_ChildNodeResponse()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_ChildNodeResponse::pResponse_type
 I_ChildNodeResponse::create(pEndpoint_type _pSourceEndpoint,
-					   pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId)			   
+					   pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId)			   
 {
     ChildNodeResponse* pChildNodeResponse(new ChildNodeResponse(_pSourceEndpoint,
                                           _pDestinationEndpoint, _requestMessageId));
 
     return pResponse_type((Response*)pChildNodeResponse, ChildNodeResponse::destroy);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_ChildNodeResponse::pMessageType_type
+I_ChildNodeResponse::getStaticMessageType()			   
+{
+    return ChildNodeResponse::sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

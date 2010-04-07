@@ -25,7 +25,7 @@ set ( ArtLibraryModel_SRC
 <%SourceList%>
     )
 
-add_definitions( -DARTLIBRARYMODEL_EXPORTS  )
+add_definitions( -DARTLIBRARYMODEL_EXPORTS  ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 

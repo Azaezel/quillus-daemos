@@ -21,6 +21,7 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#if 0 // deprecated
 #include "Action.hpp"
 
 #include "../I_BaseGame.hpp"
@@ -109,3 +110,4 @@ Action::getScriptObject()
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+#endif // deprecated

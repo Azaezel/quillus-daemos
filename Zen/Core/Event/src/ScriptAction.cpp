@@ -70,21 +70,12 @@ ScriptAction::dispatch(boost::any& _parameter)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-static std::string sm_scriptTypeName("ScriptAction");
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-const std::string&
-ScriptAction::getScriptTypeName()
-{
-    return sm_scriptTypeName;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Scripting::I_ObjectReference*
 ScriptAction::getScriptObject()
 {
     if (m_pScriptObject == NULL)
     {
-        m_pScriptObject = new ScriptAction::ScriptObjectReference_type
+        m_pScriptObject = new I_Action::ScriptObjectReference_type
             (m_pScriptModule, 
             m_pScriptModule->getScriptType(getScriptTypeName()), 
             getSelfReference().lock());
@@ -92,7 +83,6 @@ ScriptAction::getScriptObject()
 
     return m_pScriptObject;
 }
-
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Event
 }   // namespace Zen

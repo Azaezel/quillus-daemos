@@ -38,12 +38,14 @@
 #include <Zen/Core/Threading/MutexFactory.hpp>
 #include <Zen/Core/Threading/CriticalSection.hpp>
 
-#include <Zen/Core/Scripting/ObjectReference.hpp>
-#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
-#include <Zen/Core/Scripting/I_ScriptModule.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Engine/Core/I_Action.hpp>
+
+#include <Zen/Engine/Input/I_InputService.hpp>
+#include <Zen/Engine/Input/I_InputMapService.hpp>
 #include <Zen/Engine/Input/I_KeyMap.hpp>
+#include <Zen/Engine/Input/I_KeyEvent.hpp>
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
@@ -99,6 +101,8 @@ InputServiceManager::createInputMapService()
     pInputMapService_type pInputServiceMap(pRawInputMapService,
         boost::bind(&InputServiceManager::destroyInputMapService, this, _1));
 
+    pRawInputMapService->registerScriptModule(*m_pInputModule);
+
     return pInputServiceMap;
 }
 
@@ -122,102 +126,58 @@ InputServiceManager::destroyInputMapService(wpInputMapService_type _wpInputMapSe
 void
 InputServiceManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
 {
-    registerScriptTypes(_pEngine);
+    /// Don't bother if the types have already been initialized
+    if (m_scriptTypesInitialized == true || _pEngine == NULL)
+        return;
 
-    /// Register all of the existing services
-    if(m_pDefaultScriptEngine == NULL)
-    {
-        Threading::CriticalSection guard(m_inputServiceCache.getLock());
+    // Create an InputManager module
+    m_pInputModule = new Zen::Scripting::script_module(_pEngine, "Input", "Zen Input Services Module");
 
-        for(services_type::iterator iter = m_inputServiceCache.begin();
-            iter != m_inputServiceCache.end();
-            iter++)
-        {
-            registerScriptEngine(_pEngine, iter->second);
-        }
-    }
+    // Expose I_InputService to the Script Engine
+    m_pInputModule->addType<I_InputService>("InputService", "Input Service")
+	;
+
+    m_pInputModule->addType<I_KeyMap>("KeyMap", "Key Map")
+		.addMethod("mapKeyInput", &I_KeyMap::mapKeyInput)
+	;
+
+    m_pInputModule->addType<I_InputMapService>("InputMapService", "Input Map Service")
+		.addMethod("createKeyMap", &I_InputMapService::createKeyMap)
+	;
+
+    m_pInputModule->addType<I_KeyEvent>("KeyEvent", "Key Event")
+		// TODO Refactor scripting to handle const methods.
+		//.addMethod("getPressedState", &I_KeyEvent::getPressedState)
+		//.addMethod("getKeyCode", &I_KeyEvent::getKeyCode)
+		//.addMethod("getChar", &I_KeyEvent::getChar)
+	;
+
+    m_pInputModule->activate();
 
     m_pDefaultScriptEngine = _pEngine;
     m_scriptTypesInitialized = false;
+
+    /// Register all of the existing services
+    registerScriptModule();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 InputServiceManager::pScriptModule_type
 InputServiceManager::getDefaultScriptModule()
 {
-    return m_pInputModule;
+    return m_pInputModule->getScriptModule();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-InputServiceManager::registerScriptEngine(pScriptEngine_type _pEngine, pInputService_type _pService)
+InputServiceManager::registerScriptModule()
 {
-    new I_InputService::ScriptObjectReference_type(m_pInputModule, m_pInputServiceType, _pService, "resourceService");
-}
+	Threading::CriticalSection guard(m_inputServiceCache.getLock());
 
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-static void
-script_mapKeyInput(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
-{
-    I_KeyMap::ScriptObjectReference_type* pObject = dynamic_cast<I_KeyMap::ScriptObjectReference_type*>(_pObject);
-
-    std::string key = boost::any_cast<std::string>(_parms[0]);
-
-    Scripting::I_ObjectReference* pActionObj = boost::any_cast<Scripting::I_ObjectReference*>(_parms[1]);
-
-    Core::I_Action::ScriptObjectReference_type* pAction = dynamic_cast<Core::I_Action::ScriptObjectReference_type*>(pActionObj);
-
-    pObject->getObject()->mapKeyInput(key, pAction->getObject());
-}
-
-static int
-script_getKeyCode(Zen::Scripting::I_ObjectReference* _pObject)
-{
-    I_KeyEvent::ScriptObjectReference_type* pObject = dynamic_cast<I_KeyEvent::ScriptObjectReference_type*>(_pObject);
-
-    return pObject->getObject()->getKeyCode();
-}
-
-static bool
-script_getPressedState(Zen::Scripting::I_ObjectReference* _pObject)
-{
-    I_KeyEvent::ScriptObjectReference_type* pObject = dynamic_cast<I_KeyEvent::ScriptObjectReference_type*>(_pObject);
-
-    return pObject->getObject()->getPressedState();
-}
-
-static std::string
-script_getChar(Zen::Scripting::I_ObjectReference* _pObject)
-{
-    I_KeyEvent::ScriptObjectReference_type* pObject = dynamic_cast<I_KeyEvent::ScriptObjectReference_type*>(_pObject);
-
-    return boost::lexical_cast<std::string>(pObject->getObject()->getChar());
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-InputServiceManager::registerScriptTypes(pScriptEngine_type _pEngine)
-{
-    /// Don't bother if the types have already been initialized
-    if (m_scriptTypesInitialized == true || _pEngine == NULL)
-        return;
-
-    // Create an InputManager module
-    m_pInputModule = _pEngine->createScriptModule("InputManager", "Zen Input Manager Module");
-
-    // Expose I_InputService to the Script Engine
-    m_pInputServiceType = m_pInputModule->createScriptType("InputService", "Input Service", 0);
-    //m_pInputServiceType->addMethod("createKeyMap", "Create an input map", createKeyMap);
-    //
-    m_pKeyMapType = m_pInputModule->createScriptType("KeyMap", "Input Map", 0);
-    m_pKeyMapType->addMethod("mapKeyInput", "Map a key to an action", script_mapKeyInput);
-
-    m_pKeyEventType = m_pInputModule->createScriptType("KeyEvent", "Key Event", 0);
-    m_pKeyEventType->addMethod("getPressedState", "Get the state of the key (true = down, false = up", script_getPressedState);
-    m_pKeyEventType->addMethod("getKeyCode", "Get the code of the key pressed or released", script_getKeyCode);
-    m_pKeyEventType->addMethod("getChar", "Convert the key into a string", script_getChar);
-
-    m_pInputModule->activate();
+	for(input_service_cache_type::iterator iter = m_inputServiceCache.begin(); iter != m_inputServiceCache.end(); iter++)
+	{
+		iter->second->registerScriptModule(*m_pInputModule);
+	}
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

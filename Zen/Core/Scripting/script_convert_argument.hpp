@@ -29,8 +29,17 @@
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
 #include <Zen/Core/Math/Math.hpp>
+#include <Zen/Core/Math/Vector3.hpp>
+#include <Zen/Core/Math/Vector4.hpp>
+#include <Zen/Core/Math/Matrix3.hpp>
+#include <Zen/Core/Math/Matrix4.hpp>
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
+
+#include <boost/cstdint.hpp>
+
+#include <string>
+#include <map>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -103,13 +112,23 @@ struct script_convert_argument<Argument_type, true, false, false, true>
             (boost::any_cast<I_ObjectReference*>(_parm));
     }
 
+    inline base_type* getObject(base_type* _pObject)
+    {
+        return _pObject;
+    }
+
+    inline base_type* getObject(Memory::managed_ptr<base_type> _pObject)
+    {
+        return _pObject.get();
+    }
+
     inline
     operator Argument_type()
     {
         // Get the point to an object of the Argument_type using the
         // I_ObjectReference* converted from the boost::any.
         base_type* pValue =
-            dynamic_cast<base_type*>(this->m_pValue->getObject());
+            dynamic_cast<base_type*>(this->getObject(this->m_pValue->getObject()));
 
         // Make sure the value is valid and return it.
         if( pValue != NULL )
@@ -139,7 +158,7 @@ struct script_convert_argument<Memory::managed_ptr<Argument_type>, false, true, 
     /// managed_ptr<I_ScriptableType> is kept as a managed_ptr<I_ScriptableType>
     typedef Memory::managed_ptr<Argument_type>                      type;
     typedef Argument_type                                           base_type;
-    typedef typename Argument_type::ScriptObjectReference_type*     pScriptObjectReference_type;
+    typedef typename base_type::ScriptObjectReference_type*         pScriptObjectReference_type;
 
     inline
     void
@@ -284,6 +303,62 @@ struct script_convert_argument<int&, false, false, false, true>
     int m_value;
 };
 
+
+typedef std::map<std::string,std::string>   ScriptConfig_type;
+
+/// Convert an intrinsic script type (which is always passed
+/// by type*) to a value.
+/// First template argument is the argument type, the
+/// bool is true fi the argument type is a reference.
+/// The default is false and the true (is a reference)
+/// is handled by a template specialization.
+template<typename ArgumentType_type, bool>
+struct script_convert_intrinsic_type
+{
+	/// @see http://www.boost.org/doc/libs/1_42_0/libs/type_traits/doc/html/boost_typetraits/reference/remove_reference.html
+    typedef typename boost::remove_const< typename boost::remove_reference<ArgumentType_type>::type >::type type;
+
+    inline
+    void
+    operator()(boost::any& _parm)
+    {
+        m_pValue = boost::any_cast<type*>(_parm);
+    }
+
+    inline
+    operator ArgumentType_type()
+    {
+        return *m_pValue;
+    }
+
+    type* m_pValue;
+
+};	// struct script_convert_intrinsic_type
+
+/// Template specialization to convert an intrinsic script type
+/// from type* to type&
+template<typename ArgumentType_type>
+struct script_convert_intrinsic_type<ArgumentType_type, true>
+{
+    typedef typename boost::remove_const< typename boost::remove_reference<ArgumentType_type>::type >::type type;
+
+    inline
+    void
+    operator()(boost::any& _parm)
+    {
+        m_pValue = boost::any_cast<type*>(_parm);
+    }
+
+    inline
+    operator type&()
+    {
+        return *m_pValue;
+    }
+
+    type* m_pValue;
+
+};	// struct script_convert_intrinsic_type<ArgumentType_type, true>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 } // namespace detail
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -327,6 +402,83 @@ struct script_convert_argument<int>
     }
 
     int m_value;
+};
+
+template<typename ArgumentType_type>
+struct script_convert_intrinsic_type
+:   public detail::script_convert_intrinsic_type
+        <
+            ArgumentType_type,
+            boost::is_reference<ArgumentType_type>::value
+        >
+{
+};
+
+template<>
+struct script_convert_argument<Math::Vector3>
+:   public script_convert_intrinsic_type<Math::Vector3>
+{
+};
+
+template<>
+struct script_convert_argument<Math::Vector3&>
+:   public script_convert_intrinsic_type<Math::Vector3&>
+{
+};
+
+template<>
+struct script_convert_argument<const Math::Vector3&>
+:   public script_convert_intrinsic_type<const Math::Vector3&>
+{
+};
+
+template<>
+struct script_convert_argument<Math::Vector4>
+:   public script_convert_intrinsic_type<Math::Vector4>
+{
+};
+
+template<>
+struct script_convert_argument<Math::Vector4&>
+:   public script_convert_intrinsic_type<Math::Vector4&>
+{
+};
+
+template<>
+struct script_convert_argument<Math::Matrix3>
+:   public script_convert_intrinsic_type<Math::Matrix3>
+{
+};
+
+template<>
+struct script_convert_argument<Math::Matrix3&>
+:   public script_convert_intrinsic_type<Math::Matrix3&>
+{
+};
+
+template<>
+struct script_convert_argument<Math::Matrix4>
+:   public script_convert_intrinsic_type<Math::Matrix4>
+{
+
+};
+
+template<>
+struct script_convert_argument<Math::Matrix4&>
+:   public script_convert_intrinsic_type<Math::Matrix4&>
+{
+};
+
+template<>
+struct script_convert_argument<detail::ScriptConfig_type>
+:   public script_convert_intrinsic_type<detail::ScriptConfig_type>
+{
+};
+
+template<>
+struct script_convert_argument<detail::ScriptConfig_type&>
+:   public script_convert_intrinsic_type<detail::ScriptConfig_type&>
+{
 };
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

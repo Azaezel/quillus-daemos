@@ -35,8 +35,13 @@
 #include <Zen/Core/Threading/I_Condition.hpp>
 #include <Zen/Core/Threading/I_Thread.hpp>
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
+#include <Zen/Core/Event/I_EventManager.hpp>
+
+#include <Zen/Enterprise/Networking/I_Endpoint.hpp>
 
 #include <boost/noncopyable.hpp>
+
+#include <map>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -82,12 +87,17 @@ public:
     typedef Memory::managed_ptr<I_ResourceLocation>         pResourceLocation_type;
     typedef Memory::managed_ptr<I_MessageRegistry>          pMessageRegistry_type;
 
+    typedef Memory::managed_ptr<Networking::I_Endpoint>     pEndpoint_type;
+
     typedef Memory::managed_ptr<Database::I_DatabaseConnection> pDatabaseConnection_type;
 
     typedef Zen::Plugins::I_ConfigurationElement::const_ptr_type    pConfig_type;
 
-    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptEngine>     pScriptEngine_type;
-    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptModule>     pScriptModule_type;
+    typedef Memory::managed_ptr<Scripting::I_ScriptEngine>  pScriptEngine_type;
+    typedef Memory::managed_ptr<Scripting::I_ScriptModule>  pScriptModule_type;
+
+    typedef Event::I_EventManager::pEventService_type       pEventService_type;
+    typedef std::map<std::string,std::string>               config_type;
     /// @}
 
     /// @name I_ApplicationServer interface.
@@ -116,6 +126,9 @@ public:
     /// Get the default script engine.
     virtual pScriptEngine_type getDefaultScriptEngine() = 0;
 
+    /// Get the event service that the application server uses for publishing events.
+    virtual pEventService_type getEventService() = 0;
+
     /// Install multiple protocol services using the provided configuration.
     /// The provided configuration should have zero or more <protocol/> entries which
     /// are used to invoke installProtocol using a protocol service specified by the "type" attribute.
@@ -142,7 +155,7 @@ public:
     /// @see http://www.indiezen.org/wiki/wiki/zoss/ZenServer/Configuration
     virtual void installApplications(pConfig_type _pAppServicesConfig) = 0;
 
-    /// Install an Application into this Application Server
+    /// Install an Application into this Application Server.
     /// @param _pApplicationService - Application service to install
     /// @param _rootLocation - Root resource location at which this application should be installed.
     virtual void installApplication(pApplicationService_type _pApplicationService, pResourceLocation_type _pRootLocation) = 0;
@@ -153,30 +166,47 @@ public:
     /// Get the application.
     virtual pApplicationService_type getApplication(pResourceLocation_type _pServiceLocation) const = 0;
 
-    /// Visit the resource locations
+    /// Visit the resource locations.
     virtual void getResourceLocations(I_ResourceLocationVisitor& _visitor) const = 0;
 
     /// Get the message registry.
     virtual pMessageRegistry_type getMessageRegistry() = 0;
 
-    /// Handle a message
+    /// Handle a message.
     /// Messages are one-way notifications and are not expected to return a result.
     virtual void handleMessage(pMessage_type _pMessage) = 0;
 
-    /// Handle a request asynchronously
+    /// Handle a request asynchronously.
     /// A request is a message that requires a response, but the response can be handled
     /// asynchronously.
     /// @param _responseHandler dispatch object that will handle the reponse to this request.
     virtual void handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler) = 0;
 
-    /// Handle a session event
+    /// Handle a session event.
     /// A session event is an event such as a succesful authentication, (or unsuccesful
     /// for that matter), or a login or logout request event, etc.
     /// @see I_SessionEvent
     virtual void handleSessionEvent(pSessionEvent_type _pSessionEvent) = 0;
 
+    /// Install database connections.
+    /// Install one or more database connections using the provided configuration.
+    /// The provided configuration should have zero or more <database/> entries which
+    /// are used to invoke createDatabaseEntry().
+    /// service specified by the "type" attribute.
+    /// @param _pDatabasesConfig - The <databases/> configuration element that contains zero or more
+    ///     <database/> elements.
+    /// @see http://www.indiezen.org/wiki/wiki/zoss/ZenServer/Configuration
+    virtual void installDatabaseConnections(pConfig_type _pDatabasesConfig) = 0;
+
+    /// Create a database connection entry.
+    /// Database connections are pooled by the application server.  This method creates the 
+    /// connection information entry by a connection name.  When you call getDatabaseConnection()
+    /// and pass the same connection name, it will return the appropriate connection.
+    /// @todo Refactor to use config_type instead of pConfig_type.
+    virtual void createDatabaseEntry(const std::string& _connectionName, const std::string& _databaseType, config_type& _config) = 0;
+
     /// Get the database connection for the current thread.
-    virtual pDatabaseConnection_type getDatabaseConnection(const std::string& _database, Zen::Threading::I_Thread::ThreadId& _threadId) = 0;
+    virtual pDatabaseConnection_type getDatabaseConnection(const std::string& _connectionName) = 0;
     /// @}
 
     /// @name Inner classes

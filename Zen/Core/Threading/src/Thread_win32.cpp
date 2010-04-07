@@ -137,7 +137,7 @@ Thread_win32::join()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_Thread::ThreadId
-Thread_win32::getCurrentThreadId() const
+Thread_win32::getWin32CurrentThreadId()
 {
     return ThreadId(new NativeThreadId_win32(::GetCurrentThreadId()));
 }

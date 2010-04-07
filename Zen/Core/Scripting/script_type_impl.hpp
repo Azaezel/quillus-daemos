@@ -39,9 +39,22 @@ namespace Scripting {
 template<typename ScriptableClass_type>
 inline
 script_type<ScriptableClass_type>::script_type(script_module& _module, const std::string& _typeName, const std::string& _documentation)
-:   m_module(_module)
+:   m_pModule(&_module)
+,   m_pScriptModule()
 ,   m_typeName(_typeName)
 ,   m_documentation(_documentation)
+{
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+template<typename ScriptableClass_type>
+inline
+script_type<ScriptableClass_type>::script_type(pScriptType_type _pScriptType)
+:   m_pModule(NULL)
+,   m_pScriptModule(_pScriptType->getScriptModule())
+,   m_typeName(_pScriptType->getTypeName())
+,   m_documentation(_pScriptType->getDocumentation())
+,   m_pScriptType(_pScriptType)
 {
 }
 
@@ -66,16 +79,40 @@ script_type<ScriptableClass_type>::addMethod(const std::string& _methodName, Met
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 template<typename ScriptableClass_type>
+template<typename Method_type>
+script_type<ScriptableClass_type>&
+script_type<ScriptableClass_type>::addConstMethod(const std::string& _methodName, Method_type _pFunction)
+{
+    typedef BOOST_TYPEOF((get_const_dispatch_helper(_pFunction, _pFunction))) DispatchHelper_type;
+    typedef typename DispatchHelper_type::MethodReturn_type             MethodReturn_type;
+
+    typedef script_method<ScriptableClass_type, Method_type, MethodReturn_type, DispatchHelper_type>
+                                                                        ScriptMethod_type;
+
+    I_ScriptMethod* const pMethod = new ScriptMethod_type(_pFunction, get_const_dispatch_helper(_pFunction, _pFunction), m_typeName, _methodName);
+
+    m_methods[_methodName] = pMethod;
+
+    return *this;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+template<typename ScriptableClass_type>
 inline
 void
 script_type<ScriptableClass_type>::activate()
 {
-    m_pScriptType = m_module.getScriptModule()->createScriptType(m_typeName, m_documentation, 0);
+    // Create m_pScriptType if it hasn't already been created.
+    if (!m_pScriptType.isValid())
+    {
+        m_pScriptType = getScriptModule()->createScriptType(m_typeName, m_documentation, 0);
+    }
 
     // Iterate through the script_method and register them.
     for(Methods_type::iterator iter = m_methods.begin(); iter != m_methods.end(); iter++)
     {
-        // TODO I_ScriptMethod needs to support documentation
+        // TODO I_ScriptMethod needs to support documentation.  For now the second
+        // parameter is simply an empty string.
         m_pScriptType->addMethod(iter->first, "", iter->second);
     }
 }
@@ -90,7 +127,7 @@ script_type<ScriptableClass_type>::createGlobals()
     // Create the global objects
     for(GlobalObjects_type::iterator iter = m_globalObjects.begin(); iter != m_globalObjects.end(); iter++)
     {
-        m_module.getScriptModule()->createGlobalObject(iter->first, m_pScriptType, iter->second->getScriptObject());
+        getScriptModule()->createGlobalObject(iter->first, m_pScriptType, iter->second->getScriptObject());
     }
 
 }
@@ -101,8 +138,26 @@ inline
 void
 script_type<ScriptableClass_type>::createGlobalObject(const std::string& _objectName, I_ScriptableType* _pScriptableObject)
 {
-    // Defer this until after the module has been activated.
+    // Defer the creation of the object until after the module has been activated.
+    // For now, keep a collection of global objects, and when the module
+    // is activated, create them using createGlobals()
     m_globalObjects[_objectName] = _pScriptableObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+template<typename ScriptableClass_type>
+inline
+Zen::Memory::managed_ptr<I_ScriptModule>
+script_type<ScriptableClass_type>::getScriptModule()
+{
+    if(m_pModule)
+    {
+        return m_pModule->getScriptModule();
+    }
+    else
+    {
+        return m_pScriptModule.lock();
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

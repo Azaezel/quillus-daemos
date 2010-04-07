@@ -1,3 +1,4 @@
+print("Loaded Environment.lua");
 --[[
 
 environment.lua
@@ -6,6 +7,8 @@ Create a global variable called "environment" and add some array
 accessor type methods.
 
 ]]
+
+print("=============\nLoading Environment scripts...\n============")
                         
 -- Get the environment
 environment = Zen:getEnvironment()

@@ -54,7 +54,7 @@ public:
     /// @{
 public:
     /// Create a scene service
-    virtual pSceneService_type create() = 0;
+    virtual pSceneService_type create(const std::string& _name, int _sceneType) = 0;
     /// @}
 
     /// @name 'Structors

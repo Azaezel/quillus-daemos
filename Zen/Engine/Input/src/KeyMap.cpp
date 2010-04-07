@@ -184,12 +184,14 @@ KeyMap::~KeyMap()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-KeyMap::mapKeyInput(const std::string& _name, const pAction_type _pAction)
+KeyMap::mapKeyInput(const std::string& _name, Event::I_Action& _action)
 {
+    pAction_type pAction = _action.getSelfReference().lock();
+
     KeyMapTable_type::const_iterator iter = sm_keyMapTable.find(_name);
     if( iter != sm_keyMapTable.end() )
     {
-        m_keyMap.insert(std::pair<KeyState,pAction_type>(iter->second,_pAction));
+        m_keyMap.insert(std::pair<KeyState,pAction_type>(iter->second, pAction));
     }
     else
     {

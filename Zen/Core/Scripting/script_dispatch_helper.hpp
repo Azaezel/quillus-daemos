@@ -26,7 +26,7 @@
 #ifndef ZEN_SCRIPTING_SCRIPT_METHOD_HELPER_HPP_INCLUDED
 #define ZEN_SCRIPTING_SCRIPT_METHOD_HELPER_HPP_INCLUDED
 
-#ifndef ZEN_SCRIPTING_MAX_SCRIPT_PARMS 
+#ifndef ZEN_SCRIPTING_MAX_SCRIPT_PARMS
 #define ZEN_SCRIPTING_MAX_SCRIPT_PARMS 10
 #endif
 
@@ -87,7 +87,9 @@ struct get_script_object_pointer<ScriptableClass_type, true, false>
     ScriptableClass_type*
     operator()(typename ScriptableClass_type::ScriptObjectReference_type* _pObject)
     {
-        return dynamic_cast<ScriptableClass_type*>(_pObject->getRawObject());
+    	ScriptableClass_type* const pScriptable = dynamic_cast<ScriptableClass_type*>(_pObject->getRawObject());
+    	assert(pScriptable != NULL);
+        return pScriptable;
     }
 };
 
@@ -101,7 +103,9 @@ struct get_script_object_pointer<ScriptableClass_type, false, true>
     ScriptableClass_type*
     operator()(typename ScriptableClass_type::ScriptObjectReference_type* _pObject)
     {
-        return dynamic_cast<ScriptableClass_type*>(_pObject->getObject());
+    	ScriptableClass_type* const pScriptable = dynamic_cast<ScriptableClass_type*>(_pObject->getObject());
+    	assert(pScriptable != NULL);
+        return pScriptable;
     }
 };
 
@@ -178,7 +182,7 @@ script_override_return_type
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 /// This helper is used to get the correct detail::get_script_object_pointer
-/// implementation which will convert from 
+/// implementation which will convert from
 /// ScriptableClass_type::ScriptObjectReference_type*
 /// to the appropriate ScriptableClass_type*.
 /// ScriptObjectReference_type wraps either a ScriptableClass_type* or a
@@ -187,7 +191,7 @@ template<typename ScriptableClass_type, typename object_ptr_type>
 struct
 get_script_object_pointer
 : public detail::get_script_object_pointer<ScriptableClass_type,
-        detail::is_managed_pointer<ScriptableClass_type, object_ptr_type>::value,
+		detail::is_managed_scriptable_type<object_ptr_type>::value,
         boost::is_base_of<typename boost::remove_pointer<object_ptr_type>::type, ScriptableClass_type>::value &&
         boost::is_pointer<object_ptr_type>::value
     >
@@ -445,7 +449,7 @@ get_dispatch_helper(Method_type _function, Return_type(ScriptableClass_type::*_m
 
 } // namespace detail
 
-/// This template function will is used to define the OverrideReturn_type which is used by
+/// This template function is used to define the OverrideReturn_type which is used by
 /// detail::get_dispatch_helper.
 /// OverrideReturn_type is script_override_return_type<Return_type>::type, which
 /// will override the return type using some template specialization.  Any return type which
@@ -460,6 +464,15 @@ get_dispatch_helper(Method_type _function, Return_type(ScriptableClass_type::*_m
         ScriptableClass_type BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, parmType)>(_function, _method);
 }
 
+#if 0 // failed attempt at trying to make a const method... try again
+template<typename Method_type, typename Return_type, class ScriptableClass_type BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class parmType)>
+script_dispatch_helper<Method_type, typename script_override_return_type<Return_type>::type, ScriptableClass_type>&
+get_const_dispatch_helper(Method_type _function, Return_type(ScriptableClass_type::*_method)(BOOST_PP_ENUM_PARAMS_Z(1, N, parmType)) const)
+{
+    return detail::get_dispatch_helper<Method_type, Return_type, typename script_override_return_type<Return_type>::type,
+        ScriptableClass_type BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, parmType)>(_function, _method);
+}
+#endif
 
 #undef N
 #undef M

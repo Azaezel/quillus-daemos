@@ -167,6 +167,11 @@ static Scripting::I_ObjectReference* loadResource(Scripting::I_ObjectReference* 
         config["fileName"] = boost::any_cast<std::string>(_parms[0]);
         config["label"] = boost::any_cast<std::string>(_parms[1]);
 
+        if (_parms.size() > 2)
+        {
+            config["scene"] = boost::any_cast<std::string>(_parms[2]);
+        }
+
         Memory::managed_ptr<I_ResourceService> pResourceService = pService->getObject();
         Memory::managed_ptr<I_Resource> pResource = pResourceService->loadResource(config);
 
@@ -187,7 +192,7 @@ static void setMaterialName(Scripting::I_ObjectReference* _pObj, std::vector<boo
     {
         std::string name = boost::any_cast<std::string>(_parms[0]);
 
-        Rendering::I_RenderableResource* pResource = 
+        Rendering::I_RenderableResource* pResource =
             dynamic_cast<Rendering::I_RenderableResource*>(pObj->getRawObject());
 
         pResource->setMaterialName(name);

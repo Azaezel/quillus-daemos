@@ -38,6 +38,7 @@
 namespace Zen {
 namespace Plugins {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class I_ClassFactory;
 class I_Extension;
 class I_ExtensionPoint;
 class I_ExtensionQuery;

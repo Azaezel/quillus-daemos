@@ -37,7 +37,10 @@ public:
     /// @name I_MessageFactory implementation
     /// @{
 public:
-    virtual pMessage_type create(pMessageHeader_type _pMessageHeader, pEndpoint_type _pSourceEndpoint, pEndpoint_type _pDestinationEndpoint);
+    virtual pMessage_type create(pMessageHeader_type _pMessageHeader, 
+                pEndpoint_type _pSourceEndpoint, 
+                pEndpoint_type _pDestinationEndpoint);
+
     /// @}
 
     /// @name MessageFactory implementation

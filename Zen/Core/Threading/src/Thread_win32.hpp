@@ -28,6 +28,7 @@
 #ifndef ZEN_THREADING_THREAD_WIN32_HPP_INCLUDED
 #define ZEN_THREADING_THREAD_WIN32_HPP_INCLUDED
 
+#if defined(HOST_WIN32)
 #include "../I_Thread.hpp"
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -55,10 +56,10 @@ public:
     /// @name I_Thread implementation
     /// @{
 public:
-	virtual void start();
-	virtual void stop();
-	virtual void join();
-    virtual ThreadId getCurrentThreadId() const;
+    virtual void start();
+    virtual void stop();
+    virtual void join();
+    static ThreadId getWin32CurrentThreadId();
     virtual const ThreadId& getThreadId() const;
     /// @}
 
@@ -131,5 +132,7 @@ private:
 }   // namespace Threading
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+#endif // HOST_WIN32
 
 #endif // ZEN_THREADING_THREAD_WIN32_HPP_INCLUDED

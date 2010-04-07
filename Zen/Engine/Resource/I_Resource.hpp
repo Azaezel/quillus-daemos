@@ -51,6 +51,7 @@ public:
     {
         THREESPACE_RESOURCE,
         SOUND_BUFFER_RESOURCE,
+        COLLISION_RESOURCE,
         COMPOUND_RESOURCE
     };
 

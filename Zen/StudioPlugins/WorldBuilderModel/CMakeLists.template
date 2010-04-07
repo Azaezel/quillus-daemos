@@ -24,7 +24,7 @@ set ( WorldBuilderModel_SRC
 <%SourceList%>
     )
 
-add_definitions( -DWORLDBUILDERMODEL_EXPORTS  )
+add_definitions( -DWORLDBUILDERMODEL_EXPORTS  ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT}  )
 

@@ -29,6 +29,7 @@
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
 #include <boost/noncopyable.hpp>
+#include <boost/cstdint.hpp>
 
 namespace boost {
 namespace archive {
@@ -82,7 +83,10 @@ public:
     virtual pMessageHeader_type getMessageHeader() const = 0;
 
     /// Get the message Id of this message.
-    virtual unsigned int getMessageId() const = 0;
+    virtual boost::uint32_t getMessageId() const = 0;
+
+    /// This method returns the message type.
+    virtual pMessageType_type getMessageType() const = 0;
 
     /// Deserialize this message from an input archive.
     /// The protocol adapter deserializes the header, creates the appropriate message

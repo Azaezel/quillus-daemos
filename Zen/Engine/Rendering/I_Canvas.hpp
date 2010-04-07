@@ -26,6 +26,8 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
 #include <boost/noncopyable.hpp>
@@ -45,12 +47,24 @@ class I_SceneGraph;
 
 /// Base Canvas Interface
 class RENDERING_DLL_LINK I_Canvas
-:   boost::noncopyable
+:   public Zen::Scripting::I_ScriptableType
+,   boost::noncopyable
 {
     /// @name Types
     /// @{
 public:
+    typedef I_Canvas*                               pScriptObject_type;
+    typedef Scripting::ObjectReference<I_Canvas>    ScriptObjectReference_type;
+    typedef ScriptObjectReference_type              ScriptWrapper_type;
+    typedef ScriptWrapper_type*                     pScriptWrapper_type;
+
     typedef Memory::managed_ptr<Engine::Camera::I_Camera>  pCamera_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_Canvas interface

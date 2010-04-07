@@ -53,17 +53,15 @@ Zen::Enterprise::AppServer::I_MessageRegistry* NewProjectRequest::sm_pMessageReg
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 NewProjectRequest::NewProjectRequest(pEndpoint_type _pSourceEndpoint,
                            pEndpoint_type _pDestinationEndpoint)
-:   Message(createMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)
-,   Request(getMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)        
+:   Request(NewProjectRequest::createMessageHeader(getNewMessageId()), _pSourceEndpoint, _pDestinationEndpoint)        
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 NewProjectRequest::NewProjectRequest(pMessageHeader_type _pMessageHeader,
                              pEndpoint_type _pSourceEndpoint,
-                             pEndpoint_type _pDestinationEndpoint)
-:   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
-,   Request(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
+                             pEndpoint_type _pDestinationEndpoint)            
+:   Request(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
 {
 }
 
@@ -126,9 +124,9 @@ NewProjectRequest::registerMessage(Zen::Enterprise::AppServer::I_ApplicationServ
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 NewProjectRequest::pMessageHeader_type
-NewProjectRequest::createMessageHeader()
+NewProjectRequest::createMessageHeader(boost::uint32_t _messageId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId,0);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -158,6 +156,13 @@ NewProjectRequest::getDestinationLocation()
         sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginServer");
     }
     return sm_pResourceLocation;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+NewProjectRequest::pMessageType_type
+NewProjectRequest::getStaticMessageType()
+{
+    return sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

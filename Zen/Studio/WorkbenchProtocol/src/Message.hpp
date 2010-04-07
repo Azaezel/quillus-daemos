@@ -45,7 +45,7 @@ namespace Workbench {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class Message
-:   public virtual Zen::Studio::Workbench::I_Message
+:   public Zen::Studio::Workbench::I_Message
 {
     /// @name Types
     /// @{
@@ -65,13 +65,15 @@ public:
     /// @name I_Message implementation
     /// @{
 public:
-    virtual unsigned int getMessageId() const;
+    virtual boost::uint32_t getMessageId() const;
+    virtual pMessageType_type getMessageType() const;
     /// @}
 
     /// @name Static methods
     /// @{
 public:
     static void destroyMessageFactory(wpMessageFactory_type _wpMessageFactory);
+    static boost::uint32_t getNewMessageId();
     /// @}
 
     /// @name 'Structors

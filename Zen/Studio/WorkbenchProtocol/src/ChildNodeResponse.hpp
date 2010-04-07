@@ -33,6 +33,7 @@
 #include "Response.hpp"
 
 #include <Zen/Enterprise/AppServer/I_MessageFactory.hpp>
+#include <Zen/Enterprise/AppServer/I_MessageType.hpp>
 
 #include <boost/cstdint.hpp>
 #include <boost/serialization/string.hpp>
@@ -61,7 +62,6 @@ class ChildNodeResponse
     /// @{
 public:
     enum { type = 112 };  // TODO Should we be hardcoding this?
-    typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_MessageType>         pMessageType_type;
     
     typedef Zen::Memory::managed_weak_ptr<Zen::Enterprise::AppServer::I_Response>    wpResponse_type;
     /// @}
@@ -81,7 +81,8 @@ public:
     /// @name I_Message implementation
     /// @{
 public:
-    virtual unsigned int getMessageId() const { return Message::getMessageId(); } 
+    virtual boost::uint32_t getMessageId() const { return Message::getMessageId(); } 
+    virtual pMessageType_type getMessageType() const { return getStaticMessageType(); }
     /// @}
 
     /// @name Dominance for Response
@@ -94,9 +95,11 @@ public:
 public:
     static void registerMessage(Zen::Enterprise::AppServer::I_ApplicationServer& _appServer);
 
-    static pMessageHeader_type createMessageHeader();
+    static pMessageHeader_type createMessageHeader(boost::uint32_t _messageId, boost::uint32_t _requestId);
 
     static void destroy(wpResponse_type _wpResponse);
+    
+    static pMessageType_type getStaticMessageType();    
     /// @}
     
     /// @name 'Structors
@@ -107,12 +110,12 @@ protected:
              /// This constructor is used by the static create
              /// methods for creating outbound messages.
              ChildNodeResponse(pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId);
+                           pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId);
              /// This constructor is used by the message factory
              /// for creating inbound messages.
              ChildNodeResponse(pMessageHeader_type _pMessageHeader,
                            pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId);
+                           pEndpoint_type _pDestinationEndpoint);
     virtual ~ChildNodeResponse();
     /// @}
 

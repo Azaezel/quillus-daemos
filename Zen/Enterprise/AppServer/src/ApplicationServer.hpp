@@ -32,7 +32,7 @@
 
 #include <Zen/Core/Threading/I_Thread.hpp>
 #include <Zen/Core/Threading/ThreadPool.hpp>
-
+#include <Zen/Core/Event/I_EventService.hpp>
 #include <Zen/Core/Plugins/I_Configuration.hpp>
 
 #include <map>
@@ -47,6 +47,7 @@ namespace Zen {
 namespace Enterprise {
 namespace AppServer {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+;
 
 class ApplicationServer
 :   public I_ApplicationServer
@@ -78,6 +79,7 @@ public:
     virtual void stop();
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
     virtual pScriptEngine_type getDefaultScriptEngine();
+    virtual pEventService_type getEventService();
     virtual void installProtocols(pConfig_type _pProtocolsConfig);
     virtual void installProtocol(pProtocolService_type _pProtocolService, const std::string& _protocolName);
     virtual pProtocolService_type getProtocol(const std::string& _protocolName);
@@ -90,7 +92,9 @@ public:
     virtual void handleMessage(pMessage_type _pMessage);
     virtual void handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler);
     virtual void handleSessionEvent(pSessionEvent_type _pSessionEvent);
-    virtual pDatabaseConnection_type getDatabaseConnection(const std::string& _database, Zen::Threading::I_Thread::ThreadId& _threadId);
+    virtual void installDatabaseConnections(pConfig_type _pDatabasesConfig);
+    void createDatabaseEntry(const std::string& _connectionName, const std::string& _databaseType, config_type& _config);
+    virtual pDatabaseConnection_type getDatabaseConnection(const std::string& _connectionName);
     /// @}
 
     /// @name ApplicationServer implementation
@@ -114,8 +118,8 @@ public:
 
     Threading::ThreadPool& getSharedThreadPool() { return m_sharedThreadPool; }
 
-    typedef std::map<std::string,std::string> config_type;
-    void createDatabaseEntry(const std::string& _database, config_type& _config);
+    /// @return true if _location is a local destination.
+    bool isLocalDestination(pEndpoint_type _pDestination);
     /// @}
 
     /// @name Inner classes
@@ -175,6 +179,9 @@ private:
 
     /// Default script engine.
     pScriptEngine_type          m_pScriptEngine;
+
+    /// Primary event service.
+    pEventService_type          m_pEventService;
 
     /// ThreadPool that's shared among all of the services and protocols.
     Threading::ThreadPool       m_sharedThreadPool;

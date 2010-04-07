@@ -53,17 +53,15 @@ Zen::Enterprise::AppServer::I_MessageRegistry* SubscribeModelRequest::sm_pMessag
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SubscribeModelRequest::SubscribeModelRequest(pEndpoint_type _pSourceEndpoint,
                            pEndpoint_type _pDestinationEndpoint)
-:   Message(createMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)
-,   Request(getMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)        
+:   Request(SubscribeModelRequest::createMessageHeader(getNewMessageId()), _pSourceEndpoint, _pDestinationEndpoint)        
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SubscribeModelRequest::SubscribeModelRequest(pMessageHeader_type _pMessageHeader,
                              pEndpoint_type _pSourceEndpoint,
-                             pEndpoint_type _pDestinationEndpoint)
-:   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
-,   Request(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
+                             pEndpoint_type _pDestinationEndpoint)            
+:   Request(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
 {
 }
 
@@ -126,9 +124,9 @@ SubscribeModelRequest::registerMessage(Zen::Enterprise::AppServer::I_Application
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SubscribeModelRequest::pMessageHeader_type
-SubscribeModelRequest::createMessageHeader()
+SubscribeModelRequest::createMessageHeader(boost::uint32_t _messageId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId,0);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -158,6 +156,13 @@ SubscribeModelRequest::getDestinationLocation()
         sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginServer");
     }
     return sm_pResourceLocation;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SubscribeModelRequest::pMessageType_type
+SubscribeModelRequest::getStaticMessageType()
+{
+    return sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

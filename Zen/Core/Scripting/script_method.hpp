@@ -82,6 +82,8 @@ inline
 boost::any
 script_method<ScriptableClass_type, Method_type, Return_type, DispatchHelper_type>::dispatch(I_ObjectReference* _pObject, std::vector<boost::any>& _parms)
 {
+    assert(_pObject != NULL);
+
     if (m_dispatchHelper.getParameterCount() > _parms.size())
     {
         std::stringstream errorMessage;

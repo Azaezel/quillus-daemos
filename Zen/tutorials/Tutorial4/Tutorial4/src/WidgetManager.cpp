@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -74,6 +74,8 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
         m_gameClient.base().getWidgetService()
     );
 
+    // TR This code is not working on Linux for some reason... dunno why.
+#if 0
 	if ((unsigned int)_event.getX() == m_gameClient.base().getRenderingCanvas().getWidth() ||
 		(unsigned int)_event.getY() == m_gameClient.base().getRenderingCanvas().getHeight() ||
 		_event.getX() == 0 ||
@@ -103,7 +105,8 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
         // Hide the OS cursor; 
 		while (cursorVisible > -1)
 		{
-            widgetService.hideMouseCursor();
+            // TR - Why does this deadlock on Linux
+            //widgetService.hideMouseCursor();
 		}
 
         // Tell the widet service to show the mouse
@@ -116,6 +119,7 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
             widgetMouseVisible = true;
         }
     }
+#endif
 
     //m_pWidgetService->setMousePosition(_event.getX(), _event.getY());
 
@@ -167,7 +171,6 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
         position *= length;
         camera.setPosition(position.m_x, position.m_y, position.m_z);
     }
-
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

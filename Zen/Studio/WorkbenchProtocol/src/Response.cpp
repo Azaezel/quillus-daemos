@@ -44,10 +44,8 @@ namespace Workbench {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Response::Response(pMessageHeader_type _pMessageHeader,
                  pEndpoint_type _pSourceEndpoint,
-                 pEndpoint_type _pDestinationEndpoint,
-                 unsigned int _requestMessageId)
+                 pEndpoint_type _pDestinationEndpoint)
 :   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
-,   m_requestMessageId(_requestMessageId)
 {
 }
 
@@ -60,7 +58,7 @@ Response::~Response()
 unsigned int 
 Response::getRequestMessageId() const
 {
-    return m_requestMessageId;
+    return getMessageHeader()->getRequestId();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -122,6 +122,9 @@ public:
     /// Initialize the rendering service.
     virtual bool initRenderingService(const std::string& _type, const std::string& _title, int _xRes, int _yRes) = 0;
 
+    /// Initialize the rendering resource service.
+    virtual bool initRenderingResourceService(const std::string& _type) = 0;
+
     /// Initialize the terrain service.
     virtual bool initTerrainService(const std::string& _type) = 0;
 

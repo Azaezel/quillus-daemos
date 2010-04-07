@@ -25,7 +25,7 @@ set ( ZWGameClient_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZWGAMECLIENT_EXPORTS )
+add_definitions( -DZWGAMECLIENT_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 

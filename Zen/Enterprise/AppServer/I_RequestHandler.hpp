@@ -27,7 +27,6 @@
 #include "Configuration.hpp"
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Plugins/I_StartupShutdownParticipant.hpp>
 
 #include <boost/noncopyable.hpp>
 
@@ -40,7 +39,7 @@ class I_Request;
 class I_ResponseHandler;
 
 class APPSERVER_DLL_LINK I_RequestHandler
-:   public Plugins::I_StartupShutdownParticipant
+:   boost::noncopyable
 {
     /// @name Types
     /// @{
@@ -74,6 +73,11 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace AppServer
 }   // namespace Enterprise
+namespace Memory {
+    // I_RequestHandler is managed by factory
+    template<>
+    struct is_managed_by_factory<Zen::Enterprise::AppServer::I_RequestHandler> : public boost::true_type{};
+}   // namespace Memory
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 

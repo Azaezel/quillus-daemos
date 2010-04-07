@@ -36,11 +36,11 @@
 namespace Zen {
 namespace Plugins {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-class I_ClassFactory;
+;
 
 /// @note The methods that are commented are planned to be implemented but they're
 ///     not needed yet so I've not implemented them.
+/// @todo Implement a way to get the value of an element.
 class PLUGINS_DLL_LINK I_ConfigurationElement
 :   boost::noncopyable
 {
@@ -60,19 +60,11 @@ public:
     /// @name I_ConfigurationElement interface
     /// @{
 public:
-
-    /// Create and return a new instance of the executable extension
-    /// identified by the named attribute of this configuration element.
-    /// The named attribute value must contain a fully qualified name
-    /// of a class factory that has been registered with 
-    /// I_AbstractClassFactory.getSingleton().registerFactory().
-    /// @deprecated This doesn't belong here.
-    //virtual I_ClassFactory* createExecutableExtension(const std::string& _propertyName) = 0;
-
+    /// Get an attribute by name.
     virtual const std::string& getAttribute(const std::string& _name) const = 0;
 
-    /// Gets the names of all of the attributes of this configuration element
-    //virtual const std::list<std::string>& getAttributeNames() = 0;
+    /// Gets the names of all of the attributes of this configuration element.
+    //virtual void getAttributeNames(I_AttributeVisitor& _visitor) = 0;
 
     /// Gets all of the children of this element.
     /// The lifetime of the data contained by the collection is the same
@@ -87,6 +79,9 @@ public:
     /// Gets all of the children of this element with the specified name
     /// using a visitor.
     virtual void getChildren(const std::string& _name, I_ConfigurationElementVisitor& _visitor) const = 0;
+
+    /// Gets all of the children of this element using a visitor.
+    virtual void getChildren(I_ConfigurationElementVisitor& _visitor) const = 0;
 
     /// Get a single child with the specified name.
     /// If more than one child with the specified name exists, the first one is returned.

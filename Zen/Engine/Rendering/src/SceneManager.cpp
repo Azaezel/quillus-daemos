@@ -24,13 +24,18 @@
 
 #include "SceneManager.hpp"
 
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Engine/Rendering/I_SceneServiceFactory.hpp>
 #include <Zen/Engine/Rendering/I_SceneService.hpp>
+#include <Zen/Engine/Rendering/I_Light.hpp>
 
 #include <Zen/Core/Plugins/I_Configuration.hpp>
 #include <Zen/Core/Plugins/I_ConfigurationElement.hpp>
 #include <Zen/Core/Plugins/I_ExtensionQuery.hpp>
 #include <Zen/Core/Plugins/I_ExtensionRegistry.hpp>
+
+#include <iostream>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -38,6 +43,8 @@ namespace Engine {
 namespace Rendering {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SceneManager::SceneManager()
+:   m_scriptTypesInitialized(false)
+,   m_pSceneModule(NULL)
 {
 }
 
@@ -48,7 +55,7 @@ SceneManager::~SceneManager()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_SceneManager::pSceneService_type
-SceneManager::create(const std::string& _type)
+SceneManager::create(const std::string& _type, const std::string& _sceneName, const int _sceneType)
 {
     Threading::CriticalSection guard(m_sceneServiceCache.getLock());
 
@@ -69,53 +76,71 @@ SceneManager::create(const std::string& _type)
         throw Utility::runtime_exception(errorMessage.str());
     }
 
-    pService = m_sceneServiceCache.cacheService(_type, pFactory->create());
+    pService = pFactory->create(_sceneName, _sceneType);
 
-    if (m_pDefaultScriptEngine.isValid())
+    if (m_pSceneModule)
     {
-        registerScriptEngine(m_pDefaultScriptEngine, pService);
+        std::cout << "Registering script engine with scene service" << std::endl;
+        pService->registerScriptModule(*m_pSceneModule);
     }
 
+    std::cout << "Cached scene service " << _type << "::" << _sceneName << std::endl;
+    m_sceneServiceCache.cacheService(_type, pService);
+
+    std::cout << "Returning scene service." << std::endl;
     return pService;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SceneManager::pScriptModule_type
+SceneManager::getDefaultSceneScriptModule()
+{
+    return m_pSceneModule->getScriptModule();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 SceneManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
 {
-    ///registerScriptTypes(_pEngine);
+    if(m_scriptTypesInitialized == true || !_pEngine.isValid())
+        return;
 
-    /// Register all of the existing services
-    if(!m_pDefaultScriptEngine.isValid())
-    {
-        Threading::CriticalSection guard(m_sceneServiceCache.getLock());
+    // Create a Scene module
+    m_pSceneModule = new Zen::Scripting::script_module(_pEngine, "Scene", "Zen Scene Module");
 
-        for(scene_service_cache_type::iterator iter = m_sceneServiceCache.begin(); iter != m_sceneServiceCache.end(); iter++)
-        {
-            registerScriptEngine(_pEngine, iter->second);
-        }
-    }
+    m_pSceneModule->addType<I_SceneService>("SceneService", "SceneService")
+        .addMethod("setAmbientLight", &I_SceneService::setAmbientLight)
+        .addMethod("createLight", &I_SceneService::createLight)
+    ;
 
+    m_pSceneModule->addType<I_Light>("Light", "Light")
+        .addMethod("setPosition", &I_Light::setPosition)
+    ;
+    // Allow the scene service to append it's own meta data.
+    // This is now being done from the rendering service.
+    //_pService->registerScriptEngine(_pEngine);
+
+    //
+    //new I_RenderingService::ScriptObjectReference_type(m_pRenderingModule, m_pRenderingServiceType, _pService, "renderingService");
+
+    m_pSceneModule->activate();
+
+    m_scriptTypesInitialized = true;
     m_pDefaultScriptEngine = _pEngine;
-    m_scriptTypesInitialized = false;
-}
 
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-SceneManager::pScriptModule_type
-SceneManager::getDefaultScriptModule()
-{
-    return m_pModule;
+    registerSceneScriptModule();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-SceneManager::registerScriptEngine(pScriptEngine_type _pEngine, pSceneService_type _pService)
+SceneManager::registerSceneScriptModule()
 {
-    // Allow the scene service to append it's own meta data.
-    _pService->registerScriptEngine(_pEngine);
+    Threading::CriticalSection guard(m_sceneServiceCache.getLock());
 
-    // 
-    //new I_RenderingService::ScriptObjectReference_type(m_pRenderingModule, m_pRenderingServiceType, _pService, "renderingService");
+    for(SceneServiceCache_type::iterator iter = m_sceneServiceCache.begin(); iter != m_sceneServiceCache.end(); iter++)
+    {
+        iter->second->registerScriptModule(*m_pSceneModule);
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

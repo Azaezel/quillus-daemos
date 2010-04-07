@@ -44,8 +44,11 @@
 namespace Zen {
 namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-EventService::EventService()
-:   m_pScriptObject(NULL)
+EventService::EventService(const std::string& _name)
+:   m_name(_name)
+,   m_pScriptObject(NULL)
+,   m_pScriptEngine()
+,   m_pScriptModule(NULL)
 ,   m_pEventsMutex(Threading::MutexFactory::create())
 {
 }
@@ -89,7 +92,7 @@ EventService::getScriptObject()
 {
     if (m_pScriptObject == NULL)
     {
-        m_pScriptObject = new ScriptWrapper_type(getScriptModule(), 
+        m_pScriptObject = new ScriptWrapper_type(getScriptModule(),
             getScriptModule()->getScriptType(getScriptTypeName()),
             this->getSelfReference().lock()
             );
@@ -109,7 +112,8 @@ EventService::getScriptModule()
 void
 EventService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
 {
-    // TODO Only do this once.
+    // Only do this once.
+    assert(m_pScriptModule == NULL);
 
     m_pScriptEngine = _pScriptEngine;
 
@@ -123,7 +127,7 @@ EventService::registerScriptEngine(pScriptEngine_type _pScriptEngine)
         .addMethod("getEvent", &I_EventService::getEvent)
         .addMethod("getEventQueue", &I_EventService::getEventQueue)
         .addMethod("getActionMap", &I_EventService::getActionMap)
-        .createGlobalObject("eventService", this)
+        .createGlobalObject(m_name, this)
     ;
 
     // EventQueue
@@ -177,7 +181,7 @@ EventService::getEvent(const std::string& _name)
 
     // TODO Make sure the event has been created.
     Events_type::iterator iter = m_events.find(_name);
-    
+
     if (iter == m_events.end())
     {
         Event_impl* pEvent = new Event_impl(*this);
@@ -226,6 +230,13 @@ EventService::getActionMap(const std::string& _actionMapName)
     m_actionMaps[_actionMapName] = pActionMap;
 
     return *pActionMap;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+EventService::getName() const
+{
+    return m_name;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

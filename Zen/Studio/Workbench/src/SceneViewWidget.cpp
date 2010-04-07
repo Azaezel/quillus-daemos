@@ -92,7 +92,7 @@ SceneViewWidget::SceneViewWidget(wxWindow* _pParent, Workbench* _pWorkbench, pVi
     // Make it so that this is batched and redraw the view
     I_SceneModel* pModel = m_pViewable.as<Memory::managed_ptr<I_SceneModel> >().get();
     m_pSubscription = pModel->subscribe(this);
-    
+
     this->SetFocus();
 }
 
@@ -179,7 +179,8 @@ SceneViewWidget::createGUIControls()
     // TODO Do these next two steps need to be done elsewhere?
 
     // Create a scene service.
-    m_pSceneService = Engine::Rendering::I_SceneManager::getSingleton().create("ogre");
+    // Name the Ogre scene manager "default" and use the ST_EXTERIOR_CLOSE scene manager type.
+    m_pSceneService = Engine::Rendering::I_SceneManager::getSingleton().create("ogre", "default", 2);
 
     Zen::Engine::Resource::I_ResourceManager::config_type config;
 

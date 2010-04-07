@@ -52,21 +52,16 @@ NewProjectResponse::pMessageType_type NewProjectResponse::sm_pType;
 Zen::Enterprise::AppServer::I_MessageRegistry* NewProjectResponse::sm_pMessageRegistry = NULL;
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 NewProjectResponse::NewProjectResponse(pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint,
-                            unsigned int _requestMessageId)
-:   Message(createMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)
-,   Response(getMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId)
-        
+                           pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId)
+:   Response(NewProjectResponse::createMessageHeader(getNewMessageId(), _requestMessageId), _pSourceEndpoint, _pDestinationEndpoint)        
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 NewProjectResponse::NewProjectResponse(pMessageHeader_type _pMessageHeader,
                              pEndpoint_type _pSourceEndpoint,
-                             pEndpoint_type _pDestinationEndpoint,
-                            unsigned int _requestMessageId)
-:   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
-,   Response(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId) 
+                             pEndpoint_type _pDestinationEndpoint)            
+:   Response(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
 {
 }
 
@@ -113,9 +108,9 @@ NewProjectResponse::registerMessage(Zen::Enterprise::AppServer::I_ApplicationSer
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 NewProjectResponse::pMessageHeader_type
-NewProjectResponse::createMessageHeader()
+NewProjectResponse::createMessageHeader(boost::uint32_t _messageId, boost::uint32_t _requestId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId,_requestId);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -142,9 +137,16 @@ NewProjectResponse::getDestinationLocation()
 {
     if(!sm_pResourceLocation.isValid())
     {
-        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginServer");
+        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginClient");
     }
     return sm_pResourceLocation;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+NewProjectResponse::pMessageType_type
+NewProjectResponse::getStaticMessageType()
+{
+    return sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

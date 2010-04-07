@@ -143,14 +143,17 @@ static void destroy(Memory::managed_weak_ptr<I_MessageHeader> _pMessageHeader)
 NumericTypeMessageRegistry::pMessageHeader_type
 NumericTypeMessageRegistry::getMessageHeader(boost::archive::polymorphic_iarchive& _archive) const
 {
-    boost::uint32_t messageType;
+    boost::uint32_t messageType, messageId, requestId;
+
     _archive & messageType;
+    _archive & messageId;
+    _archive & requestId;
 
     MessageTypes_type::const_iterator iter = m_messageTypes.find(messageType);
 
     if (iter != m_messageTypes.end())
     {
-        return createMessageHeader(iter->second);
+        return createMessageHeader(iter->second, messageId, requestId);
     }
     else
     {
@@ -162,9 +165,9 @@ NumericTypeMessageRegistry::getMessageHeader(boost::archive::polymorphic_iarchiv
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 NumericTypeMessageRegistry::pMessageHeader_type
-NumericTypeMessageRegistry::createMessageHeader(pMessageType_type _pMessageType) const
+NumericTypeMessageRegistry::createMessageHeader(pMessageType_type _pMessageType, boost::uint32_t _messageId, boost::uint32_t _requestId) const
 {
-    return pMessageHeader_type(new MessageHeader(_pMessageType), destroy);
+    return pMessageHeader_type(new MessageHeader(_pMessageType, _messageId, _requestId), destroy);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

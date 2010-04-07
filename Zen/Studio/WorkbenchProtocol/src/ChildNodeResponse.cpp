@@ -52,21 +52,16 @@ ChildNodeResponse::pMessageType_type ChildNodeResponse::sm_pType;
 Zen::Enterprise::AppServer::I_MessageRegistry* ChildNodeResponse::sm_pMessageRegistry = NULL;
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ChildNodeResponse::ChildNodeResponse(pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint,
-                            unsigned int _requestMessageId)
-:   Message(createMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)
-,   Response(getMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId)
-        
+                           pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId)
+:   Response(ChildNodeResponse::createMessageHeader(getNewMessageId(), _requestMessageId), _pSourceEndpoint, _pDestinationEndpoint)        
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ChildNodeResponse::ChildNodeResponse(pMessageHeader_type _pMessageHeader,
                              pEndpoint_type _pSourceEndpoint,
-                             pEndpoint_type _pDestinationEndpoint,
-                            unsigned int _requestMessageId)
-:   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
-,   Response(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId) 
+                             pEndpoint_type _pDestinationEndpoint)            
+:   Response(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
 {
 }
 
@@ -113,9 +108,9 @@ ChildNodeResponse::registerMessage(Zen::Enterprise::AppServer::I_ApplicationServ
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ChildNodeResponse::pMessageHeader_type
-ChildNodeResponse::createMessageHeader()
+ChildNodeResponse::createMessageHeader(boost::uint32_t _messageId, boost::uint32_t _requestId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId,_requestId);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -142,9 +137,16 @@ ChildNodeResponse::getDestinationLocation()
 {
     if(!sm_pResourceLocation.isValid())
     {
-        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginServer");
+        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginClient");
     }
     return sm_pResourceLocation;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+ChildNodeResponse::pMessageType_type
+ChildNodeResponse::getStaticMessageType()
+{
+    return sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

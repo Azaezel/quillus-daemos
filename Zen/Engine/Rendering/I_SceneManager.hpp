@@ -56,7 +56,7 @@ public:
     /// @name I_SceneManager interface
     /// @{
 public:
-    virtual pSceneService_type create(const std::string& _type) = 0;
+    virtual pSceneService_type create(const std::string& _type, const std::string& _sceneName, const int _sceneType) = 0;
 
     /// Register the default script engine for all rendering services.
     /// Every rendering service that has been created or is created in the future
@@ -68,7 +68,7 @@ public:
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine) = 0;
 
     /// Get the default Rendering script module.
-    virtual pScriptModule_type getDefaultScriptModule() = 0;
+    virtual pScriptModule_type getDefaultSceneScriptModule() = 0;
     /// @}
 
     /// @name Static Methods

@@ -30,10 +30,14 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+
 #include <Zen/Core/Event/Event.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptableType.hpp>
 #include <Zen/Core/Scripting/ObjectReference.hpp>
+
+#include <boost/noncopyable.hpp>
 
 #include <string>
 #include <map>
@@ -52,6 +56,8 @@ class I_ResourceServiceFactory;
 /// resources.  Register the service with the I_ResourceManager.
 class RESOURCE_DLL_LINK I_ResourceService
 :   public virtual Zen::Scripting::I_ScriptableType
+,   public Zen::Memory::managed_self_ref<I_ResourceService>
+,   boost::noncopyable
 {
     /// @name Types
     /// @{

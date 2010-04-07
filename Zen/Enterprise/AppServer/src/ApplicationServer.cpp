@@ -46,6 +46,7 @@
 
 #include <Zen/Core/Threading/MutexFactory.hpp>
 #include <Zen/Core/Threading/I_Mutex.hpp>
+#include <Zen/Core/Threading/I_Thread.hpp>
 #include <Zen/Core/Threading/CriticalSection.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptableService.hpp>
@@ -79,7 +80,8 @@ static void destroy(Memory::managed_weak_ptr<I_MessageRegistry> _pMessageRegistr
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 ApplicationServer::ApplicationServer()
-:   m_sharedThreadPool(16, NULL, true, true)
+:   m_pEventService(Event::I_EventManager::getSingleton().create("eventService"))
+,   m_sharedThreadPool(16, NULL, true, true)
 ,   m_installQueue(1, NULL, true, false)
 ,   m_shutdownQueue(1, NULL, true, false)
 ,   m_pProtocolGuard(Threading::MutexFactory::create())
@@ -87,6 +89,7 @@ ApplicationServer::ApplicationServer()
 ,   m_pMessageRegistry_type(new NumericTypeMessageRegistry(), &destroy)
 ,   m_databaseConnectionsMap()
 {
+    
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -289,6 +292,13 @@ ApplicationServer::getDefaultScriptEngine()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+ApplicationServer::pEventService_type
+ApplicationServer::getEventService()
+{
+    return m_pEventService;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ApplicationServer::installProtocols(pConfig_type _pProtocolsConfig)
 {
@@ -477,83 +487,29 @@ ApplicationServer::getProtocol(const std::string& _protocolName)
 void
 ApplicationServer::installApplications(pConfig_type _pAppServicesConfig)
 {
-	class ConfigVisitor
-	:	public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
-	{
-        class DatabaseVisitor
-        :   public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
+    class ConfigVisitor
+    :   public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
+    {
+
+    public:
+        virtual void begin() {}
+
+        virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element)
         {
-            typedef std::map<std::string, std::string>      config_type;
+            Zen::Enterprise::AppServer::I_ApplicationServerManager& manager =
+                Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton();
 
-            class DBConfigVisitor
-            :   public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
+            Zen::Enterprise::AppServer::I_ApplicationServerManager::pApplicationService_type
+                pApplicationService = manager.createApplicationService(*m_pAppServer, _element.getAttribute("type"));
+
+            if( pApplicationService.isValid() )
             {
-            public:
-                virtual void begin() {}
-
-                virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element)
-                {
-                    m_config[_element.getAttribute("name")] = _element.getAttribute("value");
-                }
-
-                virtual void end() {}
-
-                DBConfigVisitor(config_type& _config)
-                :   m_config(_config)
-                {
-                }
-
-            private:
-                config_type&    m_config;
-
-            };  // class DBConfigVisitor
-
-        public:
-            virtual void begin() {}
-
-            virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element)
-            {
-                config_type config;
-
-                DBConfigVisitor visitor(config);
-                _element.getChildren("config", visitor);
-
-                m_pAppServer->createDatabaseEntry(_element.getAttribute("name"), config);
+                pApplicationService->setConfiguration(_element);
+                m_pAppServer->installApplication(pApplicationService, manager.createLocation(_element.getAttribute("location")));
             }
+        }
 
-            virtual void end() {}
-
-            DatabaseVisitor(ApplicationServer* _pAppServer)
-            :   m_pAppServer(_pAppServer)
-            {
-            }
-
-        private:
-            ApplicationServer*        m_pAppServer;
-
-        };  // class DatabaseVisitor
-	public:
-		virtual void begin() {}
-		
-		virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element)
-		{
-			Zen::Enterprise::AppServer::I_ApplicationServerManager& manager =
-				Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton();
-
-            DatabaseVisitor visitor(m_pAppServer);
-            _element.getChildren("database", visitor);
-
-			Zen::Enterprise::AppServer::I_ApplicationServerManager::pApplicationService_type
-				pApplicationService = manager.createApplicationService(*m_pAppServer, _element.getAttribute("type"));
-
-			if( pApplicationService.isValid() )
-			{
-				pApplicationService->setConfiguration(_element);
-				m_pAppServer->installApplication(pApplicationService, manager.createLocation(_element.getAttribute("location")));
-			}
-		}
-
-		virtual void end() {}
+        virtual void end() {}
 
         ConfigVisitor(ApplicationServer* _pAppServer)
         :   m_pAppServer(_pAppServer)
@@ -769,38 +725,57 @@ ApplicationServer::getMessageRegistry()
 void
 ApplicationServer::handleMessage(pMessage_type _pMessage)
 {
+    // Local and remote messages are handled here.
+
     ResourceLocation* pDestination = dynamic_cast<ResourceLocation*>(_pMessage->getDestinationLocation().get());
 
     if (pDestination != NULL)
     {
-        class HandleMessageTask
-        :   public Threading::ThreadPool::Task
+        if (isLocalDestination(_pMessage->getDestinationEndpoint()))
         {
-        public:
-            virtual void call()
+            // This is a message received by a protocol adapter or was sent
+            // from a local application service to another local application service.
+            class HandleMessageTask
+            :   public Threading::ThreadPool::Task
             {
-                if( m_pApplicationService.isValid() )
+            public:
+                virtual void call()
                 {
-                    m_pApplicationService->handleMessage(m_pMessage);
+                    if( m_pApplicationService.isValid() )
+                    {
+                        m_pApplicationService->handleMessage(m_pMessage);
+                    }
                 }
-            }
 
-            HandleMessageTask(pApplicationService_type _pApplicationService, pMessage_type _pMessage)
-            :   m_pApplicationService(_pApplicationService)
-            ,   m_pMessage(_pMessage)
-            {
-            }
+                HandleMessageTask(pApplicationService_type _pApplicationService, pMessage_type _pMessage)
+                :   m_pApplicationService(_pApplicationService)
+                ,   m_pMessage(_pMessage)
+                {
+                }
 
-            virtual ~HandleMessageTask() {}
-        private:
-            pApplicationService_type    m_pApplicationService;
-            pMessage_type               m_pMessage;
-        };
+                virtual ~HandleMessageTask() {}
+            private:
+                pApplicationService_type    m_pApplicationService;
+                pMessage_type               m_pMessage;
+            };
 
-        // TODO Use a TaskPool
-        HandleMessageTask* pTask = new HandleMessageTask(pDestination->getApplicationService(), _pMessage);
+            // TODO Use a TaskPool
+            HandleMessageTask* pTask = new HandleMessageTask(pDestination->getApplicationService(), _pMessage);
 
-        m_sharedThreadPool.pushRequest(pTask);
+            m_sharedThreadPool.pushRequest(pTask);
+        }
+        else
+        {
+            // This is an outbound message.
+            // This is an outbound request.  Send it.
+            // TODO Does this end up being asynchronous?  If not then we
+            // probably should handle it in a worker thread / outbound queue.
+            _pMessage->getDestinationEndpoint()->getProtocolAdapter().lock()->sendTo
+            (
+                _pMessage,
+                _pMessage->getDestinationEndpoint()
+            );
+        }
     }
     else
     {
@@ -814,46 +789,64 @@ ApplicationServer::handleRequest(pRequest_type _pRequest, pResponseHandler_type 
 {
     ResourceLocation* pDestination = dynamic_cast<ResourceLocation*>(_pRequest->getDestinationLocation().get());
 
-    // TODO: If _pRequest destination is not this server then the request is destined for
-    // another destination and it should be sent instead of dispatched.
-    std::cout << "Sending a request to " 
-        << _pRequest->getDestinationEndpoint()->getAddress().toString() 
-        << "/"
-        << pDestination->toString()
-        << std::endl;
-
     if (pDestination != NULL)
     {
-        class HandleRequestTask
-        :   public Threading::ThreadPool::Task
+        // TODO: If _pRequest destination is not this server then the request is destined for
+        // another destination and it should be sent instead of dispatched.
+        std::cout << "Sending a request to " 
+            << _pRequest->getDestinationEndpoint()->toString()
+            << "/"
+            << pDestination->toString()
+            << std::endl;
+
+        if (isLocalDestination(_pRequest->getDestinationEndpoint()))
         {
-        public:
-            virtual void call()
+            // All requests that are destined for a local service go through 
+            // this logic. All requests coming from an external source are 
+            // processed by ApplicationServer::handleMessage().
+
+            class HandleRequestTask
+            :   public Threading::ThreadPool::Task
             {
-                if( m_pApplicationService.isValid() )
+            public:
+                virtual void call()
                 {
-                    m_pApplicationService->handleRequest(m_pRequest, m_pResponseHandler);
+                    if( m_pApplicationService.isValid() )
+                    {
+                        m_pApplicationService->handleRequest(m_pRequest, m_pResponseHandler);
+                    }
                 }
-            }
 
-            HandleRequestTask(pApplicationService_type _pApplicationService, pRequest_type _pRequest, pResponseHandler_type _pResponseHandler)
-            :   m_pApplicationService(_pApplicationService)
-            ,   m_pRequest(_pRequest)
-            ,   m_pResponseHandler(_pResponseHandler)
-            {
-            }
+                HandleRequestTask(pApplicationService_type _pApplicationService, pRequest_type _pRequest, pResponseHandler_type _pResponseHandler)
+                :   m_pApplicationService(_pApplicationService)
+                ,   m_pRequest(_pRequest)
+                ,   m_pResponseHandler(_pResponseHandler)
+                {
+                }
 
-            virtual ~HandleRequestTask() {}
-        private:
-            pApplicationService_type    m_pApplicationService;
-            pRequest_type               m_pRequest;
-            pResponseHandler_type       m_pResponseHandler;
-        };
+                virtual ~HandleRequestTask() {}
+            private:
+                pApplicationService_type    m_pApplicationService;
+                pRequest_type               m_pRequest;
+                pResponseHandler_type       m_pResponseHandler;
+            };
 
-        // TODO Use a TaskPool
-        HandleRequestTask* pTask = new HandleRequestTask(pDestination->getApplicationService(), _pRequest, _pResponseHandler);
+            // TODO Use a TaskPool
+            HandleRequestTask* pTask = new HandleRequestTask(pDestination->getApplicationService(), _pRequest, _pResponseHandler);
 
-        m_sharedThreadPool.pushRequest(pTask);
+            m_sharedThreadPool.pushRequest(pTask);
+        }
+        else
+        {
+            // This is an outbound request.  Send it.
+            // TODO Does this end up being asynchronous?  If not then we
+            // probably should handle it in a worker thread / outbound queue.
+            _pRequest->getDestinationEndpoint()->getProtocolAdapter().lock()->sendTo
+            (
+                _pRequest,
+                _pRequest->getDestinationEndpoint()
+            );
+        }
     }
     else
     {
@@ -870,10 +863,10 @@ ApplicationServer::handleSessionEvent(pSessionEvent_type _pSessionEvent)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ApplicationServer::pDatabaseConnection_type
-ApplicationServer::getDatabaseConnection(const std::string& _database,
-                                         Zen::Threading::I_Thread::ThreadId& _threadId)
+ApplicationServer::getDatabaseConnection(const std::string& _database)
 {
     /// Do we need to guard this?
+    Zen::Threading::I_Thread::ThreadId _threadId = Threading::I_Thread::getCurrentThreadId();
 
     DatabaseConnectionsMap_type::iterator iter = m_databaseConnectionsMap.find(_database);
     if( iter != m_databaseConnectionsMap.end() )
@@ -978,26 +971,109 @@ ApplicationServer::DatabaseConnections::getConnection(Zen::Threading::I_Thread::
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-ApplicationServer::createDatabaseEntry(const std::string& _database, config_type& _config)
+ApplicationServer::installDatabaseConnections(pConfig_type _pDatabasesConfig)
 {
-    DatabaseConnectionsMap_type::iterator iter = m_databaseConnectionsMap.find(_database);
+    class DatabaseVisitor
+    :   public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
+    {
+        typedef std::map<std::string, std::string>      config_type;
+
+        class DBConfigVisitor
+        :   public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
+        {
+        public:
+            virtual void begin() {}
+
+            virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element)
+            {
+                // TODO Instead of getAttributeValue("value") there should
+                // be some way to get the text inside of an element.
+                m_config[_element.getName()] = _element.getAttribute("value");
+            }
+
+            virtual void end() {}
+
+            DBConfigVisitor(config_type& _config)
+            :   m_config(_config)
+            {
+            }
+
+        private:
+            config_type&    m_config;
+
+        };  // class DBConfigVisitor
+
+    public:
+        virtual void begin() {}
+
+        virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element)
+        {
+            config_type config;
+
+            DBConfigVisitor visitor(config);
+            _element.getChildren(visitor);
+
+            m_pAppServer->createDatabaseEntry(_element.getAttribute("name"),
+                _element.getAttribute("type"), config);                
+        }
+
+        virtual void end() {}
+
+        DatabaseVisitor(ApplicationServer* _pAppServer)
+        :   m_pAppServer(_pAppServer)
+        {
+        }
+
+    private:
+        ApplicationServer*        m_pAppServer;
+
+    };  // class DatabaseVisitor
+
+    DatabaseVisitor visitor(this);
+    _pDatabasesConfig->getChildren("database", visitor);
+
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ApplicationServer::createDatabaseEntry(const std::string& _connectionName, const std::string& _databaseType, config_type& _config)
+{
+    DatabaseConnectionsMap_type::iterator iter = m_databaseConnectionsMap.find(_connectionName);
     if( iter == m_databaseConnectionsMap.end() )
     {
         typedef Zen::Memory::managed_ptr<Zen::Database::I_DatabaseService>  pDatabaseService_type;
         pDatabaseService_type pDatabaseService = 
             Zen::Database::I_DatabaseManager::getSingleton().createDatabaseService(
-                _database, 
+                _databaseType, 
                 _config
             );
 
         DatabaseConnections* pRaw = new DatabaseConnections(pDatabaseService, _config);
         pDatabaseConnections_type pDatabaseConnections(pRaw);
-        m_databaseConnectionsMap[_database] = pDatabaseConnections;
+        m_databaseConnectionsMap[_connectionName] = pDatabaseConnections;
     }
     else
     {
         // TODO Error?
     }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+ApplicationServer::isLocalDestination(pEndpoint_type _pDestination)
+{
+    // TODO Since all endpoints must be constructed via a protocol adapter, first 
+    // check the protocol adapter associated with the endpoint.
+    // TODO Only return true if this is true, otherwise consult the
+    // other protocol adapters.  We don't want to do this now because
+    // we're testing a situation where we want to forcibly serialize and
+    // send over the wire within a single application.  If we check other
+    // protocol adapters then we'll find out that this is indeed a local 
+    // destination.
+    //return _pDestination->getProtcolAdapter()->isLocalDestination();
+
+    // An invalid pointer here means that it is definitely local.
+    return (!_pDestination.isValid()) || _pDestination->isLocal();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

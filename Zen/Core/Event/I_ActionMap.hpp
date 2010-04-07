@@ -63,10 +63,19 @@ public:
 public:
     /// Create an action by name and bind it to a function that gets envoked when
     /// the action occurs.
-    virtual void createAction(const std::string& _name, ActionFunction_type _function) = 0;
+    virtual I_Action& createAction(const std::string& _name, ActionFunction_type _function) = 0;
+
+    /// Indicates if an action exists or not.
+    /// @return true if the action exists, otherwise returns false.
+    virtual bool actionExists(const std::string& _name) = 0;
+
+	/// Get an action by name.
+    virtual I_Action& getAction(const std::string& _name) = 0;
 
     /// Get an action by name.
-    virtual pAction_type operator[](const std::string& _name) = 0;
+    /// This operator overload is a convenience operator that
+    /// simply calls getAction(_name).
+    virtual I_Action& operator[](const std::string& _name) = 0;
     /// @}
 
     /// @name 'Structors

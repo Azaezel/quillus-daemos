@@ -26,7 +26,7 @@
 
 #include "Configuration.hpp"
 
-//#include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -42,11 +42,21 @@ class I_SceneService;
 
 /// Outer OS Window that contains a canvas
 class RENDERING_DLL_LINK I_View
+:   public Zen::Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
 public:
-    //typedef Memory::managed_ptr<I_SceneService>         pSceneService_type;
+    typedef I_View*                                 pScriptObject_type;
+    typedef Scripting::ObjectReference<I_View>      ScriptObjectReference_type;
+    typedef ScriptObjectReference_type              ScriptWrapper_type;
+    typedef ScriptWrapper_type*                     pScriptWrapper_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_View interface

@@ -54,10 +54,10 @@ public:
     /// @name I_Thread implementation
     /// @{
 public:
-	virtual void start();
-	virtual void stop();
-	virtual void join();
-    virtual ThreadId getCurrentThreadId() const;
+    virtual void start();
+    virtual void stop();
+    virtual void join();
+    static ThreadId getPosixCurrentThreadId();
     virtual const ThreadId& getThreadId() const;
     /// @}
 

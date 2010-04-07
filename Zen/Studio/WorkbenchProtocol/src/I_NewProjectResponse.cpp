@@ -49,12 +49,19 @@ I_NewProjectResponse::~I_NewProjectResponse()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_NewProjectResponse::pResponse_type
 I_NewProjectResponse::create(pEndpoint_type _pSourceEndpoint,
-					   pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId)			   
+					   pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId)			   
 {
     NewProjectResponse* pNewProjectResponse(new NewProjectResponse(_pSourceEndpoint,
                                           _pDestinationEndpoint, _requestMessageId));
 
     return pResponse_type((Response*)pNewProjectResponse, NewProjectResponse::destroy);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_NewProjectResponse::pMessageType_type
+I_NewProjectResponse::getStaticMessageType()			   
+{
+    return NewProjectResponse::sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

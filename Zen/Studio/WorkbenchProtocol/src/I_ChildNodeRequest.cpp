@@ -58,6 +58,13 @@ I_ChildNodeRequest::create(pEndpoint_type _pSourceEndpoint,
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_ChildNodeRequest::pMessageType_type
+I_ChildNodeRequest::getStaticMessageType()			   
+{
+    return ChildNodeRequest::sm_pType;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Zen
 }   // namespace Studio
 }   // namespace Workbench

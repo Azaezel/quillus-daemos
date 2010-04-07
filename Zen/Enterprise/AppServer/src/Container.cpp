@@ -102,7 +102,7 @@ Container::init(int _argc, const char* _argv[])
         ).normalize();
     Plugins::I_PluginManager::app_ptr_type pApp = Plugins::I_PluginManager::getSingleton().installApplication(configPath);
 
-    I_ApplicationServerManager& manager = 
+    I_ApplicationServerManager& manager =
         I_ApplicationServerManager::getSingleton();
 
     // Initialize the main application server
@@ -122,7 +122,15 @@ Container::init(int _argc, const char* _argv[])
         m_pAppServer->registerDefaultScriptEngine(m_pScriptEngine);
     }
 
+
     pConfig_type pAppConfig = pApp->getConfiguration().getConfigurationElement("application");
+
+    // Install the databases
+    pConfig_type pDatabases = pAppConfig->getChild("databases");
+    if (pDatabases)
+    {
+        m_pAppServer->installDatabaseConnections(pDatabases);
+    }
 
     // Install the applications
     pConfig_type pApplications = pAppConfig->getChild("applications");
@@ -166,6 +174,8 @@ Container::getApplicationServer()
 bool
 Container::runScriptInit()
 {
+    std::cout << "About to run the script." << std::endl;
+
     if (m_pScriptEngine != NULL)
     {
         if (!m_pScriptEngine->executeScript(m_defaultScript))
@@ -174,6 +184,8 @@ Container::runScriptInit()
             return false;
         }
     }
+
+    std::cout << "Finished running the script." << std::endl;
 
     return true;
 }
@@ -184,3 +196,10 @@ Container::runScriptInit()
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+// HACK this resolves some unresolved symbols in boost program_options.
+namespace boost {
+    namespace program_options {
+        const unsigned options_description::m_default_line_length = 80;
+        std::string arg;
+    }
+}

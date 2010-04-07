@@ -28,6 +28,9 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+#include <Zen/Core/Scripting/ObjectReference.hpp>
+
 //#include <Zen/Core/Math/Vector3.hpp>
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
@@ -47,10 +50,14 @@ namespace World {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class WORLD_DLL_LINK I_Sky
+:   public virtual Zen::Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
 public:
+    typedef Zen::Memory::managed_ptr<I_Sky>                     pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<I_Sky>              ScriptObjectReference_type;
+
     typedef Memory::managed_ptr<I_Sky>            pSky_type;
     typedef Memory::managed_weak_ptr<I_Sky>       wpSky_type;
     typedef Event::Event<wpSky_type>              SkyEvent_type;
@@ -63,6 +70,14 @@ public:
 public:
     virtual void setResource(pResource_type _resource) = 0;
     virtual pResource_type getResource(void) = 0;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    /// This is implemented to return "Sky"
+    /// Override this method if you create a derived type
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name Events

@@ -112,7 +112,7 @@ Thread_solaris::join()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_Thread::ThreadId
-Thread_solaris::getCurrentThreadId() const
+Thread_solaris::getSolarisCurrentThreadId()
 {
     return ThreadId(new NativeThreadId_solaris(::thr_self()));
 }

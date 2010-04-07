@@ -53,17 +53,15 @@ Zen::Enterprise::AppServer::I_MessageRegistry* ChildNodeRequest::sm_pMessageRegi
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ChildNodeRequest::ChildNodeRequest(pEndpoint_type _pSourceEndpoint,
                            pEndpoint_type _pDestinationEndpoint)
-:   Message(createMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)
-,   Request(getMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)        
+:   Request(ChildNodeRequest::createMessageHeader(getNewMessageId()), _pSourceEndpoint, _pDestinationEndpoint)        
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ChildNodeRequest::ChildNodeRequest(pMessageHeader_type _pMessageHeader,
                              pEndpoint_type _pSourceEndpoint,
-                             pEndpoint_type _pDestinationEndpoint)
-:   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
-,   Request(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
+                             pEndpoint_type _pDestinationEndpoint)            
+:   Request(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
 {
 }
 
@@ -126,9 +124,9 @@ ChildNodeRequest::registerMessage(Zen::Enterprise::AppServer::I_ApplicationServe
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ChildNodeRequest::pMessageHeader_type
-ChildNodeRequest::createMessageHeader()
+ChildNodeRequest::createMessageHeader(boost::uint32_t _messageId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId,0);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -158,6 +156,13 @@ ChildNodeRequest::getDestinationLocation()
         sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginServer");
     }
     return sm_pResourceLocation;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+ChildNodeRequest::pMessageType_type
+ChildNodeRequest::getStaticMessageType()
+{
+    return sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

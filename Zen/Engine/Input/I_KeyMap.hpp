@@ -31,7 +31,7 @@
 #include <Zen/Core/Scripting/I_ScriptableType.hpp>
 #include <Zen/Core/Scripting/ObjectReference.hpp>
 
-#include <Zen/Engine/Core/I_Action.hpp>
+#include <Zen/Core/Event/I_Action.hpp>
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Event/Event.hpp>
 #include <Zen/Core/Plugins/I_Service.hpp>
@@ -42,7 +42,10 @@ namespace Engine {
 namespace Input {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_KeyPublisher;
+class I_InputEvent;
 
+/// Key Map.
+/// A key map associate key-press events to actions.
 class INPUTMANAGER_DLL_LINK I_KeyMap
 :   public virtual Zen::Scripting::I_ScriptableType
 {
@@ -53,7 +56,7 @@ public:
     typedef Scripting::ObjectReference<I_KeyMap>              ScriptObjectReference_type;
 
     typedef Zen::Memory::managed_ptr<I_InputEvent>              pInputEventPayload_type;
-	typedef Zen::Memory::managed_ptr<Core::I_Action>            pAction_type;
+	typedef Zen::Memory::managed_ptr<Event::I_Action>            pAction_type;
     typedef Zen::Event::Event<pInputEventPayload_type>          InputEvent_type;
     typedef Zen::Event::Event<Input::I_KeyMap*>               KeyMap_event;
     /// @}
@@ -63,11 +66,11 @@ public:
 public:
     /// Map a keystroke to an action by name
     /// @param _name - Textual representation of the key, such as ALT-Q
-    /// @param _pAction - Action to take when the key is pressed.
-    virtual void mapKeyInput(const std::string& _name, const pAction_type _pAction) = 0;
+    /// @param _action - Action to take when the key is pressed.
+    virtual void mapKeyInput(const std::string& _name, Event::I_Action& _action) = 0;
 
     /// Connect this key map to a key publisher.
-    /// A key map can only be connected to one publisher, so if this key map is 
+    /// A key map can only be connected to one publisher, so if this key map is
     /// already connected to another publisher then it will be disconnected.
     virtual void connect(I_KeyPublisher& _keyPublisher) = 0;
 
@@ -103,7 +106,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Input
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_KeyMap is managed by a factory
     template<>

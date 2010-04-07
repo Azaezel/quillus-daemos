@@ -11,22 +11,22 @@ end
 
 subversionProjects =
 {
-    ["build"] = { repo="svn://www.indiezen.org/zoss/build" },
-    ["Community"] = { repo="svn://www.indiezen.org/community" },
-    ["Core"] = { repo="svn://www.indiezen.org/zoss/Core" },
-    ["Engine"] = { repo="svn://www.indiezen.org/zoss/Engine" },
-    ["Enterprise"] = { repo="svn://www.indiezen.org/zoss/Enterprise" },
-    ["examples"] = { repo="svn://www.indiezen.org/zoss/examples" },
-    ["plugins"] = { repo="svn://www.indiezen.org/zoss/plugins" },
-    ["Scripts"] = { repo="svn://www.indiezen.org/zoss/Scripts" },
-    --["Shaders"] = { repo="svn://www.indiezen.org/zoss/Shaders" },
-	["Spaces"] = { repo="svn://www.indiezen.org/zoss/Spaces" },
-	["Starter"] = { repo="svn://www.indiezen.org/zoss/Starter" },
-    ["Studio"] = { repo="svn://www.indiezen.org/zoss/Studio" },
-    ["StudioPlugins"] = { repo="svn://www.indiezen.org/zoss/StudioPlugins" },
-    --["tests"] = { repo="svn://www.indiezen.org/zoss/tests" },
-    ["tutorials"] = { repo="svn://www.indiezen.org/zoss/tutorials" },
-    ["Worlds"] = { repo="svn://www.indiezen.org/worlds" },
+    ["build"] = { repo="svn://svn.indiezen.org/zoss/build" },
+    ["Community"] = { repo="svn://svn.indiezen.org/community" },
+    ["Core"] = { repo="svn://svn.indiezen.org/zoss/Core" },
+    ["Engine"] = { repo="svn://svn.indiezen.org/zoss/Engine" },
+    ["Enterprise"] = { repo="svn://svn.indiezen.org/zoss/Enterprise" },
+    ["examples"] = { repo="svn://svn.indiezen.org/zoss/examples" },
+    ["plugins"] = { repo="svn://svn.indiezen.org/zoss/plugins" },
+    ["Scripts"] = { repo="svn://svn.indiezen.org/zoss/Scripts" },
+    --["Shaders"] = { repo="svn://svn.indiezen.org/zoss/Shaders" },
+	["Spaces"] = { repo="svn://svn.indiezen.org/zoss/Spaces" },
+	["Starter"] = { repo="svn://svn.indiezen.org/zoss/Starter" },
+    ["Studio"] = { repo="svn://svn.indiezen.org/zoss/Studio" },
+    ["StudioPlugins"] = { repo="svn://svn.indiezen.org/zoss/StudioPlugins" },
+    --["tests"] = { repo="svn://svn.indiezen.org/zoss/tests" },
+    ["tutorials"] = { repo="svn://svn.indiezen.org/zoss/tutorials" },
+    ["Worlds"] = { repo="svn://svn.indiezen.org/worlds" },
 }
 
 function checkoutHandler(startArg)
@@ -429,6 +429,7 @@ function generateBuildHandler(startArg)
 		["tests/EventTest"] = {},
 		["tests/ScriptLoginTest"] = {},
         ["tests/ScriptTest"] = {},
+        ["tests/StreamTest"] = {},
         
         ["tutorials/Tutorial1"] = {},
         ["tutorials/Tutorial2"] = {},
@@ -455,13 +456,21 @@ function generateBuildHandler(startArg)
         ["Worlds/ZoneDataProtocol"] = {},
         ["Worlds/ZoneDataServer"] = {},
 ]]
-
+        ["Community/AccountCommon"] = {},
+        ["Community/AccountClient"] = {},
+        ["Community/AccountProtocol"] = {},
+        ["Community/AccountServer"] = {},
+        ["Community/AccountModel"] = {},
         ["Community/SessionCommon"] = {},
         ["Community/SessionClient"] = {},
         ["Community/SessionProtocol"] = {},
         ["Community/SessionServer"] = {},
         ["Community/SessionModel"] = {},
-        
+        ["Community/ChatCommon"] = {},
+		["Community/ChatClient"] = {},
+        ["Community/ChatProtocol"] = {},
+        ["Community/ChatServer"] = {},
+        ["Community/ChatModel"] = {},
 
         }
 
@@ -472,10 +481,66 @@ function generateBuildHandler(startArg)
 	return argsUsed
 end
 
+--[[
+local function fixEclipseHandler()
+function generateBuildHandler(startArg)
+    -- First arg is build directory, second arg is source directory
+
+	local argsUsed = 2;
+    local buildDirectory = "";
+    local sourceDirectory = "";
+
+    -- Get buildDirectory from the first argument
+    if arg[startArg + 1] ~= nil then
+        buildDirectory =  arg[startArg + 1];
+    else
+        print("Usage: zpkg build fix <buildDir> <sourceDir>");
+        return argsUsed;
+    end
+    
+    -- Get sourceDirectory from the second argument
+    if arg[startArg + 2] ~= nil then
+        sourceDirectory =  arg[startArg + 2];
+    else
+        print("Usage: zpkg build fix <buildDir> <sourceDir>");
+        return argsUsed;
+    end
+
+	local inputProject = buildDirectory .. "/.project";
+    local inputCProject = buildDirectory .. "/.cproject";
+
+	local outputProject = sourceDirectory .. "/project";
+	local outputCProject = sourceDirectory .. "/cproject";
+	
+    -- Load the .project file
+	local template = loadTemplate(inputProject)
+
+	if (template == nil) then
+		print("Error finding " .. inputProject)
+		return argsUsed;
+	end
+	
+	local result = string.gsub(template, buildDirectory .. "</name>", sourceDirectory .. "</name>");
+
+	local file = io.open(outputProject, "w")
+	file:write(result)
+	file:close()
+
+    -- Load the .cproject file
+    template = loadTemplate(inputCProject);
+	if (template == nil) then
+		print("Error finding " .. inputCProject)
+		return argsUsed;
+	end
+
+    return argsUsed;
+end
+]]
 
 buildHandlers =
 {
 	["generate"] = { func = generateBuildHandler, help = "Generate configuration files" }
+    --["fix"] = { func = fixEclipseHandler, help = "Fix Eclipse build files to work with version control" } 
 }
 
 function buildHandler(startArg)

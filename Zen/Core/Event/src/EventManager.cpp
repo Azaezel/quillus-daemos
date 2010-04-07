@@ -24,6 +24,8 @@
 #include "EventManager.hpp"
 #include "EventService.hpp"
 
+#include <Zen/Core/Threading/MutexFactory.hpp>
+
 #include <boost/bind.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -31,12 +33,14 @@ namespace Zen {
 namespace Event {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 EventManager::EventManager()
+:   m_pEventServicesMutex(Threading::MutexFactory::create())
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 EventManager::~EventManager()
 {
+    Threading::MutexFactory::destroy(m_pEventServicesMutex);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -44,11 +48,23 @@ EventManager::pEventService_type
 EventManager::create(const std::string& _eventServiceName)
 {
     // TODO Handle _eventServiceName correctly.
-    EventService* pRawEventService = new EventService;
+    Threading::CriticalSection  guard(m_pEventServicesMutex);
 
-    pEventService_type pEventService(pRawEventService, boost::bind(&EventManager::destroy, this, _1));
+    EventServices_type::iterator iter = m_eventServices.find(_eventServiceName);
+    if(iter == m_eventServices.end())
+    {
+        EventService* pRawEventService = new EventService(_eventServiceName);
 
-    return pEventService;
+        pEventService_type pEventService(pRawEventService, boost::bind(&EventManager::destroy, this, _1));
+
+        m_eventServices[_eventServiceName] = pEventService.getWeak();
+
+        return pEventService;
+    }
+    else
+    {
+        return iter->second.lock();
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -57,7 +73,12 @@ EventManager::destroy(wpEventService_type _pEventService)
 {
     EventService* pEventService = dynamic_cast<EventService*>(_pEventService.get());
 
-    delete pEventService;
+    if (pEventService)
+    {
+        m_eventServices.erase(pEventService->getName());
+        delete pEventService;
+    }
+
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
