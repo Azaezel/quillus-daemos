@@ -4,6 +4,7 @@
 // Copyright (C) 2001 - 2008 Tony Richards
 // Copyright (C)        2008 Matthew Alan Gray
 // Copyright (C)        2008 Walt Collins
+// Copyright (C)        2010 Jason Smith
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -24,6 +25,7 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //  Walt Collins (Arcanor) - wcollins@indiezen.com
+//  Jason Smith jsmith@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef INDIEZEN_ZPYTHON_PYTHON_METHOD_HPP_INCLUDED
 #define INDIEZEN_ZPYTHON_PYTHON_METHOD_HPP_INCLUDED
@@ -31,9 +33,7 @@
 #include <Python.h>
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
-#include <Zen/Core/Scripting/I_ScriptObject.hpp>
-#include <Zen/Core/Scripting/I_ObjectReference.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <string>
 
@@ -78,6 +78,7 @@ public:
              PythonMethod(PythonType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptType::bool_function_args_type _function, PyCFunction _pCFunction);
              PythonMethod(PythonType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptType::int_function_no_args_type _function, PyCFunction _pCFunction);
              PythonMethod(PythonType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptType::int_function_args_type _function, PyCFunction _pCFunction);
+             PythonMethod(PythonType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptMethod* _function, PyCFunction _pCFunction);
     virtual ~PythonMethod();
     /// @}
 
@@ -85,26 +86,27 @@ public:
     /// @{
 public:
     PythonType*     m_pType;
+    PyMethodDef*    m_pDef;
     std::string     m_name;
     std::string     m_docString;
     PyCFunction     m_pCFunction;
 
     enum FunctionType
     {
-        VOID_FUNCTION_NO_ARGS = 0,
-        VOID_FUNCTION_ARGS,
-        OBJECT_FUNCTION_ARGS,
-        OBJECT_FUNCTION_NO_ARGS,
-        STRING_FUNCTION_ARGS,
-        STRING_FUNCTION_NO_ARGS,
-        BOOL_FUNCTION_NO_ARGS,
-        BOOL_FUNCTION_ARGS,
-        INT_FUNCTION_NO_ARGS,
-        INT_FUNCTION_ARGS
+        VOID_FUNCTION_NO_ARGS,      // 0
+        VOID_FUNCTION_ARGS,         // 1
+        OBJ_FUNCTION_ARGS,          // 2
+        OBJ_FUNCTION_NO_ARGS,       // 3
+        STRING_FUNCTION_ARGS,       // 4
+        STRING_FUNCTION_NO_ARGS,    // 5
+        BOOL_FUNCTION_NO_ARGS,      // 6
+        BOOL_FUNCTION_ARGS,         // 7
+        INT_FUNCTION_NO_ARGS,       // 8
+        INT_FUNCTION_ARGS,          // 9
+        GENERIC_FUNCTION_ARGS,      // 10
     };
 
-    FunctionType    m_functionType;
-
+    FunctionType                                            m_functionType;
     Scripting::I_ScriptType::void_function_no_args_type     m_function0;
     Scripting::I_ScriptType::void_function_args_type        m_function1;
     Scripting::I_ScriptType::object_function_args_type      m_function2;
@@ -115,9 +117,7 @@ public:
     Scripting::I_ScriptType::bool_function_args_type        m_function7;
     Scripting::I_ScriptType::int_function_no_args_type      m_function8;
     Scripting::I_ScriptType::int_function_args_type         m_function9;
-
-    PyMethodDef*    m_pDef;
-    PyObject*       m_pFunction;
+    Scripting::I_ScriptMethod*                              m_function10;
     /// }
 
 };  // class PythonMethod
