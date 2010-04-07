@@ -28,9 +28,7 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
-
+#include <Zen/Core/Scripting.hpp>
 
 #include <boost/noncopyable.hpp>
 

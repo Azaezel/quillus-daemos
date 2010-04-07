@@ -20,6 +20,7 @@
 #include "Message.hpp"
 
 #include <Zen/Enterprise/AppServer/I_Request.hpp>
+#include <Zen/Enterprise/AppServer/I_MessageType.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -34,8 +35,8 @@ namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class Request
-:   public virtual GameBuilder::Message
-,   public Zen::Enterprise::AppServer::I_Request
+:   public GameBuilder::Message
+,   public virtual Zen::Enterprise::AppServer::I_Request
 {
     /// @name Types
     /// @{
@@ -48,7 +49,8 @@ public:
     virtual pEndpoint_type getSourceEndpoint() { return Message::getSourceEndpoint(); }
     virtual pEndpoint_type getDestinationEndpoint() { return Message::getDestinationEndpoint(); }
     virtual pMessageHeader_type getMessageHeader() const { return Message::getMessageHeader(); }
-    virtual unsigned int getMessageId() const { return Message::getMessageId(); }
+    virtual boost::uint32_t getMessageId() const { return Message::getMessageId(); }
+    virtual pMessageType_type getMessageType() const { return Message::getMessageType(); }
     /// @}
     
     /// @name Zen::Enterprise::AppServer::I_Request implementation

@@ -54,7 +54,7 @@ public:
 	virtual void start();
 	virtual void stop();
 	virtual void join();
-    virtual ThreadId getCurrentThreadId() const;
+    static ThreadId getSolarisCurrentThreadId();
     virtual const ThreadId& getThreadId() const;
     /// @}
 

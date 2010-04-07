@@ -203,16 +203,23 @@ GameClient::initRenderingService(const std::string& _type, const std::string& _t
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
+GameClient::initRenderingResourceService(const std::string& _type)
+{
+    return m_base.initRenderingResourceService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
 GameClient::initTerrainService(const std::string& _type)
 {
-    return m_base.initTerrainService(_type);
+    return game().initTerrainService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 GameClient::initSkyService(const std::string& _type)
 {
-    return m_base.initSkyService(_type);
+    return game().initSkyService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -548,7 +555,7 @@ GameClient::createSkybox(const std::string& _resource)
     config["type"] = "skybox";
     config["resourceName"] = _resource;
 
-    m_pSky = base().getSkyService().createSky(config);
+    m_pSky = game().getSkyService()->createSky(config);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -557,7 +564,7 @@ GameClient::createTerrain(const std::string& _resource)
 {
     Zen::Math::Matrix4 matXfm(Zen::Math::Matrix4::INIT_IDENTITY);
 
-    m_pTerrain = base().getTerrainService().createTerrain();
+    m_pTerrain = game().getTerrainService()->createTerrain();
     m_pTerrain->loadVisualization(_resource + ".cfg", matXfm);
 }
 

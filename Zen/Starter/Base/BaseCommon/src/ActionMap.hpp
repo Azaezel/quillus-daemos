@@ -23,6 +23,7 @@
 //  Tony Richards trichards@indiezen.com
 //  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#if 0 // deprecated
 #ifndef ZEN_ENGINE_BASE_ACTION_MAP_HPP_INCLUDED
 #define ZEN_ENGINE_BASE_ACTION_MAP_HPP_INCLUDED
 
@@ -114,3 +115,4 @@ private:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #endif // ZEN_ENGINE_BASE_ACTION_MAP_HPP_INCLUDED
+#endif // deprecated

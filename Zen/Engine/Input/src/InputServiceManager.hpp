@@ -33,6 +33,7 @@
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
+#include <Zen/Core/Scripting/script_module.hpp>
 #include <Zen/Core/Plugins/ServiceCache.hpp>
 
 #include <Zen/Core/Scripting/ObjectReference.hpp>
@@ -89,11 +90,8 @@ public:
     void destroyInputMapService(wpInputMapService_type _wpInputMapService);
 
 private:
-    /// Register the script classes with the scripting engine
-    void registerScriptTypes(pScriptEngine_type _pEngine);
-
-    /// Register a service with a script engine
-    void registerScriptEngine(pScriptEngine_type _pEngine, pInputService_type _pService);
+    /// Register the script module with all of the previously created services.
+    void registerScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -112,11 +110,11 @@ private:
 
     bool                        m_scriptTypesInitialized;
 
-    pScriptModule_type          m_pInputModule;
-    pScriptType_type            m_pInputServiceType;
-    pScriptType_type            m_pKeyMapType;
-    pScriptType_type            m_pKeyEventType;
-    pScriptType_type            m_pInput;
+    Zen::Scripting::script_module*	m_pInputModule;
+    pScriptType_type            	m_pInputServiceType;
+    pScriptType_type            	m_pKeyMapType;
+    pScriptType_type            	m_pKeyEventType;
+    pScriptType_type            	m_pInput;
 
     pScriptType_type            m_pSceneServiceType;
     pScriptType_type            m_pSceneNodeType;

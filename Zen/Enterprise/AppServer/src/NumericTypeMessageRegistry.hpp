@@ -57,7 +57,7 @@ public:
     virtual void registerMessageType(pMessageType_type _pMessageType);
     virtual void unregisterMessageType(pMessageType_type _pMessageType);
     virtual pMessageHeader_type getMessageHeader(boost::archive::polymorphic_iarchive& _archive) const;
-    virtual pMessageHeader_type createMessageHeader(pMessageType_type _pMessageType) const;
+    virtual pMessageHeader_type createMessageHeader(pMessageType_type _pMessageType, boost::uint32_t _messageId, boost::uint32_t _requestId) const;
     /// @}
 
     /// @name I_NumericTypeMessageRegistry implementation
@@ -122,8 +122,10 @@ public:
     :   public I_MessageHeader
     {
     public:
-        MessageHeader(pMessageType_type _pMessageType)
+        MessageHeader(pMessageType_type _pMessageType, boost::uint32_t _messageId, boost::uint32_t _requestId)
         :   m_pMessageType(_pMessageType)
+        ,   m_messageId(_messageId)
+        ,   m_requestId(_requestId)
         {
         }
 
@@ -136,14 +138,28 @@ public:
             return m_pMessageType;
         }
 
+        virtual boost::uint32_t getMessageId() const
+        {
+            return m_messageId;
+        }
+
+        virtual boost::uint32_t getRequestId() const
+        {
+            return m_requestId;
+        }
+
         virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version)
         {
             boost::uint32_t messageType = m_pMessageType.as<Memory::managed_ptr<NumericType> >()->getType();
 
             _archive & messageType;
+            _archive & m_messageId;
+            _archive & m_requestId;
         }
     private:
         pMessageType_type       m_pMessageType;
+        boost::uint32_t         m_messageId;
+        boost::uint32_t         m_requestId;
     };
     //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ///@}

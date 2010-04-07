@@ -6,7 +6,7 @@ material Terrain
       {
          texture_unit
          {
-            texture Terrain.jpg
+            texture terrain.jpg
          }
       }
    }

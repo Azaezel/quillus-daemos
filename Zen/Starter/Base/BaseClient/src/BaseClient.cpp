@@ -23,6 +23,11 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "BaseClient.hpp"
 
+#include <Zen/Core/Scripting.hpp>
+
+#include <Zen/Core/Event/I_EventService.hpp>
+#include <Zen/Core/Event/I_EventQueue.hpp>
+
 #include <Zen/Engine/Rendering/I_RenderingService.hpp>
 #include <Zen/Engine/Rendering/I_RenderingServiceFactory.hpp>
 
@@ -41,8 +46,6 @@
 
 #include <Zen/Engine/World/I_WorldManager.hpp>
 #include <Zen/Engine/World/I_WaterService.hpp>
-#include <Zen/Engine/World/I_TerrainService.hpp>
-#include <Zen/Engine/World/I_SkyService.hpp>
 
 #include <Zen/Engine/Camera/I_CameraManager.hpp>
 #include <Zen/Engine/Camera/I_CameraService.hpp>
@@ -124,6 +127,8 @@ BaseClient::BaseClient()
 ,   m_pRenderingCanvas(NULL)
 ,   m_quitting(false)
 ,   m_game(I_BaseGame::getSingleton())
+,   m_pScriptObject(NULL)
+,   m_pEventService(Zen::Event::I_EventManager::getSingleton().create("eventService"))
 {
 }
 
@@ -231,28 +236,13 @@ BaseClient::run()
 
     while(!m_quitting)
     {
+        // Dispatch GUI loop, which is either the Windows message pump
+        // or the SDL event loop (cross platform loop)
+        m_pRenderingCanvas->pumpSystemMessages();
 
-#ifdef WIN32
-        MSG message;
-        while(PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
-        {
-            TranslateMessage(&message);
-            DispatchMessage(&message);
-        }
-#else
-        // Lets just use SDL to pump the messages.
-        // Is this legal?  Seems way too easy.
-        SDL_Event event;
-        if (SDL_PollEvent(&event))
-        {
-            // Quit?
-            if (event.type == SDL_QUIT)
-            {
-                m_quitting = true;
-                continue;
-            }
-        }
-#endif // WIN32
+        // Dispatch all of the script events.
+        m_pEventService->getEventQueue("script").dispatchAllEvents(false);
+
         // Increment the timer here; this gives us the least amount of time after
         // handling the input
 #define CLAMP
@@ -290,11 +280,25 @@ BaseClient::run()
             elapsed = 0.08f;
         }
 
-        /// Give the input service a chance to process events
+        // Dispatch all of the script events.
+        m_pEventService->getEventQueue("script").dispatchAllEvents(false);
+
+        // Give the input service a chance to process events
         m_pInputService->processEvents();
 
+        // Dispatch all of the script events.
+        m_pEventService->getEventQueue("script").dispatchAllEvents(false);
+
         onBeforeFrameRenderedEvent(elapsed);
+
+        // Dispatch all of the script events.
+        m_pEventService->getEventQueue("script").dispatchAllEvents(false);
+
         m_pRenderingCanvas->renderScene();
+
+        // Dispatch all of the script events.
+        m_pEventService->getEventQueue("script").dispatchAllEvents(false);
+
         onAfterFrameRenderedEvent(elapsed);
 
         Threading::I_Thread::sleepForMilliseconds(0);
@@ -313,12 +317,22 @@ script_getKeyMap(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost:
     return I_BaseGameClient::getSingleton().getKeyMap().getScriptObject();
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 static Zen::Scripting::I_ObjectReference*
 script_getGame(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
 {
     return I_BaseGame::getSingleton().getScriptObject();
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static Zen::Scripting::I_ObjectReference*
+script_createTerrain(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
+{
+	// TODO Is this actually used?
+	throw Zen::Utility::runtime_exception("script_createTerrain(): Error, not implemented");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #if 0   // Implementation deferred
 static Zen::Scripting::I_ObjectReference*
 script_getPhysicsZone(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
@@ -386,6 +400,29 @@ script_setMaterialName(Zen::Scripting::I_ObjectReference* _pObject, std::vector<
 #endif // deprecated
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static std::string sm_scriptTypeName("GameClient");
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+BaseClient::getScriptTypeName()
+{
+    return sm_scriptTypeName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+BaseClient::getScriptObject()
+{
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptWrapper_type(getScriptModule(),
+            getScriptModule()->getScriptType(getScriptTypeName()),
+            this
+        );
+    }
+
+    return m_pScriptObject;
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 BaseClient::initScriptEngine(const std::string& _type)
 {
@@ -405,16 +442,28 @@ BaseClient::initScriptEngine(const std::string& _type)
 
     m_pModule = m_pScriptEngine->createScriptModule("BaseClient", "Game Client");
 
-    m_pGameClientScriptType = m_pModule->createScriptType("GameClient", "Game Client", 0);
+    m_pGameClientScriptType = m_pModule->createScriptType(getScriptTypeName(), "Game Client", 0);
 
     m_pGameClientScriptType->addMethod("getKeyMap", "Get the KeyMap", &script_getKeyMap);
     m_pGameClientScriptType->addMethod("getGame", "Get the main Game object", &script_getGame);
 
+    // Additional methods for GameClient use the improved script templates.
+    Zen::Scripting::script_type<BaseClient>(m_pGameClientScriptType)
+        .addMethod("getSceneService", &BaseClient::getSceneService)
+        .addMethod("getRenderingCanvas", &BaseClient::getRenderingCanvas)
+        .activate()
+    ;
+
+    //m_pGameClientScriptType->addMethod("createTerrain", "Create a terrain object", &script_createTerrain);
+
     // Register the script engine with the Rendering Manager
     if (m_pScriptEngine.isValid())
     {
+        Rendering::I_SceneManager::getSingleton().registerDefaultScriptEngine(m_pScriptEngine);
         Rendering::I_RenderingManager::getSingleton().registerDefaultScriptEngine(m_pScriptEngine);
+        Physics::I_PhysicsManager::getSingleton().registerDefaultScriptEngine(m_pScriptEngine);
         Input::I_InputServiceManager::getSingleton().registerDefaultScriptEngine(m_pScriptEngine);
+        World::I_WorldManager::getSingleton().registerDefaultScriptEngine(m_pScriptEngine);
     }
 
 
@@ -427,9 +476,16 @@ BaseClient::initSceneService(const std::string& _type)
 {
     // Was "ogre"
 
-    m_pSceneService = Rendering::I_SceneManager::getSingleton().create(_type);
+    // HACK using "default" scene service and ST_EXTERIOR_CLOSE as the type.  This
+    // was the default in ZOgre, but now you have to specify it, but changing the method
+    // signature of BaseClient::initSceneService() will break too many things so I'm
+    // going to continue using the defaults.  Eventually we need to overload initSceneService()
+    // and let the user specify the scene name and type.
+    m_pSceneService = Rendering::I_SceneManager::getSingleton().create(_type, "default", 2);
 
-    pScriptModule_type const pModule = Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule();
+    m_pSceneService->getScriptObject();
+#if 0
+    pScriptModule_type const pModule = Rendering::I_RenderingManager::getSingleton().getDefaultRenderingScriptModule();
 
     if (pModule.isValid())
     {
@@ -437,6 +493,7 @@ BaseClient::initSceneService(const std::string& _type)
             pModule->getScriptType(m_pSceneService->getScriptTypeName()),
             m_pSceneService, "sceneService");
     }
+#endif // 0
 
     // create the canvas
     std::cout << "creating Canvas" << std::endl;
@@ -574,80 +631,6 @@ BaseClient::initWaterService(const std::string& _type)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
-BaseClient::initTerrainService(const std::string& _type)
-{
-    World::I_WorldManager::config_type config;
-
-    // Create the service
-    m_pTerrainService =
-        Zen::Engine::World::I_WorldManager::getSingleton().createTerrainService(_type, config);
-
-    if (m_pTerrainService == NULL)
-    {
-        std::cout << "Error: couldn't create TerrainService" << std::endl;
-        return false;
-    }
-
-    // rendering service is required
-    assert(m_pRenderingService.isValid());
-    m_pTerrainService.get()->setRenderingService(m_pRenderingService);
-    // TODO verify that rendering resource service is valid
-    m_pTerrainService.get()->setRenderingResourceService(m_pRenderingResourceService);
-
-    // physics service is not required
-    if (m_game.getPhysicsService().isValid())
-    {
-        m_pTerrainService.get()->setPhysicsService(m_game.getPhysicsService());
-        // TODO verify that physics resource service is valid
-        m_pTerrainService.get()->setPhysicsResourceService(m_game.getPhysicsResourceService());
-    }
-    else
-    {
-        std::cout << "Warning: initTerrainService() has no Physics Service setup, proceeding anyway." << std::endl;
-    }
-
-    return true;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-bool
-BaseClient::initSkyService(const std::string& _type)
-{
-    World::I_WorldManager::config_type config;
-
-    // Create the service
-    m_pSkyService =
-        Zen::Engine::World::I_WorldManager::getSingleton().createSkyService(_type, config);
-
-    if ( !m_pSkyService.isValid() )
-    {
-        std::cout << "Error: couldn't create SkyService" << std::endl;
-        return false;
-    }
-
-    // rendering service is required
-    assert(m_pRenderingService.isValid());
-    m_pSkyService.get()->setRenderingService(m_pRenderingService);
-    // TODO verify that rendering resource service is valid
-    m_pSkyService.get()->setRenderingResourceService(m_pRenderingResourceService);
-
-    // physics service is not required
-    if (m_game.getPhysicsService().isValid())
-    {
-        m_pSkyService.get()->setPhysicsService(m_game.getPhysicsService());
-        // TODO verify that physics resource service is valid
-        m_pSkyService.get()->setPhysicsResourceService(m_game.getPhysicsResourceService());
-    }
-    else
-    {
-        std::cout << "Warning: initSkyService() has no Physics Service setup, proceeding anyway." << std::endl;
-    }
-
-    return true;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-bool
 BaseClient::initWidgetService(const std::string& _type)
 {
     Widgets::I_WidgetManager::config_type config;
@@ -665,7 +648,7 @@ BaseClient::initWidgetService(const std::string& _type)
     // rendering service is required
     assert(m_pView != NULL && m_pInputService.isValid());
 
-    m_pWidgetService->initialise(*m_pView, *m_pInputService);
+    m_pWidgetService->initialise(*m_pView, m_pInputService.get(), m_pInputService.get());
 
     return true;
 }
@@ -754,10 +737,10 @@ BaseClient::onNeedRedraw(bool _unused)
 #endif
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Rendering::I_SceneService&
+BaseClient::pSceneService_type
 BaseClient::getSceneService()
 {
-    return *m_pSceneService;
+    return m_pSceneService;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -805,22 +788,6 @@ BaseClient::getWaterService()
 {
     assert(m_pWaterService.isValid());
     return *m_pWaterService;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-World::I_TerrainService&
-BaseClient::getTerrainService()
-{
-    assert(m_pTerrainService.isValid());
-    return *m_pTerrainService;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-World::I_SkyService&
-BaseClient::getSkyService()
-{
-    assert(m_pSkyService.isValid());
-    return *m_pSkyService;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

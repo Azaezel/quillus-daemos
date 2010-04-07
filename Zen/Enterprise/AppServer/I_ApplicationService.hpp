@@ -26,9 +26,11 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Enterprise/AppServer/I_RequestHandler.hpp>
-
 #include <Zen/Core/Memory/managed_ptr.hpp>
+
+#include <Zen/Core/Plugins/I_StartupShutdownParticipant.hpp>
+
+#include <Zen/Enterprise/AppServer/I_RequestHandler.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -41,6 +43,7 @@ class I_MessageType;
 
 class APPSERVER_DLL_LINK I_ApplicationService
 :   public I_RequestHandler
+,   public Plugins::I_StartupShutdownParticipant
 {
     /// @name Types
     /// @{

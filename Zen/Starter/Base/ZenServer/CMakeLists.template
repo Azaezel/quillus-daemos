@@ -21,6 +21,8 @@ set ( ZenServer_SRC
 <%SourceList%>
     )
 
+add_definitions( ${Zen_DEFINITIONS} )
+    
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 
 link_directories ( ${DEV_LIB} ${Boost_LIBRARY_DIRS} )
@@ -28,6 +30,8 @@ link_directories ( ${DEV_LIB} ${Boost_LIBRARY_DIRS} )
 add_executable( ZenServer ${ZenServer_SRC} )
 
 add_dependencies( ZenServer ZenCore ZenEnterprise )
+
+message("Boost libraries: ${Boost_LIBRARIES}")
 
 target_link_libraries( ZenServer ZenCore ZenEnterprise ${Boost_LIBRARIES} )
 

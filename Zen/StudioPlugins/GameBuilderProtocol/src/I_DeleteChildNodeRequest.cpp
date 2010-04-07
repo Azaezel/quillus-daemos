@@ -45,6 +45,13 @@ I_DeleteChildNodeRequest::create(pEndpoint_type _pSourceEndpoint,
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_DeleteChildNodeRequest::pMessageType_type
+I_DeleteChildNodeRequest::getStaticMessageType()			   
+{
+    return DeleteChildNodeRequest::sm_pType;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace GameBuilder
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 

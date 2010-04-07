@@ -28,6 +28,8 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+
 #include <Zen/Core/Event/Event.hpp>
 
 #include <Zen/Engine/Rendering/I_AttachableObject.hpp>
@@ -43,13 +45,26 @@ namespace Rendering {
 /// Basic light interface
 class RENDERING_DLL_LINK I_Light
 :   public I_AttachableObject
+,   public Scripting::I_ScriptableType
+,   public Memory::managed_self_ref<Zen::Engine::Rendering::I_Light>
 {
     /// @name Types
     /// @{
 public:
+    typedef Zen::Memory::managed_ptr<I_Light>           pScriptObject_type;
+    typedef Scripting::ObjectReference<I_Light>         ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                  ScriptWrapper_type;
+    typedef ScriptWrapper_type*                         pScriptWrapper_type;
+
     typedef Zen::Memory::managed_ptr<I_Light>           pLight_type;
     typedef Zen::Memory::managed_weak_ptr<I_Light>      wpLight_type;
     typedef Zen::Event::Event<wpLight_type>             lightEvent_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_Light interface

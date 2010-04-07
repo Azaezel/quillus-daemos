@@ -53,6 +53,12 @@ public:
     typedef Scripting::ObjectReference<I_Action>            ScriptWrapper_type;
     /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
+    /// @}
+
     /// @name I_Action interface
     /// @{
 public:

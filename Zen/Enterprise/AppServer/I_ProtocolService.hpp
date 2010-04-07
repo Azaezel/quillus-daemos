@@ -35,6 +35,9 @@ namespace Zen {
     namespace Networking {
         class I_Endpoint;
     }   // namespace Networking
+    namespace Event {
+        class I_Event;
+    }
 namespace Enterprise {
 namespace AppServer {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -71,6 +74,18 @@ public:
 
     /// Send a message to an endpoint, potentially establishing the connection first.
     virtual void sendTo(pMessage_type _pMessage, pEndpoint_type _pEndpoint) = 0;
+
+    /// Get the "Connected" event.
+    /// This event is fired when a connection is established.
+    /// The payload for the event is the pEndpoint_type of the
+    /// destination endpoint that was disconnected.
+    virtual Event::I_Event& getConnectedEvent() = 0;
+
+    /// Get the "Disconnected" event.
+    /// This event is fired when a connection is established.
+    /// The payload for the event is the pEndpoint_type of the
+    /// destination endpoint that was disconnected.
+    virtual Event::I_Event& getDisconnectedEvent() = 0;
     /// @}
 
     /// @name Static methods

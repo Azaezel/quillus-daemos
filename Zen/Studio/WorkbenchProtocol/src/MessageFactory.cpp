@@ -88,26 +88,26 @@ MessageFactory::create(pMessageHeader_type _pMessageHeader, pEndpoint_type _pSou
                                     _pDestinationEndpoint),
                                  &destroy);
 
-        case ChildNodeResponse::type:
-            return pMessage_type(new ChildNodeResponse(_pMessageHeader,
-                                    _pSourceEndpoint, 
-                                    _pDestinationEndpoint),
-                                 &destroy);
-
         case SubscribeModelRequest::type:
             return pMessage_type(new SubscribeModelRequest(_pMessageHeader,
                                     _pSourceEndpoint, 
                                     _pDestinationEndpoint),
                                  &destroy);
 
-        case SubscribeModelResponse::type:
-            return pMessage_type(new SubscribeModelResponse(_pMessageHeader,
+        case NewProjectRequest::type:
+            return pMessage_type(new NewProjectRequest(_pMessageHeader,
                                     _pSourceEndpoint, 
                                     _pDestinationEndpoint),
                                  &destroy);
 
-        case NewProjectRequest::type:
-            return pMessage_type(new NewProjectRequest(_pMessageHeader,
+        case ChildNodeResponse::type:
+            return pMessage_type(new ChildNodeResponse(_pMessageHeader,
+                                    _pSourceEndpoint, 
+                                    _pDestinationEndpoint),
+                                 &destroy);
+
+        case SubscribeModelResponse::type:
+            return pMessage_type(new SubscribeModelResponse(_pMessageHeader,
                                     _pSourceEndpoint, 
                                     _pDestinationEndpoint),
                                  &destroy);
@@ -124,8 +124,8 @@ MessageFactory::create(pMessageHeader_type _pMessageHeader, pEndpoint_type _pSou
     // TODO Error?
     return pMessage_type();
 }
-
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
 boost::uint32_t
 MessageFactory::getMessageType(pMessageHeader_type _pMessageHeader)
 {

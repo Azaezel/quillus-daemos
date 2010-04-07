@@ -41,6 +41,10 @@ namespace Scripting {
 
 class I_ObjectReference;
 
+/// @note TR - I don't think we're actively using this anymore.
+///		It was originally part of the implementation of the Java -> C++
+///		JNI layer, but we have not been maintaining that and it doesn't
+///		even exist in this repository (it's in the old "framework" repo).
 class SCRIPTING_DLL_LINK I_ObjectHeap
 {
     /// @name Types

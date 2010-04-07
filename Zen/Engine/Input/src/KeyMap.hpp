@@ -62,7 +62,7 @@ public:
     /// @name I_KeyMap implementation
     /// @{
 public:
-    virtual void mapKeyInput(const std::string& _name, const pAction_type _pAction);
+    virtual void mapKeyInput(const std::string& _name, Event::I_Action& _action);
     virtual void connect(I_KeyPublisher& _keyPublisher);
     virtual void enable(bool _enable);
     /// @}

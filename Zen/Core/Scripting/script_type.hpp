@@ -56,14 +56,22 @@ class script_type
 public:
     typedef std::map<std::string, I_ScriptMethod*>          Methods_type;
     typedef Zen::Memory::managed_ptr<I_ScriptType>          pScriptType_type;
+    typedef Zen::Memory::managed_ptr<I_ScriptModule>        pScriptModule_type;
+    typedef Zen::Memory::managed_weak_ptr<I_ScriptModule>   wpScriptModule_type;
     typedef std::map<std::string, I_ScriptableType*>        GlobalObjects_type;
     /// @}
 
     /// @name script_type_interface implementation.
     /// @{
-private:
+public:
+    /// Activate the class.
+    /// @note ONLY script_module<> should call this method unless
+    ///		this object was constructed using an existing
+    ///		pScriptType_type.
+    /// @see script_type::script_type(pScriptType_type)
     virtual void activate();
 
+private:
     virtual void createGlobals();
     /// @}
 
@@ -75,16 +83,37 @@ public:
     script_type<ScriptableClass_type>&
     addMethod(const std::string& _methodName, Method_type _pFunction);
 
+    /// Add a const method to this script type.
+    template<class Method_type>
+    script_type<ScriptableClass_type>&
+    addConstMethod(const std::string& _methodName, Method_type _pFunction);
+
     /// Create a global instance of this script type.
     void createGlobalObject(const std::string& _objectName, I_ScriptableType* _pScriptableObject);
+
+    /// Get the script module for this type.
+    /// This will not always return a valid script module depending
+    /// upon the state of this script_type.
+    /// Look at the documentation of the constructors of this class for more information.
+    pScriptModule_type getScriptModule();
     /// @}
 
     /// @name 'Structors.
-    ///     These methods are only called by script_module.
+    ///
     /// @{
+public:
+    /// Construct a script type that adds to an existing script type whose
+    /// module has not yet been activated.  After adding methods to this script_type,
+    /// invoke the script_type::activate() method to register the methods.
+    /// getScriptModule() will return a valid script module if this constructor
+    /// is used.
+    script_type(pScriptType_type pScriptType_type);
 private:
     friend class script_module;
     /// Create a script type.
+    /// This constructor is invoked by script_module.
+    /// getScriptModule() will return a valid script module if this constructor
+    /// is used only after _module::activate() has been invoked.
     script_type(script_module& _module, const std::string& _typeName, const std::string& _documentation);
     /// @}
 
@@ -92,7 +121,15 @@ private:
     /// @{
 private:
     /// Script module that contains this script type.
-    script_module&      m_module;
+    /// This is the template version.  Either m_pModule or m_pScriptModule
+    /// are valid, but generally not both.
+    /// @see m_pScriptModule
+    script_module*      m_pModule;
+
+    /// Script module that contains this script type.
+    /// This is the interface version.
+    /// @see m_pModule
+    wpScriptModule_type m_pScriptModule;
 
     /// Name of this script_type.
     /// This name is the name that is exposed to the script engine.

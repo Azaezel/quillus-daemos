@@ -28,6 +28,8 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Core/Math/Math.hpp>
 #include <Zen/Core/Math/Radian.hpp>
 #include <Zen/Core/Math/Vector3.hpp>
@@ -49,9 +51,21 @@ class I_Camera;
 /// Rendering Canvas Interface
 class RENDERING_DLL_LINK I_Camera
 :   public I_AttachableObject
+,   public Zen::Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
+public:
+    typedef I_Camera*                               pScriptObject_type;
+    typedef Scripting::ObjectReference<I_Camera>    ScriptObjectReference_type;
+    typedef ScriptObjectReference_type              ScriptWrapper_type;
+    typedef ScriptWrapper_type*                     pScriptWrapper_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_Camera interface

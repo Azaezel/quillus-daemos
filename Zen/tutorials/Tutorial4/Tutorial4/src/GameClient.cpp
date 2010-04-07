@@ -37,13 +37,15 @@
 #include <Zen/Core/Math/Vector3.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
-#include <Zen/Core/Scripting/I_ScriptModule.hpp>
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting.hpp>
+//#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
+//#include <Zen/Core/Scripting/I_ScriptModule.hpp>
+//#include <Zen/Core/Scripting/I_ScriptType.hpp>
+//#include <Zen/Core/Scripting/ObjectReference.hpp>
+
+#include <Zen/Core/Event/I_ActionMap.hpp>
 
 #include <Zen/Engine/Core/I_GameGroup.hpp>
-#include <Zen/Engine/Core/I_ActionMap.hpp>
 #include <Zen/Engine/Core/I_GameObjectBehaviors.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsActor.hpp>
@@ -63,12 +65,14 @@
 
 #include <Zen/Engine/World/I_TerrainService.hpp>
 #include <Zen/Engine/World/I_Terrain.hpp>
+#include <Zen/Engine/World/I_SkyService.hpp>
 #include <Zen/Engine/World/I_Sky.hpp>
 #include <Zen/Engine/World/I_Water.hpp>
 
 // Ogre stuff
 //#include <Zen/plugins/ZOgre/I_OgreRenderingCanvas.hpp>
 //#include <Ogre.h>
+#include <Zen/Engine/Rendering/I_RenderingService.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -77,7 +81,6 @@
 
 #include <stddef.h>
 #include <iostream>
-
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Game {
@@ -135,11 +138,19 @@ GameClient::init()
     // Initialize Physics
     initPhysics();
 
-    // For some reason the sky service must be initialized after physics
-    m_baseClient.initSkyService("ZSky");
-
     // Terrain must be initialized after physics
-    m_baseClient.initTerrainService("ZTerrain");
+    game().initTerrainService("ZTerrain");
+
+    game().getTerrainService()->setRenderingService(m_baseClient.getRenderingService().getSelfReference().lock());
+    game().getTerrainService()->setRenderingResourceService(m_baseClient.getRenderingResourceService().getSelfReference().lock());
+    game().getTerrainService()->setPhysicsService(game().getPhysicsService());
+    game().getTerrainService()->setPhysicsResourceService(game().getPhysicsResourceService());
+
+    // For some reason the sky service must be initialized after physics
+    game().initSkyService("ZSky");
+
+    game().getSkyService()->setRenderingService(m_baseClient.getRenderingService().getSelfReference().lock());
+    game().getSkyService()->setRenderingResourceService(m_baseClient.getRenderingResourceService().getSelfReference().lock());
 
     // m_baseClient.initWaterService("ogre");
 
@@ -147,6 +158,18 @@ GameClient::init()
     // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse
     // combined input service.
     m_baseClient.initInputService("keyboard");
+
+    // Connect the main keymap source to the input service.
+    m_baseClient.getKeyMap().connect(m_baseClient.getInputService());
+
+    // Enable the key map.
+    m_baseClient.getKeyMap().enable(true);
+
+    // Initialize the Widget service.
+    // For this tutorial, it's not used for much more than showing and
+    // hiding the mouse cursor in WidgetManager, but it still needs
+    // to be initialized.
+    m_baseClient.initWidgetService("cegui");
 
     // Initialize the widget service
     m_pWidgetManager = new WidgetManager(*this, m_baseClient.getInputService());
@@ -164,18 +187,15 @@ GameClient::init()
     // Normally, createScene() is done after other things like
     // displaying some splash screens, etc.  But for now lets
     // just do it here.
+
+    // TODO Move this code to script
     createScene();
 
-    Zen::Engine::Core::I_ActionMap& actionMap = game().getActionMap();
-    if (actionMap["onInitDone"].isValid())
+    Zen::Event::I_ActionMap& actionMap = game().getActionMap();
+    if (actionMap.actionExists("onInitDone"))
     {
-        std::cout << "hooking up onInitDone" << std::endl;
         boost::any scriptObject(getScriptObject());
-        actionMap["onInitDone"]->dispatch(scriptObject);
-    }
-    else
-    {
-        std::cout << "Script didn't register handler for onInitDone" << std::endl;
+        actionMap["onInitDone"].dispatch(scriptObject);
     }
 
     m_baseClient.onBeforeFrameRenderedEvent.connect(boost::bind(&GameClient::beforeRender, this, _1));
@@ -222,9 +242,12 @@ GameClient::initResources()
 void
 GameClient::initPhysics()
 {
-    m_baseGame.initPhysicsService("ZNewton");
+    m_baseGame.initPhysicsService("ode");
+    m_baseGame.setCurrentPhysicsZone(
+        m_baseGame.getPhysicsService()->createZone()
+    );
     setupPhysicsMaterials();
-    m_baseGame.initPhysicsResourceService("ZNewton");
+    m_baseGame.initPhysicsResourceService("ode");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -257,16 +280,23 @@ GameClient::initRenderingService(const std::string& _type, const std::string& _t
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
+GameClient::initRenderingResourceService(const std::string& _type)
+{
+    return m_baseClient.initRenderingResourceService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
 GameClient::initTerrainService(const std::string& _type)
 {
-    return m_baseClient.initTerrainService(_type);
+    return game().initTerrainService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 GameClient::initSkyService(const std::string& _type)
 {
-    return m_baseClient.initSkyService(_type);
+    return game().initSkyService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -296,6 +326,13 @@ GameClient::createScriptTypes()
 {
     // TODO Register additional script types here
 
+    Zen::Scripting::script_type<GameClient>(base().getGameClientScriptType())
+        .addMethod("init", &GameClient::init)
+        .addMethod("base", &GameClient::base)
+        //.addMethod("setCurrentPhysicsZone", &GameClient::setCurrentPhysicsZone)
+        .activate()
+    ;
+
     // Tell m_base we're done.  After the modules are activated then you cannot
     // modify any script types.
     base().activateScriptModules();
@@ -309,13 +346,18 @@ GameClient::createScriptTypes()
 void
 GameClient::createScene()
 {
+    //throw Zen::Utility::runtime_exception("GameClient::createScene(): Error, not implemented.");
+#if 0 // TODO MOve to script
     // Resize the Physics Zone
     Zen::Math::Vector3 minSize(-2000.0f, -4000.0f, -2000.0f);
     Zen::Math::Vector3 maxSize( 2000.0f,  2000.0f,  2000.0f);
 
-    // Initialize the first world
+    // Initialize the first zone
 
-    m_baseGame.setCurrentPhysicsZone(m_baseGame.getPhysicsService()->createZone(minSize, maxSize));
+    pPhysicsZone_type pZone = m_baseGame.getPhysicsService()->createZone();
+    pZone->setZoneSize(minSize, maxSize);
+
+    m_baseGame.setCurrentPhysicsZone();
 
     // Create the terrain
 
@@ -396,7 +438,9 @@ GameClient::createScene()
     //waterConfig["configPath"] = "water.hdx";
     //m_pWater = m_base.getWaterService().createWater(m_base.getRenderingCanvas(), waterConfig);
     //m_pWater->setSunPosition(Zen::Math::Vector3(99999.0,99999.0f,99999.0f));
+#endif // moving this to script.
 
+    // TODO This should be moved elsewhere
     m_baseClient.onBeforeFrameRenderedEvent.connect(boost::bind(&GameClient::beforeRender, this, _1));
 }
 
@@ -482,7 +526,7 @@ GameClient::beforeRender(double _elapsedTime)
 {
 
     // TODO: Do everything else that needs to be done before the screen is rendered
-
+#if 0
 	Zen::Math::Vector3 oldvel, oldangvel;
 
     m_pPlayer->base().getPhysicsActor()->getOrientation(m_pPlayer->m_orientation);
@@ -530,7 +574,6 @@ GameClient::beforeRender(double _elapsedTime)
         newangvel = newangvel + oldangvel;
         m_pPlayer->base().getPhysicsActor()->setAngularVelocity(newangvel);
     }
-
 	// This updates all physics zones we've created:
 	m_baseGame.getPhysicsService()->stepSimulation(_elapsedTime);
 
@@ -539,6 +582,7 @@ GameClient::beforeRender(double _elapsedTime)
     m_baseClient.getRenderingCanvas().selectCamera("chase").update();
 
     //m_pWater->update(_elapsedTime);
+#endif // 0
  }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

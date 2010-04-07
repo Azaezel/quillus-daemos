@@ -69,7 +69,7 @@ ActionMap::getScriptTypeName()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
+I_Action&
 ActionMap::createAction(const std::string& _name, ActionFunction_type _function)
 {
     Threading::CriticalSection guard(m_pActionMapMutex);
@@ -79,10 +79,12 @@ ActionMap::createAction(const std::string& _name, ActionFunction_type _function)
 
     pAction_type pAction(pRawAction, boost::bind(&ActionMap::destroyAction, this, _1));
     m_actionMap[_name] = pAction;
+
+    return *pAction;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-ActionMap::pAction_type
+I_Action&
 ActionMap::operator [](const std::string& _name)
 {
     return getAction(_name);
@@ -105,7 +107,7 @@ ActionMap::getScriptObject()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
+I_Action&
 ActionMap::createScriptAction(const std::string& _name, boost::any _object, boost::any _function)
 {
     Threading::CriticalSection guard(m_pActionMapMutex);
@@ -114,6 +116,8 @@ ActionMap::createScriptAction(const std::string& _name, boost::any _object, boos
 
     pAction_type pScriptAction(pRawScriptAction, boost::bind(&ActionMap::destroyScriptAction, this, _1));
     m_actionMap[_name] = pScriptAction;
+
+    return *pScriptAction;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -135,18 +139,25 @@ ActionMap::destroyAction(pAction_type::weak_ptr_type _wpAction)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-ActionMap::pAction_type
+I_Action&
 ActionMap::getAction(const std::string& _name)
 {
     ActionMap_type::iterator iter = m_actionMap.find(_name);
     if( iter != m_actionMap.end() )
     {
-        return iter->second;
+        return *iter->second;
     }
     // TODO Throw exception?
-    return pAction_type();
+    //return pAction_type();
+    throw Zen::Utility::runtime_exception("ActionMap::getAction() : Action is not in map.");
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+ActionMap::actionExists(const std::string& _name)
+{
+    return m_actionMap.find(_name) != m_actionMap.end();
+}
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Event
 }   // namespace Zen

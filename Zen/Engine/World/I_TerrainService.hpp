@@ -36,6 +36,7 @@
 #include <Zen/Core/Event/Event.hpp>
 
 #include <map>
+#include <string>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -70,7 +71,7 @@ public:
     typedef Memory::managed_weak_ptr<I_TerrainService>                  wpTerrainService_type;
     typedef Event::Event<wpTerrainService_type>                         terrainServiceEvent_type;
     typedef std::map<std::string, std::string>                          config_type;
-    typedef Memory::managed_ptr<Engine::Physics::I_PhysicsZone>        pPhysicsZone_type;
+    typedef Memory::managed_ptr<Engine::Physics::I_PhysicsZone>			pPhysicsZone_type;
     typedef Memory::managed_ptr<I_Terrain>                              pTerrain_type;
     typedef Memory::managed_weak_ptr<I_Terrain>                         wpTerrain_type;
 
@@ -93,7 +94,7 @@ public:
     virtual pPhysicsResourceService_type getPhysicsResourceService(void) = 0;
     virtual pRenderingService_type getRenderingService(void) = 0;
     virtual pRenderingResourceService_type getRenderingResourceService(void) = 0;
-    virtual pTerrain_type createTerrain(void) = 0;
+    virtual pTerrain_type createTerrain(config_type& _physicsConfig, config_type& _renderingConfig) = 0;
     /// @}
 
     /// @name I_ScriptableType implementation

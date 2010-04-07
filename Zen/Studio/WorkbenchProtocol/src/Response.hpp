@@ -31,6 +31,7 @@
 #include "Message.hpp"
 
 #include <Zen/Enterprise/AppServer/I_Response.hpp>
+#include <Zen/Enterprise/AppServer/I_MessageType.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -47,8 +48,8 @@ namespace Workbench {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class Response
-:   public virtual Zen::Studio::Workbench::Message
-,   public Zen::Enterprise::AppServer::I_Response
+:   public Zen::Studio::Workbench::Message
+,   public virtual Zen::Enterprise::AppServer::I_Response
 {
     /// @name Types
     /// @{
@@ -61,7 +62,8 @@ public:
     virtual pEndpoint_type getSourceEndpoint() { return Message::getSourceEndpoint(); }
     virtual pEndpoint_type getDestinationEndpoint() { return Message::getDestinationEndpoint(); }
     virtual pMessageHeader_type getMessageHeader() const { return Message::getMessageHeader(); }
-    virtual unsigned int getMessageId() const { return Message::getMessageId(); }
+    virtual boost::uint32_t getMessageId() const { return Message::getMessageId(); }
+    virtual pMessageType_type getMessageType() const { return Message::getMessageType(); }
     /// @}
     
     /// @name Zen::Enterprise::AppServer::I_Response implementation
@@ -75,15 +77,13 @@ public:
 protected:
              Response(pMessageHeader_type _pMessageHeader,
                      pEndpoint_type _pSourceEndpoint,
-                     pEndpoint_type _pDestinationEndpoint,
-                     unsigned int _requestMessageId);
+                     pEndpoint_type _pDestinationEndpoint);
     virtual ~Response();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
-    unsigned int    m_requestMessageId;
     /// @}
 
 };  // class Response

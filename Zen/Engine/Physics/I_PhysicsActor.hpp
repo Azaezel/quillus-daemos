@@ -70,7 +70,7 @@ public:
 
     class I_TransformEventData;
     class I_ApplyForcesEventData;
-	class I_BeginCollisionEventData;
+    class I_BeginCollisionEventData;
     class I_DuringCollisionEventData;
     class I_EndCollisionEventData;
 
@@ -83,20 +83,20 @@ public:
     typedef Event::Event<wpPhysicsActor_type>               PhysicsActorEvent_type;
     typedef Event::Event<I_TransformEventData&>             TransformEvent_type;
     typedef Event::Event<I_ApplyForcesEventData&>           ApplyForcesEvent_type;
-	typedef Event::Event<I_BeginCollisionEventData&>        BeginCollisionEvent_type;
-	typedef Event::Event<I_DuringCollisionEventData&>       DuringCollisionEvent_type;
-	typedef Event::Event<I_EndCollisionEventData&>          EndCollisionEvent_type;
-	typedef Memory::managed_ptr<Zen::Engine::Core::I_GameObject> pGameObject_type;
+    typedef Event::Event<I_BeginCollisionEventData&>        BeginCollisionEvent_type;
+    typedef Event::Event<I_DuringCollisionEventData&>       DuringCollisionEvent_type;
+    typedef Event::Event<I_EndCollisionEventData&>          EndCollisionEvent_type;
+    typedef Memory::managed_ptr<Zen::Engine::Core::I_GameObject> pGameObject_type;
     /// @}
 
     /// @name I_PhysicsActor interface
     /// @{
 public:
-	/// Set the game object associated with this physics actor.
-	virtual void setGameObject(pGameObject_type _pGameObject) = 0;
+    /// Set the game object associated with this physics actor.
+    virtual void setGameObject(pGameObject_type _pGameObject) = 0;
 
-	/// Get the game object associated with this physics actor.
-	virtual pGameObject_type getGameObject() = 0;
+    /// Get the game object associated with this physics actor.
+    virtual pGameObject_type getGameObject() = 0;
 
     virtual void setCollisionShape(pCollisionShape_type _pCollisionShape) = 0;
     virtual pCollisionShape_type getCollisionShape() = 0;
@@ -161,10 +161,10 @@ public:
     virtual int getActivationState() = 0;
 
     /// @todo Use I_PhysicsGroup& instead of int.
-	virtual void setCollisionGroup(const int _group) = 0;
+    virtual void setCollisionGroup(const int _group) = 0;
 
     /// @todo Use I_PhysicsGroup& instead of int.
-	virtual const int getCollisionGroup() const = 0;
+    virtual const int getCollisionGroup() const = 0;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -193,14 +193,14 @@ public:
     /// shape for every frame that it is active.
     ApplyForcesEvent_type onApplyForcesEvent;
 
-	/// This event is fired once the Axis Aligned Bounding Box (AABB) of the shape intersects that of another
-	BeginCollisionEvent_type onBoundBoxCollisionEvent;
+    /// This event is fired once the Axis Aligned Bounding Box (AABB) of the shape intersects that of another
+    BeginCollisionEvent_type onBoundBoxCollisionEvent;
 
-	/// This event is fired while the physics engine determines two objects are colliding
-	DuringCollisionEvent_type onCollisionEvent;
+    /// This event is fired while the physics engine determines two objects are colliding
+    DuringCollisionEvent_type onCollisionEvent;
 
-	/// This event is fired after the physics engine determines two objects are colliding and acts on it
-	EndCollisionEvent_type onCollisionResolutionEvent;
+    /// This event is fired after the physics engine determines two objects are colliding and acts on it
+    EndCollisionEvent_type onCollisionResolutionEvent;
     /// @}
 
     /// @name 'Structors
@@ -216,11 +216,11 @@ public:
     class PHYSICS_DLL_LINK I_TransformEventData
     {
     public:
-        /// Get the Physics Shape related to this event.
-        virtual I_PhysicsActor& getActor() = 0;
+    /// Get the Physics Shape related to this event.
+    virtual I_PhysicsActor& getActor() = 0;
 
-        /// Get the matrix of the future transform.
-        virtual const Math::Matrix4& getTransform() const = 0;
+    /// Get the matrix of the future transform.
+    virtual const Math::Matrix4& getTransform() const = 0;
 
     protected:
                  I_TransformEventData();
@@ -348,9 +348,7 @@ public:
     };  // interface I_EndCollisionEventData
 
     /// @}
-	public:
-		bool m_IsStatic;
-		Math::Real m_mass;
+
 };  // interface I_PhysicsActor
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

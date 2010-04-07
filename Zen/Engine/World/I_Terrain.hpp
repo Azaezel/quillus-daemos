@@ -94,7 +94,7 @@ public:
     /// @name I_ScriptableType implementation
     /// @{
 public:
-    /// This is implemented to return "TerrainService"
+    /// This is implemented to return "Terrain"
     /// Override this method if you create a derived type
     virtual const std::string& getScriptTypeName();
     /// @}

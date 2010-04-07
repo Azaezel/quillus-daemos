@@ -1,3 +1,4 @@
+print("=============\nLoading GameClient scripts...\n============")
 
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
@@ -23,6 +24,8 @@ end
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 function GameClient:initialize()
+    self:init();
+    
 	rootGroup = self:getRootGroup()
 
 	self:createActions()
@@ -40,8 +43,7 @@ end
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 function GameClient:getActionMap(actionMapName)
-    -- This is in Game now, not GameClient
-    return self:getActionMap(actionMapName)
+    return eventService:getActionMap(actionMapName or "default")
 end
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
@@ -62,8 +64,102 @@ function GameClient:createDefaultMappings()
 end
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+function GameClient:createTerrain()
+    local terrainService = self:getGame():getTerrainService(); 
+    terrainService:setPhysicsZone(self.zone);
+    
+    local matXfm = Math.Matrix4();
+    matXfm:setXYZRotation(0, 0, 0);
+    matXfm:setPosition(0, 0, 0);
+    
+    local physicsConfig = Utility.Config( 
+    {
+        ["type"]          = "terrain",
+        ["terrainType"]   = "heightfield",
+		["fileName"]      = "terrain.raw",
+		["width"]         = 2048,
+		["widthSamples"]  = 512,
+		["depth"]         = 2048,
+		["depthSamples"]  = 512,
+		["scale"]         = 1.0,
+		["thickness"]     = 1.0,
+		["wrap"]          = 1,
+    });
+    
+    local renderingConfig = Utility.Config(
+    {
+        ["type"]          = "terrain",
+        ["fileName"]      = "terrain.cfg",
+    });
+    
+    self.terrain = terrainService:createTerrain(physicsConfig, renderingConfig);
+    
+    -- TODO set physics material and collision group?
+    
+end
+
+-- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+function GameClient:createSky()
+    local skyService = self:getGame():getSkyService();
+    
+    local skyConfig = Utility.Config(
+    {
+        ["type"]         = "skybox",
+        ["resourceName"] = "SteveCube",
+    });
+    
+    self.sky = skyService:createSky(skyConfig);
+end
+
+-- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+function GameClient:createSceneLighting()
+    local sceneService = self:base():getSceneService();
+
+    if (sceneService == nil) then
+        print("Error getting scene service.");
+    end
+    
+    sceneService:setAmbientLight(0.8, 0.8, 0.8, 1.0);
+    
+    self.lights = {};
+    self.lights[1] = sceneService:createLight("default", "Light");
+    self.lights[1]:setPosition(5000, 5000, 5000);
+end
+
+-- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 function GameClient:createScene()
     print("=============\nCreate Scene...\n============")
+    local minSize = Math.Vector3(-2000.0, -4000.0, -2000.0);
+    local maxSize = Math.Vector3( 2000.0,  2000.0,  2000.0);
+
+    self.zone = self:getGame():getPhysicsService():createZone();
+    self.zone:setBoundary(minSize, maxSize);
+
+    --self:setCurrentPhysicsZone(self.zone);
+
+    -- Load the terrain
+    self:createTerrain();
+
+    -- Load the sky
+    self:createSky();
+
+    -- Create the sceen lighting    
+    self:createSceneLighting();
+    
+    local canvas = self:base():getRenderingCanvas();
+    
+    canvas:createCamera("chase");
+    
+    local camera = canvas:selectCamera("chase");
+    
+    camera:setNearClipDistance(0.01);
+    camera:setFarClipDistance(99999*6);
+    --camera:setAspectRatio(canvas:getWidth() / canvas:getHeight());
+    camera:setAspectRatio(800/600);
+    
+    -- local fov = Math.Degree(60.0);
+    local fov = Math.Radian(1.0471975512);
+    camera:setHorizontalFOV(fov);
 end
 
 -- ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
@@ -75,4 +171,3 @@ function GameClient:testAction(action)
     end
 
 end
-

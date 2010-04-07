@@ -96,7 +96,16 @@ public:
     /// @{
 public:
 	/// Initialise and attach the service to a view and an input service.
-    virtual void initialise(Rendering::I_View & _view, Input::I_InputService& _input) = 0;
+    /// @param _pMousePublisher optional mouse event publisher.  The widget
+    ///		service will use this mouse publisher as a source for mouse
+    ///		input events.  Use NULL if you do not want to send mouse events
+    ///		to the widget service.
+    /// @param _pKeyPublisher optional key event publisher.  The widget service
+    ///		will use this mouse publisher as a source for key input events.
+    ///		Use NULL if you do not want to send key events to the widget service.
+    virtual void initialise(Rendering::I_View & _view,
+    		Input::I_MousePublisher* _pMousePublisher = NULL,
+    		Input::I_KeyPublisher* _pKeyPublisher = NULL) = 0;
 
     // These methods are deprecated.  I_View (or I_RenderingCanvas?) or something along
     // those lines need to indicate when it's time for the I_WidgetService to
@@ -125,8 +134,8 @@ public:
     /// Set the default font
     virtual void setDefaultFont(const std::string& _font) = 0;
 
-    // These methods are deprecated.  See the events below for the
-    // reason.
+    // These methods are deprecated. Use the I_MousePublisher and I_KeyPublisher
+    // in initialize() instead.
 #if 0	// deprecated
 	/// Inject a key press into the WidgetService
 	virtual void onKeyPress(key_type _key) = 0;

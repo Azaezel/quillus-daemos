@@ -52,21 +52,16 @@ SubscribeModelResponse::pMessageType_type SubscribeModelResponse::sm_pType;
 Zen::Enterprise::AppServer::I_MessageRegistry* SubscribeModelResponse::sm_pMessageRegistry = NULL;
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SubscribeModelResponse::SubscribeModelResponse(pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint,
-                            unsigned int _requestMessageId)
-:   Message(createMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint)
-,   Response(getMessageHeader(), _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId)
-        
+                           pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId)
+:   Response(SubscribeModelResponse::createMessageHeader(getNewMessageId(), _requestMessageId), _pSourceEndpoint, _pDestinationEndpoint)        
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SubscribeModelResponse::SubscribeModelResponse(pMessageHeader_type _pMessageHeader,
                              pEndpoint_type _pSourceEndpoint,
-                             pEndpoint_type _pDestinationEndpoint,
-                            unsigned int _requestMessageId)
-:   Message(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint)
-,   Response(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint, _requestMessageId) 
+                             pEndpoint_type _pDestinationEndpoint)            
+:   Response(_pMessageHeader, _pSourceEndpoint, _pDestinationEndpoint) 
 {
 }
 
@@ -113,9 +108,9 @@ SubscribeModelResponse::registerMessage(Zen::Enterprise::AppServer::I_Applicatio
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SubscribeModelResponse::pMessageHeader_type
-SubscribeModelResponse::createMessageHeader()
+SubscribeModelResponse::createMessageHeader(boost::uint32_t _messageId, boost::uint32_t _requestId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId,_requestId);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -142,9 +137,16 @@ SubscribeModelResponse::getDestinationLocation()
 {
     if(!sm_pResourceLocation.isValid())
     {
-        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginServer");
+        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginClient");
     }
     return sm_pResourceLocation;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SubscribeModelResponse::pMessageType_type
+SubscribeModelResponse::getStaticMessageType()
+{
+    return sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

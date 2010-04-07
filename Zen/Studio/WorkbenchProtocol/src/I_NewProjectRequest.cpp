@@ -58,6 +58,13 @@ I_NewProjectRequest::create(pEndpoint_type _pSourceEndpoint,
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_NewProjectRequest::pMessageType_type
+I_NewProjectRequest::getStaticMessageType()			   
+{
+    return NewProjectRequest::sm_pType;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Zen
 }   // namespace Studio
 }   // namespace Workbench

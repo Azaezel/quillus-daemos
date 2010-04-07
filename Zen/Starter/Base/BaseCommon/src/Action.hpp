@@ -21,6 +21,7 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#if 0 // deprecated
 #ifndef ZEN_ENGINE_BASE_ACTION_HPP_INCLUDED
 #define ZEN_ENGINE_BASE_ACTION_HPP_INCLUDED
 
@@ -99,3 +100,4 @@ private:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #endif // ZEN_ENGINE_BASE_ACTION_HPP_INCLUDED
+#endif // deprecated

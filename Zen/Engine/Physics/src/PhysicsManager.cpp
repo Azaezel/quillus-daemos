@@ -28,12 +28,16 @@
 
 #include "PhysicsManager.hpp"
 #include "../I_PhysicsActor.hpp"
+#include "../I_PhysicsZone.hpp"
+#include "../I_PhysicsService.hpp"
 
 #include <Zen/Core/Math/Point3.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
-#include <Zen/Core/Scripting/I_ScriptModule.hpp>
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
+#include <Zen/Core/Scripting.hpp>
+//#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
+//#include <Zen/Core/Scripting/I_ScriptModule.hpp>
+//#include <Zen/Core/Scripting/I_ScriptType.hpp>
+
 
 #include <boost/any.hpp>
 
@@ -110,7 +114,7 @@ PhysicsManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
     registerScriptTypes(_pEngine);
 
     /// Register all of the existing services
-    if(m_pDefaultScriptEngine == NULL)
+    if(m_pDefaultScriptEngine.isValid())
     {
         Threading::CriticalSection guard(m_physicsServiceCache.getLock());
 
@@ -128,7 +132,7 @@ PhysicsManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
 PhysicsManager::pScriptModule_type
 PhysicsManager::getDefaultScriptModule()
 {
-    return m_pPhysicsModule;
+    return m_pPhysicsModule->getScriptModule();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -230,32 +234,52 @@ void
 PhysicsManager::registerScriptTypes(pScriptEngine_type _pEngine)
 {
     /// Don't bother if the types have already been initialized
-    if (m_scriptTypesInitialized == true || _pEngine == NULL)
+    if (m_scriptTypesInitialized == true || !_pEngine.isValid())
         return;
 
     // Create a Physics module
-    m_pPhysicsModule = _pEngine->createScriptModule("Physics", "Zen Physics Module");
+    m_pPhysicsModule = new Scripting::script_module(_pEngine, "Physics", "Zen Physics Module");
+    //m_pPhysicsModule = _pEngine->createScriptModule("Physics", "Zen Physics Module");
 
     // Expose I_PhysicsService to the Script Engine
+    m_pPhysicsModule->addType<I_PhysicsService>("PhysicsService", "PhysicsService")
+        .addMethod("createZone", &I_PhysicsService::createZone)
+    ;
     //m_pPhysicsServiceType = m_pPhysicsModule->createScriptType("PhysicsService", "Physics Service", 0);
     //m_pSceneServiceType->addMethod("createZone", "Create a Physics World", createChildNode);
 
     // Expose I_PhysicsWord to the Script Engine
-    m_pPhysicsZoneType = m_pPhysicsModule->createScriptType("PhysicsZone", "Physics Zone", 0);
+    m_pPhysicsModule->addType<I_PhysicsZone>("PhysicsZone", "Physics Zone")
+        .addMethod("setBoundary", &I_PhysicsZone::setBoundary)
+    		// TODO add the methods needed by tutorial 4
+    		//.addMethod()
+	;
+    //m_pPhysicsZoneType = m_pPhysicsModule->createScriptType("PhysicsZone", "Physics Zone", 0);
     //m_pPhysicsZoneType->addMethod("setZoneSize", "Set the size of the world.", setZoneSize);
     //m_pPhysicsZoneType->addMethod("createShape", "", createShape);
 
     // Expose I_PhysicsActor to the Script Engine
-    m_pPhysicsActorType = m_pPhysicsModule->createScriptType("PhysicsActor", "Physics Actor", 0);
-    m_pPhysicsActorType->addMethod("setMass", "", setMass);
-    m_pPhysicsActorType->addMethod("setPosition", "", setPosition);
-    m_pPhysicsActorType->addMethod("getPosition", "", getPosition);
-    m_pPhysicsActorType->addMethod("setOrientation", "", setOrientation);
-    m_pPhysicsActorType->addMethod("setLinearVelocity", "", setLinearVelocity);
-    m_pPhysicsActorType->addMethod("getLinearVelocity", "", getLinearVelocity);
-    m_pPhysicsActorType->addMethod("setAngularVelocity", "", setAngularVelocity);
+    m_pPhysicsModule->addType<I_PhysicsActor>("PhysicsActor", "Physics Actor")
+    		.addMethod("setMass", &I_PhysicsActor::setMass)
+    		// TODO add the methods needed by tutorial 4
+	;
+//    m_pPhysicsActorType = m_pPhysicsModule->createScriptType("PhysicsActor", "Physics Actor", 0);
+//    m_pPhysicsActorType->addMethod("setMass", "", setMass);
+//    m_pPhysicsActorType->addMethod("setPosition", "", setPosition);
+//    m_pPhysicsActorType->addMethod("getPosition", "", getPosition);
+//    m_pPhysicsActorType->addMethod("setOrientation", "", setOrientation);
+//    m_pPhysicsActorType->addMethod("setLinearVelocity", "", setLinearVelocity);
+//    m_pPhysicsActorType->addMethod("getLinearVelocity", "", getLinearVelocity);
+//    m_pPhysicsActorType->addMethod("setAngularVelocity", "", setAngularVelocity);
 
+    // TODO Don't activate?  Give the service an opportunity to add more methods.
+    // TODO Eventually support multiple derived script types, which means we
+    // never activate this module.  Instead, the meta data is maintained and
+    // derived types copy that meta data, add more methods, and then activates the
+    // new derived class.
     m_pPhysicsModule->activate();
+
+    m_scriptTypesInitialized = true;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -34,6 +34,8 @@
 #include <Zen/Core/Math/Vector3.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
 
+#include <Zen/Core/Event/I_ActionMap.hpp>
+
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
@@ -128,7 +130,7 @@ GameClient::init()
     game().initPhysicsResourceService("ZNewton");
 
     // For some reason the sky service must be initialized after physics
-    m_base.initSkyService("ZSky");
+    game().initSkyService("ZSky");
 
     // Initialize the Input service
     // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse 
@@ -217,16 +219,22 @@ GameClient::initRenderingService(const std::string& _type, const std::string& _t
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
+GameClient::initRenderingResourceService(const std::string& _type)
+{
+    return m_base.initRenderingResourceService(_type);
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
 GameClient::initTerrainService(const std::string& _type)
 {
-    return m_base.initTerrainService(_type);
+    return game().initTerrainService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 GameClient::initSkyService(const std::string& _type)
 {
-    return m_base.initSkyService(_type);
+    return game().initSkyService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -274,10 +282,10 @@ GameClient::createScene()
     Zen::Engine::World::I_SkyService::config_type skyConfig;
     skyConfig["type"] = "skybox";
     skyConfig["resourceName"] = "SteveCube";
-    m_pSky = m_base.getSkyService().createSky(skyConfig);
+    m_pSky = game().getSkyService()->createSky(skyConfig);
 
-    m_base.getSceneService().setAmbientLight(0.8f, 0.8f, 0.8f, 1.0f);
-    Zen::Engine::Rendering::I_SceneService::pLight_type pLight = m_base.getSceneService().createLight("default", "Light");
+    m_base.getSceneService()->setAmbientLight(0.8f, 0.8f, 0.8f, 1.0f);
+    Zen::Engine::Rendering::I_SceneService::pLight_type pLight = m_base.getSceneService()->createLight("default", "Light");
     pLight->setPosition(500.0f, 500.0f, 500.0f);
 
 }
@@ -296,7 +304,7 @@ void
 GameClient::createDefaultMapping()
 {
     // Map some keys to actions
-    m_base.getKeyMap().mapKeyInput("q", game().getActionMap()["Quit"]);
+    base().getKeyMap().mapKeyInput("q", game().getActionMap()["Quit"]);
 
 }
 

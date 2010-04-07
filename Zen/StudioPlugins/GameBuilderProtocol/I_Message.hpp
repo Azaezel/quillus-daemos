@@ -24,6 +24,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class I_MessageType;
 
 class GAMEBUILDERPROTOCOL_DLL_LINK I_Message
 :   public virtual Zen::Enterprise::AppServer::I_Message
@@ -36,9 +37,6 @@ public:
     /// @name I_Message interface
     /// @{
 public:
-    /// Every single message created on the client has a unique message Id.
-    /// This method returns that value.
-    virtual unsigned int getMessageId() const = 0;
     /// @}
 
     /// @name 'Structors

@@ -167,6 +167,23 @@ XMLConfigurationElement::getChildren(const std::string& _name, I_ConfigurationEl
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+XMLConfigurationElement::getChildren(I_ConfigurationElementVisitor& _visitor) const
+{
+    _visitor.begin();
+
+   children_collection_type::const_iterator iter = m_children.begin();
+
+    while(iter != m_children.end())
+    {
+        _visitor.visit(*iter->second.get());
+        ++iter;
+    }
+
+    _visitor.end();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_ConfigurationElement::const_ptr_type
 XMLConfigurationElement::getChild(const std::string& _name) const
 {

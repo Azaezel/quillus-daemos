@@ -26,6 +26,8 @@
 #ifndef ZEN_ENGINE_WIDGETS_WIDGETS_MANAGER_HPP_INCLUDED
 #define ZEN_ENGINE_WIDGETS_WIDGETS_MANAGER_HPP_INCLUDED
 
+#include <Zen/Core/Scripting.hpp>
+
 #include "../I_WidgetManager.hpp"
 
 #include "../I_WidgetServiceFactory.hpp"
@@ -34,13 +36,8 @@
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Plugins/ServiceCache.hpp>
 
-#include <Zen/Core/Scripting/ObjectReference.hpp>
-
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-    namespace Scripting {
-        class I_ScriptType;
-    }   // namespace Scripting
 namespace Engine {
 namespace Widgets {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -68,11 +65,7 @@ public:
     /// @name WidgetManager implementation
     /// @{
 private:
-    /// Register the script classes with the scripting engine
-    void registerScriptTypes(pScriptEngine_type _pEngine);
-
-    /// Register a service with a script engine
-    void registerScriptEngine(pScriptEngine_type _pEngine, pService_type _pService);
+    void registerWidgetsScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -91,9 +84,7 @@ private:
 
     bool                            m_scriptTypesInitialized;
 
-    pScriptModule_type              m_pWidgetsModule;
-    pScriptType_type                m_pWidgetServiceType;
-    pObjectReference_type           m_pWidgetServiceObjectReference;
+    Zen::Scripting::script_module*  m_pWidgetsModule;
     /// @}
 
 };  // class WidgetManager

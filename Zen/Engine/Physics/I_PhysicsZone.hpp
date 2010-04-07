@@ -111,6 +111,9 @@ public:
     /// @todo TR - Does this actually work?  If not then possibly should remove it.
     virtual void setGravity(const Math::Vector3& _grav) = 0;
 
+    /// Set the zone boundary.
+    virtual void setBoundary(const Math::Vector3& _min, const Math::Vector3& _max) = 0;
+
     /// Create a Physics Actor.
     /// @todo Should more than one actor type be supported here?
     virtual pPhysicsActor_type createActor() = 0;

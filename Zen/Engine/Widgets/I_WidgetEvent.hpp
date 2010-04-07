@@ -32,10 +32,10 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-namespace Engine {
-    namespace Core {
+    namespace Event {
         class I_Action;
     }
+namespace Engine {
 namespace Widgets {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ;
@@ -46,7 +46,7 @@ class WIDGETS_DLL_LINK I_WidgetEvent
 	/// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<Engine::Core::I_Action>         pAction_type;
+    typedef Memory::managed_ptr<Event::I_Action>         pAction_type;
     /// @}
 
     /// @name I_WidgetEvent interface

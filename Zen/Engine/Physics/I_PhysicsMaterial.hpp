@@ -30,8 +30,13 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
+
 #include <Zen/Core/Event/Event.hpp>
+
 #include <Zen/Core/Math/Math.hpp>
+
+#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+#include <Zen/Core/Scripting/ObjectReference.hpp>
 
 #include <boost/noncopyable.hpp>
 #include <string>
@@ -43,20 +48,31 @@ namespace Physics {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class PHYSICS_DLL_LINK I_PhysicsMaterial
+:   public virtual Zen::Scripting::I_ScriptableType
+,   boost::noncopyable
 {
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<I_PhysicsMaterial>            pPhysicsMaterial_type;
-    typedef Memory::managed_weak_ptr<I_PhysicsMaterial>       wpPhysicsMaterial_type;
-    typedef Event::Event<wpPhysicsMaterial_type>              physicsMaterialEvent_type;
+    typedef Zen::Memory::managed_ptr<I_PhysicsMaterial>         pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<I_PhysicsMaterial>  ScriptObjectReference_type;
+
+    typedef Memory::managed_ptr<I_PhysicsMaterial>              pPhysicsMaterial_type;
+    typedef Memory::managed_weak_ptr<I_PhysicsMaterial>         wpPhysicsMaterial_type;
+    typedef Event::Event<wpPhysicsMaterial_type>                physicsMaterialEvent_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_PhysicsMaterial interface
     /// @{
 public:
-    virtual int getMaterialID() = 0;
-    virtual int getDefaultMaterialID() = 0;
+    virtual int getMaterialId() = 0;
+    virtual int getDefaultMaterialId() = 0;
 
     virtual Math::Real getDynamicFriction() = 0;
     virtual Math::Real getStaticFriction() = 0;

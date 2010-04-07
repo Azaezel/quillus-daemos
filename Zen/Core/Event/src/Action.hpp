@@ -54,7 +54,6 @@ public:
     /// @name I_ScriptableType implementation
     /// @{
 public:
-    virtual const std::string& getScriptTypeName();
     virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 

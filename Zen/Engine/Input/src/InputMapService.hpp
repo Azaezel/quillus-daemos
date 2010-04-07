@@ -47,6 +47,7 @@ public:
 public:
     /// Create an input map.
     virtual pKeyMap_type createKeyMap(const std::string& _name);
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -72,6 +73,7 @@ protected:
     /// @name Member Variables
     /// @{
 private:
+    Zen::Scripting::I_ObjectReference*	m_pScriptObject;
     /// @}
 
 };  // class InputMapService

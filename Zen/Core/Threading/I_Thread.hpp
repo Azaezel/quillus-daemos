@@ -62,7 +62,7 @@ public:
     /// Returns a copy of running (kernel-)thread's id, rendered in this 
     /// object's id format (so that you can safely compare it to 
     /// getThreadId()).  Always valid.
-    virtual ThreadId getCurrentThreadId() const = 0;
+    static ThreadId getCurrentThreadId();
 
     /// Returns a copy of this object's id. Not valid until after start().
     virtual const ThreadId& getThreadId() const = 0; 

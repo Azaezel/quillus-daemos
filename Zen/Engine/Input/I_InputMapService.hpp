@@ -27,10 +27,13 @@
 #include "Configuration.hpp"
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+
 #include <Zen/Core/Event/Event.hpp>
+
 #include <Zen/Core/Plugins/I_Service.hpp>
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+
+#include <Zen/Core/Scripting.hpp>
 
 #include <string>
 #include <map>
@@ -43,15 +46,18 @@ namespace Input {
 class I_KeyMap;
 
 /// Input Map Service.
-/// This service maps key and other input into actions.
+/// This service maps key strokes and other inputs into actions.
 class INPUTMANAGER_DLL_LINK I_InputMapService
 :   public virtual Zen::Scripting::I_ScriptableType
+,	public Zen::Memory::managed_self_ref<I_InputMapService>
 {
     /// @name Types
     /// @{
 public:
     typedef Memory::managed_ptr<I_InputMapService>          pScriptObject_type;
     typedef Scripting::ObjectReference<I_InputMapService>   ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                      ScriptWrapper_type;
+    typedef ScriptWrapper_type*                             pScriptWrapper_type;
 
     typedef Zen::Memory::managed_ptr<I_KeyMap>              pKeyMap_type;
     /// @}
@@ -59,8 +65,12 @@ public:
     /// @name I_InputMapService interface
     /// @{
 public:
-    /// Create an input map.
+    /// Create an key map.
+    /// @see I_KeyMap.
     virtual pKeyMap_type createKeyMap(const std::string& _name) = 0;
+
+    /// @todo Should this be moved to I_ScriptableType?
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -83,7 +93,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Input
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_InputMapService is managed by a factory
     template<>

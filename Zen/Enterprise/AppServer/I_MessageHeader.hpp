@@ -29,6 +29,7 @@
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
 #include <boost/noncopyable.hpp>
+#include <boost/cstdint.hpp>
 
 namespace boost {
 namespace archive {
@@ -57,6 +58,16 @@ public:
 public:
     /// Get the type of this message.
     virtual pMessageType_type getMessageType() const = 0;
+
+    /// Get the message id of this message.
+    virtual boost::uint32_t getMessageId() const = 0;
+
+    /// Get the associated request id of this message.
+    /// This value is 0 if this message is a request a message, and
+    /// non-zero if this message is a response.  This value
+    /// is the message Id of the request that resulted in the
+    /// response.
+    virtual boost::uint32_t getRequestId() const = 0;
 
     /// Serialize the message header.
     /// Deserialization is done in I_MessageRegistry::getMessageHeader().

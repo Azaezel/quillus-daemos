@@ -49,12 +49,19 @@ I_SubscribeModelResponse::~I_SubscribeModelResponse()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_SubscribeModelResponse::pResponse_type
 I_SubscribeModelResponse::create(pEndpoint_type _pSourceEndpoint,
-					   pEndpoint_type _pDestinationEndpoint, unsigned int _requestMessageId)			   
+					   pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId)			   
 {
     SubscribeModelResponse* pSubscribeModelResponse(new SubscribeModelResponse(_pSourceEndpoint,
                                           _pDestinationEndpoint, _requestMessageId));
 
     return pResponse_type((Response*)pSubscribeModelResponse, SubscribeModelResponse::destroy);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_SubscribeModelResponse::pMessageType_type
+I_SubscribeModelResponse::getStaticMessageType()			   
+{
+    return SubscribeModelResponse::sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

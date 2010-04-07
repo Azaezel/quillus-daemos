@@ -74,6 +74,7 @@ public:
     virtual Zen::Engine::Widgets::I_WidgetService& getWidgetService();
     virtual Zen::Engine::Rendering::I_RenderingCanvas& getRenderingCanvas();
     virtual bool initRenderingService(const std::string& _type, const std::string& _title, int _xRes, int _yRes);
+    bool initRenderingResourceService(const std::string& _type);
     virtual bool initTerrainService(const std::string& _type);
     virtual bool initSkyService(const std::string& _type);
     virtual bool initInputService(const std::string& _type);

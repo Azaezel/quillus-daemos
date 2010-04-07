@@ -29,8 +29,7 @@
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Event/Event.hpp>
 #include <Zen/Core/Plugins/I_Service.hpp>
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Engine/Input/I_KeyPublisher.hpp>
 #include <Zen/Engine/Input/I_MousePublisher.hpp>
@@ -78,6 +77,8 @@ public:
 
     typedef Memory::managed_ptr<I_InputService>             pScriptObject_type;
     typedef Scripting::ObjectReference<I_InputService>      ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                      ScriptWrapper_type;
+    typedef ScriptWrapper_type*                             pScriptWrapper_type;
 
     typedef Zen::Memory::managed_ptr<Zen::Plugins::I_Service>    pAbstractService_type;
 
@@ -119,6 +120,9 @@ public:
     /// frame that is rendered.
     virtual void processEvents() = 0;
 
+    /// @todo Should this be moved to I_ScriptableType?
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
+
 protected:
     /// Change the key modifier state (shift,ctrl,alt,win,etc.)
     virtual void changeState(I_KeyModifierState* _pState) = 0;
@@ -129,7 +133,7 @@ protected:
 public:
     /// This is implemented to return "InputService"
     /// Override this method if you create a derived type
-    const std::string& getScriptTypeName();
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name Static methods

@@ -24,21 +24,17 @@
 #ifndef ZEN_ENGINE_RENDERING_SCENE_MANAGER_HPP_INCLUDED
 #define ZEN_ENGINE_RENDERING_SCENE_MANAGER_HPP_INCLUDED
 
+#include <Zen/Core/Scripting.hpp>
+
 #include "../I_SceneManager.hpp"
 
 #include "../I_SceneServiceFactory.hpp"
 #include "../I_SceneService.hpp"
 
-#include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Plugins/ServiceCache.hpp>
-
-#include <Zen/Core/Scripting/ObjectReference.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-    namespace Scripting {
-        class I_ScriptType;
-    }   // namespace Scripting
 namespace Engine {
 namespace Rendering {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -49,28 +45,22 @@ class SceneManager
     /// @name Types
     /// @{
 public:
-    typedef Scripting::ObjectReference<I_SceneService>          ObjectReference_type;
-    typedef Memory::managed_ptr<ObjectReference_type>           pObjectReference_type;
-    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptType>   pScriptType_type;
-    typedef Zen::Plugins::ServiceCache<I_SceneService>          scene_service_cache_type;
+    typedef Zen::Plugins::ServiceCache<I_SceneService, I_SceneServiceFactory>   SceneServiceCache_type;
     /// @}
 
     /// @name I_SceneManager implementation
     /// @{
 public:
-    virtual pSceneService_type create(const std::string& _type);
+    virtual pSceneService_type create(const std::string& _type, const std::string& _sceneName, const int _sceneType);
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
-    virtual pScriptModule_type getDefaultScriptModule();
+    virtual pScriptModule_type getDefaultSceneScriptModule();
     /// @}
 
     /// @name Additional Implementation
     /// @{
 private:
-    /// Register the script classes with the scripting engine
-    void registerScriptTypes(pScriptEngine_type _pEngine);
-
-    /// Register a service with a script engine
-    void registerScriptEngine(pScriptEngine_type _pEngine, pSceneService_type _pService);
+    /// Register the script module with all of the previously created scene services.
+    void registerSceneScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -83,13 +73,13 @@ public:
     /// @name Member Variables
     /// @{
 private:
-    scene_service_cache_type        m_sceneServiceCache;
+    SceneServiceCache_type          m_sceneServiceCache;
 
     pScriptEngine_type              m_pDefaultScriptEngine;
 
     bool                            m_scriptTypesInitialized;
 
-    pScriptModule_type              m_pModule;
+    Zen::Scripting::script_module*	m_pSceneModule;
     /// @}
 
 };	// class SceneManager

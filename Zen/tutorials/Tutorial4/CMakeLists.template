@@ -25,7 +25,7 @@ set ( Tutorial4_SRC
 <%SourceList%>
     )
 
-add_definitions( -DTUTORIAL4_EXPORTS )
+add_definitions( -DTUTORIAL4_EXPORTS ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 

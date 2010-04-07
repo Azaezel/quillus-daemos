@@ -24,7 +24,7 @@ set ( ZenEnterprise_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZENENTERPRISE_EXPORTS )
+add_definitions( -DZENENTERPRISE_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${LIBXML2_INCLUDE_DIR} )
 
@@ -33,6 +33,8 @@ link_directories ( ${DEV_LIB} ${Boost_LIBRARY_DIRS} )
 add_library ( ZenEnterprise ${LIB_TYPE} ${ZenEnterprise_SRC} )
 
 add_dependencies(ZenEnterprise ZenCore)
+
+message("Boost libraries: ${Boost_LIBRARIES}")
 
 target_link_libraries( ZenEnterprise ZenCore ${Boost_LIBRARIES} )
 

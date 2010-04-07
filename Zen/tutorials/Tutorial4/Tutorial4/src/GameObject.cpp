@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -180,7 +180,7 @@ GameObject::loadRenderable(const std::string& _meshName, const std::string& _mat
     if( !pSceneNode.isValid() )
     {
         wasAttachedToSceneNode = false;
-        pSceneNode = Zen::Engine::Base::I_BaseGameClient::getSingleton().getSceneService().createChildNode(name.str());
+        pSceneNode = Zen::Engine::Base::I_BaseGameClient::getSingleton().getSceneService()->createChildNode(name.str());
     }
 
     pSceneNode->attachObject(*pRenderable.get());

@@ -62,10 +62,20 @@ public:
     typedef Scripting::ObjectReference<I_CollisionShape>        ScriptObjectReference_type;
     typedef Memory::managed_weak_ptr<I_CollisionShape>          wpCollisionShape_type;
     typedef Zen::Event::Event<wpCollisionShape_type>            collisionShapeEvent_type;
+
+    enum CollisionShapeType
+    {
+        NULL_SHAPE,
+        BOX_SHAPE,
+        OVOID_SHAPE,
+        CAPSULE_SHAPE,
+        HEIGHTFIELD_SHAPE
+    };
     /// @}
 
     /// @name I_CollisionShape interface
     /// @{
+    virtual CollisionShapeType getType() = 0;
     /// @}
 
     /// @name I_ScriptableType implementation

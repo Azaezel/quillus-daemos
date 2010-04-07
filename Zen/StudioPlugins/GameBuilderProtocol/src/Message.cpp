@@ -66,14 +66,28 @@ Message::getMessageHeader() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned int 
+boost::uint32_t
 Message::getMessageId() const
+{
+    return getMessageHeader()->getMessageId();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+boost::uint32_t
+Message::getNewMessageId()
 {
     static Zen::Threading::SpinLock sm_spinLock;
     static unsigned int sm_lastId = 0;
 
     Zen::Threading::xCriticalSection lock(sm_spinLock);
-    return ++sm_lastId;
+    return sm_lastId = ++sm_lastId == 0 ? 1 : sm_lastId;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Message::pMessageType_type
+Message::getMessageType() const
+{
+    throw Zen::Utility::runtime_exception("Message::getMessageType(): Error, derived message class must implement this.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

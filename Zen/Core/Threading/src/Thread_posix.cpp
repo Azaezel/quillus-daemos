@@ -119,7 +119,7 @@ Thread_posix::join()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_Thread::ThreadId
-Thread_posix::getCurrentThreadId() const
+Thread_posix::getPosixCurrentThreadId()
 {
     return ThreadId(new NativeThreadId_posix(::pthread_self()));
 }

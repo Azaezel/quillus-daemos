@@ -15,9 +15,10 @@
     <import plugin="ZOgre"/>
     <import plugin="ZInput"/>
     <import plugin="ZLua"/>
-    <import plugin="ZNewton"/>
+    <import plugin="ZODE"/>
     <import plugin="ZTerrain"/>
     <import plugin="ZSky"/>
+    <import plugin="ZCrazyEddie"/>
   </requires>
 
 </application>

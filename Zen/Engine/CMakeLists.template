@@ -24,7 +24,7 @@ set ( ZenEngine_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZENENGINE_EXPORTS )
+add_definitions( -DZENENGINE_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${LIBXML2_INCLUDE_DIR} )
 

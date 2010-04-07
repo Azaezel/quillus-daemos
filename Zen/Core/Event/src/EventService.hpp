@@ -31,6 +31,7 @@
 #include <Zen/Core/Scripting/script_module.hpp>
 
 #include <map>
+#include <string>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -80,19 +81,21 @@ public:
     /// @{
 public:
     pScriptModule_type getScriptModule();
+    const std::string& getName() const;
     /// @}
 
     /// @name 'Structors
     /// @{
 protected:
     friend class EventManager;
-             EventService();
+             EventService(const std::string& _name);
     virtual ~EventService();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
+    std::string                         m_name;
     pScriptEngine_type                  m_pScriptEngine;
     Zen::Scripting::script_module*      m_pScriptModule;
     Scripting::I_ObjectReference*       m_pScriptObject;

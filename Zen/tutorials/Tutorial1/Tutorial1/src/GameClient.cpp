@@ -33,6 +33,8 @@
 #include <Zen/Core/Math/Vector3.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
 
+#include <Zen/Core/Event/I_ActionMap.hpp>
+
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
@@ -138,17 +140,6 @@ GameClient::init()
     createBehaviors();
     createScene();
 
-    Zen::Engine::Core::I_ActionMap& actionMap = game().getActionMap();
-    if (actionMap["onInitDone"].isValid())
-    {
-        std::cout << "hooking up onInitDone" << std::endl;
-        boost::any scriptObject(getScriptObject());
-        actionMap["onInitDone"]->dispatch(scriptObject);
-    }
-    else
-    {
-        std::cout << "Script didn't register handler for onInitDone" << std::endl;
-    }
     return true;
 }
 
@@ -182,16 +173,22 @@ GameClient::initRenderingService(const std::string& _type, const std::string& _t
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
+GameClient::initRenderingResourceService(const std::string& _type)
+{
+    return m_base.initRenderingResourceService(_type);
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
 GameClient::initTerrainService(const std::string& _type)
 {
-    return m_base.initTerrainService(_type);
+    return game().initTerrainService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 GameClient::initSkyService(const std::string& _type)
 {
-    return m_base.initSkyService(_type);
+    return game().initSkyService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -243,7 +240,6 @@ GameClient::createActions()
 {
     // Create some actions
     game().getActionMap().createAction("Quit", boost::bind(&Zen::Engine::Base::I_BaseGameClient::quit, &m_base, _1));
-
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

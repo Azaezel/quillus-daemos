@@ -72,7 +72,7 @@ public:
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine) = 0;
 
     /// Get the default Rendering script module.
-    virtual pScriptModule_type getDefaultScriptModule() = 0;
+    virtual pScriptModule_type getDefaultRenderingScriptModule() = 0;
     /// @}
 
     /// @name Static Methods

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Base Starter Kit
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -26,8 +26,9 @@
 
 #include "../I_BaseGame.hpp"
 
-#include "ActionMap.hpp"
 #include "BehaviorService.hpp"
+
+#include <Zen/Core/Event/I_EventManager.hpp>
 
 #include <map>
 #include <string>
@@ -46,6 +47,7 @@ class BaseGame
     /// @name Types
     /// @{
 public:
+    typedef Zen::Event::I_EventManager::pEventService_type  pEventService_type;
     /// @}
 
     /// @name I_BaseGame implemenetation
@@ -57,8 +59,10 @@ public:
     virtual pPhysicsResourceService_type getPhysicsResourceService();
     virtual pPhysicsZone_type getCurrentPhysicsZone();
     virtual void setCurrentPhysicsZone(pPhysicsZone_type _pPhysicsZone);
-
-    virtual Core::I_ActionMap& getActionMap(const std::string& _actionMapName = "default");
+    virtual bool initTerrainService(const std::string& _type);
+    virtual pTerrainService_type getTerrainService();
+    virtual bool initSkyService(const std::string& _type);
+    virtual pSkyService_type getSkyService();
 
     virtual Core::I_GameGroup& getRootGroup();
 
@@ -74,6 +78,7 @@ public:
 
     virtual pScriptType_type getGameObjectScriptType();
     virtual pScriptType_type getGameGroupScriptType();
+    virtual Event::I_ActionMap& getActionMap();
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -94,13 +99,15 @@ public:
 protected:
     ScriptObjectReference_type*                             m_pScriptObject;
 
-    typedef std::map<std::string, ActionMap*>               ActionMaps_type;
-    ActionMaps_type                                         m_actionMapMap;
     Core::I_GameGroup*                                      m_pMainGroup;
 
-    pPhysicsZone_type                                      m_pPhysicsZone;
+    pPhysicsZone_type                                       m_pPhysicsZone;
     pPhysicsService_type                                    m_pPhysicsService;
     pPhysicsResourceService_type                            m_pPhysicsResourceService;
+
+    pTerrainService_type                                    m_pTerrainService;
+
+    pSkyService_type                                        m_pSkyService;
 
     Zen::Memory::managed_ptr<Navigation::I_NavigationService> m_pNavigationService;
 
@@ -108,6 +115,7 @@ protected:
 
     pScriptEngine_type                                      m_pScriptEngine;
     pScriptModule_type                                      m_pModule;
+    pEventService_type                                      m_pEventService;
 
     pScriptType_type                                        m_pGameScriptType;
     pScriptType_type                                        m_pGameGroupScriptType;

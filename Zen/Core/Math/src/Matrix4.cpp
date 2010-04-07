@@ -92,10 +92,10 @@ Matrix4::Matrix4(init_type _init)
     case INIT_NONE:
         return;
     case INIT_IDENTITY:
-        memcpy(&m_array, &Matrix_Identity.m_array, sizeof(m_array));
+        memcpy(m_array, Matrix_Identity.m_array, sizeof(m_array));
         break;
     case INIT_ZERO:        
-        memcpy(&m_array, &Matrix_Zero.m_array, sizeof(m_array));
+        memcpy(m_array, Matrix_Zero.m_array, sizeof(m_array));
         break;
     }
 }
@@ -109,7 +109,7 @@ Matrix4::~Matrix4()
 void
 Matrix4::identity()
 {
-    memcpy(&m_array, &Matrix_Identity.m_array, sizeof(m_array));
+    memcpy(m_array, Matrix_Identity.m_array, sizeof(m_array));
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

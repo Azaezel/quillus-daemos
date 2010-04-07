@@ -58,6 +58,13 @@ I_SubscribeModelRequest::create(pEndpoint_type _pSourceEndpoint,
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_SubscribeModelRequest::pMessageType_type
+I_SubscribeModelRequest::getStaticMessageType()			   
+{
+    return SubscribeModelRequest::sm_pType;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Zen
 }   // namespace Studio
 }   // namespace Workbench
