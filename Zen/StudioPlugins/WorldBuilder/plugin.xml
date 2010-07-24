@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="WorldBuilder"
+   name="Zen Studio World Builder Plug-in"
+   version="0.6.0"
+   provider-name="IndieZen.com">
+
+    <runtime>
+        <library name="WorldBuilder">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+        <import plugin="Workbench"/>
+        <import plugin="GameBuilder"/>
+    </requires>
+
+    <extension
+        point="Zen::Studio::Workbench::ContributorService"
+        id="WorldBuilder:ContributorService">
+        <contributor-service
+            class="WorldBuilder::ContributorService"
+        />
+    </extension>
+
+</plugin>

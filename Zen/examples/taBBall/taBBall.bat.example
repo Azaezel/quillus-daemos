@@ -1,0 +1,7 @@
+@echo off
+
+set PATH=%PATH%;C:\dev\ogre\lib;C:\dev\ogre\Samples\Common\bin\Debug;C:\dev\newton\dll
+
+C:\dev\bin\ZGameLoader_d.exe client.xml taBBallClient lua scripts\client\init.lua
+
+pause

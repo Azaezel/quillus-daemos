@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZMySQL"
+   name="IndieZen MySQL Plug-in"
+   version="0.1.0"
+   provider-name="IndieZen.org">
+
+	<runtime>
+		<library name="ZMySQL">
+			<export name="*"/>
+		</library>
+	</runtime>
+
+	<requires>
+		<import plugin="Framework"/>
+	</requires>
+
+	<extension
+          point="Zen::Enterprise::Database::DatabaseService"
+          id="ZMySQL"
+          name="Zen MySQL Service"
+          type="mysql">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<database-service
+              class="Zen::ZMySQL::DatabaseService"
+              type="mysql">
+		</database-service>
+	</extension>
+
+</plugin>

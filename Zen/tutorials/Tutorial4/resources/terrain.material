@@ -1,0 +1,13 @@
+material Terrain
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture terrain.jpg
+         }
+      }
+   }
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="zen_debug_dll"
+	OutputDirectory="$(DEV_LIB)"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="$(DEV_HOME);$(BOOST_INCLUDE)"
+	/>
+	<Tool
+		Name="VCLibrarianTool"
+		OutputFile="$(DEV_LIB)$(ProjectName)_d.lib"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		OutputFile="$(DEV_BIN)$(ProjectName)_d.dll"
+		AdditionalLibraryDirectories="$(DEV_LIB);$(DEPENDENCIES_LIB)"
+		ImportLibrary="$(DEV_LIB)$(ProjectName)_d.lib"
+	/>
+</VisualStudioPropertySheet>

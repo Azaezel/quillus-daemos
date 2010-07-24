@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZBoostNetworking"
+   name="IndieZen Boost Networking Plug-in"
+   version="0.4.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZBoostNetworking">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+    </requires>
+
+    <extension
+          point="Zen::Enterprise::AppServer::ProtocolService"
+          id="ZBoostNetworking"
+          name="Web Protocol Service"
+          type="http">
+        <protocol-service
+              class="Zen::Enterprise::AppServer::HTTP::HyperTextTransportProtocolService"
+              >
+        </protocol-service>
+    </extension>
+
+  <extension
+        point="Zen::Enterprise::AppServer::ProtocolService"
+        id="ZBoostNetworking"
+        name="User Datagram Protocol Service"
+        type="udp">
+    <protocol-service
+          class="Zen::Enterprise::AppServer::UDP::UserDatagramProtocolService"
+              >
+    </protocol-service>
+  </extension>
+
+  <extension
+        point="Zen::Enterprise::AppServer::ProtocolService"
+        id="ZBoostNetworking"
+        name="Transmission Control Protocol Service"
+        type="tcp-binary">
+    <protocol-service
+          class="Zen::Enterprise::AppServer::TransmissionControlProtocolService"
+              >
+    </protocol-service>
+  </extension>
+  
+  <extension
+        point="Zen::Enterprise::AppServer::ProtocolService"
+        id="ZBoostNetworking"
+        name="XML Web Protocol Service"
+        type="xml">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <protocol-service
+          class="Zen::Enterprise::AppServer::XML::XMLProtocolService"
+              >
+    </protocol-service>
+  </extension>
+
+</plugin>

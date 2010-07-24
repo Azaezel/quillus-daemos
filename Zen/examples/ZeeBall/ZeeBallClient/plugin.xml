@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugin id="ZeeBallClient" name="ZeeBall Game Client" version="0.1.0" provider-name="www.gamesbysarge.com">
+	<runtime>
+		<library name="ZeeBallClient">
+			<export name="*"/>
+		</library>
+	</runtime>
+	<requires>
+		<import plugin="Framework"/>
+		<import plugin="ZOgre"/>
+		<import plugin="ZCam"/>
+	</requires>
+	<extension point="Zen::Engine::Client::GameClient" id="ZeeBall" name="Games by Sarge Pong Game Client" type="ZeeBallClient">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+
+		<game-client class="ZeeBall::Client::GameClient" type="ZeeBallClient"/>
+	</extension>
+</plugin>

@@ -1,0 +1,15 @@
+// wall material definition
+material bat
+{
+	// define one technique for rendering a bat
+	technique
+	{
+		// render a bat in one pass
+		pass
+		{
+			ambient 0.545 0 0.545
+			diffuse 0.545 0 0.545
+			specular 0.545 0 0.545 120
+		}
+	}
+}

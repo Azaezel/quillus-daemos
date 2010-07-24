@@ -1,0 +1,147 @@
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+// Zen Game Engine Framework
+//
+// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2008 - 2009 Matthew Alan Gray
+//
+//  This software is provided 'as-is', without any express or implied
+//  warranty.  In no event will the authors be held liable for any damages
+//  arising from the use of this software.
+//
+//  Permission is granted to anyone to use this software for any purpose,
+//  including commercial applications, and to alter it and redistribute it
+//  freely, subject to the following restrictions:
+//
+//  1. The origin of this software must not be misrepresented; you must not
+//     claim that you wrote the original software. If you use this software
+//     in a product, an acknowledgment in the product documentation would be
+//     appreciated but is not required.
+//  2. Altered source versions must be plainly marked as such, and must not be
+//     misrepresented as being the original software.
+//  3. This notice may not be removed or altered from any source distribution.
+//
+//  Tony Richards trichards@indiezen.com
+//  Matthew Alan Gray mgray@indiezen.org
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#ifndef ZEN_ENGINE_I_RESOURCE_SERVICE_HPP_INCLUDED
+#define ZEN_ENGINE_I_RESOURCE_SERVICE_HPP_INCLUDED
+
+#include "Configuration.hpp"
+
+#include <Zen/Core/Scripting.hpp>
+
+#include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+
+#include <Zen/Core/Event/Event.hpp>
+
+#include <boost/noncopyable.hpp>
+
+#include <string>
+#include <map>
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+namespace Zen {
+namespace Engine {
+namespace Resource {
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class I_Resource;
+class I_CompoundResource;
+class I_ImporterFactory;
+class I_ResourceServiceFactory;
+
+/// Implement a resource service for loading and saving
+/// resources.  Register the service with the I_ResourceManager.
+class RESOURCE_DLL_LINK I_ResourceService
+:   public virtual Zen::Scripting::I_ScriptableType
+,   public Zen::Memory::managed_self_ref<I_ResourceService>
+,   boost::noncopyable
+{
+    /// @name Types
+    /// @{
+public:
+    typedef std::string                             index_type;
+    typedef std::map<std::string, std::string>      config_type;
+    typedef I_ResourceServiceFactory                factory_type;
+
+    typedef Zen::Memory::managed_ptr<I_ResourceService>         pScriptObject_type;
+    typedef Scripting::ObjectReference<I_ResourceService>       ScriptObjectReference_type;
+
+    typedef Zen::Memory::managed_ptr<I_Resource>                pResource_type;
+    typedef Zen::Memory::managed_weak_ptr<I_Resource>           wpResource_type;
+    typedef Zen::Memory::managed_ptr<I_ResourceService>         pResourceService_type;
+    typedef Zen::Memory::managed_weak_ptr<I_ResourceService>    wpResourceService_type;
+    typedef Zen::Event::Event<wpResourceService_type>           ServiceEvent_type;
+    /// @}
+
+    /// @name  I_ResourceService interface
+    /// @{
+public:
+    /// Add a resource location
+    /// @param _path Path of the location
+    /// @param _type Stream plugin type that handles this resource location.
+    /// @param _group Group or Mod associated with this resource location
+    /// @param _recursive True if this resource location is recursive
+    virtual void addResourceLocation(const std::string& _path, const std::string& _type,
+        const std::string& _group, bool _recursive = false) = 0;
+
+    /// After you're finished adding resource locations, you must
+    /// call this method to initialize them.
+    virtual void initialiseAllResourceGroups() = 0;
+
+    /// Load a resource into memory
+    /// @param _config Configuration for the service.
+    /// @return Pointer to new I_Resource instance
+    virtual pResource_type loadResource(config_type& _config) = 0;
+
+    /// Get the name of the singleton exposed to script for this service.
+    virtual const std::string& getScriptSingletonName() const = 0;
+
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    /// This is implemented to return "ResourceService"
+    /// Override this method if you create a derived type
+    virtual const std::string& getScriptTypeName();
+    /// @}
+
+    /// @name Static methods
+    /// @{
+public:
+    static const std::string& getNamespace();
+    static const std::string& getExtensionPointName();
+    /// @}
+
+    /// @name Events
+    /// @{
+public:
+    /// Fired immediately before this object is destroyed.
+    /// The payload is about to be destroyed, so do not keep a reference of it around.
+    ServiceEvent_type onDestroyEvent;
+    /// @}
+    /// @name 'Structors
+    /// @{
+protected:
+             I_ResourceService();
+    virtual ~I_ResourceService();
+    /// @}
+
+};  // interface I_ResourceService
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+}   // namespace Resource
+}   // namespace Engine
+namespace Memory
+{
+    /// I_ResourceService is managed by a factory
+    template<>
+    struct is_managed_by_factory<Zen::Engine::Resource::I_ResourceService> : public boost::true_type{};
+}   // namespace Memory
+}   // namespace Zen
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+#endif // ZEN_ENGINE_I_RESOURCE_SERVICE_HPP_INCLUDED

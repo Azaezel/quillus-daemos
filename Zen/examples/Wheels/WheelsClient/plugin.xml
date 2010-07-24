@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="taBBallClient"
+   name="Games by Sarge taBBall Game Client"
+   version="0.1.0"
+   provider-name="GamesBySarge.com">
+
+  <runtime>
+    <library name="WheelsClient">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+    <import plugin="ZOgre"/>
+    <import plugin="ZCam"/>
+  </requires>
+
+  <extension
+        point="Zen::Engine::Client::GameClient"
+        id="Wheels"
+        name="Wheels Sample Game Client"
+        type="WheelsClient">
+    <!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+    <rendering-service
+          class="Zen::Wheels::WheelsClient"
+          type="WheelsClient">
+    </rendering-service>
+  </extension>
+
+</plugin>
