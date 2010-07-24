@@ -28,6 +28,7 @@
 #ifndef ZEN_THREADING_THREAD_WIN32_HPP_INCLUDED
 #define ZEN_THREADING_THREAD_WIN32_HPP_INCLUDED
 
+#if defined(HOST_WIN32)
 #include "../I_Thread.hpp"
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -55,9 +56,50 @@ public:
     /// @name I_Thread implementation
     /// @{
 public:
-	virtual void start();
-	virtual void stop();
-	virtual void join();
+    virtual void start();
+    virtual void stop();
+    virtual void join();
+    static ThreadId getWin32CurrentThreadId();
+    virtual const ThreadId& getThreadId() const;
+    /// @}
+
+    /// @name Inner classes
+    /// @{
+public:
+    class NativeThreadId_win32
+    :   public I_Thread::ThreadId::I_NativeThreadId
+    {
+        /// @name Friend declarations
+        /// @{
+    private:
+        friend class Thread_win32;
+        /// @}
+
+        /// @name NativeThreadId_win32 implementation
+        /// @{
+    public:
+        virtual bool operator==(const I_NativeThreadId& _otherId) const;
+        virtual bool operator!=(const I_NativeThreadId& _otherId) const;
+        virtual bool operator< (const I_NativeThreadId& _otherId) const;
+        virtual I_NativeThreadId* clone() const;
+        virtual std::string toString() const;
+        /// @}
+
+        /// @name 'Structors
+        /// @{
+    public:
+                 NativeThreadId_win32() : m_nativeThreadId() {}
+                 NativeThreadId_win32(::DWORD const _id) : m_nativeThreadId(_id) {}
+        virtual ~NativeThreadId_win32() {}
+        /// @}
+
+        /// @name Member variables
+        /// @{
+    private:
+        ::DWORD m_nativeThreadId;
+        /// @}
+
+    };  // class NativeThreadId_win32
     /// @}
 
     /// @name 'Structors
@@ -79,9 +121,9 @@ public:
 private:
     I_Runnable*		m_pRunnable;
     ::HANDLE		m_threadHandle;
+    ThreadId        m_threadId;
     volatile bool   m_isStarted;
     volatile bool   m_isJoined;
-	DWORD			m_threadId;
 	/// @}
 
 };	// interface Thread_win32
@@ -90,5 +132,7 @@ private:
 }   // namespace Threading
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+#endif // HOST_WIN32
 
 #endif // ZEN_THREADING_THREAD_WIN32_HPP_INCLUDED

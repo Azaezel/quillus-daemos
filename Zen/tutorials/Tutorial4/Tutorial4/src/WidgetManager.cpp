@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -65,7 +65,7 @@ WidgetManager::~WidgetManager()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event)
+WidgetManager::handleMouseMoveEvent(pMouseMoveEvent_type _pEvent)
 {
 	static int cursorVisible = 0;
     static bool widgetMouseVisible = false;
@@ -74,10 +74,12 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
         m_gameClient.base().getWidgetService()
     );
 
-	if ((unsigned int)_event.getX() == m_gameClient.base().getRenderingCanvas().getWidth() ||
-		(unsigned int)_event.getY() == m_gameClient.base().getRenderingCanvas().getHeight() ||
-		_event.getX() == 0 ||
-		_event.getY() == 0)
+    // TR This code is not working on Linux for some reason... dunno why.
+#if 0
+	if ((unsigned int)_pEvent->getX() == m_gameClient.base().getRenderingCanvas().getWidth() ||
+		(unsigned int)_pEvent->getY() == m_gameClient.base().getRenderingCanvas().getHeight() ||
+		_pEvent->getX() == 0 ||
+		_pEvent->getY() == 0)
     {
         // Show the OS Cursor; might need to do it more than once
 		while (cursorVisible < 0)
@@ -103,7 +105,8 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
         // Hide the OS cursor; 
 		while (cursorVisible > -1)
 		{
-            widgetService.hideMouseCursor();
+            // TR - Why does this deadlock on Linux
+            //widgetService.hideMouseCursor();
 		}
 
         // Tell the widet service to show the mouse
@@ -116,10 +119,11 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
             widgetMouseVisible = true;
         }
     }
+#endif
 
     //m_pWidgetService->setMousePosition(_event.getX(), _event.getY());
 
-    if (_event.getZDelta() != 0)
+    if (_pEvent->getZDelta() != 0)
     {
         //m_pWidgetSErvice->setMouseWheelDelta(_event.getZDelta());
     }
@@ -142,12 +146,12 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
         if (m_rightMouseDown)
         {
 
-            float yaw = _event.getXDelta();
+            float yaw = _pEvent->getXDelta();
             yaw /= -100.0;
             Zen::Math::Radian radian(yaw);
             camera.yaw(radian, true, false);
 
-            float pitch = _event.getYDelta();
+            float pitch = _pEvent->getYDelta();
             pitch /= -100.0;
             Zen::Math::Radian radian2(pitch);
             camera.pitch(radian2, true, true);
@@ -156,7 +160,7 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
     }
 
     // Use the mouse scroll for zoom
-    float zoom = _event.getZDelta();
+    float zoom = _pEvent->getZDelta();
     if (zoom != 0)
     {
         zoom /= -100;
@@ -167,17 +171,16 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
         position *= length;
         camera.setPosition(position.m_x, position.m_y, position.m_z);
     }
-
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-WidgetManager::handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _event)
+WidgetManager::handleMouseClickEvent(pMouseClickEvent_type _pEvent)
 {
     // Right mouse button toggles the cursor
-    if (_event.getButton() == Zen::Engine::Input::BUTTON_ID_RIGHT)
+    if (_pEvent->getButton() == Zen::Engine::Input::BUTTON_ID_RIGHT)
     {
-        if (_event.wasClicked())
+        if (_pEvent->wasClicked())
         {
             m_rightMouseDown = true;
         }
@@ -186,7 +189,7 @@ WidgetManager::handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _eve
             m_rightMouseDown = false;
         }
     }
-    else if (_event.getButton() == Zen::Engine::Input::BUTTON_ID_LEFT)
+    else if (_pEvent->getButton() == Zen::Engine::Input::BUTTON_ID_LEFT)
     {
         // Move the player to the projected point.
     }

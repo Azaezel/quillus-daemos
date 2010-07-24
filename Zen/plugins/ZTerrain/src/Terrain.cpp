@@ -31,8 +31,9 @@
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 #include <Zen/Engine/Resource/I_Resource.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
+#include <Zen/Engine/Physics/I_CollisionShape.hpp>
 
 #include <Zen/Engine/World/I_WorldManager.hpp>
 
@@ -56,16 +57,16 @@ Terrain::~Terrain()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-Terrain::setCollisionShape(Terrain::pCollisionShape_type _shape)
+Terrain::setPhysicsActor(Terrain::pPhysicsActor_type _pActor)
 {
-    m_pCollisionShape = _shape;
+    m_pActor = _pActor;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Terrain::pCollisionShape_type
-Terrain::getCollisionShape(void)
+Terrain::pPhysicsActor_type
+Terrain::getPhysicsActor(void)
 {
-    return m_pCollisionShape;
+    return m_pActor;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -89,6 +90,7 @@ Terrain::loadVisualization(const std::string& _ogreSpecificConfigFileName, const
     // TODO - other scene managers may not accept heightFields for terrains
     Zen::Engine::Resource::I_ResourceService::config_type renderingConfig;
     renderingConfig["type"] = "terrain";
+    renderingConfig["scene"] = "default";
     renderingConfig["fileName"] = _ogreSpecificConfigFileName;
     setResource(m_pTerrainService->getRenderingResourceService()->loadResource(renderingConfig));
 
@@ -99,13 +101,17 @@ Terrain::loadVisualization(const std::string& _ogreSpecificConfigFileName, const
 bool
 Terrain::loadPhysicsFromRaw(const std::string& _rawFileName, size_t _size, float _maxHeight, float _scaleXY, const Math::Matrix4& _transform, bool _bSerialize)
 {
-    Zen::Engine::World::I_Terrain::pCollisionShape_type pShape = m_pTerrainService->getPhysicsZone()->createShape();
-    if (!pShape->initHeightFieldShapeFromRaw(_rawFileName, _size, _maxHeight, _scaleXY, _transform, _bSerialize))
-    {
-        std::cout << "Error: could not setup heightfield shape in Terrain::loadPhysicsFromRaw()." << std::endl;
-    }
+	Zen::Engine::Resource::I_ResourceService::config_type config;
 
-    setCollisionShape(pShape);
+	config["fileName"] = _rawFileName;
+
+	m_pTerrainService->getPhysicsResourceService()->loadResource(config);
+
+    Zen::Engine::World::I_Terrain::pPhysicsActor_type pActor = m_pTerrainService->getPhysicsZone()->createActor();
+    pActor->setCollisionShape(
+        m_pTerrainService->getPhysicsZone()->createHeightFieldShapeFromRaw(_rawFileName, _size, _maxHeight, _scaleXY, _transform, _bSerialize)
+    );
+    setPhysicsActor(pActor);
 
     return true;
 }
@@ -114,14 +120,11 @@ Terrain::loadPhysicsFromRaw(const std::string& _rawFileName, size_t _size, float
 bool
 Terrain::loadPhysicsFromSerialization(const std::string& _serializationFileName, const Math::Matrix4& _transform)
 {
-    Zen::Engine::World::I_Terrain::pCollisionShape_type pShape = m_pTerrainService->getPhysicsZone()->createShape();
-    if (!pShape->initHeightFieldShapeFromSerialization(_serializationFileName, _transform))
-    {
-        std::cout << "Error: could not setup heightfield shape in Terrain::loadPhysicsFromSerialization()." << std::endl;
-        return false;
-    }
-
-    setCollisionShape(pShape);
+    Zen::Engine::World::I_Terrain::pPhysicsActor_type pActor = m_pTerrainService->getPhysicsZone()->createActor();
+    pActor->setCollisionShape(
+        m_pTerrainService->getPhysicsZone()->createHeightFieldShapeFromSerialization(_serializationFileName, _transform)
+    );
+    setPhysicsActor(pActor);
 
     return true;
 }

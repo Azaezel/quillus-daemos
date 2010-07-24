@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Enterprise Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -53,8 +53,11 @@ public:
 public:
     virtual pEndpoint_type getSourceEndpoint() { return Message::getSourceEndpoint(); }
     virtual pEndpoint_type getDestinationEndpoint() { return Message::getDestinationEndpoint(); }
+    virtual pResourceLocation_type getSourceLocation() { return Message::getSourceLocation(); }
     virtual pResourceLocation_type getDestinationLocation() { return Message::getDestinationLocation(); }
     virtual pMessageHeader_type getMessageHeader() const;
+    virtual boost::uint64_t getMessageId() const { return Message::getMessageId(); }
+    virtual pMessageType_type getMessageType() const;
     virtual void serialize(pMessageHeader_type _pHeader, boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
     /// @}

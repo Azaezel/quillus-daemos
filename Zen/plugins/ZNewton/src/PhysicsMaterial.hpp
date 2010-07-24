@@ -32,12 +32,11 @@
 
 #include <Zen/Core/Memory/managed_self_ref.hpp>
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 #include <Zen/Core/Math/Math.hpp>
 
 #include <vector>
-
-#include "PhysicsShape.hpp"
+#include "PhysicsActor.hpp"
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {

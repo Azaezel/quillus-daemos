@@ -74,7 +74,10 @@ public:
     /// @name Class factory 
     /// @{
 public:
-    static pResponse_type createResponse(pEndpoint_type _pDestinationEndpoint, StatusType _status, const std::string& _body, const std::string& _contentType = "text/html");
+    static pResponse_type createResponse(pEndpoint_type _pDestinationEndpoint, 
+        StatusType _status, const std::string& _body, 
+        unsigned int _requestMessageId,
+        const std::string& _contentType = "text/html");
     /// @}
 
     /// @name 'Structors

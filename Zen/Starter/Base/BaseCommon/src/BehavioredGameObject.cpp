@@ -30,7 +30,7 @@
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 #include <Zen/Engine/Rendering/I_SceneService.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 #include <boost/bind.hpp>
 #include <boost/any.hpp>
@@ -111,20 +111,20 @@ BehavioredGameObject::attachToSceneNode(pSceneNode_type _pSceneNode)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-BehavioredGameObject::attachCollisionShape(pCollisionShape_type _pCollisionShape)
+BehavioredGameObject::attachPhysicsActor(pPhysicsActor_type _pPhysicsActor)
 {
-    m_pGameObject->attachCollisionShape(_pCollisionShape);
+    m_pGameObject->attachPhysicsActor(_pPhysicsActor);
 
-    _pCollisionShape->onTransformEvent.connect(boost::bind(&BehavioredGameObject::objectTransformCallback, this, _1));
-    _pCollisionShape->onApplyForcesEvent.connect(boost::bind(&BehavioredGameObject::objectForcesCallback, this, _1));
-	_pCollisionShape->onBoundBoxCollisionEvent.connect(boost::bind(&BehavioredGameObject::objectBoundBoxCollisionCallback, this, _1));
-	_pCollisionShape->onCollisionEvent.connect(boost::bind(&BehavioredGameObject::objectCollisionCallback, this, _1));
-	_pCollisionShape->onCollisionResolutionEvent.connect(boost::bind(&BehavioredGameObject::objectCollisionResolutionCallback, this, _1));
+    _pPhysicsActor->onTransformEvent.connect(boost::bind(&BehavioredGameObject::objectTransformCallback, this, _1));
+    _pPhysicsActor->onApplyForcesEvent.connect(boost::bind(&BehavioredGameObject::objectForcesCallback, this, _1));
+	_pPhysicsActor->onBoundBoxCollisionEvent.connect(boost::bind(&BehavioredGameObject::objectBoundBoxCollisionCallback, this, _1));
+	_pPhysicsActor->onCollisionEvent.connect(boost::bind(&BehavioredGameObject::objectCollisionCallback, this, _1));
+	_pPhysicsActor->onCollisionResolutionEvent.connect(boost::bind(&BehavioredGameObject::objectCollisionResolutionCallback, this, _1));
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-BehavioredGameObject::objectTransformCallback(Physics::I_CollisionShape::I_TransformEventData& _data)
+BehavioredGameObject::objectTransformCallback(Physics::I_PhysicsActor::I_TransformEventData& _data)
 {
     // Use the behaviors
     if (m_pBehaviors)
@@ -146,7 +146,7 @@ BehavioredGameObject::objectTransformCallback(Physics::I_CollisionShape::I_Trans
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-BehavioredGameObject::objectForcesCallback(Physics::I_CollisionShape::I_ApplyForcesEventData& _data)
+BehavioredGameObject::objectForcesCallback(Physics::I_PhysicsActor::I_ApplyForcesEventData& _data)
 {
     if (m_pBehaviors)
     {
@@ -156,7 +156,7 @@ BehavioredGameObject::objectForcesCallback(Physics::I_CollisionShape::I_ApplyFor
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-BehavioredGameObject::objectBoundBoxCollisionCallback(Physics::I_CollisionShape::I_BeginCollisionEventData& _data)
+BehavioredGameObject::objectBoundBoxCollisionCallback(Physics::I_PhysicsActor::I_BeginCollisionEventData& _data)
 {
     if (m_pBehaviors)
     {
@@ -166,7 +166,7 @@ BehavioredGameObject::objectBoundBoxCollisionCallback(Physics::I_CollisionShape:
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-BehavioredGameObject::objectCollisionCallback(Physics::I_CollisionShape::I_DuringCollisionEventData& _data)
+BehavioredGameObject::objectCollisionCallback(Physics::I_PhysicsActor::I_DuringCollisionEventData& _data)
 {
     if (m_pBehaviors)
     {
@@ -176,7 +176,7 @@ BehavioredGameObject::objectCollisionCallback(Physics::I_CollisionShape::I_Durin
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-BehavioredGameObject::objectCollisionResolutionCallback(Physics::I_CollisionShape::I_EndCollisionEventData& _data)
+BehavioredGameObject::objectCollisionResolutionCallback(Physics::I_PhysicsActor::I_EndCollisionEventData& _data)
 {
 	//std::cout << "BehavioredGameObject::objectCollisionCallback";
     if (m_pBehaviors)
@@ -186,15 +186,15 @@ BehavioredGameObject::objectCollisionResolutionCallback(Physics::I_CollisionShap
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-BehavioredGameObject::pCollisionShape_type
-BehavioredGameObject::getCollisionShape()
+BehavioredGameObject::pPhysicsActor_type
+BehavioredGameObject::getPhysicsActor()
 {
-    if(!m_pGameObject->getCollisionShape().isValid())
+    if(!m_pGameObject->getPhysicsActor().isValid())
     {
-        attachCollisionShape(m_game.getCurrentPhysicsZone()->createShape());
+        attachPhysicsActor(m_game.getCurrentPhysicsZone()->createActor());
     }
 
-    return m_pGameObject->getCollisionShape();
+    return m_pGameObject->getPhysicsActor();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

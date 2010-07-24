@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -22,7 +22,7 @@
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -32,7 +32,7 @@
 #include "GameObject.hpp"
 #include "GameClient.hpp"
 
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Engine/Core/I_GameGroup.hpp>
 
@@ -77,7 +77,7 @@ GameObject::getScriptObject()
         m_pScriptObject = new ScriptObjectReference_type
             (
                 m_pBaseObject->getGame().getScriptModule(),
-                sm_pScriptType,
+                m_pBaseObject->getGame().getScriptModule()->getScriptType(getScriptTypeName()),
                 this
             );
     }
@@ -95,44 +95,16 @@ GameObject::getScriptTypeName()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-static Zen::Scripting::I_ObjectReference*
-script_base(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
-{
-    typedef GameObject                              Object_type;
-    typedef Object_type::ScriptObjectReference_type ObjectRef_type;
-    GameObject* const pGameObject = (dynamic_cast<ObjectRef_type*>(_pObject))->getObject();
-    assert(pGameObject != NULL);
-
-    return pGameObject->baseBase().getScriptObject();
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-static void
-script_loadRenderable(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
-{
-    typedef GameObject                              Object_type;
-    typedef Object_type::ScriptObjectReference_type ObjectRef_type;
-    GameObject* const pGameObject = (dynamic_cast<ObjectRef_type*>(_pObject))->getObject();
-    assert(pGameObject != NULL);
-
-    std::string meshName = boost::any_cast<std::string>(_parms[0]);
-    std::string materialName;
-    if (_parms.size() == 2)
-    {
-        materialName = boost::any_cast<std::string>(_parms[1]);
-    }
-
-    pGameObject->loadRenderable(meshName, materialName);
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 GameObject::initScriptType(GameClient& _gameClient)
 {
-    sm_pScriptType = _gameClient.base().getScriptModule()->createScriptType(sm_scriptTypeName, "Game Object", 0);
+    sm_pScriptType = _gameClient.game().getScriptModule()->createScriptType(sm_scriptTypeName, "Game Object", 0);
 
-    sm_pScriptType->addMethod("base", "Get the base game object", script_base);
-    sm_pScriptType->addMethod("loadRenderable", "Load a renderable object", script_loadRenderable);
+    Zen::Scripting::script_type<GameObject>(sm_pScriptType)
+        .addMethod("base", &GameObject::baseBase)
+        .addMethod("loadRenderable", &GameObject::loadRenderable)
+        .activate()
+    ;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -162,8 +134,11 @@ GameObject::loadRenderable(const std::string& _meshName, const std::string& _mat
     name << m_name << ":" << _meshName;
     config["label"] = name.str();
 
+    /// TODO Should we be hardcoding this?
+    config["scene"] = "default";
+
     config["type"] = "entity";
-    
+
     pRenderableResource_type pRenderable =
         Zen::Engine::Base::I_BaseGameClient::getSingleton().getRenderingResourceService().loadResource(config).as<pRenderableResource_type>();
 
@@ -180,7 +155,7 @@ GameObject::loadRenderable(const std::string& _meshName, const std::string& _mat
     if( !pSceneNode.isValid() )
     {
         wasAttachedToSceneNode = false;
-        pSceneNode = Zen::Engine::Base::I_BaseGameClient::getSingleton().getSceneService().createChildNode(name.str());
+        pSceneNode = Zen::Engine::Base::I_BaseGameClient::getSingleton().getSceneService()->createChildNode(name.str());
     }
 
     pSceneNode->attachObject(*pRenderable.get());
@@ -242,7 +217,8 @@ GameObject::setScale(Zen::Engine::Core::I_BaseGameObject& _object, float _x, flo
 {
     _object.setScale(_x, _y, _z);
 
-    _object.getCollisionShape()->setScale(_x * 100.0f, _y * 100.0f, _z * 100.0f);
+    // TODO Should physics actor support scale?
+    //_object.getPhysicsActor()->setScale(_x * 100.0f, _y * 100.0f, _z * 100.0f);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

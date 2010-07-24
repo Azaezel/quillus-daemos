@@ -21,7 +21,7 @@ set ( ZGameLoader_SRC
 <%SourceList%>
     )
 
-#add_definitions( -DZGAMELOADER_EXPORTS )
+add_definitions( ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 

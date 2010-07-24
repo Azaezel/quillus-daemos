@@ -40,8 +40,59 @@ namespace ZOpenAL {
 
 class Source
 :   public Engine::Sound::I_SoundSource
-,   public Memory::managed_self_ref<Engine::Sound::I_SoundSource>
 {
+    /// @name Types
+    /// @{
+public:
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
+    /// @name I_Audible implementation
+    /// @{
+public:
+	virtual bool play();
+    virtual void mute(bool _mute);
+    virtual void pause(bool _pause);
+    virtual void stop();
+    /// @}
+
+    /// @name I_Source implementation
+    /// @{
+public:
+    virtual void setResource(ResourceService::pResource_type _pResource);
+    virtual ResourceService::pResource_type getResource() const;
+    virtual void setPosition(const Math::Point3& _pos);
+    virtual const Math::Point3& getPosition() const;
+    virtual void setVelocity(const Math::Vector3& _vel);
+    virtual const Math::Vector3& getVelocity() const;
+    virtual void setVolume(const Math::Real _vol);
+    virtual Math::Real getVolume() const;
+    virtual void setPitch(const Math::Real _pitch);
+    virtual Math::Real getPitch() const;
+    virtual void setEmissionRadius(const Math::Real _radius);
+    virtual Math::Real getEmissionRadius() const;
+    virtual void setLooping(const bool _loop);
+    virtual bool getLooping() const;
+    virtual void queue();
+    virtual void dequeue();
+    virtual PLAYSTATE getPlayState();
+    virtual void setPlayState(const PLAYSTATE _state);
+    virtual Math::Real getVolDist() {return m_volDist;}
+    virtual void setVolDist(const Math::Real _dist) { m_volDist = _dist;}
+    /// @}
+
+    /// @name SoundService implementation
+    /// @{
+public:
+    virtual void setSourceID(unsigned int _sourceID);
+    virtual unsigned int getSourceID();
+    /// @}
+
     /// @name 'Structors
     /// @{
 public:
@@ -49,78 +100,31 @@ public:
     virtual ~Source();
     /// @}
 
-    /// @name I_Source implementation
-    /// @{
-public:
-
-    virtual void setResource(ResourceService::pResource_type _resource);
-    virtual ResourceService::pResource_type getResource() const;
-    //playback
-    virtual void setLooping(const bool _loop);
-    virtual bool getLooping() const;
-	virtual bool play();
-    virtual void mute(bool _mute);
-    virtual void pause(bool _pause);
-    virtual void stop();
-    //3d coords
-    virtual void setPosition(const Math::Point3& _pos);
-    virtual const Math::Point3& getPosition() const;
-    virtual void setVelocity(const Math::Vector3& _vel);
-    virtual const Math::Vector3& getVelocity() const;
-    //fine grain manipulation
-    virtual void setVolume(const Math::Real _vol);
-    virtual Math::Real getVolume() const;
-    virtual void setPitch(const Math::Real _pitch);
-    virtual Math::Real getPitch() const;
-    virtual void setEmissionRadius(const Math::Real _radius);
-    virtual Math::Real getEmissionRadius() const;
-    /// @}
-
-    /// @name SoundService class data-interfacing. For use with SoundService::onFrame() and SoundService::sortSounds()
-    /// @{
-public:
-
-    virtual void queue();
-    virtual void dequeue();
-    virtual PLAYSTATE   getPlayState();
-    virtual void    setPlayState(const PLAYSTATE _state);
-    virtual Math::Real getVolDist(){return m_VolDist;};                 //these two are only placeholders
-    virtual void setVolDist(const Math::Real _dist){ m_VolDist = _dist;};      //to cut down on sort-crunching
-    /// @}
-
     /// @name Member Variables
     /// @{
 private:
-    PLAYSTATE           m_playState;
-    Math::Real          m_VolDist;                              //volume*distance storage for sorting
+    unsigned int                        m_sourceId;
+
+    PLAYSTATE                           m_playState;
+    Math::Real                          m_volDist;
+
+    bool                                m_looping;
+    ResourceService::pResource_type     m_pSoundResource;
+    Math::Point3                        m_pos;
+    Math::Vector3                       m_vec;
+    Math::Real                          m_volume;
+    Math::Real                          m_pitch;
+    Math::Real                          m_emissionRadius;
+
+    ScriptObjectReference_type*         m_pScriptObject;
+    pScriptModule_type                  m_pModule;
     /// @}
 
-    ///OpenAL specific:
-public:
-    virtual void setSourceID(unsigned int _sourceID);
-    virtual unsigned int getSourceID();
-private:
-    /// @name Member Variables
-    /// @{
-    unsigned int    m_SourceID;
-    /// @}
-
-    /// Sound Source General:
-    /// @name Member Variables
-    /// @{
-private:
-
-    bool    m_looping;          //loops or a one off playthrough?
-    ResourceService::pResource_type      m_SoundResource;    //the sound file struct (turn to vector<> for randomised list support?)
-    Math::Point3        m_pos;              //3d coords of the emitter
-    Math::Vector3       m_vec;              //3d velocity vector
-    Math::Real          m_volume;           //volume from this source
-    Math::Real          m_pitch;            //pitch from this source
-    Math::Real          m_emissionRadius;
 };  // class Source
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace OpenAL
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
 #endif // ZEN_ZOPENAL_SOURCE_HPP_INCLUDED

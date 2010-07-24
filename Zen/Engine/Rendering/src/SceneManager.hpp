@@ -24,6 +24,8 @@
 #ifndef ZEN_ENGINE_RENDERING_SCENE_MANAGER_HPP_INCLUDED
 #define ZEN_ENGINE_RENDERING_SCENE_MANAGER_HPP_INCLUDED
 
+#include <Zen/Core/Scripting.hpp>
+
 #include "../I_SceneManager.hpp"
 
 #include "../I_SceneServiceFactory.hpp"
@@ -43,13 +45,22 @@ class SceneManager
     /// @name Types
     /// @{
 public:
-    typedef Zen::Plugins::ServiceCache<I_SceneService>      scene_service_cache_type;
+    typedef Zen::Plugins::ServiceCache<I_SceneService, I_SceneServiceFactory>   SceneServiceCache_type;
     /// @}
 
     /// @name I_SceneManager implementation
     /// @{
 public:
-    virtual pSceneService_type create(const std::string& _type);
+    virtual pSceneService_type create(const std::string& _type, const std::string& _sceneName, const int _sceneType);
+    virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
+    virtual pScriptModule_type getDefaultSceneScriptModule();
+    /// @}
+
+    /// @name Additional Implementation
+    /// @{
+private:
+    /// Register the script module with all of the previously created scene services.
+    void registerSceneScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -62,7 +73,13 @@ public:
     /// @name Member Variables
     /// @{
 private:
-    scene_service_cache_type            m_sceneServiceCache;
+    SceneServiceCache_type          m_sceneServiceCache;
+
+    pScriptEngine_type              m_pDefaultScriptEngine;
+
+    bool                            m_scriptTypesInitialized;
+
+    Zen::Scripting::script_module*	m_pSceneModule;
     /// @}
 
 };	// class SceneManager

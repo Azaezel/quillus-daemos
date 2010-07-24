@@ -63,7 +63,12 @@ public:
     /// @name I_WidgetManager interface
     /// @{
 public:
-    virtual pService_type create(const std::string& _type, config_type& _config) = 0;
+    /// Create a widget service by loading a plugin.
+    /// @param _type - Type of widget service to create.
+    /// @param _config - Additional configuration data required by the widget service.
+    ///         The format of this configuration data is defined by the plugin, so read
+    ///         your widget service plugin documentation.
+    virtual pService_type create(const std::string& _type, config_type& _config, pScriptEngine_type _pScriptEngine) = 0;
 
     /// Register the default script engine for all widget services.
     /// Every widget service that has been created or is created in the future

@@ -29,6 +29,8 @@
 #include "WorldManager.hpp"
 
 #include <Zen/Engine/World/I_Terrain.hpp>
+#include <Zen/Engine/World/I_Sky.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
@@ -46,6 +48,8 @@ namespace Engine {
 namespace World {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 WorldManager::WorldManager()
+:   m_scriptTypesInitialized(false)
+,   m_pWorldModule(NULL)
 {
 }
 
@@ -137,6 +141,8 @@ WorldManager::createSkyService(const std::string& _type, config_type& _config)
 
     if (pService.isValid())
     {
+        pService->registerScriptModule(*m_pWorldModule);
+
         return pService;
     }
 
@@ -149,7 +155,15 @@ WorldManager::createSkyService(const std::string& _type, config_type& _config)
         return pService;
     }
 
-    return m_skyServiceCache.cacheService(_type, pFactory->create(_type, _config));
+    pService = pFactory->create(_type, _config);
+    if (m_pWorldModule)
+    {
+        pService->registerScriptModule(*m_pWorldModule);
+    }
+
+    m_skyServiceCache.cacheService(_type, pService);
+
+    return pService;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -187,88 +201,54 @@ WorldManager::createWaterService(const std::string& _type, config_type& _config)
 void
 WorldManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
 {
-    registerScriptTypes(_pEngine);
+    // Only do this once.
+    if (m_scriptTypesInitialized == true || !_pEngine.isValid())
+        return;
 
-    /// Register all of the existing services
-    if(m_pDefaultScriptEngine == NULL)
-    {
-        Threading::CriticalSection guard(m_terrainServiceCache.getLock());
+    m_pWorldModule = new Zen::Scripting::script_module(_pEngine, "World", "Zen World Module");
 
-        for(terrainServiceCache_type::iterator iter = m_terrainServiceCache.begin(); iter != m_terrainServiceCache.end(); iter++)
-        {
-            registerScriptEngine(_pEngine, iter->second);
-        }
-    }
+    m_pWorldModule->addType<I_TerrainService>("TerrainService", "TerrainService")
+        .addMethod("createTerrain", &I_TerrainService::createTerrain)
+        .addMethod("setPhysicsZone", &I_TerrainService::setPhysicsZone)
+    ;
 
+    m_pWorldModule->addType<I_Terrain>("Terrain", "Terrain")
+    ;
+
+    m_pWorldModule->addType<I_SkyService>("SkyService", "SkyService")
+        .addMethod("createSky", &I_SkyService::createSky)
+    ;
+
+    m_pWorldModule->addType<I_Sky>("Sky", "Sky")
+    ;
+
+    m_pWorldModule->activate();
+
+    m_scriptTypesInitialized = true;
     m_pDefaultScriptEngine = _pEngine;
-    m_scriptTypesInitialized = false;
+
+    registerSkyScriptModule();
+
+    // TODO Register the script module with the other services
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 WorldManager::pScriptModule_type
 WorldManager::getDefaultWorldScriptModule()
 {
-    return m_pZoneModule;
+    return m_pWorldModule->getScriptModule();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-WorldManager::registerScriptEngine(pScriptEngine_type _pEngine, pTerrainService_type _pService)
+WorldManager::registerSkyScriptModule()
 {
-    new Scripting::ObjectReference<I_TerrainService>(m_pZoneModule, m_pTerrainServiceType, _pService, "terrainService");
-}
+    Threading::CriticalSection guard(m_skyServiceCache.getLock());
 
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-static Zen::Scripting::I_ObjectReference*
-script_createTerrain(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> parms)
-{
-    Zen::Scripting::ObjectReference<I_TerrainService>* pObject = dynamic_cast<Zen::Scripting::ObjectReference<I_TerrainService>*>(_pObject);
-
-    I_TerrainService::pTerrain_type pTerrain = pObject->getRawObject()->createTerrain();
-
-    Zen::Scripting::ObjectReference<I_Terrain>* pScriptObject = 
-        new Zen::Scripting::ObjectReference<I_Terrain>(pObject->getModule(), pObject->getModule()->getScriptType("Terrain"), pTerrain);
-
-    return pScriptObject;
-}
-
-#if 0 // deferred
-void
-script_loadVisualization(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> parms)
-{
-    Zen::Scripting::ObjectReference<I_TerrainService>* pObject = dynamic_cast<Zen::Scripting::ObjectReference<I_TerrainService>*>(_pObject);
-
-    I_TerrainService::pTerrain_type pTerrain = pObject->getRawObject()->createTerrain();
-
-    Zen::Scripting::ObjectReference<I_Terrain>* pScriptObject = 
-        new Zen::Scripting::ObjectReference<I_Terrain>(pObject->getModule(), pObject->getModule()->getScriptType("Terrain"), pTerrain);
-
-    return pScriptObject;
-}
-#endif
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-WorldManager::registerScriptTypes(pScriptEngine_type _pEngine)
-{
-    /// Don't bother if the types have already been initialized
-    if (m_scriptTypesInitialized == true || _pEngine == NULL)
-        return;
-
-    m_pZoneModule = _pEngine->createScriptModule("World", "Zen Rendering Module");
-
-    m_pTerrainServiceType = m_pZoneModule->createScriptType("TerrainService", "Terrain Service", 0);
-    m_pTerrainServiceType->addMethod("createTerrain", "Create a Terrain", script_createTerrain);
-
-#if 0 // deferred
-    m_pTerrainType = m_pZoneModule->createScriptType("Terrain", "Terrain", 0);
-    m_pTerrainType->addMethod("loadVisualization", "Load the Visual part of a terrain", script_loadVisualization);
-    m_pTerrainType->addMethod("loadPhysicsFromRaw", "Load the physics part of a terrain from a RAW file.", script_loadPhysicsFromRaw);
-    m_pTerrainType->addMethod("loadPhysicsFromSerialization", "Load Physics from a serialized file", script_loadPhysicsFromSerialization);
-#endif 
-
-    m_pZoneModule->activate();
-
+    for(skyServiceCache_type::iterator iter = m_skyServiceCache.begin(); iter != m_skyServiceCache.end(); iter++)
+    {
+        iter->second->registerScriptModule(*m_pWorldModule);
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

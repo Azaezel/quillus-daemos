@@ -1,7 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -20,13 +21,17 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef ZEN_ENGINE_RENDERING_I_VIEW_HPP_INCLUDED
 #define ZEN_ENGINE_RENDERING_I_VIEW_HPP_INCLUDED
 
 #include "Configuration.hpp"
 
-//#include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Scripting.hpp>
+
+#include <Zen/Core/Event/I_Event.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -36,17 +41,29 @@ namespace Engine {
 	}
 namespace Rendering {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
 class I_Canvas;
 class I_SceneService;
 
-/// Outer OS Window that contains a canvas
+/// Outer OS Window that contains a canvas.
+/// @todo Implement the getViewClosingEvent.  Need to implement a thread-safe
+/// 	asynchronous mechanism for allowing the application to prevent
+///		the view from closing.
 class RENDERING_DLL_LINK I_View
+:   public Zen::Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
 public:
-    //typedef Memory::managed_ptr<I_SceneService>         pSceneService_type;
+    typedef I_View*                                 pScriptObject_type;
+    typedef Scripting::ObjectReference<I_View>      ScriptObjectReference_type;
+    typedef ScriptObjectReference_type              ScriptWrapper_type;
+    typedef ScriptWrapper_type*                     pScriptWrapper_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_View interface
@@ -61,9 +78,31 @@ public:
     virtual I_View* createSubView(int _x, int _y, int _width, int _height) = 0;
 
     /// Get the canvas associated with this view.
-    virtual I_Canvas& getCanvas(void) = 0;
+    virtual I_Canvas& getCanvas() = 0;
 
+    /// Initialize / create the canvas.
     virtual bool initCanvas() = 0;
+
+    /// Get the viewMoved event.
+    /// This event is fired when this view moves.
+    /// The payload is the I_View*.
+    virtual Event::I_Event& getViewMovedEvent() = 0;
+
+    /// Get the view resized event.
+    /// This event is fired when the view is resized.
+    /// The payload is the I_View*.
+    virtual Event::I_Event& getViewResizedEvent() = 0;
+
+    /// Get the view closed event.
+    /// This event is fired when the view has closed.
+    /// The payload is the I_View*.
+    virtual Event::I_Event& getViewClosedEvent() = 0;
+
+    /// Get the view focus changed event.
+    /// This event is fired when the view is gaining or
+    /// losing focus.
+    /// The payload is the I_View*.
+    virtual Event::I_Event& getViewFocusChangedEvent() = 0;
     /// @}
 
     /// @name 'Structors

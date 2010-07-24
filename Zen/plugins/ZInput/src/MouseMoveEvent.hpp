@@ -71,7 +71,8 @@ public:
     /// @name Member Variables
     /// @{
 private:
-    const OIS::MouseEvent&                      m_event;
+    const OIS::MouseState                       m_mouseState;
+    //const OIS::MouseEvent&                      m_event;
     const Engine::Input::I_KeyModifierState&    m_modifierState;
     Scripting::I_ObjectReference*               m_pScriptObject;
     /// @}

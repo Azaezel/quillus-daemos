@@ -45,6 +45,7 @@ set ( ZEN_PROJECTS
 	Starter/Base/BaseCommon
 	Starter/Base/BaseClient
 	Starter/Base/ZGameLoader
+	Starter/Base/ZenServer
 	Spaces/ObjectModel
 	plugins
 )
@@ -53,6 +54,12 @@ foreach(PROJECT_PATH ${ZEN_PROJECTS})
 	message("-- ${PROJECT_PATH}") 
 	add_subdirectory("${ZEN_HOME}/${PROJECT_PATH}" "${PROJECT_PATH}")
 endforeach(PROJECT_PATH)
+
+option(ZEN_BUILD_ENTERPRISE_PLUGINS "Build Enterprise Plugins" FALSE)
+if (ZEN_BUILD_ENTERPRISE_PLUGINS)
+    message("-- Enterprise Plugins")
+    add_subdirectory("${ZEN_HOME}/EnterprisePlugins" "EnterprisePlugins")
+endif (ZEN_BUILD_ENTERPRISE_PLUGINS)
 
 option(ZEN_BUILD_TESTS "Build Tests" FALSE)
 if (ZEN_BUILD_TESTS)
@@ -158,22 +165,23 @@ if (ZEN_BUILD_ZEN_STUDIO)
         endforeach(PROJECT_PATH)
     endif()
     
-    # Do the tests
-    option(ZEN_BUILD_EXPERIMENTAL_TESTS "Build Experimental Tests" FALSE)
-    if(ZEN_BUILD_EXPERIMENTAL_TESTS)
-    
-        set(ZEN_EXPERIMENTAL_TESTS_PROJECTS
-            tests/ScriptTest
-        )
-        
-        foreach(PROJECT_PATH ${ZEN_EXPERIMENTAL_TESTS_PROJECTS})
-            message("-- ${PROJECT_PATH}")
-            add_subdirectory("${ZEN_HOME}/${PROJECT_PATH}" "${PROJECT_PATH}")
-        endforeach(PROJECT_PATH)
-    endif()
-    
 endif()
 
+# Do the experimental tests
+option(ZEN_BUILD_EXPERIMENTAL_TESTS "Build Experimental Tests" FALSE)
+if(ZEN_BUILD_EXPERIMENTAL_TESTS)
+
+	set(ZEN_EXPERIMENTAL_TESTS_PROJECTS
+		tests/ScriptTest
+        tests/ScriptLoginTest
+        # tests/StreamTest
+	)
+	
+	foreach(PROJECT_PATH ${ZEN_EXPERIMENTAL_TESTS_PROJECTS})
+		message("-- ${PROJECT_PATH}")
+		add_subdirectory("${ZEN_HOME}/${PROJECT_PATH}" "${PROJECT_PATH}")
+	endforeach(PROJECT_PATH)
+endif()
 
 # Do Zen Worlds (optionally)
 option(ZEN_BUILD_ZEN_WORLDS "Build Zen Worlds" FALSE)
@@ -188,6 +196,12 @@ option(ZEN_BUILD_ZEN_COMMUNITY "Build Zen Community" FALSE)
 
 if (ZEN_BUILD_ZEN_COMMUNITY)
     add_subdirectory("${ZEN_HOME}/Community" "Community")
+endif()
+
+# Do Unit Tests (optionally)
+option(ZEN_BUILD_UNIT_TESTS "Build Unit Tests" FALSE)
+if (ZEN_BUILD_UNIT_TESTS)
+    add_subdirectory("${ZEN_HOME}/Test" "Test")
 endif()
 
 include(Packaging)

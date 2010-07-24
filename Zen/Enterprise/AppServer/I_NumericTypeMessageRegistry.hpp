@@ -56,7 +56,7 @@ public:
     /// @name I_NumericTypeMessageRegistry interface.
     /// @{
 public:
-    virtual pMessageType_type getMessageType(boost::uint32_t _type) = 0;
+    virtual pMessageType_type getMessageType(boost::uint64_t _type) = 0;
     /// @}
 
     /// @name Inner types 
@@ -66,7 +66,7 @@ public:
     :   public I_MessageType
     {
     public:
-        virtual boost::uint32_t getType() const = 0;
+        virtual boost::uint64_t getType() const = 0;
     };  // class NumericType
 
     /// @}

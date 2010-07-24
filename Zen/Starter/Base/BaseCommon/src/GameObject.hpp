@@ -37,7 +37,7 @@
 #include <Zen/Engine/Resource/I_Resource.hpp>
 #include <Zen/Engine/Rendering/I_RenderableResource.hpp>
 #include <Zen/Engine/Rendering/I_SceneNode.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 
 #include <string>
 
@@ -71,8 +71,8 @@ public:
     virtual pSceneNode_type getSceneNode();
     virtual void attachToSceneNode(pSceneNode_type _pSceneNode);
 
-    virtual void attachCollisionShape(pCollisionShape_type _pCollisionShape);
-    virtual pCollisionShape_type getCollisionShape();
+    virtual void attachPhysicsActor(pPhysicsActor_type _pPhysicsActor);
+    virtual pPhysicsActor_type getPhysicsActor();
 
     virtual void setPosition(const Math::Point3& _position, bool _overridePhysics = false);
     virtual void setPosition(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z, bool _overridePhysics = false);
@@ -127,7 +127,7 @@ private:
 
     pRenderableResource_type                m_pRenderable;
     pSceneNode_type                         m_pNode;
-    pCollisionShape_type                      m_pCollisionShape;
+    pPhysicsActor_type                      m_pPhysicsActor;
 
     Math::Point3                            m_position;
     Math::Quaternion4                       m_orientation;

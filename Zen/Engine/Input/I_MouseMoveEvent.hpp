@@ -29,10 +29,11 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+
 #include <Zen/Engine/Input/I_InputEvent.hpp>
 #include <Zen/Engine/Input/ButtonIDs.hpp>
 
@@ -47,11 +48,12 @@ class I_KeyModifierState;
 class INPUTMANAGER_DLL_LINK I_MouseMoveEvent
 :   public I_InputEvent
 ,   public virtual Zen::Scripting::I_ScriptableType
+,   public Zen::Memory::managed_self_ref<I_MouseMoveEvent>
 {
     /// @name Types
     /// @{
 public:
-    typedef I_MouseMoveEvent*                               pScriptObject_type;
+    typedef Zen::Memory::managed_ptr<I_MouseMoveEvent>      pScriptObject_type;
     typedef Scripting::ObjectReference<I_MouseMoveEvent>    ScriptObjectReference_type;
     /// @}
 

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -24,7 +24,7 @@
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -43,11 +43,12 @@
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
 #include <Zen/Core/Scripting/ObjectReference.hpp>
 
+#include <Zen/Core/Event/I_ActionMap.hpp>
+
 #include <Zen/Engine/Core/I_GameGroup.hpp>
-#include <Zen/Engine/Core/I_ActionMap.hpp>
 #include <Zen/Engine/Core/I_GameObjectBehaviors.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
 
 #include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>
@@ -60,7 +61,7 @@
 #include <Zen/Engine/Rendering/I_RenderableResource.hpp>
 
 #include <Zen/Engine/Input/I_InputService.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
+#include <Zen/Engine/Input/I_KeyMap.hpp>
 
 #include <Zen/Engine/World/I_TerrainService.hpp>
 #include <Zen/Engine/World/I_Terrain.hpp>
@@ -112,6 +113,16 @@ GameClient::getScriptObject()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::registerScriptEngine(pScriptEngine_type _pScriptEngine)
+{
+    // This isn't really used with the Base Starter kit since ZGameLoader 
+    // registers the script engine with the BaseGameClient.
+
+    // Just ignore this method.
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 GameClient::init()
 {
@@ -122,30 +133,27 @@ GameClient::init()
     initPhysics();
 
     // For some reason the sky service must be initialized after physics
-    m_baseClient.initSkyService("ZSky");
+    game().initSkyService("ZSky");
 
     // Terrain must be initialized after physics
-    m_baseClient.initTerrainService("ZTerrain");
+    game().initTerrainService("ZTerrain");
 
     // Initialize the Input service
-    // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse 
+    // Note: "keyboard" actually initializes the ZInput Keyboard and Mouse
     // combined input service.
     m_baseClient.initInputService("keyboard");
 
     // Initialize resources
     initResources();
 
-    // Create the script types
-    createScriptTypes();
-
-    // Possibly the rest of this should be done later and we should show 
+    // Possibly the rest of this should be done later and we should show
     // an initial game screen or splash screens here.
 
     createActions();
     createDefaultMapping();
     createBehaviors();
 
-    // Normally, createScene() is done after other things like 
+    // Normally, createScene() is done after other things like
     // displaying some splash screens, etc.  But for now lets
     // just do it here.
     createScene();
@@ -203,6 +211,88 @@ GameClient::run()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::Widgets::I_WidgetService&
+GameClient::getWidgetService()
+{
+    return m_baseClient.getWidgetService();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::Rendering::I_RenderingCanvas&
+GameClient::getRenderingCanvas()
+{
+    return m_baseClient.getRenderingCanvas();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::Resource::I_ResourceService&
+GameClient::getRenderingResourceService()
+{
+    return m_baseClient.getRenderingResourceService();
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::World::I_TerrainService&
+GameClient::getTerrainService()
+{
+    return m_baseClient.getTerrainService();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::World::I_SkyService&
+GameClient::getSkyService()
+{
+    return m_baseClient.getSkyService();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initRenderingService(const std::string& _type, const std::string& _title, int _xRes, int _yRes)
+{
+    return m_baseClient.initRenderingService(_type, _title, _xRes, _yRes);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initRenderingResourceService(const std::string& _type)
+{
+    return m_baseClient.initRenderingResourceService(_type);
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initTerrainService(const std::string& _type)
+{
+    return game().initTerrainService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initSkyService(const std::string& _type)
+{
+    return game().initSkyService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initInputService(const std::string& _type)
+{
+    return m_baseClient.initInputService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initWidgetService(const std::string& _type)
+{
+    return m_baseClient.initWidgetService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::activateGameClientScriptModule()
+{
+    createScriptTypes();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 GameClient::createScriptTypes()
 {
@@ -224,18 +314,21 @@ GameClient::createScene()
     // Resize the Physics World
     Zen::Math::Vector3 minSize(-2000.0f, -4000.0f, -2000.0f);
     Zen::Math::Vector3 maxSize( 2000.0f,  2000.0f,  2000.0f);
-    m_baseGame.getCurrentPhysicsZone()->setZoneSize(minSize, maxSize);
+    m_baseGame.getCurrentPhysicsZone()->setBoundary(minSize, maxSize);
 
     // Create the terrain
 
-    m_baseClient.getTerrainService().setPhysicsZone(m_baseGame.getCurrentPhysicsZone());
+    game().getTerrainService()->setPhysicsZone(m_baseGame.getCurrentPhysicsZone());
 
     // load our terrain
     Zen::Math::Matrix4 matXfm(Zen::Math::Matrix4::INIT_IDENTITY);
     matXfm.setXYZRotation(Zen::Math::Degree(0), Zen::Math::Degree(0),Zen::Math::Degree(0));
     matXfm.setPosition(0.0f, 0.0f, 0.0f);
 
-    m_pTerrain = m_baseClient.getTerrainService().createTerrain();
+    // TODO Change according to Tutorial4
+    //m_pTerrain = m_base.getTerrainService().createTerrain();
+    throw Zen::Utility::runtime_exception("GameClient::createScene(): Error, not implemented");
+
     m_pTerrain->loadVisualization(std::string("terrain.cfg"), matXfm);
     // NOTE - you will need to use loadPhysicsFromRaw() one time (below) to create the collision
     //   binary, then you can use loadPhysicsFromSerialization() which loads MUCH faster.
@@ -250,10 +343,10 @@ GameClient::createScene()
     Zen::Engine::World::I_SkyService::config_type skyConfig;
     skyConfig["type"] = "skybox";
     skyConfig["resourceName"] = "SteveCube";
-    m_pSky = m_baseClient.getSkyService().createSky(skyConfig);
+    m_pSky = game().getSkyService()->createSky(skyConfig);
 
-    m_baseClient.getSceneService().setAmbientLight(0.8f, 0.8f, 0.8f, 1.0f);
-    Zen::Engine::Rendering::I_SceneService::pLight_type pLight = m_baseClient.getSceneService().createLight("default", "Light");
+    m_baseClient.getSceneService()->setAmbientLight(0.8f, 0.8f, 0.8f, 1.0f);
+    Zen::Engine::Rendering::I_SceneService::pLight_type pLight = m_baseClient.getSceneService()->createLight("default", "Light");
     pLight->setPosition(5000.0f, 5000.0f, 5000.0f);
 
     // Create the player
@@ -269,7 +362,7 @@ GameClient::createScene()
     m_pPlayer->base().setPosition(146.0f, 101.0f, 221.0f, true);
 
 
-	//m_pPlayer->base().getCollisionShape()->setAngularMomentum(Zen::Math::Vector3(0.0f,0.0f,0.0f));
+	//m_pPlayer->base().getPhysicsActor()->setAngularVelocity(Zen::Math::Vector3(0.0f,0.0f,0.0f));
 
     Zen::Engine::Rendering::I_RenderingCanvas& canvas = m_baseClient.getRenderingCanvas();
 
@@ -318,10 +411,10 @@ void
 GameClient::createDefaultMapping()
 {
     // Map some keys to actions
-    m_baseClient.getInputMap().mapKeyInput("q", m_baseGame.getActionMap()["Quit"]);
+    m_baseClient.getKeyMap().mapKeyInput("q", m_baseGame.getActionMap()["Quit"]);
 
     // Using wasd for movement, using w to go forward
-    //m_base.getInputMap().mapKeyInput("w", m_base.getActionMap()["Move Forward"]);
+    //m_base.getKeyMap().mapKeyInput("w", m_base.getActionMap()["Move Forward"]);
 
 }
 
@@ -365,9 +458,9 @@ GameClient::beforeRender(double _elapsedTime)
 
 	Zen::Math::Vector3 oldvel, oldangvel;
 
-    m_pPlayer->base().getCollisionShape()->getOrientation(m_pPlayer->m_orientation);
-    m_pPlayer->base().getCollisionShape()->getVelocity(oldvel);
-	oldangvel = m_pPlayer->base().getCollisionShape()->getAngularMomentum();
+    m_pPlayer->base().getPhysicsActor()->getOrientation(m_pPlayer->m_orientation);
+    m_pPlayer->base().getPhysicsActor()->getLinearVelocity(oldvel);
+	oldangvel = m_pPlayer->base().getPhysicsActor()->getAngularVelocity();
 
 	//really should rip this entire chunk out and replace it with a controledMovementBehavior (don't look for it, it's just a name atm)
     //
@@ -380,7 +473,7 @@ GameClient::beforeRender(double _elapsedTime)
 		Zen::Math::Vector3 deltaV(0.0f, _elapsedTime * m_pPlayer->m_stepHeight, _elapsedTime * m_pPlayer->m_moveSpeed);
         Zen::Math::Vector3 newvel = m_pPlayer->m_orientation.rotate(deltaV);
         newvel = newvel + oldvel;
-        m_pPlayer->base().getCollisionShape()->setVelocity(newvel);
+        m_pPlayer->base().getPhysicsActor()->setLinearVelocity(newvel);
     }
     if (m_moveZDelta < 0)
     {
@@ -388,7 +481,7 @@ GameClient::beforeRender(double _elapsedTime)
         Zen::Math::Vector3 deltaV(0.0f, _elapsedTime * m_pPlayer->m_stepHeight, _elapsedTime * -m_pPlayer->m_moveSpeed);
         Zen::Math::Vector3 newvel = m_pPlayer->m_orientation.rotate(deltaV);
         newvel = newvel+oldvel;
-        m_pPlayer->base().getCollisionShape()->setVelocity(newvel);
+        m_pPlayer->base().getPhysicsActor()->setLinearVelocity(newvel);
     }
 
     //
@@ -400,7 +493,7 @@ GameClient::beforeRender(double _elapsedTime)
         Zen::Math::Vector3 deltaV(0.0f,  _elapsedTime * -m_pPlayer->m_turnSpeed, 0.0f);
         Zen::Math::Vector3 newangvel = m_pPlayer->m_orientation.rotate(deltaV);
         newangvel = newangvel + oldangvel;
-        m_pPlayer->base().getCollisionShape()->setAngularMomentum(newangvel);
+        m_pPlayer->base().getPhysicsActor()->setAngularVelocity(newangvel);
     }
     if (m_moveXDelta < 0)
     {
@@ -408,13 +501,13 @@ GameClient::beforeRender(double _elapsedTime)
         Zen::Math::Vector3 deltaV(0.0f, _elapsedTime * m_pPlayer->m_turnSpeed, 0.0f);
         Zen::Math::Vector3 newangvel = m_pPlayer->m_orientation.rotate(deltaV);
         newangvel = newangvel + oldangvel;
-        m_pPlayer->base().getCollisionShape()->setAngularMomentum(newangvel);
+        m_pPlayer->base().getPhysicsActor()->setAngularVelocity(newangvel);
     }
 
 	// This updates all physics worlds we've created:
 	m_baseGame.getPhysicsService()->stepSimulation(_elapsedTime);
 
-	//m_pPlayer->base().getCollisionShape()->setOrientation(m_pPlayer->m_orientation);
+	//m_pPlayer->base().getPhysicsActor()->setOrientation(m_pPlayer->m_orientation);
 
     m_baseClient.getRenderingCanvas().selectCamera("chase").update();
 }

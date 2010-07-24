@@ -27,7 +27,9 @@
 #include "Configuration.hpp"
 
 #include <Zen/Core/Math/Math.hpp>
+
 #include <Zen/Core/Event/Event.hpp>
+
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
 #include <Zen/Engine/Rendering/I_Canvas.hpp>
@@ -43,7 +45,7 @@ class I_Camera;
 class I_SceneNode;
 
 /// Rendering Canvas Interface
-/// @todo Need to add I_RenderingCanvas::setBackgroundColour(color) but 
+/// @todo Need to add I_RenderingCanvas::setBackgroundColour(color) but
 ///     there isn't a I_Color or Color interface or class.
 class RENDERING_DLL_LINK I_RenderingCanvas
 :   public I_Canvas
@@ -51,9 +53,20 @@ class RENDERING_DLL_LINK I_RenderingCanvas
     /// @name Types
     /// @{
 public:
+    typedef I_RenderingCanvas*                              pScriptObject_type;
+    typedef Scripting::ObjectReference<I_RenderingCanvas>   ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                      ScriptWrapper_type;
+    typedef ScriptWrapper_type*                             pScriptWrapper_type;
+
     typedef Zen::Event::Event<bool>             redraw_event;
 
     struct I_SceneNodeVisitor;                  //< Defined below
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_RenderingCanvas interface
@@ -62,7 +75,7 @@ public:
     /// Resize the canvas
     virtual void resize(int _x, int _y, int _width, int _height) = 0;
 
-    /// Called by the GUI manager to render the current scene.  
+    /// Called by the GUI manager to render the current scene.
     /// Double buffered canvases will render the scene to the back buffer
     /// and the GUI manager will swap the buffers as necessary.
     virtual void renderScene() = 0;
@@ -109,13 +122,18 @@ public:
 
     /// Query for the scene nodes.
     ///
-    /// Creates a ray from the camera through the _x and _y coordinates on the canvas and projects 
+    /// Creates a ray from the camera through the _x and _y coordinates on the canvas and projects
     /// the ray to find all scene nodes that intersect with the ray.
     ///
     /// @param _x, _y The x and y coordinates where the ray should intersect the canvas.
     /// @param _visitor The visitor object that will be called for every scene node that intersects
     ///         the given ray.
     virtual void querySceneNodes(Math::Real _x, Math::Real _y, I_SceneNodeVisitor& _visitor) = 0;
+
+    /// Pump system messages.
+    /// This is an operating system agnostic message pump.  It should be called
+    /// every frame.
+    virtual void pumpSystemMessages() = 0;
     /// @}
 
     /// @name Events

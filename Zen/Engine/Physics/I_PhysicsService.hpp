@@ -30,12 +30,19 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Core/Math/Math.hpp>
-
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
 
 #include <Zen/Core/Event/Event.hpp>
+
+#include <Zen/Core/Math/Math.hpp>
+#include <Zen/Core/Math/Vector3.hpp>
+
+#include <Zen/Core/Scripting.hpp>
+
+#include <boost/noncopyable.hpp>
+#include <string>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -46,13 +53,21 @@ namespace Physics {
 class I_PhysicsZone;
 
 class PHYSICS_DLL_LINK I_PhysicsService
+:   public virtual Zen::Scripting::I_ScriptableType
+,   public Zen::Memory::managed_self_ref<I_PhysicsService>
+,   boost::noncopyable
 {
     /// @name Types
     /// @{
 public:
     typedef std::string                                    index_type;
+
+    typedef Zen::Memory::managed_ptr<I_PhysicsService>          pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<I_PhysicsService>   ScriptObjectReference_type;
+
     typedef Memory::managed_ptr<I_PhysicsService>          pPhysicsService_type;
     typedef Memory::managed_weak_ptr<I_PhysicsService>     wpPhysicsService_type;
+
     typedef Event::Event<wpPhysicsService_type>            serviceEvent_type;
     typedef Zen::Math::Real                                frameDelta_type;
     typedef Event::Event<frameDelta_type>                  frameEvent_type;
@@ -60,21 +75,33 @@ public:
     typedef Memory::managed_weak_ptr<I_PhysicsZone>       wpPhysicsZone_type;
     /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
+    /// @}
+
     /// @name I_PhysicsService interface
     /// @{
 public:
-   	virtual pPhysicsZone_type createZone(void) = 0;
+    /// Create a physics zone.
+    /// A physics zone contains all of the physics actors that make up a
+    /// standalone physics simulation.  Actors within on zone do not
+    /// interact with actors within another zone.
+    /// @note Some physics plugins do not support muliple zones.  If
+    ///     this is the case, the plugin should throw an exception
+    ///     if an application attempts to create more than one zone.
+    virtual pPhysicsZone_type createZone() = 0;
 
-    /// @todo TR - This should not be here.  It should be
-    ///     moved to I_PhysicsZone.  Each world needs to
-    ///     be treated as a separate simulation.
+    /// Step the physics simulations by the specified amount of time.
+    /// This will step the physics simulations for all zones and will
+    /// not return until the simulation has completed.
+    /// You might consider running I_PhysicsZone::stepSimulation() instead.
+    /// @param _elapsedTime is in seconds where 1.0 is one second.
 	virtual void stepSimulation(double _elapsedTime) = 0;
-    /// @}
 
-    /// @name Event handlers
-    /// @{
-protected:
-	virtual void onFrame() = 0;
+    /// @todo Should this be moved to I_ScriptableType?
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
     /// @}
 
     /// @name Static methods
@@ -88,7 +115,7 @@ public:
     /// @{
 public:
     /// Fired immediately before this object is destroyed.
-    /// The payload is about to be destroyed, so do not keep a reference of it around.
+    /// The payload is about to be destroyed, so do not keep a reference to it.
     serviceEvent_type onDestroyEvent;
 
     /// This event is fired after every frame is rendered
@@ -109,7 +136,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Physics
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_PhysicsService is managed by a I_PhysicsServiceFactory
     template<>

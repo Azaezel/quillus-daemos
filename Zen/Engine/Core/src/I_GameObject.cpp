@@ -29,6 +29,15 @@ namespace Zen {
 namespace Engine {
 namespace Core {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static std::string sm_gameObjectTypeName("GameObject");
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+I_GameObject::getScriptTypeName()
+{
+    return sm_gameObjectTypeName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_BaseGameObject::I_BaseGameObject()
 {
 }
@@ -39,12 +48,12 @@ I_BaseGameObject::~I_BaseGameObject()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-static std::string sm_scriptTypeName("GameObject");
+static std::string sm_baseGameObjectTypeName("BaseGameObject");
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 const std::string&
 I_BaseGameObject::getScriptTypeName()
 {
-    return sm_scriptTypeName;
+    return sm_baseGameObjectTypeName;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

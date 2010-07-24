@@ -28,6 +28,10 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Memory/managed_ptr.hpp>
+
+#include <Zen/Core/Scripting/I_ScriptModule.hpp>
+
 #include <string>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -43,6 +47,7 @@ class SCRIPTING_DLL_LINK I_ScriptableType
     /// @name Types
     /// @{
 public:
+    typedef Memory::managed_ptr<I_ScriptModule>     pScriptModule_type;
     /// @}
 
     /// @name I_ScriptableType interface
@@ -56,7 +61,7 @@ public:
     /// @brief Get the script object associated with this object
     /// @return The script object associated with this object, but possibly NULL if this object
     ///         was created before a script engine was registered.
-    virtual Scripting::I_ObjectReference* getScriptObject() = 0;
+    virtual I_ObjectReference* getScriptObject() = 0;
     /// @}
 
     /// @name 'Structors

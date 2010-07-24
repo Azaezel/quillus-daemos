@@ -23,10 +23,12 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "RenderingService.hpp"
 #include "RenderingView.hpp"
+#include "SceneService.hpp"
+#include "SceneNode.hpp"
+#include "AttachableObject.hpp"
+#include "ParticleSystem.hpp"
 
 #include "NullContext.hpp"
-
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
 
 #include <Zen/Engine/Rendering/I_RenderingManager.hpp>
 
@@ -37,24 +39,28 @@ namespace ZOgre {
 RenderingService::RenderingService()
 :   m_root(Ogre::Root::getSingleton())
 ,   m_pScriptObject(NULL)
+,   m_pModule(NULL)
 {
     std::cout << "new RenderingService" << std::endl;
 
     // TODO Where should this go?
-
+    std::cout << "OGRE: m_root.restoreConfig()" << std::endl;
     if (m_root.restoreConfig())
     {
         // we found a valid ogre.cfg with our rendering configuration in it
         std::cout << "Rendering configuration loaded from file 'ogre.cfg'.  Delete it to show dialog at startup." << std::endl;
         m_root.initialise(false);
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation("./materials/textures", "FileSystem", "General", false);
         return;
     }
 
     // there was no valid ogre.cfg file to read from, so let's show the dialog
+    std::cout << "OGRE: m_root.showConfigDialog()" << std::endl;
     if (m_root.showConfigDialog())
     {
         std::cout << "Rendering configuration loaded from on-screen dialog." << std::endl;
         m_root.initialise(false);
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation("./materials/textures", "FileSystem", "General", false);
         return;
     }
 
@@ -68,27 +74,31 @@ RenderingService::~RenderingService()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Engine::Rendering::I_Context* 
+Zen::Engine::Rendering::I_Context*
 RenderingService::createContext(window_handle_type _pParent)
 {
-    return new NullContext(_pParent);
+    return new NullContext(*m_pModule, _pParent ? _pParent :
+#ifdef _WIN32
+        NULL
+#else
+        ""
+#endif
+        );
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 RenderingService::destroyContext(Zen::Engine::Rendering::I_Context* _pContext)
 {
     // TODO Implement
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Engine::Rendering::I_View* 
+Zen::Engine::Rendering::I_View*
 RenderingService::createView(Zen::Engine::Rendering::I_Context& _context, const std::string& _windowName, unsigned int _width, unsigned int _height)
 {
     // TODO Pass _context to the constructor?
-    RenderingView* pView = new RenderingView(_context, _windowName, _width, _height);
+    RenderingView* pView = new RenderingView(*m_pModule, _context, _windowName, _width, _height);
 
     return pView;
 }
@@ -108,11 +118,29 @@ RenderingService::getScriptObject()
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(), 
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+            m_pModule->getScriptModule(),
+            m_pModule->getScriptModule()->getScriptType(getScriptTypeName()),
+            getSelfReference().lock()
+        );
     }
 
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+RenderingService::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    m_pModule = &_module;
+
+    SceneNode::registerScriptModule(_module);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+RenderingService::showConfigDialog()
+{
+    return m_root.showConfigDialog();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

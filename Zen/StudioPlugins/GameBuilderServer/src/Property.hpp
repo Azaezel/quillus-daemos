@@ -25,7 +25,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-;
+class Properties;
 
 /// Game Object Type Property.
 /// @note Does the element property need to be different from a document property?
@@ -75,7 +75,7 @@ public:
     virtual bool canChange(const std::string& _newValue);
 
     /// Set the value of the property.
-    /// The property must notify m_publisher if the value 
+    /// The property must notify m_publisher if the value
     /// is actually modified.  m_publisher will notify all of the
     /// listeners.
     virtual void setValue(const std::string& _newValue);
@@ -88,6 +88,14 @@ public:
     ///         the name of the property.
     virtual bool tryLoadProperty(pPropertyDomainObject_type _pDomainObject);
 
+    /// Get a property by name.
+    /// For a Property, the name must match the value returned by getName()
+    /// otherwise NULL is returned.
+    /// This method is overridden in PropertyGroup to handle child properties.
+    virtual const Zen::Studio::Workbench::I_Property* getPropertyByName(const std::string& _name);
+
+    /// Get the parent Properties that contains this Property.
+    Properties& getProperties();
 private:
     /// Called by load() to set the m_pPropertyDO.
     void setPropertyDO(pPropertyDomainObject_type _pPropertyDO);
@@ -96,7 +104,7 @@ private:
     /// @name 'Structors
     /// @{
 public:
-             Property(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _name, const std::string& _value, Property* _pParent = NULL);
+             Property(Properties& _property, const std::string& _name, const std::string& _value, Property* _pParent = NULL);
     virtual ~Property();
     /// @}
 
@@ -105,7 +113,7 @@ public:
 private:
     pPropertyDomainObject_type  m_pPropertyDO;
 
-    Zen::Studio::Workbench::I_PropertiesPublisher&  m_publisher;
+    Properties&         m_properties;
     std::string         m_name;
     std::string         m_value;
     Property*           m_pParent;

@@ -49,6 +49,7 @@ I_Terrain::getScriptTypeName()
 {
     return sm_scriptTypeName;
 }
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace World
 }   // namespace Engine

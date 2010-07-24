@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// IndieZen Game Engine Framework
+// Zen Engine Framework
 //
-// Copyright (C) 2001 - 2007 Tony Richards
-// Copyright (C)        2008 Walt Collins
+// Copyright (C) 2001 - 2009 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,29 +20,31 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
 #include "PhysicsMaterial.hpp"
-#include <vector>
+
+#include <Zen/Core/Scripting.hpp>
+
+#include <Zen/Core/Threading/SpinLock.hpp>
+#include <Zen/Core/Threading/CriticalSection.hpp>
+
+#include <Zen/Engine/Physics/I_PhysicsManager.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-PhysicsMaterial::PhysicsMaterial(wpPhysicsZone_type _zone, bool _default)
-:   m_pZone(_zone)
+PhysicsMaterial::PhysicsMaterial(bool _isDefault)
+:   m_surfaceParameters()
+,   m_pScriptModule(Zen::Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
+,   m_pScriptObject(NULL)
+,   m_dynamicFriction(0.0f)
+,   m_isCollidable(true)
+,   m_id(_isDefault ? 0 : getNewMaterialId())
 {
-    //thinking this is bad practice, so just a general outline -bjr
-    materials_vector_type materialsListing m_pZone->getZonePtr()->getAllMaterials();
-    if (_default) m_id = NULL;
-    else m_id = materialsListing.end();
-    materialsListing.push_back(this);
-
-    setCollidable(true);
-    setAdvancedCollisionPrediction(false);
-    setRestitution(0.25f);
-    setStaticFriction(1.0f);
-    setDynamicFriction(0.7f);
+    m_surfaceParameters.mode = 
+        dContactBounce;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -52,52 +53,66 @@ PhysicsMaterial::~PhysicsMaterial()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-int 
-PhysicsMaterial::getMaterialID()
+Scripting::I_ObjectReference*
+PhysicsMaterial::getScriptObject()
+{
+    // TODO Make thread safe?
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptObjectReference_type
+            (m_pScriptModule, m_pScriptModule->getScriptType(getScriptTypeName()), getSelfReference().lock());
+    }
+
+    return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+int
+PhysicsMaterial::getMaterialId()
 {
     return m_id;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-int 
-PhysicsMaterial::getDefaultMaterialID()
+int
+PhysicsMaterial::getDefaultMaterialId()
 {
-    return NULL;
+    return 0;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Math::Real 
+Math::Real
 PhysicsMaterial::getDynamicFriction()
 {
     return m_dynamicFriction;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Math::Real 
+Math::Real
 PhysicsMaterial::getStaticFriction()
 {
-    return m_staticFriction;
+    return m_surfaceParameters.mu;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Math::Real 
-PhysicsMaterial::getElasticity()
+Math::Real
+PhysicsMaterial::getRestitution()
 {
-    return m_elasticity;
+    return m_surfaceParameters.bounce;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-bool 
+bool
 PhysicsMaterial::getAdvancedCollisionPrediction()
 {
-    return m_bAdvancedCollisionPrediction;
+    throw Utility::runtime_exception("PhysicsMaterial::getAdvancedCollisionPrediction(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-bool 
+bool
 PhysicsMaterial::getCollidable()
 {
-    return m_bCollidable;
+    return m_isCollidable;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -111,36 +126,47 @@ PhysicsMaterial::setDynamicFriction(Math::Real _dynamicFriction)
 void
 PhysicsMaterial::setStaticFriction(Math::Real _staticFriction)
 {
-    // Newton friction coefficients are normally between 0 and 1
-    m_staticFriction = _staticFriction;
+    m_surfaceParameters.mu = _staticFriction;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-PhysicsMaterial::setRestitution(Math::Real _restitution)
+PhysicsMaterial::setRestitution(Math::Real _elasticity)
 {
-    m_restitution = _restitution;
+    m_surfaceParameters.bounce = _elasticity;
+    m_surfaceParameters.bounce_vel = 0.0f;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 PhysicsMaterial::setAdvancedCollisionPrediction(bool _mode)
 {
-    m_bAdvancedCollisionPrediction = _mode;
+    throw Utility::runtime_exception("PhysicsMaterial::setAdvancedCollisionPrediction(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 PhysicsMaterial::setCollidable(bool _collide)
 {
-    m_bCollidable = _collide;
+    m_isCollidable = _collide;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 PhysicsMaterial::setIgnoreCollision(pPhysicsMaterial_type _material)
 {
-   //implement explicit mat on mat ignore collisions, or stick to a collisiongroups mask for collisionshapes?
+    throw Utility::runtime_exception("PhysicsMaterial::setIgnoreCollision(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+int
+PhysicsMaterial::getNewMaterialId()
+{
+    static Zen::Threading::SpinLock sm_spinLock;
+    static unsigned int sm_lastId = 0;
+
+    Zen::Threading::xCriticalSection lock(sm_spinLock);
+    return sm_lastId = ++sm_lastId == 0 ? 1 : sm_lastId;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

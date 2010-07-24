@@ -87,6 +87,7 @@ public:
     /// @{
 protected:
              View(wxWindow* _pParent, Workbench* _pWorkbench, pViewable_type _pViewable, const int _instance);
+             View(wxWindow* _pParent, Workbench* _pWorkbench, pViewable_type _pViewable, const int _instance, long _windowStyle);
     virtual ~View();
     /// @}
 

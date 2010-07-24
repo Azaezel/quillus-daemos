@@ -58,7 +58,7 @@ ZoneLayerView::createGUIControls()
     pDefaultPane->SetSizer(new wxBoxSizer(wxVERTICAL));
     pDefaultPane->GetSizer()->Add(new SimpleLayerPanel(pDefaultPane->GetPane()), 1, wxGROW|wxALL, 2);
     pDefaultPane->GetSizer()->SetSizeHints(pDefaultPane->GetPane());
-
+#if 0 // temporarily removed - doesn't work in wxWidget 2.9.0
     wxCollapsiblePane* const pSkyLayer = new wxCollapsiblePane(this, wxID_ANY, wxT("Sky Layer"),
         wxDefaultPosition, wxDefaultSize, wxCP_NO_TLW_RESIZE|wxCP_DEFAULT_STYLE);
     m_pSizer->Add(pSkyLayer, 0, wxGROW | wxALIGN_CENTER | wxALL, 5);
@@ -75,6 +75,7 @@ ZoneLayerView::createGUIControls()
     pTerrainLayer->GetSizer()->SetSizeHints(pTerrainLayer->GetPane());
 
     GetSizer()->AddStretchSpacer();
+#endif
 
     FitInside();
     SetScrollbars(20, 20, 50, 50);

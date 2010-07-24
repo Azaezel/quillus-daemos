@@ -74,6 +74,7 @@ public:
     /// @name I_GameObject implementation
     /// @{
 public:
+    virtual const Zen::Engine::Core::I_BaseGameObject& base() const;
     virtual Zen::Engine::Core::I_BaseGameObject& base();
     virtual Zen::Engine::Core::I_GameObjectData* getData();
     virtual void setData(Zen::Engine::Core::I_GameObjectData* _pData);
@@ -155,6 +156,14 @@ protected:
     /// @}
 
 };  // class GameObject
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+inline
+const Zen::Engine::Core::I_BaseGameObject&
+GameObject::base() const
+{
+    return *m_pBaseObject;
+}
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 inline

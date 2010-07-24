@@ -21,11 +21,13 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PhysicsJoint.hpp"
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include "PhysicsActor.hpp"
+#include "PhysicsZone.hpp"
+
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Core/Math/Vector3.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -44,7 +46,7 @@ PhysicsJoint::~PhysicsJoint()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-PhysicsJoint::attachShape(PhysicsJoint::pCollisionShape_type _shape)
+PhysicsJoint::attachActor(PhysicsJoint::pPhysicsActor_type _shape)
 {
     m_pShape = _shape;
 }
@@ -53,7 +55,7 @@ PhysicsJoint::attachShape(PhysicsJoint::pCollisionShape_type _shape)
 void
 PhysicsJoint::initUpVectorJoint(const Math::Vector3& _upVector)
 {
-    NewtonConstraintCreateUpVector((NewtonWorld*)m_pZone->getZonePtr(), _upVector.m_array, (NewtonBody*)m_pShape->getBodyPtr());
+    NewtonConstraintCreateUpVector(dynamic_cast<PhysicsZone*>(m_pShape->getPhysicsZone().get())->getZonePtr(), _upVector.m_array, dynamic_cast<PhysicsActor*>(m_pShape.get())->getActorPtr());
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

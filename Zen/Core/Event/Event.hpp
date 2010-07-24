@@ -52,14 +52,14 @@ namespace Event {
 /// The Event is thread safe in that you can safely connect, disconnect
 /// and publish events in multiple threads.
 ///
-/// Delegates are regitered using the Event::connect() method, which returns
+/// Delegates are registered using the Event::connect() method, which returns
 /// a pointer to a connection.  
 ///
-/// An event is published by envoking the operator() method on the 
+/// An event is published by invoking the operator() method on the
 /// Event object, passing the payload as a parameter to the method.
 ///
 /// The payload is then passed as a parameter to every delegate's operator(),
-/// synchrounously and in the order that the delegate was connected. (FIFO).
+/// synchronously and in the order that the delegate was connected. (FIFO).
 ///
 /// @param Parm1_type Payload type that is passed to the delegate
 ///     when the event fires.
@@ -100,17 +100,17 @@ public:
 
     /// Fires an Event.
     /// This should not be called by anything other than the object that owns the event.
-	void operator()(Parm1_type _parm)
-	{
+    void operator()(Parm1_type _parm)
+    {
         Threading::CriticalSection guard(m_pMutex);
 
         for( typename container_type::iterator iter = m_connections.begin(); 
             iter != m_connections.end(); 
             iter++)
-		{
-			(**iter)(_parm);
-		}
-	}
+        {
+            (**iter)(_parm);
+        }
+    }
 
 private:
     /// For internal use only.  This should only be called by the
@@ -141,7 +141,7 @@ public:
     /// @name Member Variables
     /// @{
 private:
-	container_type	m_connections;
+    container_type	m_connections;
     pMutex_type     m_pMutex;
     /// @}
 

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -42,6 +42,7 @@ namespace Zen {
 namespace Engine {
 namespace Input {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class I_InputMapService;
 
 class INPUTMANAGER_DLL_LINK I_InputServiceManager
 {
@@ -51,9 +52,10 @@ public:
     typedef Zen::Memory::managed_ptr<Scripting::I_ScriptEngine> pScriptEngine_type;
     typedef Zen::Memory::managed_ptr<Scripting::I_ScriptModule> pScriptModule_type;
 
-    typedef Zen::Memory::managed_ptr<I_InputService>  pService_type;
+    typedef Zen::Memory::managed_ptr<I_InputService>    pService_type;
     typedef std::map<std::string, std::string>          config_type;
     typedef config_type&                                config_ref_type;
+    typedef Zen::Memory::managed_ptr<I_InputMapService> pInputMapService_type;
     /// @}
 
     /// @name I_InputServiceManager interface
@@ -66,8 +68,11 @@ public:
     /// @return Pointer to an input service.
     virtual pService_type create(const std::string& _type, config_type& _config) = 0;
 
-    /// Register the default script engine for all resource services.
-    /// Every resource service that has been created or is created in the future
+    /// Create an input map service.
+    virtual pInputMapService_type createInputMapService() = 0;
+
+    /// Register the default script engine for all input services.
+    /// Every input service that has been created or is created in the future
     /// will use this script engine.
     /// @param _pEngine NULL to set the default engine to none, but doing so will
     ///             not unregister the script engine to services that have already

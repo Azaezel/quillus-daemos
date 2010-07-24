@@ -17,8 +17,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-CreatorCategoryProperty::CreatorCategoryProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _value, Property* _pParent)
-:   Property(_publisher, "Creator Category", _value, _pParent)
+CreatorCategoryProperty::CreatorCategoryProperty(Properties& _properties, const std::string& _value, Property* _pParent)
+:   Property(_properties, "Creator Category", _value, _pParent)
 {
 }
 

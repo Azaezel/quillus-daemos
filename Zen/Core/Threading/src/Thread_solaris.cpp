@@ -28,6 +28,12 @@
 #include "Thread_solaris.hpp"
 
 #include "../I_Runnable.hpp"
+#include "../SpinLock.hpp"
+#include "../CriticalSection.hpp"
+#include <stdexcept>
+#include <sstream>
+#include <map>
+#include <unistd.h>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -37,6 +43,7 @@ namespace Threading {
 Thread_solaris::Thread_solaris(I_Runnable *const _pRunnable)
 :	m_pRunnable(_pRunnable)
 ,   m_nativeThread()
+,   m_threadId()
 ,   m_isStarted(false)
 ,   m_isJoined(false)
 {
@@ -104,6 +111,20 @@ Thread_solaris::join()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Thread::ThreadId
+Thread_solaris::getSolarisCurrentThreadId()
+{
+    return ThreadId(new NativeThreadId_solaris(::thr_self()));
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const I_Thread::ThreadId&
+Thread_solaris::getThreadId() const
+{
+    return m_threadId;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 DWORD WINAPI
 Thread_solaris::threadFunction (::LPVOID _pThis)
 {
@@ -116,6 +137,38 @@ Thread_solaris::threadFunction (::LPVOID _pThis)
 	{
 	}
     return 0;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Thread_solaris::NativeThreadId_solaris::operator==(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+{
+    const NativeThreadId_solaris* const pNativeThreadId_solaris = static_cast<const NativeThreadId_solaris*>(&_id);
+    return (pNativeThreadId_solaris != NULL) && (m_nativeThreadId == pNativeThreadId_solaris->m_nativeThreadId);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Thread_solaris::NativeThreadId_solaris::operator!=(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+{
+    const NativeThreadId_solaris* const pNativeThreadId_solaris = static_cast<const NativeThreadId_solaris*>(&_id);
+    return (pNativeThreadId_solaris == NULL) || (m_nativeThreadId != pNativeThreadId_solaris->m_nativeThreadId);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Thread::ThreadId::I_NativeThreadId*
+Thread_solaris::NativeThreadId_solaris::clone() const
+{
+    return new NativeThreadId_solaris(m_nativeThreadId);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+std::string
+Thread_solaris::NativeThreadId_solaris::toString() const
+{
+    std::ostringstream oStream;
+    oStream << std::hex << std::uppercase << "0x" << m_nativeThreadId;
+    return oStream.str();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

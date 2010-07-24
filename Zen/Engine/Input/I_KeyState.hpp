@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C)        2006 Phillip Castaneda (pjcast -- www.wreckedgames.com)
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
@@ -68,6 +68,9 @@ public:
 protected:
              I_KeyState();
     virtual ~I_KeyState();
+private:
+    I_KeyState(const I_KeyState& _keyState);
+    I_KeyState& operator=(const I_KeyState& _keyState);
     /// @}
 
 };  // I_KeyState interface

@@ -21,6 +21,9 @@
 #include <Zen/Studio/WorkbenchModel/I_PropertiesDomainObject.hpp>
 #include <Zen/Studio/WorkbenchModel/I_PropertyDomainObject.hpp>
 
+#include <algorithm>
+#include <iostream>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -67,6 +70,34 @@ bool
 DocumentProperties::cellPropertiesChangeEachColumn() const
 {
     return false;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const Zen::Studio::Workbench::I_Property*
+DocumentProperties::getPropertyByFullName(const std::string& _fullName)
+{
+
+    // Parse the name using "\" as a delimiter.  Figure out which parent property it belongs and call it.
+
+    const std::string delimiter("\\");
+    std::string::const_iterator iter = std::find_first_of(_fullName.begin(), _fullName.end(), delimiter.begin(), delimiter.end());
+
+    if (iter != _fullName.end())
+    {
+        std::string firstPart(_fullName.begin(), iter);
+        std::cout << "Found " << firstPart << std::endl;
+
+        // TODO This needs to be found using a map
+        if (firstPart == "Creator")
+        {
+            std::string remaining(iter + 1, _fullName.end());
+            return m_creator.getPropertyByName(_fullName);
+        }
+    }
+
+    return NULL;
+
+    throw Zen::Utility::runtime_exception("DocumentProperties::getPropertyByFullName(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

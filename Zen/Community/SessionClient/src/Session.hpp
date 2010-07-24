@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -21,10 +21,12 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//	Matthew Alan Gray mgray@indiezen.org
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef ZEN_COMMUNITY_SESSIONCLIENT_SESSION_HPP_INCLUDED
 #define ZEN_COMMUNITY_SESSIONCLIENT_SESSION_HPP_INCLUDED
+
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Community/SessionCommon/I_Session.hpp>
 
@@ -36,44 +38,70 @@ namespace Community {
     }   // namespace Common
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class SessionService;
 
-/// Session Session
+/// Session.
+/// This represents a stateful session.
+/// @note Should this be scriptable or should Common::I_Session be scriptable?
+///     For now I think it should be here, since the server side currently
+///     is not scriptable.
 class Session
-:   Common::I_Session
+:   public Common::I_Session
+,   public Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
 public:
-    typedef Zen::Memory::managed_ptr<Common::I_SessionService>    pSessionService_type;
+    typedef Session*                                        pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<Session>        ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                      ScriptWrapper_type;
+    typedef ScriptWrapper_type*                             pScriptWrapper_type;
     /// @}
 
-    /// @name I_Session interface
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
+    /// @name I_Session implementation
     /// @{
 public:
     virtual SessionState_type getSessionState() const;
-    virtual boost::int32_t getSessionId() const;
+    virtual boost::uint32_t getSessionId() const;
     virtual const pEndpoint_type getEndpoint() const;
-    virtual pFutureAttribute_type getAttribute(const std::string& _key) const;
+    //virtual pFutureAttribute_type getAttribute(const std::string& _key) const;
+    /// @}
+
+    /// @name Session implementation
+    /// @{
+public:
+    void setSessionId(boost::uint32_t _sessionId);
+    void setSessionState(SessionState_type _sessionState);
+    static void registerScriptModule(Zen::Scripting::script_module& _module);
+    int scriptGetSessionState();
     /// @}
 
     /// @name 'Structors
     /// @{
 protected:
-    friend class LoginResponseHandler;
-             Session(pSessionService_type _pParent,
-                     boost::int32_t _sessionId,
-                     SessionState_type _sessionState,
-                     pEndpoint_type _pEndpoint);
+    friend class SessionService;
+             Session(SessionService& _parent, pEndpoint_type _pDestination);
     virtual ~Session();
     /// @}
 
     /// @name Member variables
     /// @{
 private:
-    pSessionService_type          m_pParent;
+    SessionService&             m_parent;
+    /// Destination endpoint
+    pEndpoint_type              m_pEndpoint;
+
     boost::int32_t              m_sessionId;
     SessionState_type           m_sessionState;
-    const pEndpoint_type        m_pEndpoint;
+
+    pScriptWrapper_type         m_pScriptObject;
     /// @}
 
 };  // class Session

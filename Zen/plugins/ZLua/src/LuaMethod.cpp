@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -27,6 +27,7 @@
 #include "LuaObject.hpp"
 #include "LuaTypeMap.hpp"
 #include "LuaEngine.hpp"
+#include "Config.hpp"
 
 #include <Zen/Core/Math/Matrix4.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
@@ -50,7 +51,7 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(0)
+,   m_functionType(VOID_FUNCTION_NO_ARGS)
 ,   m_function0(_function)
 {
     init();
@@ -62,7 +63,7 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(1)
+,   m_functionType(VOID_FUNCTION_ARGS)
 ,   m_function1(_function)
 {
     init();
@@ -74,7 +75,7 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(2)
+,   m_functionType(OBJ_FUNCTION_ARGS)
 ,   m_function2(_function)
 {
     init();
@@ -86,7 +87,7 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(3)
+,   m_functionType(OBJ_FUNCTION_NO_ARGS)
 ,   m_function3(_function)
 {
     init();
@@ -98,7 +99,7 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(4)
+,   m_functionType(STRING_FUNCTION_NO_ARGS)
 ,   m_function4(_function)
 {
     init();
@@ -110,7 +111,7 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(5)
+,   m_functionType(STRING_FUNCTION_ARGS)
 ,   m_function5(_function)
 {
     init();
@@ -122,7 +123,7 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(6)
+,   m_functionType(BOOL_FUNCTION_NO_ARGS)
 ,   m_function6(_function)
 {
     init();
@@ -134,12 +135,11 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(7)
+,   m_functionType(BOOL_FUNCTION_ARGS)
 ,   m_function7(_function)
 {
     init();
 }
-
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptType::int_function_no_args_type _function, lua_CFunction _pCFunction)
@@ -147,7 +147,7 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(8)
+,   m_functionType(INT_FUNCTION_NO_ARGS)
 ,   m_function8(_function)
 {
     init();
@@ -159,8 +159,20 @@ LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::strin
 ,   m_name(_name)
 ,   m_docString(_docString)
 ,   m_pCFunction(_pCFunction)
-,   m_functionType(9)
+,   m_functionType(INT_FUNCTION_ARGS)
 ,   m_function9(_function)
+{
+    init();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+LuaMethod::LuaMethod(LuaType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptMethod* _function, lua_CFunction _pCFunction)
+:   m_pType(_pType)
+,   m_name(_name)
+,   m_docString(_docString)
+,   m_pCFunction(_pCFunction)
+,   m_functionType(GENERIC_FUNCTION_ARGS)
+,   m_function10(_function)
 {
     init();
 }
@@ -176,33 +188,10 @@ LuaMethod::init()
 {
     lua_State* const L = m_pType->getModule().getEngine().getState();
 
-    // Pretty much all of the functions are created in LuaType::activate()
+    // All of the functions are created in LuaType::activate()
     //lua_pushcfunction(L, m_pCFunction);
     //lua_setglobal(L, m_name.c_str());
-
-#if 0
-    m_pDef = new PyMethodDef;
-    memset(m_pDef, 0, sizeof(PyMethodDef));
-    m_pDef->ml_name = m_name.c_str();
-    m_pDef->ml_meth = m_pCFunction;
-
-    //m_pFunction = lua_CFunction_New(m_pDef, NULL);
-
-    PyObject* pMethod = PyDescr_NewMethod(m_pType->getRawType(), m_pDef);
-
-    PyDict_SetItemString(m_pType->getRawType()->tp_dict, m_pDef->ml_name, pMethod);
-    Py_DECREF(pMethod);
-#endif
 }
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#if 0
-PyMethodDef*
-LuaMethod::getDef()
-{
-    return m_pDef;
-}
-#endif
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int
@@ -219,14 +208,15 @@ LuaMethod::operator()(lua_State* L)
 
         switch(m_functionType)
         {
-        case 0: // VoidFunctionNoArgs
+        case VOID_FUNCTION_NO_ARGS:
             m_function0(*pObj);
             return 0;
-        case 1: // VoidFunctionArgs
-        case 2: // ObjFunctionArgs
-        case 5: // StringFunctionArgs
-        case 7: // BoolFunctionArgs
-        case 9: // IntFunctionArgs
+        case VOID_FUNCTION_ARGS:
+        case OBJ_FUNCTION_ARGS:
+        case STRING_FUNCTION_ARGS:
+        case BOOL_FUNCTION_ARGS:
+        case INT_FUNCTION_ARGS:
+        case GENERIC_FUNCTION_ARGS:
             {
                 int top = lua_gettop(L);
 
@@ -348,6 +338,66 @@ LuaMethod::operator()(lua_State* L)
                                     continue;
                                 }
 
+                                lua_pop(L,1);
+                                lua_getfield(L, LUA_REGISTRYINDEX, "Radian");
+                                if (lua_rawequal(L, -1, -2))
+                                {
+                                    // Get the user data, which is a Math::Radian*
+                                    Math::Radian* pRadian = 
+                                        (Math::Radian*)lua_touserdata(L, -3);
+
+                                    // Push the value onto the list of arguments being passed
+                                    // to the function being called by Lua.
+                                    // Note that we're pushing a <b>pointer</b>, of the
+                                    // Math::Radian and not the value.
+                                    parms.push_back(pRadian);
+
+                                    // Pop the table and the two meta tables.
+                                    lua_pop(L, 3);
+                                    assert(tmpTop == lua_gettop(L));
+                                    continue;
+                                }
+
+                                lua_pop(L,1);
+                                lua_getfield(L, LUA_REGISTRYINDEX, "Degree");
+                                if (lua_rawequal(L, -1, -2))
+                                {
+                                    // Get the user data, which is a Math::Degree*
+                                    Math::Degree* pDegree = 
+                                        (Math::Degree*)lua_touserdata(L, -3);
+
+                                    // Push the value onto the list of arguments being passed
+                                    // to the function being called by Lua.
+                                    // Note that we're pushing a <b>pointer</b>, of the
+                                    // Math::Radian and not the value.
+                                    parms.push_back(pDegree);
+
+                                    // Pop the table and the two meta tables.
+                                    lua_pop(L, 3);
+                                    assert(tmpTop == lua_gettop(L));
+                                    continue;
+                                }
+
+                                // Check to see if the argument is a Config type.
+                                lua_pop(L, 1);
+                                lua_getfield(L, LUA_REGISTRYINDEX, "Config");
+                                if (lua_rawequal(L, -1, -2))
+                                {
+                                	// Get the user data, which is a Config*
+                                    Config* pConfig = (Config*)lua_touserdata(L, -3);
+
+                                    // Push the value onto the list of arguments being passed
+                                    // to the function being called by Lua.
+                                    // Note that we're pushing a <b>pointer</b>, of the
+                                    // std::map<std::string, std::string> and not the value.
+                                    parms.push_back(&pConfig->m_config);
+
+                                    // Pop the table and the two meta tables
+                                    lua_pop(L, 3);
+                                    assert(tmpTop == lua_gettop(L));
+                                    continue;
+                                }
+
                                 pObjectReference_type* pValue = (pObjectReference_type*)lua_touserdata(L, -3);
                                 parms.push_back(*pValue);
                                 lua_pop(L, 2);
@@ -377,7 +427,7 @@ LuaMethod::operator()(lua_State* L)
                     }
                 }
 
-                if (m_functionType == 1)    // VoidFunctionArgs
+                if (m_functionType == VOID_FUNCTION_ARGS)
                 {
                     // Pop everything off the stack
                     lua_pop(L, lua_gettop(L));
@@ -387,7 +437,7 @@ LuaMethod::operator()(lua_State* L)
                     // No return value
                     return 0;
                 }
-                else if (m_functionType == 5) // StringFunctionArgs
+                else if (m_functionType == STRING_FUNCTION_ARGS)
                 {
                     // Pop everything off the stack
                     lua_pop(L, lua_gettop(L));
@@ -398,7 +448,7 @@ LuaMethod::operator()(lua_State* L)
 
                     return 1;
                 }
-                else if (m_functionType == 7)   // BoolFunctionArgs
+                else if (m_functionType == BOOL_FUNCTION_ARGS)
                 {
                     // Pop everything off the stack
                     lua_pop(L, lua_gettop(L));
@@ -409,7 +459,7 @@ LuaMethod::operator()(lua_State* L)
 
                     return 1;
                 }
-                else if (m_functionType == 9)   // IntFunctionArgs
+                else if (m_functionType == INT_FUNCTION_ARGS)
                 {
                     // Pop everything off the stack
                     lua_pop(L, lua_gettop(L));
@@ -420,7 +470,7 @@ LuaMethod::operator()(lua_State* L)
 
                     return 1;
                 }
-                else // ObjFunctionArgs
+                else if (m_functionType == OBJ_FUNCTION_ARGS)
                 {
                     // Pop everything off the stack
                     lua_pop(L, lua_gettop(L));
@@ -433,9 +483,141 @@ LuaMethod::operator()(lua_State* L)
                     assert(lua_gettop(L) == 1);
                     return 1;
                 }
+                else if (m_functionType == GENERIC_FUNCTION_ARGS)
+                {
+                    // Pop everything off the stack
+                    lua_pop(L, lua_gettop(L));
+
+                    boost::any anyReturn = m_function10->dispatch(*pObj, parms);
+
+                    // TODO this is inefficient... do a map of functors instead.
+                    if (anyReturn.type() == typeid(void))
+                    {
+                        // no return, don't bother doing anything
+                        return 0;
+                    }
+                    else if (anyReturn.type() == typeid(Zen::Scripting::I_ObjectReference*))
+                    {
+                        // object
+                        pObjectReference_type pReturn = boost::any_cast<pObjectReference_type>(anyReturn);
+
+                        lua_rawgeti(L, LUA_REGISTRYINDEX, (lua_Integer)pReturn->getScriptUserData());
+
+                        assert(lua_gettop(L) == 1);
+                        return 1;
+                    }
+                    else if (anyReturn.type() == typeid(std::string))
+                    {
+                        std::string returnValue = boost::any_cast<std::string>(anyReturn);
+
+                        lua_pushstring(L, returnValue.c_str());
+
+                        return 1;
+                    }
+                    else if(anyReturn.type() == typeid(bool))
+                    {
+                        bool returnValue = boost::any_cast<bool>(anyReturn);
+
+                        lua_pushboolean(L, returnValue);
+
+                        return 1;
+                    }
+                    else if (anyReturn.type() == typeid(int))
+                    {
+                        int returnValue = boost::any_cast<int>(anyReturn);
+
+                        lua_pushinteger(L, returnValue);
+
+                        return 1;
+                    }
+                    else if (anyReturn.type() == typeid(unsigned int))
+                    {
+                        int returnValue = boost::any_cast<unsigned int>(anyReturn);
+
+                        lua_pushinteger(L, returnValue);
+
+                        return 1;
+                    }
+                    else if (anyReturn.type() == typeid(Zen::Math::Real))
+                    {
+                        Zen::Math::Real returnValue = boost::any_cast<Zen::Math::Real>(anyReturn);
+
+                        lua_pushnumber(L, returnValue);
+
+                        return 1;
+                    }
+                    // TODO This is a hack.
+                    else if (anyReturn.type() == typeid(Zen::Math::Vector3))
+                    {
+                        const int top = lua_gettop(L);
+
+                        lua_newtable(L);
+                        const int table = lua_gettop(L);
+
+                        Math::Vector3* pVector3 = new (lua_newuserdata(L, sizeof(Math::Vector3))) Math::Vector3();
+                        const int userdata = lua_gettop(L);
+
+                        // T["__zen_userdata"] = UD
+                        lua_pushvalue(L, userdata);
+                        lua_setfield(L, table, "__zen_userdata");
+
+                        // Get the meta table for this class type and set it for this object
+                        luaL_getmetatable(L, "Vector3");
+                        lua_setmetatable(L, table);
+
+                        // Get the meta table for this class type and set it for the user data
+                        luaL_getmetatable(L, "Vector3");
+                        lua_setmetatable(L, userdata);
+
+                        // Pop the userdata so only the table is left
+                        lua_pop(L, 1);
+
+                        *pVector3 = boost::any_cast<Zen::Math::Vector3>(anyReturn);
+
+                        return 1;
+                    }
+                    else if (anyReturn.type() == typeid(Zen::Math::Point3))
+                    {
+                        const int top = lua_gettop(L);
+
+                        lua_newtable(L);
+                        const int table = lua_gettop(L);
+
+                        Math::Point3* pPoint3 = new (lua_newuserdata(L, sizeof(Math::Point3))) Math::Point3();
+                        const int userdata = lua_gettop(L);
+
+                        // T["__zen_userdata"] = UD
+                        lua_pushvalue(L, userdata);
+                        lua_setfield(L, table, "__zen_userdata");
+
+                        // Get the meta table for this class type and set it for this object
+                        luaL_getmetatable(L, "Point3");
+                        lua_setmetatable(L, table);
+
+                        // Get the meta table for this class type and set it for the user data
+                        luaL_getmetatable(L, "Point3");
+                        lua_setmetatable(L, userdata);
+
+                        // Pop the userdata so only the table is left
+                        lua_pop(L, 1);
+
+                        *pPoint3 = boost::any_cast<Zen::Math::Point3>(anyReturn);
+
+                        return 1;
+                    }
+                    else
+                    {
+                        // TODO Make this error message a little more detailed
+                        throw Zen::Utility::runtime_exception("Script method returned unknown type.");
+                    }
+
+                    // TODO Throw an exception since the type wasn't 
+                    assert(lua_gettop(L) == 0);
+                    return 0;
+                }
             }
             break;
-        case 3: // ObjFunctionNoArgs
+        case OBJ_FUNCTION_NO_ARGS:
             {
                 // Pop everything off the stack
                 lua_pop(L, lua_gettop(L));
@@ -450,7 +632,7 @@ LuaMethod::operator()(lua_State* L)
 
             }
             break;
-        case 4: // StringFunctionNoArgs
+        case STRING_FUNCTION_NO_ARGS:
             {
                 // Pop everything off the stack
                 lua_pop(L, lua_gettop(L));
@@ -462,7 +644,7 @@ LuaMethod::operator()(lua_State* L)
                 return 1;
             }
             break;
-        case 6: // BoolFunctionNoArgs
+        case BOOL_FUNCTION_NO_ARGS:
             {
                 // Pop everything off the stack
                 lua_pop(L, lua_gettop(L));
@@ -474,7 +656,7 @@ LuaMethod::operator()(lua_State* L)
                 return 1;
             }
             break;
-        case 8: // IntFunctionNoArgs
+        case INT_FUNCTION_NO_ARGS:
             {
                 // Pop everything off the stack
                 lua_pop(L, lua_gettop(L));
@@ -489,12 +671,12 @@ LuaMethod::operator()(lua_State* L)
         }
 
     }
-    catch(Utility::runtime_exception ex)
+    catch(Utility::runtime_exception& ex)
     {
         std::cout << "ERROR: Caught exception handling call to C++ from Lua. " << ex.what() << std::endl;
         throw ex;
     }
-    catch(std::exception ex)
+    catch(std::exception& ex)
     {
         std::cout << "ERROR: Caught exception handling call to C++ from Lua. " << ex.what() << std::endl;
         throw ex;

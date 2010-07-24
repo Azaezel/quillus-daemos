@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
-// Copyright (C)        2008 Walt Collins
+// Copyright (C) 2001 - 2009 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +20,6 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PhysicsResourceService.hpp"
 #include "PhysicsResource.hpp"
@@ -47,7 +45,7 @@ namespace ZODE {
 PhysicsResourceService::PhysicsResourceService()
 :   m_bInitialized(false)
 ,   m_pGroupInitLock(Threading::MutexFactory::create())
-,   m_pScriptModule(Engine::Physics::I_PhysicsManager::getSingleton().getDefaultScriptModule())
+,   m_pModule(NULL)
 {
 }
 
@@ -62,6 +60,14 @@ void
 PhysicsResourceService::addResourceLocation(const std::string& _path, const std::string& _type,
                                      const std::string& _group, bool _recursive)
 {
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsResourceService::initialiseAllResourceGroups()
+{
+    // TODO Implement?
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -85,6 +91,26 @@ PhysicsResourceService::loadResource(config_type& _config)
     {
         std::cout << "ZODE::loadResource() loading terrain..." << std::endl;
 
+        // TODO Use a better configuration type so we don't have to do all
+        // of these conversions.
+        const std::string terrainType = _config["terrainType"];
+
+        if (terrainType == "heightfield")
+        {
+        }
+        else
+        {
+            throw Zen::Utility::runtime_exception("Invalid terrainType specified.");
+        }
+
+#if 0
+        dGeomHeightfieldDataBuildShort(dHeightfieldDataID d,
+                                      const short *pHeightData,
+                                      int bCopyHeightData,
+                                      dReal width, dReal depth,
+                                      int widthSamples, int depthSamples,
+                                      dReal scale, dReal offset, dReal thickness, int bWrap);
+#endif
         // TODO - return an empty resource, since I don't know what to return here
         pResource_type emptyResource;
         return emptyResource;
@@ -108,17 +134,37 @@ PhysicsResourceService::destroyResource(wpResource_type)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static std::string sm_scriptSingletonName("physicsResourceService");
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+PhysicsResourceService::getScriptSingletonName() const
+{
+    return sm_scriptSingletonName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Scripting::I_ObjectReference*
 PhysicsResourceService::getScriptObject()
 {
     // TODO Make thread safe?
     if (m_pScriptObject == NULL)
     {
-        m_pScriptObject = new ScriptObjectReference_type
-            (m_pScriptModule, m_pScriptModule->getScriptType(getScriptTypeName()), getSelfReference().lock());
+        m_pScriptObject = new ScriptObjectReference_type(
+            m_pModule->getScriptModule(), 
+            m_pModule->getScriptModule()->getScriptType(getScriptTypeName()), 
+            getSelfReference().lock()
+        );
     }
 
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsResourceService::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    m_pModule = &_module;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

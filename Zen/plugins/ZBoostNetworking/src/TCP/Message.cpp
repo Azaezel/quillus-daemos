@@ -114,7 +114,7 @@ big_to_native(boost::uint32_t x)
 bool
 MessageBuffer::decodeHeader()
 {
-    m_bodyLength = big_to_native(m_bodyLength);
+    m_bodyLength = big_to_native(m_encodedBodyLength);
     if (m_bodyLength > MAX_BODY_LENGTH)
     {
         // TODO Error
@@ -128,7 +128,7 @@ MessageBuffer::decodeHeader()
 void
 MessageBuffer::encodeHeader()
 {
-    m_bodyLength = native_to_big(m_bodyLength);
+    m_encodedBodyLength = native_to_big(m_bodyLength);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

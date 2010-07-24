@@ -26,11 +26,20 @@
 
 #include "../I_Thread.hpp"
 
+#if defined(HOST_POSIX)
+#include "Thread_posix.hpp"
+#endif
+
+#if defined(HOST_SOLARIS)
+#include "Thread_solaris.hpp"
+#endif
+
 #if     defined(HOST_WIN32)
     #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN
     #endif
     #include "Windows.h"    // ::Sleep()
+	#include "Thread_win32.hpp"
 #elif   defined(HOST_POSIX) || defined(HOST_SOLARIS)
     #include "unistd.h"     // ::sleep(), ::usleep()
 #else
@@ -60,6 +69,21 @@ I_Thread::I_Thread()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_Thread::~I_Thread()
 {
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Thread::ThreadId
+I_Thread::getCurrentThreadId()
+{
+#if defined(HOST_WIN32)
+    return Thread_win32::getWin32CurrentThreadId();
+#elif defined(HOST_POSIX) || defined(HOST_DARWIN)
+    return Thread_posix::getPosixCurrentThreadId();
+#elif defined(HOST_SOLARIS)
+    return Thread_solaris::getSolarisCurrentThreadId();
+#else
+#error Platform not supported
+#endif
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

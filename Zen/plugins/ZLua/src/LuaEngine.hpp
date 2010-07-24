@@ -24,14 +24,10 @@
 #ifndef ZEN_ZLUA_LUA_ENGINE_HPP_INCLUDED
 #define ZEN_ZLUA_LUA_ENGINE_HPP_INCLUDED
 
-extern "C" {
-#include <lauxlib.h>
-#include <lualib.h>
-}
+#include "../I_LuaScriptEngine.hpp"
 
 #include <Zen/Core/Memory/managed_self_ref.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
@@ -46,7 +42,7 @@ namespace ZLua {
 class LuaObject;
 
 class LuaEngine
-:   public Scripting::I_ScriptEngine
+:   public I_LuaScriptEngine
 ,   public Memory::managed_self_ref<Scripting::I_ScriptEngine>
 {
     /// @name Types
@@ -73,14 +69,16 @@ public:
     virtual pScriptModule_type createScriptModule(const std::string& _moduleName, const std::string& _docString);
     /// @}
 
+    /// @name I_LuaScriptEngine implementation
+    /// @{
+public:
+    virtual lua_State* getState() const { return m_pLua; }
+    /// @}
+
     /// @name LuaEngine implementation
     /// @{
 public:
     LuaTypeMap& getTypeMap();
-    //Scripting::I_ObjectReference* getObject(PyObject* _pObject);
-    //void setObject(PyObject* _pPyObject, Scripting::I_ObjectReference* _pCPPObject);
-    inline 
-    lua_State* getState() const { return m_pLua; }
 
     void registerModules();
     /// @}
@@ -104,8 +102,6 @@ public:
 private:
     LuaHeap*         m_pHeap;
     LuaTypeMap       m_typeMap;
-
-    //object_map_type     m_objectMap;
 
     lua_State*          m_pLua;
 

@@ -33,8 +33,14 @@
 
 #include <Zen/Core/Plugins/ServiceCache.hpp>
 
+#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting/script_module.hpp>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+    namespace Scripting {
+        class I_ScriptType;
+    }   // namespace Scripting
 namespace Engine {
 namespace Sound {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -45,13 +51,23 @@ class SoundManager
     /// @name Types
     /// @{
 public:
-    typedef Zen::Plugins::ServiceCache<I_SoundService, I_SoundServiceFactory>   soundServiceCache_type;
+    typedef Zen::Plugins::ServiceCache<I_SoundService, I_SoundServiceFactory>   SoundServiceCache_type;
+    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptType>                   pScriptType_type;
     /// @}
 
     /// @name I_SoundManager implementation
     /// @{
 public:
     virtual pService_type create(const std::string& _type, config_type& _config);
+    virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
+    virtual pScriptModule_type getDefaultScriptModule();
+    /// @}
+
+    /// @name SoundManager implementation
+    /// @{
+public:
+    /// Register a service with a script engine.
+    void registerScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -64,7 +80,12 @@ public:
     /// @name Member variables
     /// @{
 private:
-    soundServiceCache_type  m_soundServiceCache;
+    SoundServiceCache_type  m_soundServiceCache;
+
+    pScriptEngine_type              m_pDefaultScriptEngine;
+    bool                            m_scriptTypesInitialized;
+
+    Zen::Scripting::script_module*	m_pSoundModule;
     /// @}
 
 };  // class SoundManager

@@ -58,7 +58,7 @@ class I_ExplorerNode;
 /// Workbench Service interface.
 /// See this discussion for more details about this design.
 /// http://www.indiezen.org/wiki/irclogs/2009/03/19/#UTC2009-03-19T14:27:25
-/// @see I_ApplicationServer::getApplication() to get an instance of an 
+/// @see I_ApplicationServer::getApplication() to get an instance of an
 ///     implementation of this interface.
 class WORKBENCHCOMMON_DLL_LINK I_WorkbenchService
 :   public Enterprise::AppServer::I_ApplicationService
@@ -91,11 +91,13 @@ public:
     /// @name I_WorkbenchService interface
     /// @{
 public:
-    /// Set the control path for this workbench.
-    /// The control path is the root directory where all of the workbench data 
-    /// is to be stored.
-    /// @return true if the control path is valid.
-    virtual bool setControlPath(const boost::filesystem::path& _controlPath) = 0;
+    /// Set the path to the folder for this workspace.
+    /// This also verifies that the control path (./workbench) exists.
+    /// @return true if the path and the control path are valid.
+    virtual bool setWorkspacePath(const boost::filesystem::path& _path) = 0;
+
+    /// Get the path to the root folder for this workspace.
+    virtual const boost::filesystem::path& getWorkspacePath() = 0;
 
     /// Get the control path for this workbench.
     virtual const boost::filesystem::path& getControlPath() = 0;
@@ -111,11 +113,11 @@ public:
 
     /// Create a SpreadSheet document.
     /// This will create an empty SpreadSheet document.
-    /// @param _pNode Node at which the document is created.  If the document already 
+    /// @param _pNode Node at which the document is created.  If the document already
     ///     exists then it will be opened.
     /// @param _pProject The project associated with this document.  NULL is allowed
     ///     if this document is not associated with a project.
-    /// @todo Instead of _pUserData, pass a string that is the extension name of the 
+    /// @todo Instead of _pUserData, pass a string that is the extension name of the
     ///     document user data.
     /// @todo Should this be a generic createDocument with _pNode and extension names
     ///     for the document and the document user data?  I'm beginning to think yes.

@@ -21,7 +21,6 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef ZEN_ZNEWTON_PHYSICS_JOINT_HPP_INCLUDED
 #define ZEN_ZNEWTON_PHYSICS_JOINT_HPP_INCLUDED
@@ -32,13 +31,13 @@
 
 #include <Zen/Core/Memory/managed_self_ref.hpp>
 #include <Zen/Engine/Physics/I_PhysicsJoint.hpp>
-
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZNewton {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class PhysicsZone;
+class PhysicsActor;
 class CollisionShape;
 
 class PhysicsJoint
@@ -48,15 +47,14 @@ class PhysicsJoint
     /// @name Types
     /// @{
 public:
-    //typedef Memory::managed_weak_ptr<Zen::Engine::Physics::I_PhysicsJoint> wpPhysicsJoint_type;
-    typedef Memory::managed_ptr<Zen::Engine::Physics::I_CollisionShape> pCollisionShape_type;
-    typedef Memory::managed_weak_ptr<Zen::Engine::Physics::I_PhysicsZone> wpPhysicsZone_type;
+    typedef Memory::managed_ptr<Zen::Engine::Physics::I_PhysicsActor>       pPhysicsActor_type;
+    typedef Memory::managed_weak_ptr<Zen::Engine::Physics::I_PhysicsZone>   wpPhysicsZone_type;
     /// @}
 
     /// @name I_PhysicsJoint implementation
     /// @{
 public:
-    virtual void attachShape(pCollisionShape_type _shape);
+    virtual void attachActor(pPhysicsActor_type _shape);
     virtual void initUpVectorJoint(const Math::Vector3& _upVector);
     /// @}
 
@@ -70,7 +68,7 @@ public:
     /// @name Member Variables
     /// @{
 private:
-    pCollisionShape_type m_pShape;
+    pPhysicsActor_type m_pShape;
     wpPhysicsZone_type m_pZone;
     /// @}
 

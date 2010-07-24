@@ -21,46 +21,27 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef INDIEZEN_ZOPENAL_ZOPENAL_PLUGIN_HPP_INCLUDED
-#define INDIEZEN_ZOPENAL_ZOPENAL_PLUGIN_HPP_INCLUDED
+#ifndef ZEN_ZOPENAL_ZOPENAL_PLUGIN_HPP_INCLUDED
+#define ZEN_ZOPENAL_ZOPENAL_PLUGIN_HPP_INCLUDED
 
-#include <IndieZen/framework/Plugins/I_Plugin.hpp>
-
-#include <IndieZen/framework/Plugins/I_ConfigurationElement.hpp>
+#include <Zen/Core/Plugins/Utilities.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-namespace IndieZen {
+namespace Zen {
 namespace ZOpenAL {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class ZOpenALPlugin
 :   public Plugins::I_Plugin
 {
-    /// @name I_Plugin implementation
-    /// @{
 public:
-    virtual void initExtensionPoints();
-    virtual void initExtensions();
-    virtual Plugins::I_ClassFactory* getClassFactory(const Plugins::I_ConfigurationElement& _config);
-    /// @}
-
-    /// @name 'Structors
-    /// @{
-public:
-             ZOpenALPlugin();
-    virtual ~ZOpenALPlugin();
-    /// @}
-
-    /// @name Member variables
-    /// @{
-private:
-    /// @}
-
+    /// Declare that this is a plugin
+    DECLARE_ZEN_PLUGIN(ZOpenALPlugin);
 };  // class ZOpenALPlugin
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZOpenAL
-}   // namespace IndieZen
+}   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // INDIEZEN_ZOPENAL_ZOPENAL_PLUGIN_HPP_INCLUDED
+#endif // ZEN_ZOPENAL_ZOPENAL_PLUGIN_HPP_INCLUDED

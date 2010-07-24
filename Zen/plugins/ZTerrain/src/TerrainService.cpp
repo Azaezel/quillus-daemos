@@ -30,8 +30,8 @@
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Rendering/I_RenderingService.hpp>
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 #include <Zen/Engine/Resource/I_Resource.hpp>
@@ -130,7 +130,7 @@ TerrainService::getRenderingResourceService(void)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 TerrainService::pTerrain_type
-TerrainService::createTerrain(void)
+TerrainService::createTerrain(config_type& _physicsConfig, config_type& _renderingConfig)
 {
     Terrain* pRawTerrain = new Terrain(this->getSelfReference());
     pTerrain_type pTerrain = pTerrain_type(pRawTerrain, boost::bind(&TerrainService::onDestroyTerrain, this, _1));
@@ -143,6 +143,8 @@ TerrainService::createTerrain(void)
         std::cout << "Error: must setup required services prior to creating terrain objects in TerrainService::createTerrain()." << std::endl;
         return pTerrain;
     }
+
+    pRawTerrain->loadVisualization(_renderingConfig["fileName"], Zen::Math::Matrix4(Zen::Math::Matrix4::INIT_IDENTITY));
 
     wpTerrain_type wpTerrain(pTerrain);
     pRawTerrain->setSelfReference(wpTerrain);

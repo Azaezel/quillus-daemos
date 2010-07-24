@@ -20,8 +20,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-I_Project::I_Project(const std::string& _name)
-:   Zen::Studio::Workbench::I_Project(_name)
+I_Project::I_Project()
+:   Zen::Studio::Workbench::I_Project("")
 {
 }
 

@@ -22,7 +22,7 @@
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -46,7 +46,7 @@ class GravityBehavior
     /// @name I_PhysicsTransformBehavior implementation
     /// @{
 public:
-    virtual bool handlePhysicsForce(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_ApplyForcesEventData& _eventData);
+    virtual bool handlePhysicsForce(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_ApplyForcesEventData& _eventData);
     /// @}
 
     /// @name GravityBehavior implementation

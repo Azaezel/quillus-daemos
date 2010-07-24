@@ -74,6 +74,13 @@ Request::serialize(boost::archive::polymorphic_oarchive& _archive, const int _ve
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Request::pMessageType_type
+Request::getMessageType() const
+{
+    throw Zen::Utility::runtime_exception("XML::Request::getMessageType() : Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace XML
 }   // namespace AppServer
 }   // namespace Enterprise

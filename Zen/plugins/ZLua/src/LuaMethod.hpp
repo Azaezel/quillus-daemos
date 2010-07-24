@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C)        2008 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -32,9 +32,8 @@ extern "C" {
 }
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
-#include <Zen/Core/Scripting/I_ScriptObject.hpp>
-#include <Zen/Core/Scripting/I_ObjectReference.hpp>
+
+#include <Zen/Core/Scripting.hpp>
 
 #include <string>
 
@@ -79,6 +78,7 @@ public:
              LuaMethod(LuaType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptType::bool_function_args_type _function, lua_CFunction _pCFunction);
              LuaMethod(LuaType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptType::int_function_no_args_type _function, lua_CFunction _pCFunction);
              LuaMethod(LuaType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptType::int_function_args_type _function, lua_CFunction _pCFunction);
+             LuaMethod(LuaType* _pType, const std::string& _name, const std::string& _docString, Scripting::I_ScriptMethod* _function, lua_CFunction _pCFunction);
     virtual ~LuaMethod();
     /// @}
 
@@ -90,7 +90,22 @@ public:
     std::string     m_docString;
     lua_CFunction     m_pCFunction;
 
-    unsigned        m_functionType;
+    enum FunctionTypes
+    {
+        VOID_FUNCTION_NO_ARGS,      // 0
+        VOID_FUNCTION_ARGS,         // 1
+        OBJ_FUNCTION_ARGS,          // 2
+        OBJ_FUNCTION_NO_ARGS,       // 3
+        STRING_FUNCTION_NO_ARGS,    // 4
+        STRING_FUNCTION_ARGS,       // 5
+        BOOL_FUNCTION_NO_ARGS,      // 6
+        BOOL_FUNCTION_ARGS,         // 7
+        INT_FUNCTION_NO_ARGS,       // 8
+        INT_FUNCTION_ARGS,          // 9
+        GENERIC_FUNCTION_ARGS,      // 10
+    };
+
+    FunctionTypes                                           m_functionType;
     Scripting::I_ScriptType::void_function_no_args_type     m_function0;
     Scripting::I_ScriptType::void_function_args_type        m_function1;
     Scripting::I_ScriptType::object_function_args_type      m_function2;
@@ -101,9 +116,7 @@ public:
     Scripting::I_ScriptType::bool_function_args_type        m_function7;
     Scripting::I_ScriptType::int_function_no_args_type      m_function8;
     Scripting::I_ScriptType::int_function_args_type         m_function9;
-
-    //PyMethodDef*    m_pDef;
-    //PyObject*       m_pFunction;
+    Scripting::I_ScriptMethod*                              m_function10;
     /// }
 
 };  // class LuaMethod

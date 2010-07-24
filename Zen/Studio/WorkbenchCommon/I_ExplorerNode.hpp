@@ -41,6 +41,7 @@ namespace Zen {
 namespace Studio {
 namespace Workbench {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class I_Project;
 class I_ExplorerNodeType;
 
 /// Explorer Node.
@@ -78,7 +79,7 @@ public:
         ,   m_name(m_pNode->getDisplayName())
         {
         }
-        UserData(const std::string& _name) 
+        UserData(const std::string& _name)
         :   m_pNode(NULL)
         ,   m_name(_name) {}
         virtual ~UserData() {}
@@ -110,11 +111,17 @@ public:
     virtual pUserData_type getUserData() const = 0;
 
     /// Get the parent of this node.
-    /// @return NULL if this node has no parent, or the point to the parent
+    /// @return NULL if this node has no parent, or the pointer to the parent
     ///         node.
     virtual I_ExplorerNode* getParent() = 0;
 
+    /// Get the childrin of this explorer node.
     virtual void getChildren(I_ExplorerNodeVisitor& _visitor) = 0;
+
+    /// Get the project to which this node belongs.
+    /// @return NULL if this node does not belong to a project, or a pointer to
+    ///     the project.
+    virtual I_Project* getProject() = 0;
 
     /// Get the internal node Id.
     /// Every node can be identified via a unique 64 bit value.  This method

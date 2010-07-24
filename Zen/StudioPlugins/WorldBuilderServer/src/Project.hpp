@@ -15,6 +15,7 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
+#include <Zen/Studio/WorkbenchCommon/Project.hpp>
 #include <Zen/StudioPlugins/WorldBuilderCommon/I_Project.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -30,7 +31,8 @@ namespace WorldBuilder {
 ;
 
 class Project
-:   public I_Project
+:   public Zen::Studio::Workbench::Project
+,   public WorldBuilder::I_Project
 {
     /// @name Types
     /// @{
@@ -57,12 +59,13 @@ public:
     /// @{
 public:
     virtual void onCreated();
-    virtual boost::uint64_t getProjectId() const;
-    virtual void setProjectId(boost::uint64_t _projectId);
-    virtual Zen::Studio::Workbench::I_ProjectExplorerController& getController();
-    virtual Zen::Studio::Workbench::I_WorkbenchService& getWorkbenchService();
-    virtual pDatabaseConnection_type getDatabaseConnection();
-    virtual const boost::filesystem::path& getControlPath();
+    virtual boost::uint64_t getProjectId() const                                { return Zen::Studio::Workbench::Project::getProjectId(); }
+    virtual void setProjectId(boost::uint64_t _projectId)                       { Zen::Studio::Workbench::Project::setProjectId(_projectId); }
+    virtual Zen::Studio::Workbench::I_ProjectExplorerController& getController(){ return Zen::Studio::Workbench::Project::getController(); }
+    virtual Zen::Studio::Workbench::I_WorkbenchService& getWorkbenchService()   { return Zen::Studio::Workbench::Project::getWorkbenchService(); }
+    virtual pDatabaseConnection_type getDatabaseConnection()                    { return Zen::Studio::Workbench::Project::getDatabaseConnection(); }
+    virtual const boost::filesystem::path& getControlPath() const               { return Zen::Studio::Workbench::Project::getControlPath(); }
+    virtual const boost::filesystem::path& getProjectPath() const               { return Zen::Studio::Workbench::Project::getProjectPath(); }
     /// @}
 
     /// @name WorldBuilder::I_Project implementation
@@ -74,17 +77,15 @@ public:
     /// @{
 protected:
     friend class ProjectService;
+
     explicit Project(Zen::Studio::Workbench::I_ProjectExplorerController& _controller, const std::string& _name);
+
     virtual ~Project();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
-    Zen::Studio::Workbench::I_ProjectExplorerController&    m_controller;
-
-    boost::uint64_t                                         m_projectId;
-
     static class ProjectType                                sm_type;
     /// @}
 

@@ -82,7 +82,7 @@ public:
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine) = 0;
 
     /// Get the default Resource script module.
-    virtual pScriptModule_type getDefaultScriptModule() = 0;
+    virtual pScriptModule_type getDefaultResourceScriptModule() = 0;
     /// @}
 
     /// @name Static Instance

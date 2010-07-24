@@ -63,6 +63,9 @@ SkyServiceFactory::create(const std::string& _type, Engine::World::I_SkyServiceF
 
 	SkyServiceFactory::pSkyService_type pService(pRawService, boost::bind(&SkyServiceFactory::destroy, this, _1));
 
+	// Make sure this works.  (Nope, it doesn't... need to kill this annoying bug)
+	//assert(pRawService->getSelfReference().get() != NULL);
+
     wpSkyService_type pWeakPtr(pService);
 
     pRawService->setSelfReference(pWeakPtr);

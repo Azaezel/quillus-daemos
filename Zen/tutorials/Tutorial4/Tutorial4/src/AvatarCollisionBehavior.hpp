@@ -53,9 +53,9 @@ class AvatarCollisionBehavior
     /// @name I_CollisionBehavior implementation
     /// @{
 public:
-    virtual bool handleBoundBoxCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_BeginCollisionEventData& _eventData);
-    virtual bool handleCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_DuringCollisionEventData& _eventData);
-	virtual void handleCollisionResolution(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_EndCollisionEventData& _eventData); 
+    virtual bool handleBoundBoxCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_BeginCollisionEventData& _eventData);
+    virtual bool handleCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_DuringCollisionEventData& _eventData);
+	virtual void handleCollisionResolution(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_EndCollisionEventData& _eventData); 
 	/// @}
 
     /// @name AvatarCollisionBehavior implementation

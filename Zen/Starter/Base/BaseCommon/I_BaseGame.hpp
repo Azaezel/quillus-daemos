@@ -46,6 +46,9 @@ namespace Zen {
         class I_ScriptModule;
         class I_ScriptType;
     }   // namespace Scripting
+    namespace Event {
+        class I_ActionMap;
+    }
 namespace Engine {
     namespace World {
         class I_WaterService;
@@ -58,11 +61,9 @@ namespace Engine {
     namespace Input {
         class I_InputService;
         class I_KeyEvent;
-        class I_InputMap;
+        class I_KeyMap;
     }   // namespace Input
     namespace Core {
-        class I_Action;
-        class I_ActionMap;
         class I_GameGroup;
         class I_BehaviorService;
     }   // namespace Core
@@ -96,6 +97,9 @@ public:
     typedef Memory::managed_ptr<Resource::I_ResourceService>    pPhysicsResourceService_type;
 
     typedef Zen::Engine::Physics::I_PhysicsService::pPhysicsZone_type  pPhysicsZone_type;
+
+    typedef Memory::managed_ptr<World::I_TerrainService>        pTerrainService_type;
+    typedef Memory::managed_ptr<World::I_SkyService>            pSkyService_type;
     /// @}
 
     /// @name I_BaseGame interface
@@ -117,9 +121,19 @@ public:
     virtual pPhysicsResourceService_type getPhysicsResourceService() = 0;
 
     virtual pPhysicsZone_type getCurrentPhysicsZone() = 0;
+    virtual void setCurrentPhysicsZone(pPhysicsZone_type _pPhysicsZone) = 0;
 
-    /// Get the primary action map
-    virtual Core::I_ActionMap& getActionMap(const std::string& _actionMapName = "default") = 0;
+    /// @brief Initialize the terrain service.
+    virtual bool initTerrainService(const std::string& _type) = 0;
+
+    /// Get the terrain service.
+    virtual pTerrainService_type getTerrainService() = 0;
+
+    /// @brief Initialize the sky service.
+    virtual bool initSkyService(const std::string& _type) = 0;
+
+    /// Get the sky service.
+    virtual pSkyService_type getSkyService() = 0;
 
     /// Get the root grame group
     virtual Core::I_GameGroup& getRootGroup() = 0;
@@ -176,6 +190,9 @@ public:
     /// You can append additional methods to this script type, but only before
     /// activateScriptModules() has been called.
     virtual pScriptType_type getGameGroupScriptType() = 0;
+
+    /// Get the default action map.
+    virtual Event::I_ActionMap& getActionMap() = 0;
     /// @}
 
     /// @name Static Methods

@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 2.6) 
 
 project (WorldClient)
+set ( PROJECT_PREFIX "Worlds/WorldClient" )
 
 if ( NOT INDIEZEN_PARENT)
 	find_path ( INDIEZEN_PARENT Zen .. ../.. ../../.. ENV )
@@ -45,3 +46,12 @@ if (MSVC_IDE)
     set_target_properties ( WorldClient PROPERTIES PREFIX "../../bin/" )
 	set_target_properties ( WorldClient PROPERTIES IMPORT_PREFIX "../../lib/" )
 endif(MSVC_IDE)
+
+<%HeaderInstallDirectives%>
+
+install ( TARGETS
+	WorldClient
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+)

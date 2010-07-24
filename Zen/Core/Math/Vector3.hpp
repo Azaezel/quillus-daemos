@@ -32,6 +32,10 @@
 
 #include <math.h>
 
+#include <string>
+#include <sstream>
+#include <iostream>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Math {
@@ -48,6 +52,8 @@ public:
 
     static Real dot(const Vector3& _v1, const Vector3& _v2);
     static Vector3 crossProduct(const Vector3& _v1, const Vector3& _v2);
+
+    std::string toString() const;
     /// @}
 
     /// @name Operators
@@ -60,7 +66,12 @@ public:
 
     Vector3 operator/(const Real _right) const;
     Vector3 operator+(const Vector3& _right) const;
+    Vector3& operator+=(const Vector3& _right);
     Vector3 operator-(const Vector3& _right) const;
+    Vector3& operator-=(const Vector3& _right);
+
+    bool operator==(const Vector3& _right) const;
+    bool operator!=(const Vector3& _right) const;
     /// @}
 
     /// @name Serialization methods
@@ -220,6 +231,14 @@ Vector3::operator*(const Real _right) const
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 inline
+Vector3
+operator*(const Real _left, const Vector3& _right)
+{
+    return _right*_left;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+inline
 Vector3&
 Vector3::operator*=(const Real _right)
 {
@@ -252,6 +271,17 @@ Vector3::operator+(const Vector3& _right) const
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 inline
+Vector3&
+Vector3::operator+=(const Vector3& _right)
+{
+    m_x += _right.m_x;
+    m_y += _right.m_y;
+    m_z += _right.m_z;
+    return *this;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+inline
 Vector3
 Vector3::operator-(const Vector3& _right) const
 {
@@ -260,6 +290,33 @@ Vector3::operator-(const Vector3& _right) const
     v.m_y = m_y - _right.m_y;
     v.m_z = m_z - _right.m_z;
     return v;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+inline
+Vector3&
+Vector3::operator-=(const Vector3& _right)
+{
+    m_x -= _right.m_x;
+    m_y -= _right.m_y;
+    m_z -= _right.m_z;
+    return *this;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+inline
+bool
+Vector3::operator==(const Vector3& _right) const
+{
+    return (m_x == _right.m_x) && (m_y == _right.m_y) && (m_z == _right.m_z);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+inline
+bool
+Vector3::operator!=(const Vector3& _right) const
+{
+    return !(*this == _right);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -284,10 +341,21 @@ Vector3::serialize(boost::archive::polymorphic_oarchive& _archive, const int _ve
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 inline
-Vector3
-operator*(const Zen::Math::Real _left, const Zen::Math::Vector3& _right)
+std::string
+Vector3::toString() const
 {
-    return _right * _left;
+    std::stringstream stream;
+    stream << "[Math::Vector3]{m_x=" << m_x << ",m_y=" << m_y << ",m_z=" << m_z << "}";
+    return stream.str();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+inline
+std::ostream&
+operator<<(std::ostream& _os, const Vector3& _vector3)
+{
+    _os << _vector3.toString();
+    return _os;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

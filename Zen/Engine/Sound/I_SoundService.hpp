@@ -27,31 +27,59 @@
 #define ZEN_ENGINE_SOUND_I_SOUND_SERVICE_HPP_INCLUDED
 
 #include "Configuration.hpp"
-#include "I_SoundSource.hpp"
-#include "I_SoundManager.hpp"
 
-#include <Zen/Core/Math/Point3.hpp>
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
 
 #include <Zen/Core/Event/Event.hpp>
+
+#include <Zen/Core/Math/Point3.hpp>
+
+#include <boost/noncopyable.hpp>
+#include <string>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Engine {
 namespace Sound {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+class I_SoundSource;
+class I_SoundResource;
    
 class SOUND_DLL_LINK I_SoundService
+:   public virtual Zen::Scripting::I_ScriptableType
+,   public Zen::Memory::managed_self_ref<I_SoundService>
+,   boost::noncopyable
 {
     /// @name Types
     /// @{
 public:
-    typedef std::string                                 index_type;
-    typedef Memory::managed_ptr<I_SoundService>         pService_type;
-    typedef Memory::managed_weak_ptr<I_SoundService>    wpService_type;
-    typedef Event::Event<wpService_type>                serviceEvent_type;
-    typedef Memory::managed_ptr<I_SoundSource>          pSource_type;
+    typedef std::string                                     index_type;
+
+    typedef Zen::Memory::managed_ptr<I_SoundService>        pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<I_SoundService> ScriptObjectReference_type;
+
+    typedef Memory::managed_ptr<I_SoundService>             pService_type;
+    typedef Memory::managed_weak_ptr<I_SoundService>        wpService_type;
+
+    typedef Event::Event<wpService_type>                    serviceEvent_type;
+    typedef Zen::Math::Real                                 frameDelta_type;
+    typedef Event::Event<frameDelta_type>                   frameEvent_type;
+
+    typedef Memory::managed_ptr<I_SoundSource>              pSource_type;
+    typedef Memory::managed_weak_ptr<I_SoundSource>         wpSource_type;
+
+    typedef Memory::managed_ptr<I_SoundResource>            pSoundResource_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_SoundService interface
@@ -59,18 +87,15 @@ public:
 public:
 	/// In case anything needs to be done each frame, put it in processEvents()
    	virtual void muteAll(bool bMute) = 0;
-    virtual pSource_type createSource(I_SoundResource::pSoundResource_type _pResource) = 0;
-    virtual pSource_type createSource(I_SoundResource::pSoundResource_type _pResource, Math::Point3 _pos) = 0;
-    virtual pSource_type createSource(I_SoundResource::pSoundResource_type _pResource, Math::Real _x, Math::Real _y) = 0;
+    virtual pSource_type createSource(pSoundResource_type _pResource) = 0;
+    virtual pSource_type createSource(pSoundResource_type _pResource, Math::Point3 _pos) = 0;
+    virtual pSource_type createSource(pSoundResource_type _pResource, Math::Real _x, Math::Real _y) = 0;
 
     virtual void setListenRadius(Math::Real _radius) = 0;
     virtual Math::Real getListenRadius() = 0;
-    /// @}
 
-    /// @name Event handlers
-    /// @{
-//protected:
-    virtual void onFrame() = 0;
+    /// @todo Should this be moved to I_ScriptableType?
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
     /// @}
 
     /// @name Static methods
@@ -83,7 +108,14 @@ public:
     /// @name Events
     /// @{
 public:
+    /// Fired immediately before this object is destroyed.
+    /// The payload is about to be destroyed, so do not keep a reference to it.
     serviceEvent_type   onDestroyEvent;
+
+    /// This event is fired after every frame is rendered
+    /// The payload is hte number of elapsed seconds since
+    /// the previous frame event.
+    frameEvent_type     onFrameEvent;
     /// @}
 
     /// @name 'Structors
@@ -101,7 +133,8 @@ protected:
 namespace Memory {
     /// I_SoundService is managed by I_SoundServiceFactory
     template<>
-    struct is_managed_by_factory<Engine::Sound::I_SoundService> : public boost::true_type{};
+    struct is_managed_by_factory<Engine::Sound::I_SoundService> 
+    :   public boost::true_type{};
 }   // namespace Memory
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

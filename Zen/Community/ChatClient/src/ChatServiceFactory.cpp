@@ -2,7 +2,7 @@
 // Zen Community Framework
 //
 // Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +21,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//	Matthew Alan Gray mgray@indiezen.org
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "ChatServiceFactory.hpp"
 
@@ -34,7 +34,6 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Community {
-namespace Chat {
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ChatServiceFactory::ChatServiceFactory()
@@ -70,6 +69,12 @@ ChatServiceFactory::create(Zen::Enterprise::AppServer::I_ApplicationServer& _app
 
     pApplicationService_type pChatService(pRawService, boost::bind(&ChatServiceFactory::destroy, this, _1));
 
+    typedef Memory::managed_ptr<Common::I_ChatService>       pChatService_type;
+    typedef Memory::managed_weak_ptr<Common::I_ChatService>  wpChatService_type;
+    wpChatService_type pWeak(pChatService.as<pChatService_type>());
+
+    pRawService->setSelfReference(pWeak);
+
     return pChatService;
 }
 
@@ -77,14 +82,13 @@ ChatServiceFactory::create(Zen::Enterprise::AppServer::I_ApplicationServer& _app
 ChatServiceFactory&
 ChatServiceFactory::getSingleton()
 {
-    static ChatServiceFactory sm_chatServiceFactory;
+    static ChatServiceFactory sm_ChatServiceFactory;
 
-    return sm_chatServiceFactory;
+    return sm_ChatServiceFactory;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Client
-}   // namespace Chat
 }   // namespace Community
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

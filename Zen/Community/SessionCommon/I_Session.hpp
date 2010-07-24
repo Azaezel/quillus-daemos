@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -57,6 +57,7 @@ class SESSIONCOMMON_DLL_LINK I_Session
 public:
     enum SessionState_type
     {
+        INITIALIZED,
         CONNECTED,
         NOT_AUTHORIZED,
         DISCONNECTED
@@ -74,13 +75,14 @@ public:
     virtual SessionState_type getSessionState() const = 0;
 
     /// Get the session identifier.
-    virtual boost::int32_t getSessionId() const = 0;
+    virtual boost::uint32_t getSessionId() const = 0;
 
     /// Get the session endpoint.
     virtual const pEndpoint_type getEndpoint() const = 0;
 
     /// Get session data
-    virtual pFutureAttribute_type getAttribute(const std::string& _key) const = 0;
+    /// Temporarily deprecated.  Should it use a listener instead of a future?
+    //virtual pFutureAttribute_type getAttribute(const std::string& _key) const = 0;
     /// @}
 
     /// @name 'Structors
@@ -98,7 +100,7 @@ protected:
 namespace Memory {
     // I_Session is managed by factory
     template<>
-    struct is_managed_by_factory<Zen::Community::Common::I_Session> : public boost::true_type{};
+    struct is_managed_by_factory<Zen::Community::Common::I_Session> : public boost::false_type{};
 }   // namespace Memory
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

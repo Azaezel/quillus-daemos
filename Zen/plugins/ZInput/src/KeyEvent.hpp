@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -26,9 +26,8 @@
 #ifndef ZEN_ZINPUT_KEY_EVENT_HPP_INCLUDED
 #define ZEN_ZINPUT_KEY_EVENT_HPP_INCLUDED
 
-#include "KeyState.hpp"
-
 #include <Zen/Engine/Input/I_KeyEvent.hpp>
+#include <Zen/Engine/Input/I_KeyState.hpp>
 
 #include <OISKeyboard.h>
 
@@ -36,6 +35,7 @@
 namespace Zen {
 namespace ZInput {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class KeyState;
 
 class KeyEvent
 :   public Engine::Input::I_KeyEvent
@@ -64,7 +64,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             KeyEvent(const OIS::KeyEvent& _event, const bool _isPressed, const KeyState& _state);
+             KeyEvent(const OIS::KeyEvent& _event, const bool _isPressed, KeyState* _pState);
     virtual ~KeyEvent();
     /// @}
 
@@ -73,7 +73,7 @@ public:
 private:
     const OIS::KeyEvent&                        m_event;
     bool                                        m_isPressed;
-    const KeyState                              m_keyState;
+    KeyState*                                   m_pKeyState;
     Scripting::I_ObjectReference*               m_pScriptObject;
     /// @}
 

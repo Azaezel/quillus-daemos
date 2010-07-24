@@ -69,6 +69,12 @@ SessionServiceFactory::create(Zen::Enterprise::AppServer::I_ApplicationServer& _
 
     pApplicationService_type pSessionService(pRawService, boost::bind(&SessionServiceFactory::destroy, this, _1));
 
+    typedef Memory::managed_ptr<Common::I_SessionService>       pSessionService_type;
+    typedef Memory::managed_weak_ptr<Common::I_SessionService>  wpSessionService_type;
+    wpSessionService_type pWeak(pSessionService.as<pSessionService_type>());
+
+    pRawService->setSelfReference(pWeak);
+
     return pSessionService;
 }
 

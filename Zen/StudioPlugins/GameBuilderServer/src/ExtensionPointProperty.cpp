@@ -17,8 +17,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-ExtensionPointProperty::ExtensionPointProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _value, const std::string& _name, Property* _pParent)
-:   Property(_publisher, _name, _value, _pParent)
+ExtensionPointProperty::ExtensionPointProperty(Properties& _properties, const std::string& _value, const std::string& _name, Property* _pParent)
+:   Property(_properties, _name, _value, _pParent)
 {
 }
 

@@ -23,6 +23,9 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+#include <boost/asio.hpp>
+
 #include "../../XML/I_XMLResponse.hpp"
 
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
@@ -67,9 +70,11 @@ destroyResponse(Memory::managed_weak_ptr<I_Response> _wpResponse)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_XMLResponse::pResponse_type
-I_XMLResponse::createResponse(pEndpoint_type _pDestinationEndpoint, StatusType _status, const std::string& _body, const std::string& _contentType)
+I_XMLResponse::createResponse(pEndpoint_type _pDestinationEndpoint, StatusType _status, 
+                              const std::string& _body, unsigned int _requestMessageId,
+                              const std::string& _contentType)
 {
-    Reply* pReply = new XML::Reply(_pDestinationEndpoint, _status, _body, _contentType);
+    Reply* pReply = new XML::Reply(_pDestinationEndpoint, _status, _body, _contentType, _requestMessageId);
 
     pResponse_type pResponse(pReply, destroyResponse);
 

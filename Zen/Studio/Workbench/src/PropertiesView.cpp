@@ -80,6 +80,8 @@ PropertiesView::onAddProperty(I_PropertiesPublisher& _publisher, I_Property& _pr
     // Get the handle associated with this publisher.
     PropertiesHandle* const pHandle = m_propertiesMap[&_publisher];
 
+    // TODO Fix:  pHandle is sometimes NULL.  Why?
+
     // The name is a concatenation of the property set name and the property name.
     std::stringstream name;
     name << pHandle->getPublisher().getPropertiesName();

@@ -64,7 +64,7 @@ WidgetManager::~WidgetManager()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event)
+WidgetManager::handleMouseMoveEvent(pMouseMoveEvent_type _pEvent)
 {
 	static int cursorVisible = 0;
     static bool widgetMouseVisible = false;
@@ -73,10 +73,10 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
         m_gameClient.base().getWidgetService()
     );
 
-	if ((unsigned int)_event.getX() == m_gameClient.base().getRenderingCanvas().getWidth() ||
-		(unsigned int)_event.getY() == m_gameClient.base().getRenderingCanvas().getHeight() ||
-		_event.getX() == 0 ||
-		_event.getY() == 0)
+	if ((unsigned int)_pEvent->getX() == m_gameClient.base().getRenderingCanvas().getWidth() ||
+		(unsigned int)_pEvent->getY() == m_gameClient.base().getRenderingCanvas().getHeight() ||
+		_pEvent->getX() == 0 ||
+		_pEvent->getY() == 0)
     {
         // Show the OS Cursor; might need to do it more than once
 		while (cursorVisible < 0)
@@ -118,7 +118,7 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
 
     //m_pWidgetService->setMousePosition(_event.getX(), _event.getY());
 
-    if (_event.getZDelta() != 0)
+    if (_pEvent->getZDelta() != 0)
     {
         //m_pWidgetSErvice->setMouseWheelDelta(_event.getZDelta());
     }
@@ -126,12 +126,12 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
     // Use the mouse to move the camera
     Zen::Engine::Rendering::I_Camera& camera = m_gameClient.base().getRenderingCanvas().getCurrentCamera();
 
-    float yaw = _event.getXDelta();
+    float yaw = _pEvent->getXDelta();
     yaw /= -100.0;
     Zen::Math::Radian radian(yaw);
     camera.yaw(radian, true, false);
 
-    float pitch = _event.getYDelta();
+    float pitch = _pEvent->getYDelta();
     pitch /= -100.0;
     Zen::Math::Radian radian2(pitch);
     camera.pitch(radian2, true, true);
@@ -139,7 +139,7 @@ WidgetManager::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-WidgetManager::handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _event)
+WidgetManager::handleMouseClickEvent(pMouseClickEvent_type _pEvent)
 {
     // TODO handle mouse clicks
 }

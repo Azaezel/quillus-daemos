@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -32,7 +32,7 @@
 #include <Zen/Core/Threading/I_Mutex.hpp>
 #include <Zen/Engine/Input/I_InputService.hpp>
 
-#include "InputMap.hpp"
+//#include "KeyMap.hpp"
 
 #include <OISInputManager.h>
 #include <OISEvents.h>
@@ -57,10 +57,10 @@ class InputService
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_weak_ptr<Engine::Input::I_InputMap>         wpInputMap_type;
+    typedef Memory::managed_weak_ptr<Engine::Input::I_KeyMap>           wpKeyMap_type;
     typedef Memory::managed_ptr<Engine::Input::I_KeyEvent>              pKeyEvent_type;
 
-    typedef std::map<Plugins::I_Service*, wpInputMap_type>              inputMapMap_type;
+    typedef std::map<Plugins::I_Service*, wpKeyMap_type>                inputMapMap_type;
     typedef std::map<std::string, std::string>                          config_type;
     /// @}
 
@@ -71,11 +71,14 @@ public:
     virtual void pauseEvents();
     virtual void resumeEvents();
     virtual void processEvents();
-    virtual pInputMap_type createInputMap(const std::string& _name);
-    virtual void enableInputMap(const std::string& _name);
-    virtual void disableInputMap(const std::string& _name);
-    virtual void enableAllInputMaps();
-    virtual void disableAllInputMaps();
+#if 0
+    virtual pKeyMap_type createKeyMap(const std::string& _name);
+    virtual void enableKeyMap(const std::string& _name);
+    virtual void disableKeyMap(const std::string& _name);
+    virtual void enableAllKeyMaps();
+    virtual void disableAllKeyMaps();
+#endif
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
 protected:
     virtual void changeState(Engine::Input::I_KeyModifierState* _pState);
     /// @}
@@ -109,7 +112,7 @@ public:
     /// @name Event handlers
     /// @{
 public:
-    void destroy(wpInputMap_type _pInputMap);
+    //void destroy(wpKeyMap_type _pKeyMap);
     /// @}
 
     /// @name 'Structors
@@ -127,8 +130,8 @@ private:
 
     bool                                    m_isPaused;
 
-    std::map<std::string, wpInputMap_type>  m_inputMapMap;
-    std::map<InputMap*, std::string>        m_inputMapIdx;
+    //std::map<std::string, wpKeyMap_type>  m_inputMapMap;
+    //std::map<KeyMap*, std::string>        m_inputMapIdx;
 
     OIS::InputManager*                      m_pInputManager;
     OIS::Keyboard*                          m_pKeyboard;

@@ -34,8 +34,7 @@
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
 #include <Zen/Core/Math/Math.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Core/Event/Event.hpp>
 
@@ -88,7 +87,7 @@ public:
 #endif // deprecated
 
     /// Attach a physics actor to this node
-    virtual void attachCollisionShape(Physics::I_CollisionShape& _shape) = 0;
+    virtual void attachPhysicsActor(Physics::I_CollisionShape& _shape) = 0;
 
     /// Set the position of this node.
     virtual void setPosition(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z) = 0;
@@ -98,6 +97,9 @@ public:
 
     /// Set the rotation of this node as a transformation matrix.
     virtual void setRotation(Math::Quaternion4 _quaternion) = 0;
+
+    /// Set the orientation of this node as a quaternion.
+    virtual void setOrientation(Math::Quaternion4& _quaternion) = 0;
 
     /// Apply a transformation matrix to this node.
     virtual void applyTransformation(Math::Matrix4 _transformationMatrix) = 0;

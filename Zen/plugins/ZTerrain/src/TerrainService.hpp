@@ -59,7 +59,7 @@ public:
     virtual pPhysicsResourceService_type getPhysicsResourceService(void);
     virtual pRenderingService_type getRenderingService(void);
     virtual pRenderingResourceService_type getRenderingResourceService(void);
-    virtual pTerrain_type createTerrain(void);
+    virtual pTerrain_type createTerrain(config_type& _physicsConfig, config_type& _renderingConfig);
     /// @}
 
     /// @name I_ScriptableType implementation

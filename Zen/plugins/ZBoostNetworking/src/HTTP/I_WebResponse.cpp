@@ -21,6 +21,8 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "../../I_WebResponse.hpp"
 
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>

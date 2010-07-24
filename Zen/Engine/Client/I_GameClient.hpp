@@ -41,7 +41,7 @@
 
 #include <Zen/Core/Event/Event.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
+#include <Zen/Core/Scripting/I_ScriptableService.hpp>
 #include <Zen/Core/Scripting/ObjectReference.hpp>
 
 #include <string>
@@ -59,12 +59,25 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Engine {
+    namespace Rendering {
+        class I_RenderingCanvas;
+    }   // namespace Rendering
+    namespace Resource {
+        class I_ResourceService;
+    }   // namespace Resource
+    namespace Widgets {
+        class I_WidgetService;
+    }   // namespace Widgets
+    namespace World {
+        class I_TerrainService;
+        class I_SkyService;
+    }   // namespace World
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 /// Basic game client interface
 class CLIENT_DLL_LINK I_GameClient
-:   public virtual Zen::Scripting::I_ScriptableType
+:   public virtual Zen::Scripting::I_ScriptableService
 ,   public Memory::managed_self_ref<I_GameClient>
 {
     /// @name Types
@@ -73,7 +86,7 @@ public:
 #ifdef _WIN32
     typedef HWND                                        WindowHandle_type;
 #else
-    typedef void*                                       WindowHandle_type;
+    typedef const char*                                 WindowHandle_type;
 #endif
 
     typedef std::string                                 index_type;
@@ -82,24 +95,63 @@ public:
     typedef Memory::managed_weak_ptr<I_GameClient>      wpService_type;
 
     typedef Event::Event<wpService_type>                serviceEvent_type;
-    typedef Zen::Math::Real                             frameDelta_type;
+    typedef double                                      frameDelta_type;
     typedef Event::Event<frameDelta_type>               frameEvent_type;
 
     typedef Memory::managed_ptr<I_GameClient>           pScriptObject_type;
     typedef Scripting::ObjectReference<I_GameClient>    ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                  ScriptWrapper_type;
+    typedef ScriptWrapper_type*                         pScriptWrapper_type;
     /// @}
 
     /// @name I_GameClient interface
     /// @{
 public:
-    /// Get the window handle
+    /// Get the window handle.
     virtual const WindowHandle_type getHandle() const = 0;
 
-    /// Initialize the Game Client
+    /// Activate the script module for the game developer
+    /// script module.
+    virtual void activateGameClientScriptModule() = 0;
+
+    /// Initialize the Game Client.
     virtual bool init() = 0;
 
-    /// Run the Game Client
+    /// Run the Game Client.
     virtual void run() = 0;
+
+    /// Get the widget service.
+    virtual Widgets::I_WidgetService& getWidgetService() = 0;
+
+    /// Get the current rendering canvas.
+    virtual Rendering::I_RenderingCanvas& getRenderingCanvas() = 0;
+
+    /// Get the current rendering resource service.
+    virtual Resource::I_ResourceService& getRenderingResourceService() = 0;
+
+    /// Get the current terrain service.
+    virtual World::I_TerrainService& getTerrainService() = 0;
+
+    /// Get the current sky service.
+    virtual World::I_SkyService& getSkyService() = 0;
+
+    /// Initialize the rendering service.
+    virtual bool initRenderingService(const std::string& _type, const std::string& _title, int _xRes, int _yRes) = 0;
+
+    /// Initialize the rendering resource service.
+    virtual bool initRenderingResourceService(const std::string& _type) = 0;
+
+    /// Initialize the terrain service.
+    virtual bool initTerrainService(const std::string& _type) = 0;
+
+    /// Initialize the sky service.
+    virtual bool initSkyService(const std::string& _type) = 0;
+
+    /// Initialize the input service.
+    virtual bool initInputService(const std::string& _type) = 0;
+
+    /// Initialize the widget service.
+    virtual bool initWidgetService(const std::string& _type) = 0;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -121,6 +173,11 @@ public:
     /// @{
 public:
     serviceEvent_type   onDestroyEvent;
+
+    /// This event is fired before every frame is rendered
+    /// The payload is the number of elapsed seconds since
+    /// the previous frame event.
+    frameEvent_type     onBeforeFrameRenderedEvent;
 
     /// This event is fired after every frame is rendered
     /// The payload is the number of elapsed seconds since

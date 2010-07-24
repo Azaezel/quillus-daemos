@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Studio Workbench Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -48,7 +48,6 @@
 #include <Zen/Studio/WorkbenchCommon/I_SpreadSheetCellFactory.hpp>
 
 #include <Zen/Studio/WorkbenchProtocol/I_WorkbenchProtocolManager.hpp>
-#include <Zen/Studio/WorkbenchProtocol/I_WorkbenchRequest.hpp>
 
 #include <Zen/Studio/WorkbenchModel/I_ProjectDomainObject.hpp>
 
@@ -117,28 +116,16 @@ WorkbenchService::stop()
 void
 WorkbenchService::handleMessage(pMessage_type _pMessage)
 {
-    // This should be a Workbench request coming from the client
-
-	I_WorkbenchRequest* pRequest = dynamic_cast<I_WorkbenchRequest*>(_pMessage.get());
-
-    if (pRequest)
-    {
-        throw Zen::Utility::runtime_exception("WorkbenchService::handleMessage(): Error, not implemented.");
-    }
-    else
-    {
-        // TODO Error!
-    }
+    // TODO Derive from scriptable_generic_service 
+    throw Utility::runtime_exception("WorkbenchService::handleMessage(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 WorkbenchService::handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler)
 {
-    if(_pRequest->getSourceEndpoint().isValid())
-    {
-        throw Zen::Utility::runtime_exception("WorkbenchService::handleRequest(): Error, not implemented.");
-    }
+    // TODO Derive from scriptable_generic_service 
+    throw Utility::runtime_exception("WorkbenchService::handleMessage(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -150,14 +137,16 @@ WorkbenchService::getApplicationServer()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
-WorkbenchService::setControlPath(const boost::filesystem::path& _controlPath)
+WorkbenchService::setWorkspacePath(const boost::filesystem::path& _workspacePath)
 {
-    m_controlPath = _controlPath;
+    m_workspacePath = _workspacePath;
+    m_controlPath = m_workspacePath / ".workbench";
 
     // Connect to the database
     boost::filesystem::path dbPath = m_controlPath / "workbench.sqlite";
     if (!boost::filesystem::exists(dbPath))
     {
+        // TODO Create it.
         return false;
     }
 
@@ -180,7 +169,16 @@ WorkbenchService::setControlPath(const boost::filesystem::path& _controlPath)
         return false;
     }
 
+    // Set the workspace path to the the
+
     return true;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const boost::filesystem::path&
+WorkbenchService::getWorkspacePath()
+{
+    return m_workspacePath;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -382,26 +380,20 @@ WorkbenchService::loadProjects()
 I_ExplorerNode::pUserData_type
 WorkbenchService::createNodeUserData(boost::uint64_t _explorerNodeId, const std::string& _nodeType, I_ExplorerNode& _parentNode)
 {
-    std::cout << "WorkbenchService::createNodeUserData(): Get Zen::Studio::Workbench::ExplorerNode extension point" << std::endl;
     // Find the correct extension for this node user data and load it
     Plugins::I_ExtensionRegistry::pExtensionPoint_type
         pExtensionPoint = Plugins::I_ExtensionRegistry::getSingleton().getExtensionPoint("Zen::Studio::Workbench", "ExplorerNode");
 
     if (pExtensionPoint.get() != NULL)
     {
-        std::cout << "WorkbenchService::createNodeUserData(): Got extension point" << std::endl;
         Plugins::I_Extension::extension_ptr_type pExtension = pExtensionPoint->getExtension(_nodeType);
 
-        std::cout << "WorkbenchService::createNodeUserData(): Got extension " << _nodeType << std::endl;
         if (pExtension)
         {
-            std::cout << "WorkbenchService::createNodeUserData(): Getting class factory " << _nodeType << std::endl;
-
             // TODO Cache this factory / extension?
             I_ExplorerNodeFactory* pFactory = dynamic_cast<I_ExplorerNodeFactory*>(&pExtension->getClassFactory());
 
             // Create the project.
-            std::cout << "WorkbenchService::createNodeUserData(): Creating the project " << _nodeType << std::endl;
             return pFactory->createNodeUserData(_explorerNodeId, _nodeType, _parentNode);
         }
     }

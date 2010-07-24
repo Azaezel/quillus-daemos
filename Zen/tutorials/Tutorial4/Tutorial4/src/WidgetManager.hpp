@@ -41,11 +41,18 @@ class GameClient;
 
 class WidgetManager
 {
+    /// @name Types
+    /// @{
+public:
+    typedef Zen::Memory::managed_ptr<Zen::Engine::Input::I_MouseMoveEvent>  pMouseMoveEvent_type;
+    typedef Zen::Memory::managed_ptr<Zen::Engine::Input::I_MouseClickEvent> pMouseClickEvent_type;
+    /// @}
+
     /// @name Event Handlers
     /// @{
 public:
-    void handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event);
-    void handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _event);
+    void handleMouseMoveEvent(pMouseMoveEvent_type _pEvent);
+    void handleMouseClickEvent(pMouseClickEvent_type _pEvent);
     /// @}
 
     /// @name 'Structors

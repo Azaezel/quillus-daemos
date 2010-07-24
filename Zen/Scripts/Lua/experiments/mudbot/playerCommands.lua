@@ -3,24 +3,36 @@ playerCommands = {}
 
 operators = {  }
 
-operators["SgtFlame|Zen"] = 1
+operators["CptThomas"] = 1
 
 playerCommands["quit"] = function (connection, channel, nick, command, words)
     if operators[nick] ~= nil then
-        connection.say=("Ok, Sarge... see ya!", channel)
+        connection.say("Ok, " .. nick .. " see ya!", channel)
         connection.quit()
     else
-        connection.say(Error, unauthorized access.", channel)
+        connection.say("Error, unauthorized access.", channel)
     end
 end
 
 playerCommands["join"] = function (connection, channel, nick, command, words)
     if operators[nick] ~= nil then
-        connection.say("Ok, Sarge... you want me to join channel " .. words[2] .. "?", channel)
-        connection.join(words[2])
+        connection.say("Ok, " .. nick .. "... you want me to join channel " .. words[2]..words[3] .. "?", channel)
+        connection.join(words[2]..words[3])
         connection.say("Ok, I'm here.", words[2])
     else
         connection.say("Error, unauthorized access.")
+    end
+end
+
+playerCommands["part"] = function (connection, channel, nick, command, words)
+    if operators[nick] ~= nil then
+        --connection.leave(words[2]..words[3])
+		connection.part(words[2]..words[3])
+        --connection.say("This needs fixed! :(")
+		connection.say("words[2]"..words[2].."words[3]"..words[3])
+		connection.say("I'm leavin'")
+    else
+        connection.say("You can't do that!")
     end
 end
 
@@ -52,6 +64,16 @@ end
 
 playerCommands["rename"] = function (connection, channel, nick, command, words)
 	connection.send("NICK " .. words[2])
+end
+
+--Seems to only work if package is not already required
+playerCommands["reload"] = function (connection, channel, nick, command, words)
+    if words[2] ~= "main" then
+      package.loaded[words[2]] = nil;
+      reload(words[2]);
+    else
+      connection.say("No way!")
+    end
 end
 
 function trace(event, line)

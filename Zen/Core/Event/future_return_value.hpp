@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Core Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -48,7 +48,7 @@ namespace Event {
 /// 
 /// @param Return_type is the return value that will be returned in the "future".
 ///
-/// @see http://www.garagegames.com/community/blogs/view/14899/1#comment-96568
+/// @see http://www.torquepowered.com/community/blogs/view/14899/1#comment-96568
 ///     for a good discussion about futures and promises.
 template<class Return_type>
 class future_return_value
@@ -224,6 +224,16 @@ future_return_value<Return_type>::connect(typename Event<Return_type>::delegate_
 
     return m_event.connect(_listener);
 }
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+template<typename Payload_type>
+class managed_future_ptr
+: public Memory::managed_ptr
+    <
+          future_return_value<Memory::managed_ptr<Payload_type> >
+    >
+{
+};
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Event

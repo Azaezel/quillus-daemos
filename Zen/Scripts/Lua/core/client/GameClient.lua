@@ -44,9 +44,13 @@ function GameClient:initialize()
         self:initRenderingService(self.plugins["Rendering"], windowTitle, 
                 self.config["Resolution"][1], self.config["Resolution"][2]);
     end
-
+    
     if (self.plugins["Physics"] ~= nil) then
         self:initPhysicsService(self.plugins["Physics"]);
+    end
+
+    if (self.plugins["Terrain"] ~= nil) then
+        self:initTerrainService(self.plugins["Terrain"]);
     end
 
     -- Just default this for now

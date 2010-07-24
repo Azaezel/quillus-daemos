@@ -26,6 +26,9 @@
 
 #include <Zen/Core/Plugins/I_Application.hpp>
 
+#include <Zen/Core/Utility/I_LogManager.hpp>
+#include <Zen/Core/Utility/log_stream.hpp>
+
 #include "XMLConfiguration.hpp"
 
 #include <string>
@@ -87,7 +90,7 @@ public:
 
     /// @{ 'Structors
 public:
-             Application();
+    Application(Utility::I_LogManager::pLogService_type _pLogService);
     virtual ~Application();
     /// @}
 
@@ -99,6 +102,9 @@ private:
     std::string                 m_name;
     std::string                 m_version;
     std::string                 m_providerName;
+
+    Zen::Utility::log_stream_buffer     m_logStreamBuffer;
+    Zen::Utility::log_stream            m_logStream;
     /// @}
 
 };  // class Application

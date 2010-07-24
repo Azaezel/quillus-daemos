@@ -27,6 +27,7 @@
 #include <Zen/StudioPlugins/GameBuilderModel/I_GameObjectElementDataMap.hpp>
 
 #include <boost/bind.hpp>
+#include <iostream>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
@@ -58,7 +59,7 @@ GameObjectTypeDocument::~GameObjectTypeDocument()
 
     if (m_ppParent == NULL)
     {
-        delete m_ppParent; 
+        delete m_ppParent;
     }
 }
 
@@ -124,9 +125,14 @@ GameObjectTypeDocument::subscribe(pGameObjectTypeView_type _pView, pFilter_type 
     // Cannot subscribe unless the document has already been loaded.
     assert(m_loaded);
 
-    Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
+    // This lock needs to only guard the insert and not the notification,
+    // otherwise a nested lock will occur, which will deadlock on some
+    // platforms.
+    {
+        Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
 
-    m_subscribersGOT.insert(_pView);
+        m_subscribersGOT.insert(_pView);
+    }
 
     // Notify the view of the current state of the document.
     notifyView(_pView);
@@ -138,6 +144,9 @@ GameObjectTypeDocument::subscribe(pGameObjectTypeView_type _pView, pFilter_type 
 int
 GameObjectTypeDocument::notifyView(pGameObjectTypeView_type _pView)
 {
+    // Notify the view that this document changed.
+    _pView->onDocumentModified(*this);
+
     // Have the parent document notify this view of all elements.
 #if 0 // this won't notify of overridden values
     if (m_ppParent)
@@ -295,11 +304,20 @@ GameObjectTypeDocument::getCellProperties(const int _column, const int _row)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+GameObjectTypeDocument::onDocumentModified(I_GameObjectTypeDocument& _gameObjectTypeDocument)
+{
+    // TODO How should this be handled?
+    std::cout << "GameObjectTypeDocument::onDocumentModified(): What goes here?" << std::endl;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 GameObjectTypeDocument::onNewElement(I_GameObjectElement& _element, int _position)
 {
     // This is called when the parent GOT changes.
 
-    Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
+    // TR - Why was this being locked here?  I moved it below.
+    //Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
 
     GameObjectElement* pGameObjectElement = new GameObjectElement(*this, "", &_element);
 
@@ -310,7 +328,7 @@ GameObjectTypeDocument::onNewElement(I_GameObjectElement& _element, int _positio
     {
         m_parentElements.push_back(pGameObjectElement);
 
-        // Correct the position given to the views.  When it's -1, we need to 
+        // Correct the position given to the views.  When it's -1, we need to
         // pass the correct value (-1 means "the end" but when this GOT has elements,
         // the parent's end is not necessarily this GOT's end).
         newPosition = m_parentElementCount;
@@ -350,10 +368,15 @@ GameObjectTypeDocument::onNewElement(I_GameObjectElement& _element, int _positio
         (*iter)->onNewElement(*pGameObjectElement, newPosition);
     }
 
-    // Notify the spreadsheet views
-    for(SpreadSheetSubscribers_type::iterator iter = m_subscribersSS.begin(); iter != m_subscribersSS.end(); iter++)
     {
-        (*iter)->onNewRow(newPosition, "");
+        // TR Moved from above and made it local since it's guarding m_subscribersSS
+        Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
+
+        // Notify the spreadsheet views
+        for(SpreadSheetSubscribers_type::iterator iter = m_subscribersSS.begin(); iter != m_subscribersSS.end(); iter++)
+        {
+            (*iter)->onNewRow(newPosition, "");
+        }
     }
 }
 
@@ -370,7 +393,7 @@ GameObjectTypeDocument::onElementRemoved(int _position)
 void
 GameObjectTypeDocument::onElementModified(I_GameObjectElement& _element, int _row)
 {
-    // This is called when an element changes.  It's a parent GOT element 
+    // This is called when an element changes.  It's a parent GOT element
     // if _row < m_parentElementCount
 
     Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
@@ -414,6 +437,26 @@ GameObjectTypeDocument::onElementModified(I_GameObjectElement& _element, int _ro
 
     // And save everything.
     save();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameObjectTypeDocument::onAddProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Zen::Studio::Workbench::I_Property& _property)
+{
+
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameObjectTypeDocument::onValueModified(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Zen::Studio::Workbench::I_Property& _property)
+{
+    notifyViewsOfModification();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameObjectTypeDocument::onRemoveProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Zen::Studio::Workbench::I_Property& _property)
+{
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -488,7 +531,7 @@ GameObjectTypeDocument::load(GameObjectType& _node)
 
         pDatabaseConnection_type pDbConn = getProject()->getDatabaseConnection();
 
-        I_GameObjectElementDataMap::pGameObjectElementDataMap_type 
+        I_GameObjectElementDataMap::pGameObjectElementDataMap_type
             pElementDM = I_GameObjectElementDataMap::create(pDbConn);
 
         I_GameObjectElementDataMap::pFutureGameObjectElementDataCollection_type
@@ -498,8 +541,27 @@ GameObjectTypeDocument::load(GameObjectType& _node)
         pElementDC->getValue()->getAll(elementVisitor);
 
     }
-    
+
+    // Subscribe to the node's
+    GameObjectType* const pNode = dynamic_cast<GameObjectType*>(m_pNode);
+    m_pDocumentPropertySubscription = pNode->getProperties().subscribe(this);
+
     m_loaded = true;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameObjectTypeDocument::notifyViewsOfModification()
+{
+    // TODO Guard?  Right now it's not necessary
+
+    std::cout << "GameObjectTypeDocument::notifyViewsOfModification()" << std::endl;
+
+    // Notify the child GOT's
+    for(GameObjectTypeSubscribers_type::iterator iter = m_subscribersGOT.begin(); iter != m_subscribersGOT.end(); iter++)
+    {
+        (*iter)->onDocumentModified(*this);
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -527,7 +589,7 @@ GameObjectTypeDocument::addElement(pDatabaseConnection_type _pDbConn, I_GameObje
     }
     else
     {
-        // Create the element and put it on the list.  It should already be in 
+        // Create the element and put it on the list.  It should already be in
         // the correct sequence since the DC ordered it correctly.
         pElement = new GameObjectElement(*this, _pDomainObject->getName());
         position = m_elements.size() + m_parentElementCount;

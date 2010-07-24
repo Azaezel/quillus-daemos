@@ -22,7 +22,7 @@
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -46,10 +46,10 @@ AvatarCollisionBehavior::~AvatarCollisionBehavior()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
-AvatarCollisionBehavior::handleBoundBoxCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_BeginCollisionEventData& _eventData)
+AvatarCollisionBehavior::handleBoundBoxCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_BeginCollisionEventData& _eventData)
 {
-	m_origionalAngularMomentum = _eventData.getShape().getAngularMomentum();
-	if ((_eventData.getShape().getCollisionGroup() == AVATAR) && (_eventData.getOtherShape().getCollisionGroup() == AVATAR))
+	m_origionalAngularMomentum = _eventData.getActor().getAngularVelocity();
+	if ((_eventData.getActor().getCollisionGroup() == AVATAR) && (_eventData.getOtherActor().getCollisionGroup() == AVATAR))
 	{
 		//this might verry well be redundant...
 		_eventData.ignoreCollision();
@@ -60,19 +60,19 @@ AvatarCollisionBehavior::handleBoundBoxCollision(Zen::Engine::Core::I_BaseGameOb
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
-AvatarCollisionBehavior::handleCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_DuringCollisionEventData& _eventData)
+AvatarCollisionBehavior::handleCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_DuringCollisionEventData& _eventData)
 {
 	return true;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-AvatarCollisionBehavior::handleCollisionResolution(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_EndCollisionEventData& _eventData)
+AvatarCollisionBehavior::handleCollisionResolution(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_EndCollisionEventData& _eventData)
 {
 	//this is a correction mechanism. Collision callbacks are executed after the PhysicsService().stepSimulation
 	//as such, we take the m_origionalAngularMomentum from when collision resolution first begins (checking an AABB against another)
 	//and set the inverse of it to our new momentum once collisions are finished summing out (aproximately during handleCollision)
-	_eventData.getShape().setAngularMomentum(m_origionalAngularMomentum * -1.0f);
+	_eventData.getActor().setAngularVelocity(m_origionalAngularMomentum * -1.0f);
 	return;
 }
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

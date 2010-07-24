@@ -23,6 +23,7 @@
 //  Tony Richards trichards@indiezen.com
 //  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#if 0 // deprecated
 #include "ActionMap.hpp"
 #include "Action.hpp"
 
@@ -261,3 +262,4 @@ ActionMap::pScriptType_type ActionMap::sm_pScriptType;
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+#endif // deprecated

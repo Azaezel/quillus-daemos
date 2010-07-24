@@ -1,12 +1,15 @@
 #!/usr/bin/lua
 package.path=package.path..";./?.lua;"
 
-print(package.path)
-
+require "irc"
+require "playerCommands"
 require "bot"
 
 require "quests.questEngine"
 require "quests.ventin"
 require "quests.barkeep"
 
-runBot("irc.indiezen.org", 16667, "Rhapsody", "#test")
+--Custom Commands for Ginger
+require "gingerCommands"
+
+runBot("irc.indiezen.org", 16667, "Ginger", "#test")

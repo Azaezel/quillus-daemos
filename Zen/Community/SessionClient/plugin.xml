@@ -2,8 +2,8 @@
 <?indiezen version="1.0"?>
 <plugin
    id="SessionClient"
-   name="Zen Worlds Session Client"
-   version="0.4.0"
+   name="Zen Community Session Client"
+   version="0.6.2"
    provider-name="IndieZen.org">
 
   <runtime>
@@ -19,10 +19,10 @@
   <extension
         point="Zen::Enterprise::AppServer::ApplicationService"
         id="SessionClient"
-        name="Zen Worlds Session Client"
+        name="Zen Community Session Client"
         type="SessionClient">
     <application-service
-          class="Worlds::SessionService">
+          class="Community::SessionService">
     </application-service>
   </extension>
 

@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -31,22 +31,27 @@
 #include "NullCamera.hpp"
 #include "NullLight.hpp"
 
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
-
 #include <Zen/Engine/Rendering/I_RenderingManager.hpp>
 
 #include <boost/bind.hpp>
+
+static bool sm_bCreated = false;
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-SceneService::SceneService()
+SceneService::SceneService(const std::string& _name, int _sceneType)
 :   m_pScriptObject(NULL)
+,   m_pSceneManager(NULL)
+,   m_cameras()
 {
-    //m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "default");
-    //Ogre::Root::getSingleton().initialise(false, "IndieZen Rendering Window");
-    m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_EXTERIOR_CLOSE, "default");
+    assert(!sm_bCreated);
+    sm_bCreated = true;
+    std::cout << "OGRE: Ogre::Root::getSingleton().createSceneManager(_sceneType, _name);" << std::endl;
+    m_pSceneManager = Ogre::Root::getSingleton().createSceneManager(_sceneType, _name);
+    assert(m_pSceneManager != NULL);
+
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -58,7 +63,7 @@ SceneService::~SceneService()
 SceneService::pLight_type
 SceneService::createLight(const std::string& _type, const std::string& _name)
 {
-    NullLight* pRawLight = new NullLight(m_pSceneManager->createLight(_name));
+    NullLight* pRawLight = new NullLight(*m_pModule, m_pSceneManager->createLight(_name));
 
     pLight_type pLight(pRawLight, onDestroyLight);
 
@@ -95,7 +100,7 @@ SceneService::createChildNode(const std::string &_name)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 SceneService::setAmbientLight(Math::Real _red, Math::Real _green, Math::Real _blue, Math::Real _alpha)
 {
     m_pSceneManager->setAmbientLight(Ogre::ColourValue(_red, _green, _blue, _alpha));
@@ -158,6 +163,20 @@ SceneService::onDestroyLight(wpLight_type& _wpLight)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneService::setSkyBox(bool _enable, const std::string& _materialName)
+{
+    m_pSceneManager->setSkyBox(_enable, _materialName);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SceneService::pSceneNode_type
+SceneService::createSceneNode(const std::string& _name)
+{
+    return createChildNode(_name);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Scripting::I_ObjectReference*
 SceneService::getScriptObject()
 {
@@ -165,11 +184,19 @@ SceneService::getScriptObject()
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(), 
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+            m_pModule->getScriptModule(),
+            m_pModule->getScriptModule()->getScriptType(getScriptTypeName()),
+            getSelfReference().lock()
+        );
     }
-
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneService::registerScriptModule(Zen::Scripting::script_module& _scriptModule)
+{
+    m_pModule = &_scriptModule;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

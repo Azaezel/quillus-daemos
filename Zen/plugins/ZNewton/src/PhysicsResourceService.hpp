@@ -52,10 +52,13 @@ public:
     /// @name I_RenderingService implementation
     /// @{
 public:
+    void initialiseAllResourceGroups();
     virtual void addResourceLocation(const std::string& _path, const std::string& _type, 
         const std::string& _group, bool _recursive = false);
 
     virtual pResource_type loadResource(config_type& _config);
+    
+    virtual const std::string& getScriptSingletonName() const;
     /// @}
 
     /// @name I_ScriptableType implementation

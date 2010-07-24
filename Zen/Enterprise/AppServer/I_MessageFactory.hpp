@@ -56,6 +56,7 @@ public:
     /// @name I_MessageFactory interface
     /// @{
 public:
+    /// Create a message.
     virtual pMessage_type create(pMessageHeader_type _pMessageHeader, pEndpoint_type _pSourceEndpoint, pEndpoint_type _pDestinationEndpoint) = 0;
     /// @}
 

@@ -49,11 +49,12 @@ WidgetServiceFactory::getSingleton()
     return factory;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 WidgetServiceFactory::pWidgetService_type
-WidgetServiceFactory::create(const std::string& _type, config_type& _config)
+WidgetServiceFactory::create(const std::string& _type, config_type& _config, pScriptEngine_type _pScriptEngine)
 {
     // TODO Possibly pass _config to the widget service
-    WidgetService* pRawService = new WidgetService();
+    WidgetService* pRawService = new WidgetService(_pScriptEngine);
 
     pWidgetService_type pService(
         pRawService,
@@ -65,7 +66,7 @@ WidgetServiceFactory::create(const std::string& _type, config_type& _config)
     );
 
     wpWidgetService_type pWeakPtr(pService);
-    
+
     pRawService->setSelfReference(pWeakPtr);
 
     return pService;

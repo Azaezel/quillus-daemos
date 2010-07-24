@@ -35,8 +35,10 @@
 namespace Zen {
 namespace Plugins {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+;
 
-/// @todo This needs to have a better design
+/// @deprecated Instead of using this, use I_ExtensionRegistry::getExtensionPoints()
+/// @see I_ExtensionRegistry::getExtensionPoints().
 class I_ExtensionQuery
 :   public boost::noncopyable
 {
@@ -67,7 +69,7 @@ public:
     /// @name 'Structors
     /// @{
 protected:
-			 I_ExtensionQuery();
+                 I_ExtensionQuery();
 	virtual ~I_ExtensionQuery();
     /// @}
 

@@ -78,6 +78,8 @@ public:
     Color(Math::Real _red, Math::Real _green, Math::Real _blue, Math::Real _alpha = 1.0f);
 
     Color(const Color& _right);
+
+    Color(const Math::Real* _array);
     /// @}
 
     /// @name Member variables
@@ -126,6 +128,16 @@ Color::Color(const Color& _right)
 ,   m_green(_right.m_green)
 ,   m_blue(_right.m_blue)
 ,   m_alpha(_right.m_alpha)
+{
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+inline
+Color::Color(const Math::Real* _array)
+:	m_red(_array[0])
+,	m_green(_array[1])
+,	m_blue(_array[2])
+,	m_alpha(_array[3])
 {
 }
 

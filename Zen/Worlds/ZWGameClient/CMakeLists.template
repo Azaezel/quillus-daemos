@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 2.6) 
 
 project(ZWGameClient)
+set ( PROJECT_PREFIX "Worlds/ZWGameClient" )
 
 if ( NOT INDIEZEN_PARENT)
 	find_path ( INDIEZEN_PARENT Zen .. ../.. ../../.. ENV )
@@ -24,7 +25,7 @@ set ( ZWGameClient_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZWGAMECLIENT_EXPORTS )
+add_definitions( -DZWGAMECLIENT_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 
@@ -32,9 +33,9 @@ link_directories ( ${DEV_LIB} ${Boost_LIBRARY_DIRS} ${LibXML2_LIBRARY_DIRS} )
 
 add_library ( ZWGameClient ${LIB_TYPE} ${ZWGameClient_SRC} )
 
-add_dependencies( ZWGameClient ZenCore ZenEngine BaseClient BaseCommon )
+add_dependencies( ZWGameClient ZenCore ZenEngine ZenEnterprise BaseClient BaseCommon ZCrazyEddie )
 
-target_link_libraries( ZWGameClient ZenCore ZenEngine BaseClient BaseCommon ${Boost_LIBRARIES} ${LIBXML2_LIBRARIES} )
+target_link_libraries( ZWGameClient ZenCore ZenEngine ZenEnterprise BaseClient BaseCommon ZCrazyEddie ${Boost_LIBRARIES} ${LIBXML2_LIBRARIES} )
 
 set_target_properties ( ZWGameClient 
 						PROPERTIES
@@ -46,3 +47,12 @@ if (MSVC_IDE)
     set_target_properties ( ZWGameClient PROPERTIES PREFIX "../../bin/" )
 	set_target_properties ( ZWGameClient PROPERTIES IMPORT_PREFIX "../../lib/" )
 endif(MSVC_IDE)
+
+<%HeaderInstallDirectives%>
+
+install ( TARGETS
+	ZWGameClient
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+)

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -30,6 +30,7 @@ extern "C" {
 
 #include "LuaEngine.hpp"
 #include "LuaModule.hpp"
+#include "Config.hpp"
 
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
 #include <Zen/Core/Scripting/I_ObjectReference.hpp>
@@ -38,6 +39,8 @@ extern "C" {
 #include <Zen/Core/Math/Point3.hpp>
 #include <Zen/Core/Math/Vector3.hpp>
 #include <Zen/Core/Math/Vector4.hpp>
+#include <Zen/Core/Math/Radian.hpp>
+#include <Zen/Core/Math/Degree.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
@@ -86,22 +89,111 @@ LuaEngine::heap()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static
+std::string
+getLuaErrorString(int _error)
+{
+    std::string errorMessage;
+
+    switch(_error)
+    {
+    case LUA_ERRSYNTAX:
+        errorMessage = "Lua syntax error";
+        break;
+    case LUA_ERRMEM:
+        errorMessage = "Lua out of memory error";
+        break;
+    case LUA_ERRRUN:
+        errorMessage = "Lua runtime error";
+        break;
+    case LUA_ERRERR:
+        errorMessage = "Lua fatal error";
+        break;
+    case LUA_ERRFILE:
+        errorMessage = "Lua file not found error";
+        break;
+    case LUA_YIELD:
+        errorMessage = "Lua yield";
+        break;
+    }
+
+    return errorMessage;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 LuaEngine::executeScript(const std::string& _fileName)
 {
+    int luaTop = lua_gettop(m_pLua);
+
     // TODO This should really use a resource manager, but for now just do it this way
+    int error;
 
-    luaL_loadfile(m_pLua, _fileName.c_str());
-
-    if (lua_pcall(m_pLua, 0, 0, 0) != 0)
+    // Load a file.  The chunk is on top of the stack.
+    if ((error = luaL_loadfile(m_pLua, _fileName.c_str())) != 0)
     {
-        std::string errString = lua_tostring(m_pLua, -1);
-        std::cout << errString << std::endl;
+        std::stringstream errString;
+        errString << getLuaErrorString(error)
+            << " while loading file " << _fileName << "." << std::endl;
+
+        errString << lua_tostring(m_pLua, -1) << std::endl;
+
+        // Pop the error message off the stack.
+        lua_pop(m_pLua, 1);
+
+        throw Utility::runtime_exception(errString.str());
     }
+
+    int errorHandler = 0;
+
+    lua_getglobal(m_pLua, "errorHandler");
+    if (!lua_isnil(m_pLua, lua_gettop(m_pLua)))
+    {
+        // Set the error handler
+        errorHandler = -2;
+    }
+
+    // Duplicate the chunk so we can keep a reference to it.
+    // This also makes the chunk be on the top of the stack.
+    lua_pushvalue(m_pLua, -2);
+
+    // Call the chunk.
+    if (error = lua_pcall(m_pLua, 0, 0, errorHandler) != 0)
+    {
+        std::stringstream errString;
+        errString << getLuaErrorString(error) << " "
+            << lua_tostring(m_pLua, -1) << std::endl;
+
+        lua_getglobal(m_pLua, "errorHandler");
+
+        if (!lua_isnil(m_pLua, lua_gettop(m_pLua)))
+        {
+            lua_pushstring(m_pLua, errString.str().c_str());
+            lua_pcall(m_pLua, 1, 0, 0);
+        }
+        else
+        {
+            // TODO No errorHandler function exists.  Should this
+            // throw an exception or should an error message be output?
+            // For now just output an error message.
+            std::cout << errString.str() << std::endl;
+        }
+
+        // Who knows what's leftover on the stack?  Just 
+        // punt and set it to where we know it should be.
+        lua_settop(m_pLua, luaTop + 2);
+    }
+
+    // Pop the errorHandler and the initial chunk.
+    lua_pop(m_pLua, 2);
+
+    // TODO Verify that luaTop hasn't changed.
+    luaTop = lua_gettop(m_pLua);
 
     return true;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 static int new_Point3(lua_State *L, Math::Point3 _point3);
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -109,34 +201,182 @@ enum TYPES
 {
     OBJECT_REFERENCE_TYPE,
     INT_TYPE,
+    UINT_TYPE,
     STRING_TYPE,
     REAL_TYPE,
-    POINT3_TYPE
+    POINT3_TYPE,
+    VOID_TYPE
 };
 
-typedef std::map<std::string, TYPES> TypeMap_type;
+class TypeHandler
+{
+public:
+	typedef boost::function<std::string(boost::any&)>		ConvertToStringFunction_type;
+	typedef boost::function<void(lua_State*, boost::any&)>	PushArgumentFunction_type;
+
+	TypeHandler(TYPES _type,
+			ConvertToStringFunction_type _convertToStringFunction,
+			PushArgumentFunction_type _pushArgumentFunction)
+	:	m_type(_type)
+	,	m_convertToStringFunction(_convertToStringFunction)
+	,	m_pushArgumentFunction(_pushArgumentFunction)
+	{
+
+	}
+
+	TypeHandler(const TypeHandler& _right)
+	{
+		clone(_right);
+	}
+
+	TypeHandler& operator=(const TypeHandler& _right)
+	{
+		return clone(_right);
+	}
+
+	TypeHandler& clone(const TypeHandler& _right)
+	{
+		m_type = _right.m_type;
+		m_convertToStringFunction = _right.m_convertToStringFunction;
+		m_pushArgumentFunction = _right.m_pushArgumentFunction;
+		return *this;
+	}
+
+	std::string convertToString(boost::any& _value)
+	{
+		return m_convertToStringFunction(_value);
+	}
+
+	void pushArgument(lua_State* _pLuaState, boost::any& _value)
+	{
+		return m_pushArgumentFunction(_pLuaState, _value);
+	}
+
+	TYPES getType()
+	{
+		return m_type;
+	}
+
+
+private:
+	TYPES 							m_type;
+	ConvertToStringFunction_type 	m_convertToStringFunction;
+	PushArgumentFunction_type 		m_pushArgumentFunction;
+
+};
+
+typedef std::map<std::string, TypeHandler*> TypeMap_type;
 static TypeMap_type sm_typeMap;
 
 static bool sm_initialized = false;
 
+static std::string convertIntToString(boost::any& _value)
+{
+	std::stringstream stream;
+	stream << boost::any_cast<int>(_value);
+	return stream.str();
+}
+
+static void pushInt(lua_State* L, boost::any& _value)
+{
+    int value = boost::any_cast<int>(_value);
+    lua_pushinteger(L, value);
+}
+
+static std::string convertUIntToString(boost::any& _value)
+{
+    std::stringstream stream;
+    stream << boost::any_cast<unsigned int>(_value);
+    return stream.str();
+}
+
+static void pushUInt(lua_State* L, boost::any& _value)
+{
+    int value = boost::any_cast<unsigned int>(_value);
+    lua_pushinteger(L, value);
+}
+
+static std::string convertStringToString(boost::any& _value)
+{
+	std::string value = boost::any_cast<std::string>(_value);
+	return value;
+}
+
+static void pushString(lua_State* L, boost::any& _value)
+{
+    std::string value = boost::any_cast<std::string>(_value);
+    lua_pushstring(L, value.c_str());
+}
+
+static std::string convertRealToString(boost::any& _value)
+{
+	std::stringstream stream;
+	stream << boost::any_cast<Math::Real>(_value);
+	return stream.str();
+}
+
+static void pushReal(lua_State* L, boost::any& _value)
+{
+    Math::Real value = boost::any_cast<Math::Real>(_value);
+    lua_pushnumber(L, value);
+}
+
+static std::string convertPoint3ToString(boost::any& _value)
+{
+	std::stringstream stream;
+	Math::Point3 value = boost::any_cast<Math::Point3>(_value);
+	stream << value.m_x << " " << value.m_y << " " << value.m_z;
+	return stream.str();
+}
+
+static void pushPoint3(lua_State* L, boost::any& _value)
+{
+    new_Point3(L, boost::any_cast<Math::Point3>(_value));
+}
+
+static std::string convertVoidToString(boost::any& _value)
+{
+	return std::string("<void>");
+}
+
+static void pushVoid(lua_State* L, boost::any& _value)
+{
+	lua_pushnil(L);
+}
+
+static std::string convertObjectToString(boost::any& _value)
+{
+	throw Zen::Utility::runtime_exception("Error, cannot convert an object to a string.");
+}
+
+static void pushObject(lua_State* L, boost::any& _value)
+{
+    Scripting::I_ObjectReference* pObj = boost::any_cast<Scripting::I_ObjectReference*>(_value);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, (uintptr_t)pObj->getScriptUserData());
+}
+
 static void initTypeHuntMaps()
 {
+    if (sm_initialized)
+    {
+    	return ;
+    }
+
     sm_initialized = true;
-    sm_typeMap[typeid(Scripting::I_ObjectReference*).name()] = OBJECT_REFERENCE_TYPE;
-    sm_typeMap[typeid(int).name()] = INT_TYPE;
-    sm_typeMap[typeid(std::string).name()] = STRING_TYPE;
-    sm_typeMap[typeid(Math::Real).name()] = REAL_TYPE;
-    sm_typeMap[typeid(Math::Point3).name()] = POINT3_TYPE;
+    sm_typeMap[typeid(Scripting::I_ObjectReference*).name()] = new TypeHandler(OBJECT_REFERENCE_TYPE, convertObjectToString, pushObject);
+    sm_typeMap[typeid(int).name()] = new TypeHandler(INT_TYPE, convertIntToString, pushInt);
+    sm_typeMap[typeid(unsigned int).name()] = new TypeHandler(UINT_TYPE, convertUIntToString, pushUInt);
+    sm_typeMap[typeid(std::string).name()] = new TypeHandler(STRING_TYPE, convertStringToString, pushString);
+    sm_typeMap[typeid(Math::Real).name()] = new TypeHandler(REAL_TYPE, convertRealToString, pushReal);
+    sm_typeMap[typeid(Math::Point3).name()] = new TypeHandler(POINT3_TYPE, convertPoint3ToString, pushPoint3);
+    sm_typeMap[typeid(void).name()] = new TypeHandler(VOID_TYPE, convertVoidToString, pushVoid);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 LuaEngine::executeMethod(boost::any& _object, boost::any& _method, std::vector<boost::any>& _parms)
 {
-    if (!sm_initialized)
-    {
-        initTypeHuntMaps();
-    }
+	initTypeHuntMaps();
 
     lua_State* const L = getState();
 
@@ -145,7 +385,7 @@ LuaEngine::executeMethod(boost::any& _object, boost::any& _method, std::vector<b
     TypeMap_type::iterator pType = sm_typeMap.find(_object.type().name());
     if (pType != sm_typeMap.end())
     {
-        switch(pType->second)
+        switch(pType->second->getType())
         {
         case OBJECT_REFERENCE_TYPE:
             object = (uintptr_t)(boost::any_cast<Scripting::I_ObjectReference*>(_object)->getScriptUserData());
@@ -180,48 +420,8 @@ LuaEngine::executeMethod(boost::any& _object, boost::any& _method, std::vector<b
             return;
         }
 
-        switch(pType->second)
-        {
-        case OBJECT_REFERENCE_TYPE:
-        {
-            Scripting::I_ObjectReference* pObj = boost::any_cast<Scripting::I_ObjectReference*>(*iter);
-            lua_rawgeti(L, LUA_REGISTRYINDEX, (uintptr_t)pObj->getScriptUserData());
-            parms++;
-            continue;
-        }
-        case STRING_TYPE:
-        {
-            std::string value = boost::any_cast<std::string>(*iter);
-            lua_pushstring(L, value.c_str());
-            parms++;
-            continue;
-        }
-        case REAL_TYPE:
-        {
-            Math::Real value = boost::any_cast<Math::Real>(*iter);
-            lua_pushnumber(L, value);
-            parms++;
-            continue;
-        }
-        case INT_TYPE:
-        {
-            int value = boost::any_cast<int>(*iter);
-            lua_pushinteger(L, value);
-            parms++;
-            continue;
-        }
-        case POINT3_TYPE:
-        {
-            new_Point3(L, boost::any_cast<Math::Point3>(*iter));
-            parms++;
-            continue;
-        }
-        default:
-            std::cout << "Error, undefined parameter type in LuaEngine::executeMethod: " << iter->type().name() << std::endl;
-            // TODO Error
-            return;
-        }
-
+        pType->second->pushArgument(L, *iter);
+        parms++;
     }
 
     if (lua_pcall(m_pLua, parms, 0, 0) != 0)
@@ -354,11 +554,12 @@ static int new_Matrix4 (lua_State *L)
     // Pop the userdata so only the table is left
     lua_pop(L, 1);
 
+    // Initialize up to 4x4 matrix
     for(int x = 1; x < 17; x++)
     {
         if (x < top)
         {
-            pMatrix4->m_array[x - 1] = lua_tonumber(L, x);
+            pMatrix4->m_array[x - 1] =  (Zen::Math::Real)lua_tonumber(L, x);
         }
         else
         {
@@ -397,10 +598,148 @@ static int setZRotation_Matrix4(lua_State *L)
     return 0;
 }
 
+static int setXYZRotation_Matrix4(lua_State *L)
+{
+    Math::Matrix4* pMatrix4 = checkMatrix4(L, 1);
+    Math::Radian xRotation(checkReal(L, 2));
+    Math::Radian yRotation(checkReal(L, 3));
+    Math::Radian zRotation(checkReal(L, 4));
+
+    pMatrix4->setXYZRotation(xRotation, yRotation, zRotation);
+    return 0;
+}
+
+static int setPosition_Matrix4(lua_State *L)
+{
+    Math::Matrix4* pMatrix4 = checkMatrix4(L, 1);
+    Math::Radian x(checkReal(L, 2));
+    Math::Radian y(checkReal(L, 3));
+    Math::Radian z(checkReal(L, 4));
+
+    pMatrix4->setPosition(x,y,z);
+    return 0;
+}
+
 static const struct luaL_reg MatrixLib [] = {
     {"setXRotation", setXRotation_Matrix4},
     {"setYRotation", setYRotation_Matrix4},
     {"setZRotation", setZRotation_Matrix4},
+    {"setXYZRotation", setXYZRotation_Matrix4},
+    {"setPosition", setPosition_Matrix4},
+    {NULL, NULL}
+};
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+static const char* sm_pRadian = "Radian";
+
+static Math::Radian* checkRadian(lua_State *L, int idx)
+{
+    lua_pushliteral(L, "__zen_userdata");
+    lua_gettable(L, idx);
+
+    Math::Radian* pRadian = (Math::Radian*)luaL_checkudata(L, -1, sm_pRadian);
+    luaL_argcheck(L, pRadian != NULL, idx, "Radian expected");
+    lua_pop(L, 1);
+
+    return pRadian;
+}
+
+static int new_Radian(lua_State* L)
+{
+    const int top = lua_gettop(L);
+
+    lua_newtable(L);
+    const int table = lua_gettop(L);
+
+    Math::Radian* pRadian = new (lua_newuserdata(L, sizeof(Math::Radian))) Math::Radian();
+    const int userdata = lua_gettop(L);
+
+    // T["__zen_userdata"] = UD
+    lua_pushvalue(L, userdata);
+    lua_setfield(L, table, "__zen_userdata");
+
+    // Get the meta table for this class type and set it for this object
+    luaL_getmetatable(L, sm_pRadian);
+    lua_setmetatable(L, table);
+
+    // Get the meta table for this class type and set it for the user data
+    luaL_getmetatable(L, sm_pRadian);
+    lua_setmetatable(L, userdata);
+
+    // Pop the userdata so only the table is left
+    lua_pop(L, 1);
+
+    if( 1 <= top )
+    {
+        *pRadian = (Zen::Math::Real)lua_tonumber(L, 1);
+    }
+    else
+    {
+        *pRadian = 0.0f;
+    }
+
+    return 1;
+}
+
+static const struct luaL_reg RadianLib [] = {
+    {NULL, NULL}
+};
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+static const char* sm_pDegree = "Degree";
+
+static Math::Degree* checkDegree(lua_State *L, int idx)
+{
+    lua_pushliteral(L, "__zen_userdata");
+    lua_gettable(L, idx);
+
+    Math::Degree* pDegree = (Math::Degree*)luaL_checkudata(L, -1, sm_pDegree);
+    luaL_argcheck(L, pDegree != NULL, idx, "Degree expected");
+    lua_pop(L, 1);
+
+    return pDegree;
+}
+
+static int new_Degree(lua_State* L)
+{
+    const int top = lua_gettop(L);
+
+    lua_newtable(L);
+    const int table = lua_gettop(L);
+
+    Math::Degree* pDegree = new (lua_newuserdata(L, sizeof(Math::Degree))) Math::Degree();
+    const int userdata = lua_gettop(L);
+
+    // T["__zen_userdata"] = UD
+    lua_pushvalue(L, userdata);
+    lua_setfield(L, table, "__zen_userdata");
+
+    // Get the meta table for this class type and set it for this object
+    luaL_getmetatable(L, sm_pRadian);
+    lua_setmetatable(L, table);
+
+    // Get the meta table for this class type and set it for the user data
+    luaL_getmetatable(L, sm_pRadian);
+    lua_setmetatable(L, userdata);
+
+    // Pop the userdata so only the table is left
+    lua_pop(L, 1);
+
+    if( 1 <= top )
+    {
+        *pDegree = (Zen::Math::Real)lua_tonumber(L, 1);
+    }
+    else
+    {
+        *pDegree = 0.0f;
+    }
+
+    return 1;
+}
+
+static const struct luaL_reg DegreeLib [] = {
     {NULL, NULL}
 };
 
@@ -560,7 +899,7 @@ static int new_Vector3 (lua_State *L)
     {
         if (x <= top)
         {
-            pVector3->m_array[x - 1] = lua_tonumber(L, x + 1);
+            pVector3->m_array[x - 1] = (Zen::Math::Real)lua_tonumber(L, x);
         }
         else
         {
@@ -569,6 +908,18 @@ static int new_Vector3 (lua_State *L)
     }
 
     return 1;
+}
+
+static int destroy_Vector3(lua_State *L)
+{
+    /// TODO Determine if lua takes care of deleting the pointer automatically
+    /// Had problems with the commented code below.
+    //Math::Vector3* pVector3 = checkVector3(L,1);
+    //if (pVector3 != NULL)
+    //{
+    //    delete pVector3;
+    //}
+    return 0;
 }
 
 static int setX_Vector3(lua_State *L)
@@ -616,6 +967,18 @@ static int getZ_Vector3(lua_State *L)
     return 1;
 }
 
+static int add_Vector3(lua_State *L)
+{
+    new_Vector3(L);
+    Math::Vector3* pVector3A = checkVector3(L,1);
+    Math::Vector3* pVector3B = checkVector3(L,2);
+    Math::Vector3* pVectorResult = checkVector3(L,3);
+
+    *pVectorResult = *pVector3A + *pVector3B;
+
+    return 1;
+}
+
 static const struct luaL_reg Vector3Lib [] = {
     {"setX", setX_Vector3},
     {"setY", setY_Vector3},
@@ -623,6 +986,7 @@ static const struct luaL_reg Vector3Lib [] = {
     {"getX", getX_Vector3},
     {"getY", getY_Vector3},
     {"getZ", getZ_Vector3},
+    {"add", add_Vector3},
     {NULL, NULL}
 };
 
@@ -671,7 +1035,7 @@ static int new_Vector4 (lua_State *L)
     {
         if (x <= top)
         {
-            pVector4->m_array[x - 1] = lua_tonumber(L, x);
+            pVector4->m_array[x - 1] = (Zen::Math::Real)lua_tonumber(L, x);
         }
         else
         {
@@ -800,7 +1164,7 @@ static int new_Quaternion4 (lua_State *L)
     {
         if (x <= top)
         {
-            pQuaternion4->m_array[x - 1] = lua_tonumber(L, x);
+            pQuaternion4->m_array[x - 1] = (Zen::Math::Real)lua_tonumber(L, x);
         }
         else
         {
@@ -884,13 +1248,111 @@ static const struct luaL_reg Quaternion4Lib [] = {
 };
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
 static const luaL_Reg MathLib[] = {
     {sm_pMatrix4,       new_Matrix4},
     {sm_pVector3,       new_Vector3},
     {sm_pVector4,       new_Vector4},
     {sm_pPoint3,        new_Point3NoArgs},
+    {sm_pRadian,        new_Radian},
+    {sm_pDegree,        new_Degree},
     {sm_pQuaternion4,   new_Quaternion4},
+    {NULL, NULL}
+};
+
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static const char* sm_pConfig = "Config";
+
+static Config* checkConfig(lua_State *L, int idx)
+{
+    lua_pushliteral(L, "__zen_userdata");
+    lua_gettable(L, idx);
+
+    Config* pConfig = (Config*)luaL_checkudata(L, -1, sm_pConfig);
+    luaL_argcheck(L, pConfig != NULL, idx, "Config expected");
+    lua_pop(L, 1);
+
+    return pConfig;
+}
+
+static int new_Config (lua_State *L)
+{
+	initTypeHuntMaps();
+
+	// Save the top of the stack.
+	// This is the first parameter to the Utility.Config(table);
+    const int firstArgument = lua_gettop(L);
+
+    lua_newtable(L);
+    const int newTable = lua_gettop(L);
+
+    // In-place creation of a Config
+    Config* pConfig = new (lua_newuserdata(L, sizeof(Config))) Config;
+    const int userdata = lua_gettop(L);
+
+    // T["__zen_userdata"] = UD
+    lua_pushvalue(L, userdata);
+    lua_setfield(L, newTable, "__zen_userdata");
+
+    // Get the meta table for this class type and set it for this object
+    luaL_getmetatable(L, sm_pConfig);
+    lua_setmetatable(L, newTable);
+
+    // Get the meta table for this class type and set it for the user data
+    luaL_getmetatable(L, sm_pConfig);
+    lua_setmetatable(L, userdata);
+
+    // Pop the userdata so only the table is left
+    lua_pop(L, 1);
+
+    // Iterate through the first argument, which should be a table.
+    // Push nil as the first key
+    lua_pushnil(L);
+    int x = 0;
+
+    // Loop through the items in the first argument
+    // using the top of the stack as the key.  The first
+    // iteration is nil, subsequent iterations are the key.
+    // lua_next pushes the next key, next value onto the stack in
+    // that order.
+    while (lua_next(L, firstArgument) != 0)
+    {
+    	x++;
+
+    	// Get the type of the key and verify that it's a string
+    	if (lua_type(L, -2) != LUA_TSTRING)
+    	{
+    		// If it's not a string, display an error message.
+    		std::cout << "Error: argument " << x << " to Utility.Config() must be a string and not "
+    				<< lua_typename(L, -2) << " for key " << lua_tostring(L, -2);
+
+    		// Break out of the loop.
+    		break;
+    	}
+
+    	// Get the key and the value for this iteration
+    	const std::string key = lua_tostring(L, -2);
+    	const std::string value = lua_tostring(L, -1);
+
+    	// Save the value in the map using the key.
+    	pConfig->m_config[key] = value;
+
+    	// Pop the value off the stack.  Leave the key on the stack so that
+    	// the lua_next can use it.
+    	lua_pop(L, 1);
+    }
+
+    return 1;
+}
+
+static const struct luaL_reg ConfigLib [] = {
+	// TODO Add getter / setter methods?
+    {NULL, NULL}
+};
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static const luaL_Reg UtilityLib[] = {
+    {sm_pConfig,       	new_Config},
     {NULL, NULL}
 };
 
@@ -902,7 +1364,15 @@ LuaEngine::registerModules()
 
     luaL_openlibs(L);
 
+    int libTop = lua_gettop(L);
+
+    //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
     luaL_register(L, "Math", MathLib);
+
+    int mathTop = lua_gettop(L);
+
+    //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     // Register the Matrix meta table
     luaL_newmetatable(L, sm_pMatrix4);
@@ -916,6 +1386,8 @@ LuaEngine::registerModules()
 
     // Pop the metatable
     lua_pop(L, 1);
+    int top2 = lua_gettop(L);
+    assert(mathTop == lua_gettop(L));
 
     //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
@@ -931,6 +1403,39 @@ LuaEngine::registerModules()
 
     // Pop the metatable
     lua_pop(L, 1);
+    assert(mathTop == lua_gettop(L));
+
+    //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+    // Register the Radian meta table
+    luaL_newmetatable(L, sm_pRadian);
+
+    // metatable.__index = metatable
+    lua_pushstring(L, "__index");
+    lua_pushvalue(L, -2);
+    lua_settable(L, -3);
+
+    luaL_openlib(L, NULL, RadianLib, 0);
+
+    // Pop the metatable
+    lua_pop(L, 1);
+    assert(mathTop == lua_gettop(L));
+
+    //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+    // Register the Degree meta table
+    luaL_newmetatable(L, sm_pDegree);
+
+    // metatable.__index = metatable
+    lua_pushstring(L, "__index");
+    lua_pushvalue(L, -2);
+    lua_settable(L, -3);
+
+    luaL_openlib(L, NULL, DegreeLib, 0);
+
+    // Pop the metatable
+    lua_pop(L, 1);
+    assert(mathTop == lua_gettop(L));
 
     //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
@@ -942,11 +1447,21 @@ LuaEngine::registerModules()
     lua_pushvalue(L, -2);
     lua_settable(L, -3);
 
+    // metatable.__gc function
+    lua_pushstring(L, "__gc");
+    lua_pushcfunction(L, destroy_Vector3);
+    lua_settable(L, -3);
+
+    // metatable.__add function
+    lua_pushstring(L, "__add");
+    lua_pushcfunction(L, add_Vector3);
+    lua_settable(L, -3);
+    
     luaL_openlib(L, NULL, Vector3Lib, 0);
 
     // Pop the metatable
     lua_pop(L, 1);
-
+    assert(mathTop == lua_gettop(L));
 
     //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
@@ -962,6 +1477,7 @@ LuaEngine::registerModules()
 
     // Pop the metatable
     lua_pop(L, 1);
+    assert(mathTop == lua_gettop(L));
 
     //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
@@ -977,6 +1493,37 @@ LuaEngine::registerModules()
 
     // Pop the metatable
     lua_pop(L, 1);
+    assert(mathTop == lua_gettop(L));
+
+    //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+    lua_pop(L,1);
+    assert(libTop == lua_gettop(L));
+
+    //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+    luaL_register(L, "Utility", UtilityLib);
+
+    int utilityTop = lua_gettop(L);
+
+    // Register the Config meta table
+    luaL_newmetatable(L, sm_pConfig);
+
+    // metatable.__index = metatable
+    lua_pushstring(L, "__index");
+    lua_pushvalue(L, -2);
+    lua_settable(L, -3);
+
+    luaL_openlib(L, NULL, ConfigLib, 0);
+
+    // Pop the metatable
+    lua_pop(L, 1);
+    assert(utilityTop == lua_gettop(L));
+
+    //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+    lua_pop(L, 1);
+    assert(libTop == lua_gettop(L));
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

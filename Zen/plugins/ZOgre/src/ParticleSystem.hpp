@@ -26,6 +26,8 @@
 #ifndef ZEN_ZOGRE_PARTICLE_SYSTEM_HPP_INCLUDED
 #define ZEN_ZOGRE_PARTICLE_SYSTEM_HPP_INCLUDED
 
+#include "AttachableObject.hpp"
+
 #include <Zen/Engine/Rendering/I_ParticleSystem.hpp>
 
 #include <OgreRoot.h>
@@ -37,6 +39,7 @@ namespace ZOgre {
 
 class ParticleSystem
 :   public Zen::Engine::Rendering::I_ParticleSystem
+,   public AttachableObject
 {
     /// @name Types
     /// @{
@@ -48,6 +51,13 @@ public:
 public:
     /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
     /// @name I_ParticleSystem implementation
     /// @{
 public:
@@ -57,6 +67,11 @@ public:
     /// @{
 public:
     const Ogre::ParticleSystem& getOgreParticleSystem() const;
+    /// @}
+
+    /// @name Static methods
+    /// @{
+    static void registerScriptModule(Zen::Scripting::script_module& _module);
     /// @}
 
     /// @name 'Structors

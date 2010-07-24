@@ -22,7 +22,7 @@
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -46,9 +46,9 @@ GravityBehavior::~GravityBehavior()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
-GravityBehavior::handlePhysicsForce(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_ApplyForcesEventData& _eventData)
+GravityBehavior::handlePhysicsForce(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_ApplyForcesEventData& _eventData)
 {
-    float mass = _eventData.getShape().getMass();
+    Zen::Math::Real mass = _eventData.getActor().getMass();
 
     Zen::Math::Vector3 gravity(m_gravity);
     gravity *= mass;

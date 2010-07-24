@@ -32,9 +32,10 @@ namespace Zen {
 namespace Studio {
 namespace Workbench {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-ProjectExplorerNode::ProjectExplorerNode(ProjectExplorerModel& _model, pUserData_type _pUserData, ProjectExplorerNode* _pParent)
+ProjectExplorerNode::ProjectExplorerNode(ProjectExplorerModel& _model, pUserData_type _pUserData, I_Project* _pProject, ProjectExplorerNode* _pParent)
 :   m_model(_model)
 ,   m_pUserData(_pUserData)
+,   m_pProject(_pProject)
 ,   m_pParent(_pParent)
 {
     m_pUserData->setNode(this);
@@ -44,7 +45,7 @@ ProjectExplorerNode::ProjectExplorerNode(ProjectExplorerModel& _model, pUserData
     }
 
     // Connect the onModified event to the model.
-    m_pEventConnection = 
+    m_pEventConnection =
         onModified.connect(boost::bind(&ProjectExplorerModel::onNodeModified, &_model, _1));
 }
 
@@ -118,6 +119,13 @@ ProjectExplorerNode::getChildren(I_ExplorerNodeVisitor& _visitor)
     }
 
     _visitor.end();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Project*
+ProjectExplorerNode::getProject()
+{
+    return m_pProject;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

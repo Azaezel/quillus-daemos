@@ -71,7 +71,7 @@ public:
 #ifdef _WIN32
     typedef HWND                                    windowHandle_type;
 #else
-    typedef void*                                   windowHandle_type;
+    typedef const char*                             windowHandle_type;
 #endif
     /// @}
 

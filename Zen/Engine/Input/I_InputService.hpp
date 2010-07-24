@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -29,8 +29,10 @@
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Event/Event.hpp>
 #include <Zen/Core/Plugins/I_Service.hpp>
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting.hpp>
+
+#include <Zen/Engine/Input/I_KeyPublisher.hpp>
+#include <Zen/Engine/Input/I_MousePublisher.hpp>
 
 #include <string>
 #include <map>
@@ -41,25 +43,25 @@ namespace Engine {
 namespace Input {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_InputServiceFactory;
-class I_InputMap;
+class I_KeyMap;
 
 class I_ButtonEvent;
 class I_ScalarEvent;
 class I_VectorEvent;
 class I_KeyEvent;
 class I_KeyModifierState;
-class I_MouseMoveEvent;
-class I_MouseClickEvent;
 
 /// I'm still deciding on how the events should work.  Should I create
-/// some sort of FocusManager that directs where the input goes, or 
+/// some sort of FocusManager that directs where the input goes, or
 /// should everything that wants the events decide if they have focus
-/// and process the event accordingly, or should they subscribe / 
+/// and process the event accordingly, or should they subscribe /
 /// unsubscribe as they gain and lose focus, or some sort of combination?
 /// For now everything subscribes and each subscriber determines if the
 /// event is intended for them.
 class INPUTMANAGER_DLL_LINK I_InputService
 :   public virtual Zen::Scripting::I_ScriptableType
+,   public I_KeyPublisher
+,   public I_MousePublisher
 {
     /// @name Friend declarations
     /// @{
@@ -75,10 +77,12 @@ public:
 
     typedef Memory::managed_ptr<I_InputService>             pScriptObject_type;
     typedef Scripting::ObjectReference<I_InputService>      ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                      ScriptWrapper_type;
+    typedef ScriptWrapper_type*                             pScriptWrapper_type;
 
     typedef Zen::Memory::managed_ptr<Zen::Plugins::I_Service>    pAbstractService_type;
 
-    typedef Zen::Memory::managed_ptr<I_InputMap>            pInputMap_type;
+    typedef Zen::Memory::managed_ptr<I_KeyMap>              pKeyMap_type;
     typedef Zen::Memory::managed_ptr<I_InputService>        pService_type;
     typedef Zen::Memory::managed_weak_ptr<I_InputService>   wpService_type;
     typedef Zen::Event::Event<wpService_type>               service_event;
@@ -92,11 +96,6 @@ public:
     typedef Zen::Memory::managed_ptr<I_VectorEvent>         pVector_type;
     typedef Zen::Event::Event<pVector_type>                 vector_event;
 
-    typedef Zen::Memory::managed_ptr<I_KeyEvent>            pKeyEventPayload_type;
-    typedef Zen::Event::Event<pKeyEventPayload_type>        key_event;
-
-    typedef Zen::Event::Event<I_MouseMoveEvent&>            MouseMoveEvent_type;
-    typedef Zen::Event::Event<I_MouseClickEvent&>           MouseClickEvent_type;
     /// @}
 
     /// @name I_InputService interface
@@ -107,7 +106,7 @@ public:
     /// @param _height Height of the render window.
     virtual void setWindowSize(int _width, int _height) = 0;
 
-    /// Temporarily pauses event notifications.  
+    /// Temporarily pauses event notifications.
     /// Generally you should call this method when your control
     /// loses focus.
     virtual void pauseEvents() = 0;
@@ -117,25 +116,12 @@ public:
     /// regains focus.
     virtual void resumeEvents() = 0;
 
-    /// Some devices require you to call this for every 
+    /// Some devices require you to call this for every
     /// frame that is rendered.
     virtual void processEvents() = 0;
- 
-    /// Create an input map.
-    /// @note This is a key input map and eventually should be renamed as such.
-    virtual pInputMap_type createInputMap(const std::string& _name) = 0;
 
-    /// Enable an input map.
-    virtual void enableInputMap(const std::string& _name) = 0;
-
-    /// Disable an input map.
-    virtual void disableInputMap(const std::string& _name) = 0;
-
-    /// Enable all input maps.
-    virtual void enableAllInputMaps() = 0;
-
-    /// Disable all input maps.
-    virtual void disableAllInputMaps() = 0;
+    /// @todo Should this be moved to I_ScriptableType?
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
 
 protected:
     /// Change the key modifier state (shift,ctrl,alt,win,etc.)
@@ -147,7 +133,7 @@ protected:
 public:
     /// This is implemented to return "InputService"
     /// Override this method if you create a derived type
-    const std::string& getScriptTypeName();
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name Static methods
@@ -164,9 +150,6 @@ public:
     button_event            onButtonEvent;
     scalar_event            onScalarEvent;
     vector_event            onVectorEvent;
-    key_event               onKeyEvent;
-    MouseMoveEvent_type     onMouseMoveEvent;
-    MouseClickEvent_type    onMouseClickEvent;
     /// @}
 
     /// @name 'Structors
@@ -181,7 +164,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Input
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_InputService is managed by a factory
     template<>

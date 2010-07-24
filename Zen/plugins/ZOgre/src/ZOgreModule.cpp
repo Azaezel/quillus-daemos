@@ -88,7 +88,7 @@ static ZOgreModule* pModule = NULL;
 static Ogre::Root* pRoot = NULL;
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-ZOgreModule& 
+ZOgreModule&
 ZOgreModule::instance()
 {
     // TODO: Guard
@@ -99,6 +99,7 @@ ZOgreModule::instance()
 
     if (pRoot == NULL)
     {
+        std::cout << "OGRE: new Ogre::Root();" << std::endl;
 #ifdef _DEBUG
 	    pRoot = new Ogre::Root("plugins-debug.cfg", "ogre.cfg", "Ogre.log");
 #else
@@ -110,7 +111,7 @@ ZOgreModule::instance()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Plugins::I_Module::plugin_name_collection_type& 
+Zen::Plugins::I_Module::plugin_name_collection_type&
 ZOgreModule::getPluginNames()
 {
     return m_names;
@@ -120,13 +121,13 @@ ZOgreModule::getPluginNames()
 Plugins::I_Module::plugin_ptr_type
 ZOgreModule::getPlugin(const plugin_name_type& _PluginName)
 {
-    // TODO: Return the appropriate plugin; 
+    // TODO: Return the appropriate plugin;
     // For now since only one type is supported then return that.
     return m_pPlugin;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
+void
 ZOgreModule::destroyPlugin(Plugins::I_Module::plugin_ptr_type _pPlugin)
 {
     // TODO delete?

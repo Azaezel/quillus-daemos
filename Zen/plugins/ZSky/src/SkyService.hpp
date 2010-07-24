@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // IndieZen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
-// Copyright (C)        2008 Walt Collins
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +21,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef ZEN_ZSKY_SKY_SERVICE_HPP_INCLUDED
 #define ZEN_ZSKY_SKY_SERVICE_HPP_INCLUDED
@@ -42,6 +42,7 @@ class SkyService
     /// @name Types
     /// @{
 public:
+    typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptModule>    pScriptModule_type;
     /// @}
 
     /// @name I_SkyService implementation
@@ -52,6 +53,14 @@ public:
     virtual void setRenderingService(pRenderingService_type _pService);
     virtual void setRenderingResourceService(pRenderingResourceService_type _pService);
     virtual pSky_type createSky(config_type& _config);
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
     /// @name SkyService implementation
@@ -75,10 +84,13 @@ public:
     /// @name Member Variables
     /// @{
 private:
-    pPhysicsService_type m_pPhysicsService;
-    pPhysicsResourceService_type m_pPhysicsResourceService;
-    pRenderingService_type m_pRenderingService;
-    pRenderingResourceService_type m_pRenderingResourceService;
+    pPhysicsService_type            m_pPhysicsService;
+    pPhysicsResourceService_type    m_pPhysicsResourceService;
+    pRenderingService_type          m_pRenderingService;
+    pRenderingResourceService_type  m_pRenderingResourceService;
+
+    ScriptObjectReference_type*     m_pScriptObject;
+
     /// @}
 
 };  // class SkyService

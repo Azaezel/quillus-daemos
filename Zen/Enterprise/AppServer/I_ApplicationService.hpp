@@ -26,9 +26,11 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Enterprise/AppServer/I_RequestHandler.hpp>
-
 #include <Zen/Core/Memory/managed_ptr.hpp>
+
+#include <Zen/Core/Plugins/I_StartupShutdownParticipant.hpp>
+
+#include <Zen/Enterprise/AppServer/I_RequestHandler.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -38,15 +40,18 @@ namespace AppServer {
 class I_ApplicationServer;
 class I_Message;
 class I_MessageType;
+class I_ResourceLocation;
 
 class APPSERVER_DLL_LINK I_ApplicationService
 :   public I_RequestHandler
+,   public Plugins::I_StartupShutdownParticipant
 {
     /// @name Types
     /// @{
 public:
     typedef Memory::managed_ptr<I_Message>                  pMessage_type;
     typedef Zen::Memory::managed_ptr<I_MessageType>         pMessageType_type;
+    typedef Zen::Memory::managed_ptr<I_ResourceLocation>    pResourceLocation_type;
     /// @}
 
     /// @name I_ApplicationService interface.
@@ -57,6 +62,9 @@ public:
     /// method.
     /// @see I_ApplicationServiceFactory
     virtual I_ApplicationServer& getApplicationServer() = 0;
+
+    /// Get the application service resource location.
+    virtual pResourceLocation_type getServiceLocation() = 0;
 
     /// Handle a message
     /// Messages are one-way notifications and are not expected to return a result.

@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRE
 list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
 
 Find_Package(IndieZen REQUIRED)
-Find_Package(Boost REQUIRED system )
+Find_Package(Boost REQUIRED system serialization)
 
 SET (LIB_TYPE SHARED)
 
@@ -23,7 +23,7 @@ set ( ZSky_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZSKY_EXPORTS )
+add_definitions( -DZSKY_EXPORTS -DBOOST_SERIALIZATION_DYN_LINK )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 

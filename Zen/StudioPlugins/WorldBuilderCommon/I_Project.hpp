@@ -23,7 +23,7 @@ namespace WorldBuilder {
 
 /// A World Builder project.
 class WORLDBUILDERCOMMON_DLL_LINK I_Project
-:   public Zen::Studio::Workbench::I_Project
+:   public virtual Zen::Studio::Workbench::I_Project
 {
     /// @name Types
     /// @{
@@ -38,7 +38,7 @@ public:
     /// @name 'Structors
     /// @{
 protected:
-             I_Project(const std::string& _name);
+             I_Project();
     virtual ~I_Project();
     /// @}
 

@@ -26,6 +26,7 @@
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_GameObjectElement;
+class I_GameObjectTypeDocument;
 
 /// Game Object Type View.
 /// Implement a view and use I_GameObjectTypeDocument::subscribe() in
@@ -40,11 +41,15 @@ public:
     /// @name I_GameObjectTypeView interface
     /// @{
 public:
+    /// This method is called when a game object type document is modified.
+    /// Generally this modification is a property modification.
+    virtual void onDocumentModified(I_GameObjectTypeDocument& _gameObjectTypeDocument) = 0;
+
     /// This method is called when a new element is added to the document to which this
     /// view is subscribed.
     /// The element details will be indicated via a call to onElementModified().
     /// @param _position -1 if added to the end, otherwise the element was added
-    ///     before the index provided (0 is the beginning, 1 is after the first 
+    ///     before the index provided (0 is the beginning, 1 is after the first
     ///     element, etc).
     virtual void onNewElement(I_GameObjectElement& _element, int _position) = 0;
 

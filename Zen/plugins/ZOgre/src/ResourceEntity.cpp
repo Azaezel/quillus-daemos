@@ -29,7 +29,7 @@
 
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
 
-#include <Zen/Engine/Rendering/I_RenderingManager.hpp>
+#include <Zen/Engine/Resource/I_ResourceManager.hpp>
 #include <Zen/Engine/Rendering/I_AnimationState.hpp>
 
 #include "Ogre.hpp"
@@ -110,8 +110,10 @@ Scripting::I_ObjectReference*
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(), 
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+            Engine::Resource::I_ResourceManager::getSingleton().getDefaultResourceScriptModule(), 
+            Engine::Resource::I_ResourceManager::getSingleton().getDefaultResourceScriptModule()->getScriptType(getScriptTypeName()), 
+            getSelfReference().lock()
+        );
     }
 
     return m_pScriptObject;

@@ -19,11 +19,13 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-CreatorPropertyGroup::CreatorPropertyGroup(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Property* _pParent)
-:   PropertyGroup(_publisher, "Creator", _pParent)
-,   m_creatorCategory(_publisher, "", this)
-,   m_creatorIcon(_publisher, "", this)
+CreatorPropertyGroup::CreatorPropertyGroup(Properties& _properties, Property* _pParent)
+:   PropertyGroup(_properties, "Creator", _pParent)
+,   m_creatorCategory(_properties, "", this)
+,   m_creatorIcon(_properties, "", this)
 {
+    addChild(m_creatorCategory.getName(), &m_creatorCategory);
+    addChild(m_creatorIcon.getName(), &m_creatorIcon);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -35,6 +37,7 @@ CreatorPropertyGroup::~CreatorPropertyGroup()
 void
 CreatorPropertyGroup::insert(pDatabaseConnection_type _pDBConn)
 {
+    // TODO This could be handled by ProperyGroup since it has a list of the children now.
     Property::insert(_pDBConn);
     m_creatorCategory.insert(_pDBConn);
     m_creatorIcon.insert(_pDBConn);
@@ -44,6 +47,7 @@ CreatorPropertyGroup::insert(pDatabaseConnection_type _pDBConn)
 void
 CreatorPropertyGroup::load(pDatabaseConnection_type _pDBConn)
 {
+    // TODO This could be handled by ProperyGroup since it has a list of the children now.
     Property::load(_pDBConn);
     m_creatorCategory.load(_pDBConn);
     m_creatorIcon.load(_pDBConn);
@@ -53,6 +57,8 @@ CreatorPropertyGroup::load(pDatabaseConnection_type _pDBConn)
 void
 CreatorPropertyGroup::save(pDatabaseConnection_type _pDBConn)
 {
+    // TODO This could be handled by ProperyGroup since it has a list of the children now.
+
     Property::save(_pDBConn);
     m_creatorCategory.save(_pDBConn);
     m_creatorIcon.save(_pDBConn);
@@ -62,6 +68,8 @@ CreatorPropertyGroup::save(pDatabaseConnection_type _pDBConn)
 void
 CreatorPropertyGroup::remove(pDatabaseConnection_type _pDBConn)
 {
+    // TODO This could be handled by ProperyGroup since it has a list of the children now.
+
     Property::remove(_pDBConn);
     m_creatorCategory.remove(_pDBConn);
     m_creatorIcon.remove(_pDBConn);
@@ -71,6 +79,7 @@ CreatorPropertyGroup::remove(pDatabaseConnection_type _pDBConn)
 void
 CreatorPropertyGroup::notifyAdd(pPropertiesListener_type _pListener)
 {
+    // TODO This could be handled by ProperyGroup since it has a list of the children now.
     _pListener->onAddProperty(getPublisher(), *this);
 
     m_creatorCategory.notifyAdd(_pListener);
@@ -81,6 +90,7 @@ CreatorPropertyGroup::notifyAdd(pPropertiesListener_type _pListener)
 void
 CreatorPropertyGroup::setPropertiesId(boost::uint64_t _propertiesId)
 {
+    // TODO This could be handled by ProperyGroup since it has a list of the children now.
     Property::setPropertiesId(_propertiesId);
     m_creatorCategory.setPropertiesId(_propertiesId);
     m_creatorIcon.setPropertiesId(_propertiesId);
@@ -90,6 +100,8 @@ CreatorPropertyGroup::setPropertiesId(boost::uint64_t _propertiesId)
 bool
 CreatorPropertyGroup::tryLoadProperty(pPropertyDomainObject_type _pDomainObject)
 {
+    // TODO This could be handled by ProperyGroup since it has a list of the children now.
+
     return (Property::tryLoadProperty(_pDomainObject) ||
         m_creatorCategory.tryLoadProperty(_pDomainObject) ||
         m_creatorIcon.tryLoadProperty(_pDomainObject));

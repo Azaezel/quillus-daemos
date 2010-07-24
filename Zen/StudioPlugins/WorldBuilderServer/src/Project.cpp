@@ -29,8 +29,8 @@
 namespace WorldBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Project::Project(Zen::Studio::Workbench::I_ProjectExplorerController& _controller, const std::string& _name)
-:   m_controller(_controller)
-,   I_Project(_name)
+:   Zen::Studio::Workbench::I_Project(_name)
+,   Zen::Studio::Workbench::Project(_controller, _name)
 {
 }
 
@@ -131,57 +131,13 @@ Project::remove(pDatabaseConnection_type _pDBConn)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-boost::uint64_t
-Project::getProjectId() const
-{
-    return m_projectId;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-Project::setProjectId(boost::uint64_t _projectId)
-{
-    m_projectId = _projectId;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 Project::onCreated()
 {
     /// Create the default child node
     Zen::Studio::Workbench::I_ExplorerNode::pUserData_type pData(new ZoneFolder(*this, "Zones"));
 
-    m_controller.createChildNode(*getNode(), pData);
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Studio::Workbench::I_ProjectExplorerController&
-Project::getController()
-{
-    return m_controller;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Studio::Workbench::I_WorkbenchService&
-Project::getWorkbenchService()
-{
-    return m_controller.getWorkbenchService();
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Project::pDatabaseConnection_type
-Project::getDatabaseConnection()
-{
-    // TODO This project should have its own database connection
-    return getWorkbenchService().getDatabaseConnection();
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-const boost::filesystem::path&
-Project::getControlPath()
-{
-    // TODO This project should have its own control path
-    return getWorkbenchService().getControlPath();
+    getController().createChildNode(*getNode(), pData);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

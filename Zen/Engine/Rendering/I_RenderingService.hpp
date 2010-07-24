@@ -26,11 +26,13 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Event/Event.hpp>
+#include <Zen/Core/Scripting.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+
+#include <Zen/Core/Event/Event.hpp>
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -40,6 +42,8 @@
 #endif
 
 #include <stddef.h>
+
+#include <boost/noncopyable.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -54,7 +58,9 @@ class I_RenderingServiceFactory;
 /// Basic renderer interface
 /// This class
 class RENDERING_DLL_LINK I_RenderingService
-:   public virtual Zen::Scripting::I_ScriptableType
+:   public Zen::Scripting::I_ScriptableType
+,   public Zen::Memory::managed_self_ref<I_RenderingService>
+,   boost::noncopyable
 {
     /// @name Types
     /// @{
@@ -64,6 +70,8 @@ public:
 
     typedef Zen::Memory::managed_ptr<I_RenderingService>        pScriptObject_type;
     typedef Scripting::ObjectReference<I_RenderingService>      ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                          ScriptWrapper_type;
+    typedef ScriptWrapper_type*                                 pScriptWrapper_type;
 
     typedef Zen::Memory::managed_ptr<I_RenderingService>        pRenderingService_type;
     typedef Zen::Memory::managed_weak_ptr<I_RenderingService>   wpRenderingService_type;
@@ -73,7 +81,8 @@ public:
 #ifdef _WIN32
     typedef HWND                                    window_handle_type;
 #else
-    typedef void*                                   window_handle_type;
+    // On X11, this is a string in the format of display:screen:window
+    typedef const char*                             window_handle_type;
 #endif
     /// @}
 
@@ -97,6 +106,8 @@ public:
 
     /// Destroy a render view
     virtual void destroyView(I_View* _pView) = 0;
+
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -134,7 +145,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Rendering
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_RenderingService is managed by a factory
     template<>

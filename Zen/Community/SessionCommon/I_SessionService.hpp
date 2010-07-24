@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -28,20 +28,17 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Memory/managed_ptr.hpp>
+
+#include <Zen/Core/Event/I_Event.hpp>
+
 #include <Zen/Enterprise/AppServer/I_ApplicationService.hpp>
 #include <Zen/Enterprise/Networking/I_Endpoint.hpp>
-
-#include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Event/Event.hpp>
-#include <Zen/Core/Event/future_return_value.hpp>
 
 #include <string>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-    namespace Networking {
-        class I_Endpoint;
-    }   // namespace Networking
 namespace Community {
 namespace Common {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -60,28 +57,26 @@ class SESSIONCOMMON_DLL_LINK I_SessionService
 public:
     typedef Memory::managed_ptr<Networking::I_Endpoint>     pEndpoint_type;
 
-	typedef Memory::managed_ptr<I_SessionService>				pService_type;
-
-    typedef Memory::managed_ptr<I_Session>                  pSession_type;
-    typedef Event::Event<pSession_type>                     SessionEvent_type;
-    typedef Event::future_return_value<pSession_type>       FutureSession_type;
-    typedef Memory::managed_ptr<FutureSession_type>         pFutureSession_type;
+    typedef Memory::managed_ptr<I_SessionService>			pService_type;
     /// @}
 
     /// @name I_SessionService interface
     /// @{
 public:
-    /// Request a login
-    virtual pFutureSession_type requestSession(pEndpoint_type _pDestinationEndpoint, 
+    /// Request a login.
+    /// When the session is connected (or rejected) the session event is
+    /// fired.
+    /// @see getSessionEvent().
+    virtual void requestLogin(pEndpoint_type _pDestinationEndpoint, 
                               const std::string& _name, 
                               const std::string& _password) = 0;
-    /// @}
 
-    /// @name Events
-    /// @{
-public:
-    /// This event will fire when the session status changes.
-    SessionEvent_type onSessionStatusChange;
+    /// Request an existing session by Id.
+    virtual I_Session& getSession(boost::uint64_t _sessionId) = 0;
+
+    /// Get the session event.
+    /// The payload is an I_Session.
+    virtual Event::I_Event& getSessionEvent() = 0;
     /// @}
 
     /// @name 'Structors

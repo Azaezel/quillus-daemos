@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// IndieZen Game Engine Framework
+// Zen Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
-// Copyright (C)        2008 Walt Collins
+// Copyright (C) 2001 - 2009 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,69 +20,17 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#include "ZODEPlugin.hpp"
+#include <Zen/Core/Plugins/Utilities.hpp>
 
 #include "PhysicsServiceFactory.hpp"
 #include "ResourceServiceFactory.hpp"
 
-#include <iostream>
 
-#include <cstddef>
+IMPLEMENT_SINGLE_ZEN_PLUGIN(ZODEModule, ZODEPlugin)
 
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-namespace Zen {
-namespace ZODE {
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-ZODEPlugin::ZODEPlugin()
-{
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-ZODEPlugin::~ZODEPlugin()
-{
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-ZODEPlugin::initExtensionPoints()
-{
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-ZODEPlugin::initExtensions()
-{
-    // TODO Register the factory?
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Plugins::I_ClassFactory*
-ZODEPlugin::getClassFactory(const Plugins::I_ConfigurationElement& _config)
-{
-    // Return the correct factory based on the extension point.
-    const std::string& extensionPoint = _config.getAttribute("point");
-    const std::string& id = _config.getAttribute("id");
-
-    // Debug
-    std::cout << "Creating extension point " << extensionPoint << " : " << id << std::endl;
-
-    if (extensionPoint == "Zen::Engine::Physics::PhysicsService")
-    {
-        return &PhysicsServiceFactory::getSingleton();
-    }
-    else if(extensionPoint == "Zen::Engine::Resource::ResourceService")
-    {
-        return &ResourceServiceFactory::instance();
-    }
-
-    return NULL;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-}   // namespace ZODE
-}   // namespace Zen
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+BEGIN_ZEN_EXTENSION_MAP(ZODEPlugin)
+    ZEN_EXTENSION("Zen::Engine::Physics::PhysicsService", &Zen::ZODE::PhysicsServiceFactory::getSingleton())
+    ZEN_EXTENSION("Zen::Engine::Resource::ResourceService", &Zen::ZODE::ResourceServiceFactory::getSingleton())
+END_ZEN_EXTENSION_MAP()

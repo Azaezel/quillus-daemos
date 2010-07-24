@@ -151,7 +151,7 @@ Workbench::initialize(boost::filesystem::path& _workspacePath)
         return false;
     }
 
-    if (!m_pWorkbenchService->setControlPath(m_controlPath))
+    if (!m_pWorkbenchService->setWorkspacePath(m_workspacePath))
     {
         return false;
     }
@@ -283,8 +283,10 @@ Workbench::getRenderingService()
     // HACK Hard coded to Ogre, but should get this value from a configuration
     // or something.
 
-    return Zen::Engine::Rendering::I_RenderingManager::getSingleton()
+    Workbench::pRenderingService_type pRenderingService = Zen::Engine::Rendering::I_RenderingManager::getSingleton()
         .create("ogre");
+
+    return pRenderingService;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -306,10 +308,30 @@ Workbench::createNewProject(const I_ProjectType& _projectType)
     {
         std::string projectName(wx2std(pTextEntryDialog->GetValue()));
 
-        I_ProjectExplorerController& controller = m_pMainFrame->getProjectExplorer();
+        // Verify that this project name can be a valid path.
+        boost::filesystem::path projectPath =
+            boost::filesystem::system_complete(getWorkbenchService().getWorkspacePath() / projectName);
 
-        I_ProjectService::pProject_type pProject = pProjectService->createProject(controller, projectName);
-        controller.createNewProject(pProject);
+        if (projectPath.is_complete())
+        {
+            I_ProjectExplorerController& controller = m_pMainFrame->getProjectExplorer();
+
+            if (!boost::filesystem::exists(projectPath))
+            {
+                boost::filesystem::create_directories(projectPath);
+            }
+
+            I_ProjectService::pProject_type pProject = pProjectService->createProject(controller, projectName);
+
+            // TODO Fire an event and let the controller subscribe to that event instead of doing this directly.
+            controller.createNewProject(pProject);
+        }
+        else
+        {
+            // TODO Send to the system log
+            wxMessageBox("The project name must be a valid directory name.  Please try again.", "Error",
+                wxOK_DEFAULT, m_pMainFrame);
+        }
     }
 }
 

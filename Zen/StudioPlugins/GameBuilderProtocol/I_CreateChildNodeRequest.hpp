@@ -35,13 +35,13 @@ namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class GAMEBUILDERPROTOCOL_DLL_LINK I_CreateChildNodeRequest
-:   public Zen::Enterprise::AppServer::I_Request
-,   public virtual GameBuilder::I_Message
+:   public virtual Zen::Enterprise::AppServer::I_Request
 {
     /// @name Types
     /// @{
 public:
     typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_Request>   pRequest_type;
+
     /// @}
 
     /// @name Getter / Setter methods
@@ -65,6 +65,8 @@ public:
 public:
     static pRequest_type create(pEndpoint_type _pSourceEndpoint,
                                 pEndpoint_type _pDestinationEndpoint);
+
+    static pMessageType_type getStaticMessageType();
     /// @}
 
     /// @name 'Structors

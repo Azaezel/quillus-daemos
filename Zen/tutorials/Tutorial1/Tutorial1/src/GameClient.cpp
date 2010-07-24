@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -33,6 +33,8 @@
 #include <Zen/Core/Math/Vector3.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
 
+#include <Zen/Core/Event/I_ActionMap.hpp>
+
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
@@ -42,7 +44,7 @@
 #include <Zen/Engine/Core/I_ActionMap.hpp>
 #include <Zen/Engine/Core/I_GameObjectBehaviors.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
 
 #include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>
@@ -54,9 +56,7 @@
 #include <Zen/Engine/Rendering/I_RenderableResource.hpp>
 
 #include <Zen/Engine/Input/I_InputService.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
-
-#include <Zen/Engine/Camera/I_CameraManager.hpp>
+#include <Zen/Engine/Input/I_KeyMap.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -100,6 +100,16 @@ GameClient::getScriptObject()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::registerScriptEngine(pScriptEngine_type _pScriptEngine)
+{
+    // This isn't really used with the Base Starter kit since ZGameLoader 
+    // registers the script engine with the BaseGameClient.
+
+    // Just ignore this method.
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 GameClient::init()
 {
@@ -120,8 +130,6 @@ GameClient::init()
     // TODO FIX THIS! :P
     base().initInputService("keyboard");
 
-    createScriptTypes();
-
     // Possibly the rest of this should be done later and we should show 
     // an initial game screen or splash screens here.
 
@@ -138,6 +146,88 @@ void
 GameClient::run()
 {
     m_base.run();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::Widgets::I_WidgetService&
+GameClient::getWidgetService()
+{
+    return m_base.getWidgetService();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::Rendering::I_RenderingCanvas&
+GameClient::getRenderingCanvas()
+{
+    return m_base.getRenderingCanvas();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::Resource::I_ResourceService&
+GameClient::getRenderingResourceService()
+{
+    return m_base.getRenderingResourceService();
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::World::I_TerrainService&
+GameClient::getTerrainService()
+{
+    return m_base.getTerrainService();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Engine::World::I_SkyService&
+GameClient::getSkyService()
+{
+    return m_base.getSkyService();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initRenderingService(const std::string& _type, const std::string& _title, int _xRes, int _yRes)
+{
+    return m_base.initRenderingService(_type, _title, _xRes, _yRes);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initRenderingResourceService(const std::string& _type)
+{
+    return m_base.initRenderingResourceService(_type);
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initTerrainService(const std::string& _type)
+{
+    return game().initTerrainService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initSkyService(const std::string& _type)
+{
+    return game().initSkyService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initInputService(const std::string& _type)
+{
+    return m_base.initInputService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initWidgetService(const std::string& _type)
+{
+    return m_base.initWidgetService(_type);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::activateGameClientScriptModule()
+{
+    createScriptTypes();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -168,7 +258,6 @@ GameClient::createActions()
 {
     // Create some actions
     game().getActionMap().createAction("Quit", boost::bind(&Zen::Engine::Base::I_BaseGameClient::quit, &m_base, _1));
-
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -176,7 +265,7 @@ void
 GameClient::createDefaultMapping()
 {
     // Map some keys to actions
-    base().getInputMap().mapKeyInput("q", game().getActionMap()["Quit"]);
+    base().getKeyMap().mapKeyInput("q", game().getActionMap()["Quit"]);
 
 }
 

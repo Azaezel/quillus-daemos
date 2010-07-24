@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -26,17 +26,20 @@
 #ifndef ZEN_COMMUNITY_SESSIONSERVER_SESSION_SERVICE_HPP_INCLUDED
 #define ZEN_COMMUNITY_SESSIONSERVER_SESSION_SERVICE_HPP_INCLUDED
 
-#include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Memory/managed_weak_ptr.hpp>
-#include <Zen/Core/Memory/managed_self_ref.hpp>
+#include <Zen/Enterprise/AppServer/scriptable_generic_service.hpp>
 
-#include <Zen/Enterprise/AppServer/I_ApplicationService.hpp>
-#include <Zen/Enterprise/AppServer/I_ApplicationServer.hpp>
+#include <Zen/Community/SessionCommon/I_SessionService.hpp>
 
 #include <Zen/Enterprise/Database/I_DatabaseManager.hpp>
 #include <Zen/Enterprise/Database/I_DatabaseConnection.hpp>
 
-#include <Zen/Community/SessionCommon/I_SessionService.hpp>
+#include <Zen/Community/SessionModel/I_AccountDataMap.hpp>
+#include <Zen/Community/SessionModel/I_AccountDomainObject.hpp>
+#include <Zen/Community/SessionModel/I_AccountDataCollection.hpp>
+
+#include <Zen/Spaces/ObjectModel/I_Subscription.hpp>
+
+#include <boost/cstdint.hpp>
 
 #include <string>
 #include <map>
@@ -52,27 +55,29 @@ namespace Zen {
 namespace Community {
     namespace Common {
         class I_Attribute;
+        class I_AccountView;
     }   // namespace Common
+    namespace Session {
+        class I_AccountDomainObject;
+    }   // namespace Session
 namespace Server {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-;
+class Session;
 
 class SessionService
-:   public Zen::Community::Common::I_SessionService
-,   public Zen::Memory::managed_self_ref<Common::I_SessionService>
+:   public Zen::Enterprise::AppServer::scriptable_generic_service
+        <Zen::Community::Common::I_SessionService, SessionService>
 {
     /// @name Types
     /// @{
 public:
-    typedef Zen::Plugins::I_ConfigurationElement::const_ptr_type    pConfig_type;
+    typedef Zen::Memory::managed_ptr<Zen::Community::Session::I_AccountDomainObject>    pAccount_type;
+    typedef std::map<std::string, pAccount_type>                                        UsersToAccount_type;
 
-    typedef Zen::Memory::managed_ptr<Zen::Networking::I_Endpoint>   pEndpoint_type;
+    typedef Memory::managed_ptr<Common::I_AccountView>                                  pAccountView_type;
+    typedef Memory::managed_weak_ptr<Common::I_AccountView>                             wpAccountView_type;
 
-    typedef std::map<unsigned int, pResponseHandler_type>           Handlers_type;
-
-    typedef Zen::Memory::managed_ptr<Common::I_Attribute>           pAttribute_type;
-    typedef Zen::Event::future_return_value<pAttribute_type>        FutureAttribute_type;
-    typedef Zen::Memory::managed_ptr<FutureAttribute_type>          pFutureAttribute_type;
+    typedef Memory::managed_ptr<Spaces::ObjectModel::I_Subscription>    pSubscription_type;
     /// @}
 
     /// @name I_StartupShutdownParticipant implementation
@@ -85,59 +90,48 @@ public:
     virtual void stop();
     /// @}
 
-    /// @name I_RequestHandler implementation
+    /// @name I_ScriptableType
     /// @{
 public:
-    virtual void handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler);
+    virtual const std::string& getScriptTypeName();
+    virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
-    /// @name I_ApplicationService implementation
+    /// @name I_ScriptableService implementation
     /// @{
 public:
-    virtual Zen::Enterprise::AppServer::I_ApplicationServer& getApplicationServer();
-    virtual void handleMessage(pMessage_type _pMessage);
+    virtual void registerScriptEngine(pScriptEngine_type _pScriptEngine);
     /// @}
 
     /// @name I_SessionService implementation
     /// @{
 public:
-#if 0   // deprecated
-    virtual void requestSession(pEndpoint_type _pDestinationEndpoint, 
+    virtual void requestLogin(pEndpoint_type _pDestinationEndpoint, 
                               const std::string& _name, 
-                              const std::string& _password,
-                              pResponseHandler_type _pResponseHandler);
-#endif  // deprecated
-
-    virtual pFutureSession_type requestSession(pEndpoint_type _pDestinationEndpoint, 
-                                             const std::string& _name, 
-                                             const std::string& _password);
+                              const std::string& _password);
+    virtual Common::I_Session& getSession(boost::uint64_t _sessionId);
+    virtual Event::I_Event& getSessionEvent();
     /// @}
 
-	/// @name SessionService implementation
-	/// @{
-public:
-    pFutureAttribute_type requestAttribute(const Common::I_Session& _session,
-                                           const std::string& _key);
-private:
-    void addConfig(const Zen::Plugins::I_ConfigurationElement& _element);
-	/// @}
-
-    /// @name DatabaseConfigVisitor declaration
+    /// @name SessionService implementation
     /// @{
 private:
-    struct DatabaseConfigVisitor
-    :   public Zen::Plugins::I_ConfigurationElement::I_ConfigurationElementVisitor
-    {
-        virtual void begin();
-        virtual void visit(const Zen::Plugins::I_ConfigurationElement& _element);
-        virtual void end();
+    pScriptModule_type getScriptModule();
 
-                 DatabaseConfigVisitor(SessionService& _service);
-        virtual ~DatabaseConfigVisitor();
+    void loadAccounts();
 
-    private:
-        SessionService&   m_service;
-    };
+    void handleLoginRequest(pRequest_type _pRequest, pResponseHandler_type);
+
+    boost::uint32_t generateSessionId();
+
+    void subscribeView();
+    /// @}
+
+    /// @name Static methods
+    /// @{
+public:
+    static void destroyAccountView(wpAccountView_type _pAccountView);
+    /// @}
 
     /// @name 'Structors
     /// @{
@@ -150,18 +144,27 @@ protected:
     /// @name Member Variables
     /// @{
 private:
-    Zen::Enterprise::AppServer::I_ApplicationServer&                m_appServer;
-    Zen::Threading::ThreadPool*                                     m_pThreadPool;
+    pScriptEngine_type                                  m_pScriptEngine;
+    Zen::Scripting::script_module*                      m_pScriptModule;
+    Scripting::I_ObjectReference*                       m_pScriptObject;
+    const Zen::Plugins::I_ConfigurationElement*         m_pDatabaseConfig;
+    const Zen::Plugins::I_ConfigurationElement*         m_pAccountConfig;
 
-    Handlers_type                                                   m_responseHandlers;
-    Zen::Threading::I_Mutex*                                        m_pHandlersMutex;
+    pAccountView_type                                   m_pAccountView;
 
-    std::string                                                     m_databaseName;
-    std::string                                                     m_databaseType;
-    std::map< std::string, std::string >                            m_databaseConfig;
+    UsersToAccount_type                                 m_usersMap;
+    
+    typedef std::map<boost::uint64_t, Session*>         SessionIdSession_type;
+    SessionIdSession_type                               m_sessions;
 
-    Zen::Database::I_DatabaseManager::pDatabaseService_type         m_pDatabaseService;
-    Zen::Database::I_DatabaseConnection::pDatabaseConnection_type   m_pDatabaseConnection;
+    Session*                                            m_pRootSession;
+
+    boost::uint32_t                                     m_lastSessionId;
+    Zen::Threading::I_Mutex*                            m_pSesssionIdMutex;
+
+    bool                                                m_viewSubscribed;
+
+    pSubscription_type                                  m_pSubscription;
     /// @}
 
 };  // class SessionService

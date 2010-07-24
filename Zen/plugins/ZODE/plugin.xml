@@ -3,7 +3,7 @@
 <plugin
    id="ZODE"
    name="IndieZen ODE Plug-in"
-   version="0.1.0"
+   version="0.6.0"
    provider-name="IndieZen.org">
 
     <runtime>
@@ -18,25 +18,25 @@
 
 	<extension
           point="Zen::Engine::Physics::PhysicsService"
-          id="ZODE"
+          id="ode"
           name="IndieZen ODE Physics Service"
-          type="ZODE">
+          type="ode">
 		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
 		<physics-service
               class="Zen::ZODE::PhysicsService"
-              type="ZODE">
+              type="ode">
 		</physics-service>
 	</extension>
 
 	<extension
 		point="Zen::Engine::Resource::ResourceService"
-		  id="ZODEResource"
+		  id="ode"
 		  name="IndieZen ODE Resource Service"
-		  type="ZODE">
+		  type="ode">
 		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
 		<resource-service
 			  class="Zen::ZODE::ResourceService"
-			  type="ZODE">
+			  type="ode">
 		</resource-service>
 	</extension>
 

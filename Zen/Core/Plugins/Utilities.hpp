@@ -135,8 +135,10 @@ IMPLEMENT_ZEN_MODULE(module_type)
 namespace Zen {
 namespace Plugins {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+;
 
-/// This template will implement the base module
+/// This template implement a common implementation of I_Module.
+/// You can use this or write your own implementation.
 template<typename Plugin_type>
 class BaseModule
 :   public I_Module

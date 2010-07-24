@@ -26,6 +26,8 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Scripting.hpp>
+
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -45,15 +47,30 @@ namespace Rendering {
 
 /// Rendering context
 class RENDERING_DLL_LINK I_Context
+:   public Zen::Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
 public:
+    typedef I_Context*                              pScriptObject_type;
+    typedef Scripting::ObjectReference<I_Context>   ScriptObjectReference_type;
+    typedef ScriptObjectReference_type              ScriptWrapper_type;
+    typedef ScriptWrapper_type*                     pScriptWrapper_type;
+
 #ifdef _WIN32
+    typedef HWND                                    parent_window_handle_type;
     typedef HWND                                    window_handle_type;
 #else
+    // On X11, this is a string in the format of display:screen:window
     typedef void*                                   window_handle_type;
+    typedef const char*                             parent_window_handle_type;
 #endif
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_Context interface
@@ -64,7 +81,7 @@ public:
 
     /// Get the parent window.
     /// This value is used when creating a new view.
-    virtual window_handle_type getParentWindow() const = 0;
+    virtual parent_window_handle_type getParentWindow() const = 0;
 
     /// Get the window.
     /// This value is not valid until this context has been used

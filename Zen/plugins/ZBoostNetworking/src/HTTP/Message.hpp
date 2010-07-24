@@ -41,7 +41,9 @@ class Message
 public:
     virtual pEndpoint_type getSourceEndpoint();
     virtual pEndpoint_type getDestinationEndpoint();
+    virtual pResourceLocation_type getSourceLocation();
     virtual pResourceLocation_type getDestinationLocation();
+    virtual boost::uint64_t getMessageId() const;
     virtual void serialize(boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
     /// @}

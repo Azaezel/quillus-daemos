@@ -50,6 +50,8 @@ public:
     virtual void setFarClipDistance(const Math::Real _farDistance);
     virtual void setPosition(const Math::Real _x, const Math::Real _y, const Math::Real _z);
     virtual Math::Point3 getPosition() const;
+    virtual void setOrientation(const Math::Real _w, const Math::Real _x, const Math::Real _y, const Math::Real _z);
+    virtual Math::Quaternion4 getOrientation() const;
     virtual void setDirection(const Math::Real _x, const Math::Real _y, const Math::Real _z);
     virtual Math::Vector3 getDirection() const;
     virtual Math::Vector3 getRight() const;
@@ -61,6 +63,12 @@ public:
     virtual void update();
     /// @see http://www.indiezen.org/wiki/irclogs/2009/08/12/#UTC2009-08-12T17:28:49
     virtual Math::Ray getViewportRay(int _x, int _y);
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
     /// @name Camera implementation
@@ -75,7 +83,7 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             Camera(RenderingCanvas& _canvas, Ogre::Camera& _camera, const std::string& _name);
+             Camera(Zen::Scripting::script_module& _module, RenderingCanvas& _canvas, Ogre::Camera& _camera, const std::string& _name);
     virtual ~Camera();
     /// @}
 
@@ -86,6 +94,9 @@ private:
     Ogre::Camera&           m_camera;
     std::string             m_name;
     Ogre::SceneNode*        m_pSceneNode;
+
+    ScriptObjectReference_type*     m_pScriptObject;
+    Zen::Scripting::script_module&  m_module;
     /// @}
 
 };  // class Camera

@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// IndieZen Game Engine Framework
+// Zen Engine Framework
 //
 // Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C)        2008 Walt Collins
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,33 +20,21 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef ZEN_ZODE_PHYSICS_MATERIAL_HPP_INCLUDED
 #define ZEN_ZODE_PHYSICS_MATERIAL_HPP_INCLUDED
 
-/*
-// TR - Newton.h should include stdlib.h but it doesn't.
-#include <stdlib.h>
-#include <Newton.h>
-ODE libs
-*/
-
 #include <Zen/Core/Memory/managed_self_ref.hpp>
+
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
-#include <Zen/Core/Math/Math.hpp>
 
-#include <vector>
-
-#include "PhysicsShape.hpp"
+#include <ode/ode.h>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-class PhysicsZone;
+;
 
 class PhysicsMaterial
 :   public Engine::Physics::I_PhysicsMaterial
@@ -56,16 +43,19 @@ class PhysicsMaterial
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_weak_ptr<Zen::Engine::Physics::I_PhysicsWorld> wpPhysicsZone_type;
-    typedef Memory::managed_ptr<Zen::Engine::Physics::I_PhysicsMaterial>         pPhysicsMaterial_type;
-    typedef std::vector<pPhysicsMaterial_type>         materials_vector_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
     /// @name I_PhysicsMaterial implementation
     /// @{
 public:
-    virtual int getMaterialID();
-    virtual int getDefaultMaterialID();
+    virtual int getMaterialId();
+    virtual int getDefaultMaterialId();
 
     virtual Math::Real getDynamicFriction();
     virtual Math::Real getStaticFriction();
@@ -79,28 +69,33 @@ public:
     virtual void setAdvancedCollisionPrediction(bool _mode);
     virtual void setCollidable(bool _collide);
     virtual void setIgnoreCollision(pPhysicsMaterial_type _material);
+    /// @}
 
+    /// @name Static methods
+    /// @{
+private:
+    static int getNewMaterialId();
     /// @}
 
     /// @name 'Structors
     /// @{
 public:
-             PhysicsMaterial(wpPhysicsZone_type _zone, bool _default);
+             PhysicsMaterial(bool _isDefault);
     virtual ~PhysicsMaterial();
     /// @}
 
     /// @name Member Variables
     /// @{
 private:
-    wpPhysicsZone_type  m_pZone;
-    int                  m_defaultGroupID;
-    int                  m_id;
-    bool                 m_bCollidable;
-    bool                 m_bAdvancedCollisionPrediction;
-    Math::Real           m_restitution;
-    Math::Real           m_dynamicFriction;
-    Math::Real           m_staticFriction;
+    unsigned int                        m_id;
+    dSurfaceParameters                  m_surfaceParameters;
+    Zen::Math::Real                     m_dynamicFriction;
+    bool                                m_isCollidable;
+
+    pScriptModule_type                  m_pScriptModule;
+    ScriptObjectReference_type*         m_pScriptObject;
     /// @}
+
 };  // class PhysicsMaterial
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

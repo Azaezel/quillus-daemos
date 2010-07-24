@@ -68,12 +68,18 @@ class WidgetService
     /// @name Types
     /// @{
 public:
+    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptEngine>             pScriptEngine_type;
+    typedef Zen::Memory::managed_ptr<Zen::Engine::Input::I_KeyEvent>        pKeyEvent_type;
+    typedef Zen::Memory::managed_ptr<Zen::Engine::Input::I_MouseClickEvent> pMouseClickEvent_type;
+    typedef Zen::Memory::managed_ptr<Zen::Engine::Input::I_MouseMoveEvent>  pMouseMoveEvent_type;
     /// @}
 
     /// @name I_WidgetService implementation
     /// @{
 public:
-    virtual void initialise(Zen::Engine::Rendering::I_View& _view, Zen::Engine::Input::I_InputService& _input);
+    virtual void initialise(Zen::Engine::Rendering::I_View& _view,
+            Zen::Engine::Input::I_MousePublisher* _pMousePublisher,
+            Zen::Engine::Input::I_KeyPublisher* _pKeyPublisher);
     virtual Zen::Engine::Widgets::I_FontService& getFontService();
     virtual Zen::Engine::Widgets::I_Widget& getWidget(const std::string& _path, bool _absolute = false);
     virtual void switchRoot(const std::string& _root);
@@ -109,21 +115,23 @@ public:
 protected:
     std::list<std::string> parseWidgetPath(const std::string& _path);
     bool handleDestroyWidget(const CEGUI::EventArgs& _eventArgs);
-    void handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _event);
-    void handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event);
+    void handleMouseClickEvent(pMouseClickEvent_type _pEvent);
+    void handleMouseMoveEvent(pMouseMoveEvent_type _pEvent);
+    void handleKeyPressed(pKeyEvent_type _pKeyEvent);
     /// @}
 
     /// @name 'Structors
     /// @{
 protected:
     friend class WidgetServiceFactory;
-             WidgetService();
+             WidgetService(pScriptEngine_type _pScriptEngine);
     virtual ~WidgetService();
     /// @}
 
     /// @name Member variables
     /// @{
 private:
+    pScriptEngine_type                                              m_pScriptEngine;
     Zen::Threading::I_Mutex*                                        m_pCollectionMutex;
 
     typedef std::map<std::string, Zen::Engine::Widgets::I_Widget* > widgetCache_type;

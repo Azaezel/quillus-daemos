@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Enterprise Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -31,6 +31,7 @@
 #include "../../XML/I_XMLRequest.hpp"
 
 #include <boost/shared_ptr.hpp>
+#include <boost/cstdint.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -55,8 +56,11 @@ public:
 public:
     virtual pEndpoint_type getSourceEndpoint() { return Message::getSourceEndpoint(); }
     virtual pEndpoint_type getDestinationEndpoint() { return Message::getDestinationEndpoint(); }
+    virtual pResourceLocation_type getSourceLocation() { return Message::getSourceLocation(); }
     virtual pResourceLocation_type getDestinationLocation() { return Message::getDestinationLocation(); }
     virtual pMessageHeader_type getMessageHeader() const;
+    virtual pMessageType_type getMessageType() const;
+    virtual boost::uint64_t getMessageId() const { return Message::getMessageId(); }
     virtual void serialize(pMessageHeader_type _pHeader, boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
     /// @}

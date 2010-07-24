@@ -29,10 +29,18 @@
 #define ZEN_ENGINE_RESOURCE_I_SOUND_SOURCE_HPP_INCLUDED
 
 #include "Configuration.hpp"
-#include "I_SoundResource.hpp"
-#include <Zen/Engine/Resource/I_ResourceService.hpp>
-#include <Zen/Core/Memory/managed_ptr.hpp>
+
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Engine/Sound/I_Audible.hpp>
+#include <Zen/Engine/Sound/I_SoundResource.hpp>
+
+#include <Zen/Engine/Resource/I_ResourceService.hpp>
+
+#include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+
 #include <Zen/Core/Math/Point3.hpp>
 #include <Zen/Core/Math/Vector3.hpp>
 
@@ -43,9 +51,12 @@ namespace Sound {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class SOUND_DLL_LINK I_SoundSource
-: public I_Audible
+:   public virtual Zen::Scripting::I_ScriptableType
+,   public Zen::Memory::managed_self_ref<I_SoundSource>
+,   public I_Audible
 {
-
+    /// @name Types
+    /// @{
 public:
     enum PLAYSTATE
     {
@@ -55,13 +66,14 @@ public:
         STOPPED
     };
 
-    /// @name Types
-    /// @{
-public:
-    typedef Memory::managed_ptr<I_SoundSource>         pSoundSource_type;
-    typedef Memory::managed_weak_ptr<I_SoundSource>    wpSoundSource_type;
-    typedef Event::Event<wpSoundSource_type>           soundSourceEvent_type;
-    typedef Memory::managed_ptr<Resource::I_Resource>        pResource_type;
+    typedef Zen::Memory::managed_ptr<I_SoundSource>         pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<I_SoundSource>  ScriptObjectReference_type;
+
+    typedef Memory::managed_ptr<I_SoundSource>              pSoundSource_type;
+    typedef Memory::managed_weak_ptr<I_SoundSource>         wpSoundSource_type;
+    typedef Event::Event<wpSoundSource_type>                SoundSourceEvent_type;
+
+    typedef Memory::managed_ptr<Resource::I_Resource>       pResource_type;
     /// @}
 
     /// @name I_SoundSource interface
@@ -100,6 +112,13 @@ public:
     const std::string& getScriptTypeName();
     /// @}
 
+    /// @name Events
+    /// @{
+public:
+    /// This event is fired immediately before this object is destroyed.
+    SoundSourceEvent_type   onDestroyEvent;
+    /// @}
+
     /// @name 'Structors
     /// @{
              I_SoundSource();
@@ -111,14 +130,13 @@ public:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Resource
 }   // namespace Engine
-/*
 namespace Memory 
 {
     /// I_SoundResource is managed by a factory
     template<>
-    struct is_managed_by_factory<Zen::Engine::Sound::I_SoundSource> : public boost::true_type{};
+    struct is_managed_by_factory<Zen::Engine::Sound::I_SoundSource> 
+    :   public boost::true_type{};
 }   // namespace Memory
-*/
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 

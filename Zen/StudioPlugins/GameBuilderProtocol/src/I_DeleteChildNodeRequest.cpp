@@ -36,12 +36,19 @@ I_DeleteChildNodeRequest::~I_DeleteChildNodeRequest()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_DeleteChildNodeRequest::pRequest_type
 I_DeleteChildNodeRequest::create(pEndpoint_type _pSourceEndpoint,
-					   pEndpoint_type _pDestinationEndpoint)
+					   pEndpoint_type _pDestinationEndpoint)			   
 {
     DeleteChildNodeRequest* pDeleteChildNodeRequest(new DeleteChildNodeRequest(_pSourceEndpoint,
                                           _pDestinationEndpoint));
 
-    return pRequest_type(pDeleteChildNodeRequest, DeleteChildNodeRequest::destroy);
+    return pRequest_type((Request*)pDeleteChildNodeRequest, DeleteChildNodeRequest::destroy);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_DeleteChildNodeRequest::pMessageType_type
+I_DeleteChildNodeRequest::getStaticMessageType()			   
+{
+    return DeleteChildNodeRequest::sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

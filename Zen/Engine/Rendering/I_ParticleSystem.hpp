@@ -39,7 +39,7 @@ namespace Rendering {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class RENDERING_DLL_LINK I_ParticleSystem
-:   public Zen::Engine::Rendering::I_AttachableObject
+:   public virtual Zen::Engine::Rendering::I_AttachableObject
 {
     /// @name Types
     /// @{

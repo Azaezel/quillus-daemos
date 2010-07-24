@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Base Starter Kit
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -26,22 +26,19 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Engine/Client/I_GameClient.hpp>
-
 #include <Zen/Core/Math/Math.hpp>
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
 
+#include <Zen/Core/Scripting.hpp>
+
+#include <Zen/Engine/Client/I_GameClient.hpp>
+
 #include <boost/any.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-    namespace Scripting {
-        class I_ScriptEngine;
-        class I_ScriptModule;
-        class I_ScriptType;
-    }   // namespace Scripting
 namespace Engine {
     namespace Rendering {
         class I_Context;
@@ -56,8 +53,6 @@ namespace Engine {
     }   // namespace Camera
     namespace World {
         class I_WaterService;
-        class I_TerrainService;
-        class I_SkyService;
     }   // namespace World
     namespace Resource {
         class I_ResourceService;
@@ -65,7 +60,7 @@ namespace Engine {
     namespace Input {
         class I_InputService;
         class I_KeyEvent;
-        class I_InputMap;
+        class I_KeyMap;
     }   // namespace Input
     namespace Core {
         class I_Action;
@@ -87,6 +82,7 @@ namespace Base {
 
 /// Base Game Engine Client
 class BASECLIENT_DLL_LINK I_BaseGameClient
+:   public Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
@@ -94,7 +90,7 @@ public:
     typedef double                                              FrameDelta_type;
     typedef Event::Event<FrameDelta_type>                       FrameEvent_type;
 
-    typedef Memory::managed_ptr<Scripting::I_ScriptModule>      pScriptModule_type;
+    typedef Memory::managed_ptr<Scripting::I_ScriptEngine>      pScriptEngine_type;
     typedef Memory::managed_ptr<Scripting::I_ScriptType>        pScriptType_type;
     /// @}
 
@@ -135,12 +131,6 @@ public:
     /// @brief Initialize the water service
     virtual bool initWaterService(const std::string& _type) = 0;
 
-    /// @brief Initialize the terrain service
-    virtual bool initTerrainService(const std::string& _type) = 0;
-
-    /// @brief Initialize the sky service
-    virtual bool initSkyService(const std::string& _type) = 0;
-
     /// @brief Initialize the widgets service
     virtual bool initWidgetService(const std::string& _type) = 0;
 
@@ -152,7 +142,6 @@ public:
     /// Do this after all services have been initialized and your game client has
     /// completed adding new methods to the registered script types.
     virtual void activateScriptModules() = 0;
-
     /// @}
 
     /// @name I_BaseGameClient Getter methods
@@ -173,6 +162,9 @@ public:
     ///         I_BaseGameClient object.
     virtual Scripting::I_ScriptEngine& getScriptEngine() = 0;
 
+    /// Get the script engine by pointer.
+    virtual pScriptEngine_type getScriptEnginePtr() = 0;
+
     /// @brief Get the rendering resource service
     ///
     /// Use this to set additional directories for the rendering resource service.
@@ -182,21 +174,22 @@ public:
     ///         I_BaseGameClient object.
     virtual Resource::I_ResourceService& getRenderingResourceService() = 0;
 
-    virtual Rendering::I_SceneService& getSceneService() = 0;
+    typedef Memory::managed_ptr<Rendering::I_SceneService>      pSceneService_type;
+    virtual pSceneService_type getSceneService() = 0;
 
     virtual Input::I_InputService& getInputService() = 0;
 
     virtual Rendering::I_RenderingService& getRenderingService() = 0;
     virtual Rendering::I_RenderingCanvas& getRenderingCanvas() = 0;
 
-    virtual World::I_WaterService& getWaterService() = 0;
     virtual World::I_TerrainService& getTerrainService() = 0;
     virtual World::I_SkyService& getSkyService() = 0;
+    virtual World::I_WaterService& getWaterService() = 0;
 
     virtual Widgets::I_WidgetService& getWidgetService() = 0;
 
-    /// Get the primary InputMap
-    virtual Input::I_InputMap& getInputMap() = 0;
+    /// Get the primary KeyMap
+    virtual Input::I_KeyMap& getKeyMap() = 0;
 
     /// Get the GameClient script module
     virtual pScriptModule_type getScriptModule() = 0;

@@ -24,7 +24,7 @@ set ( Workbench_SRC
 <%SourceList%>
     )
 
-add_definitions( -DGAMEBUILDERPROTOCOL_EXPORTS )
+add_definitions( -DGAMEBUILDERPROTOCOL_EXPORTS ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 

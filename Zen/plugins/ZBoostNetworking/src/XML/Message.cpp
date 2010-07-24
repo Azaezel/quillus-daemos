@@ -23,6 +23,8 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "Message.hpp"
 
 #include <Zen/Enterprise/Networking/I_Endpoint.hpp>
@@ -77,9 +79,28 @@ Message::getDestinationEndpoint()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Message::pResourceLocation_type
+Message::getSourceLocation()
+{
+    // TODO Implement?
+    return pResourceLocation_type();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Message::pResourceLocation_type
 Message::getDestinationLocation()
 {
     return m_pDestinationLocation;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+boost::uint64_t
+Message::getMessageId() const
+{
+    static Zen::Threading::SpinLock sm_spinLock;
+    static boost::uint64_t sm_lastId = 0;
+
+    Zen::Threading::xCriticalSection lock(sm_spinLock);
+    return ++sm_lastId;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

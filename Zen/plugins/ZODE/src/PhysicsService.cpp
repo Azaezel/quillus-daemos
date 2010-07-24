@@ -1,8 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// IndieZen Game Engine Framework
+// Zen Engine Framework
 //
-// Copyright (C) 2001 - 2007 Tony Richards
-// Copyright (C)        2008 Walt Collins
+// Copyright (C) 2001 - 2009 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,10 +20,13 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "PhysicsService.hpp"
-#include "PhysicsWorld.hpp"
+#include "PhysicsZone.hpp"
+
+#include <Zen/Core/Scripting.hpp>
+
+#include <Zen/Engine/Physics/I_PhysicsManager.hpp>
 
 #include <boost/bind.hpp>
 #include <exception>
@@ -35,27 +37,57 @@ namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsService::PhysicsService()
+:   m_pScriptModule(NULL)
+,   m_pScriptObject(NULL)
 {
+    std::cout << "PhysicsService::PhysicsService()" << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsService::~PhysicsService()
 {
-    m_zoneSet.clear();
+    std::cout << "PhysicsService::~PhysicsService()" << std::endl;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+PhysicsService::getScriptObject()
+{
+    // TODO Make thread safe?
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptObjectReference_type(
+            m_pScriptModule->getScriptModule(), 
+            m_pScriptModule->getScriptModule()->getScriptType(getScriptTypeName()), 
+            getSelfReference().lock()
+        );
+    }
+
+    return m_pScriptObject;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 PhysicsService::pPhysicsZone_type
-PhysicsService::createZone(void)
+PhysicsService::createZone()
 {
-    // TODO evaluate whether or not we should have an unregister function for removing worlds from the list.
+    // TODO What to do with _min and _max?  Does ODE use these?
 
-    PhysicsZone* pRawZone = new PhysicsZone();
-    pPhysicsZone_type pZone = pPhysicsZone_type(pRawZone, boost::bind(&PhysicsService::onDestroyPhysicsWorld, this, _1));
-    m_zoneSet.insert(pZone);
+    std::cout << "PhysicsService::createZone()" << std::endl;
+    PhysicsZone* pRaw = new PhysicsZone();
+    pPhysicsZone_type pZone = pPhysicsZone_type(
+        pRaw, 
+        boost::bind(&PhysicsService::onDestroyPhysicsZone, this, _1)
+    );
 
-    wpPhysicsZone_type wpZone(pZone);
-    pRawZone->setSelfReference(wpZone);
+    // Make sure getWeak() works correctly.  I've had problems with it in the past.
+    std::cout << "PhysicsService::createZone(): Checking weak pointer" << std::endl;
+    assert(pZone.getWeak().get());
+    std::cout << "PhysicsService::createZone(): Weak pointer is good" << std::endl;
+
+    m_zones.insert(pZone.getWeak());
+    pRaw->setSelfReference(pZone.getWeak());
+
+    std::cout << "PhysicsService::createZone(): Done" << std::endl;
 
     return pZone;
 }
@@ -64,26 +96,23 @@ PhysicsService::createZone(void)
 void
 PhysicsService::stepSimulation(double _elapsedTime)
 {
-    // TODO - iterate across the world list and allow them to update themselves.
-    for (std::set<pPhysicsZone_type>::iterator iter = m_zoneSet.begin(); iter != m_zoneSet.end(); iter++)
+    // TODO Guard
+    for(ZoneCollection_type::iterator iter = m_zones.begin(); iter != m_zones.end(); iter++)
     {
-        //PAL utilizes a g_contacts.clear() before, and a dJointGroupEmpty (g_contactgroup); after the next two lines
-        //in other words, we'll need to do some explicit instructions here
-        dWorldStep ((dWorldID)iter->get()->getZonePtr(), _elapsedTime);
-        dSpaceCollide((dSpaceID)iter->get()->getSpacePtr(),0,&GenericContactProcess);
+        iter->lock()->stepSimulation(_elapsedTime);
     }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-PhysicsService::onDestroyPhysicsWorld(wpPhysicsZone_type _wpPhysicsZone)
+PhysicsService::onDestroyPhysicsZone(wpPhysicsZone_type _wpPhysicsZone)
 {
-    // TODO - remove appropriate entry from m_zoneSet
-    //m_zoneSet.erase(iter);
+    // TODO Guard
+    m_zones.erase(_wpPhysicsZone);
 
     /// Fire the PhysicsZone's onDestroyEvent
     _wpPhysicsZone->onDestroyEvent(_wpPhysicsZone);
-    
+
     /// delete the PhysicsZone pointer
     PhysicsZone* pPhysicsZone = dynamic_cast<PhysicsZone*>(_wpPhysicsZone.get());
 
@@ -93,28 +122,18 @@ PhysicsService::onDestroyPhysicsWorld(wpPhysicsZone_type _wpPhysicsZone)
     }
     else
     {
-        throw Zen::Utility::runtime_exception("Zen::ZODE::PhysicsService::onDestroyPhysicsWorld() : _wpPhysicsZone is an invalid PhysicsZone.");
+        throw Zen::Utility::runtime_exception("Zen::ZODE::PhysicsService::onDestroyPhysicsZone() : _wpPhysicsZone is an invalid PhysicsZone.");
     }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-PhysicsService::onFrame()
+PhysicsService::registerScriptModule(Zen::Scripting::script_module& _module)
 {
-    // TODO - do we need this function?
+    m_pScriptModule = &_module;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZODE
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-// this callback is called when processing the object list to see if bjects are colliding
-static void
-GenericContactProcess(void *data, dGeomID o1, dGeomID o2)
-{
-//insert variant of fairly long PAL implementation chain here
-//see static void nearCallback (void *data, dGeomID o1, dGeomID o2) for sorting, using spaces,
-//and creating contact joints
-}

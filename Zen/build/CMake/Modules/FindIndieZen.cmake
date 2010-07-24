@@ -30,8 +30,16 @@ if (NOT DEV_LIB)
 endif (NOT DEV_LIB)
 
 if (NOT DEPENDENCIES_HOME)
-	set ( DEPENDENCIES_HOME "${INDIEZEN_PARENT}/dependencies/" )
-	message ( "-- Dependencies Home: ${DEPENDENCIES_HOME}" )
+    # If DEPENDENCIES_HOME environment is set, use it, otherwise default to 
+	# "${INDIEZEN_PARENT}/dependencies/"
+	set (DEPENDENCIES_HOME "$ENV{DEPENDENCIES_HOME}")
+	if(NOT DEPENDENCIES_HOME)
+		set ( DEPENDENCIES_HOME "${INDIEZEN_PARENT}/dependencies/" )
+		set (DEPENDENCIES_HOW "Using Zen/..")
+	else()
+		set (DEPENDENCIES_HOW "Using environment DEPENDENCIES_HOME")
+	endif()
+	message ( "-- Dependencies Home: ${DEPENDENCIES_HOME} ${DEPENDENCIES_HOW}" )		
 endif (NOT DEPENDENCIES_HOME)
 
 # Boost overrides
@@ -39,18 +47,25 @@ SET( Boost_USE_MULTITHREAD On )
 SET( Boost_USE_STATIC_LIBS Off )
 #SET( Boost_DEBUG On)
 
+SET( Boost_ADDITIONAL_VERSIONS "1.42" )
+
 IF (WIN32)
 	IF (NOT BOOST_ROOT)
-		# Hack for BOOST_ROOT
-		FIND_PATH(BOOST_ROOT 
-			NAMES include/boost-1_35 include/boost-1_39
-			HINTS "${INDIEZEN_PARENT}Boost" "${DEPENDENCIES_HOME}Boost"
-		)
+        # Try to use the BOOST_ROOT environment variable.
+        set (BOOST_ROOT "$ENV{BOOST_ROOT}")
+        if (NOT BOOST_ROOT)
+            # Hack for BOOST_ROOT
+            FIND_PATH(BOOST_ROOT 
+                NAMES include/boost-1_35 include/boost-1_39 include/boost-1_42
+                HINTS "${INDIEZEN_PARENT}/Boost" "${DEPENDENCIES_HOME}/Boost"
+            )
 
-		FIND_PATH(BOOST_LIBRARYDIR
-			NAMES libboost_date_time-vc80-mt-1_35.lib
-			HINTS "${DEV_LIB}"
-		)
+            FIND_PATH(BOOST_LIBRARYDIR
+                NAMES boost_system-vc80-mt-1_42.lib boost_system-vc90-mt-1_42.lib
+                        boost_system-vc80-mt-1_39.lib boost_system-vc90-mt-1_39.lib
+                HINTS "${DEV_LIB}" "${DEPENDENCIES_HOME}/Boost/lib"
+            )
+        endif()
 
 		#message ("-- Boost Root: ${BOOST_ROOT}")
 		#message ("-- Boost Lib: ${BOOST_LIBRARYDIR}")
@@ -61,24 +76,24 @@ IF (WIN32)
 	set (PC_LIBXML_INCLUDE_DIRS 
         "${INDIEZEN_PARENT}/libxml2-2.6.30+.win32/include" 
         "${INDIEZEN_PARENT}/libxml2/include" 
-        "${DEPENDENCIES_HOME}libxml2/include"
+        "${DEPENDENCIES_HOME}/libxml2/include"
         )
 	set (PC_LIBXML_LIBDIR 
         "${INDIEZEN_PARENT}/libxml2-2.6.30+.win32/lib"
         "${INDIEZEN_PARENT}/libxml2/lib"
-        "${DEPENDENCIES_HOME}libxml2/lib"
+        "${DEPENDENCIES_HOME}/libxml2/lib"
         "${INDIEZEN_PARENT}/lib"
         )
         
     set (PC_LIBXML_BINDIR
         "${INDIEZEN_PARENT}/libxml2-2.6.30+.win32/bin"
         "${INDIEZEN_PARENT}/libxml2/bin"
-        "${DEPENDENCIES_HOME}libxml2/bin"
+        "${DEPENDENCIES_HOME}/libxml2/bin"
         "${INDIEZEN_PARENT}/bin"
         )
 
 	set(BUILD_EXE_TYPE "WIN32")
-	set(Zen_DEFINITIONS "-D_CRT_SECURE_NO_WARNINGS -DUNICODE -D_UNICODE")
+	set(Zen_DEFINITIONS "-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DUNICODE -D_UNICODE -DBOOST_ALL_NO_LIB=1 -DBOOST_ALL_DYN_LINK")
 
 ENDIF (WIN32)
 	

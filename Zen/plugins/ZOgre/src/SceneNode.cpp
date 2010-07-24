@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -25,8 +25,10 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "SceneNode.hpp"
+#include "SceneService.hpp"
 #include "Camera.hpp"
 #include "ParticleSystem.hpp"
+#include "AttachableObject.hpp"
 
 #include <Zen/Core/Math/Matrix4.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
@@ -51,6 +53,7 @@ namespace ZOgre {
 SceneNode::SceneNode(Ogre::SceneNode* _pNode)
 :   m_pNode(_pNode)
 ,   m_pResource(NULL)
+,   m_pScriptObject(NULL)
 {
 }
 
@@ -77,7 +80,7 @@ SceneNode::attachResource(Engine::Rendering::I_RenderableResource& _resource)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void 
-SceneNode::attachCollisionShape(Engine::Physics::I_CollisionShape& _CollisionShape)
+SceneNode::attachPhysicsActor(Engine::Physics::I_CollisionShape& _CollisionShape)
 {
     m_pCollisionShape = &_CollisionShape;
 }
@@ -115,6 +118,13 @@ SceneNode::setRotation(Math::Quaternion4 _quaternion)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneNode::setOrientation(Math::Quaternion4& _quaternion)
+{
+    m_pNode->setOrientation(_quaternion.m_w, _quaternion.m_x, _quaternion.m_y, _quaternion.m_z);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void 
 SceneNode::applyTransformation(Math::Matrix4 _transformationMatrix)
 {
@@ -129,6 +139,16 @@ SceneNode::setScale(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+SceneNode::pSceneNode_type
+SceneNode::createChildSceneNode(const std::string& _nodeName)
+{
+    Ogre::SceneNode* pRawNode = m_pNode->createChildSceneNode(_nodeName);
+    pSceneNode_type pSceneNode(new SceneNode(pRawNode), &SceneService::destroySceneNode);
+
+    return pSceneNode;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Scripting::I_ObjectReference*
 SceneNode::getScriptObject()
 {
@@ -136,8 +156,10 @@ SceneNode::getScriptObject()
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule(), 
-            Engine::Rendering::I_RenderingManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+            sm_pModule->getScriptModule(), 
+            sm_pModule->getScriptModule()->getScriptType(getScriptTypeName()), 
+            getSelfReference().lock()
+        );
     }
 
     return m_pScriptObject;
@@ -246,6 +268,21 @@ const boost::any&
 SceneNode::getUserData() const
 {
     return m_userData;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Scripting::script_module* SceneNode::sm_pModule = NULL;
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneNode::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    sm_pModule = &_module;
+
+    Zen::Scripting::script_type<SceneNode>(_module.getScriptModule()->getScriptType("SceneNode"))
+        .addMethod("attachObject", &SceneNode::scriptAttachObject1)
+        .addMethod("createChildSceneNode", &SceneNode::createChildSceneNode)
+        .activate()
+    ;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -39,7 +39,7 @@ namespace Rendering {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class RENDERING_DLL_LINK I_Renderable
-: public    I_AttachableObject
+:   public I_AttachableObject
 {
     /// @name I_Renderable interface
     /// @{

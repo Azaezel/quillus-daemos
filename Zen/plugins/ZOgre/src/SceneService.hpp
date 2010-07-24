@@ -26,11 +26,11 @@
 
 #include "NullCamera.hpp"
 
-#include <Zen/Engine/Rendering/I_SceneService.hpp>
-
-#include <Zen/Core/Memory/managed_self_ref.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
+
+#include <Zen/Engine/Rendering/I_SceneService.hpp>
 
 #include "Ogre.hpp"
 
@@ -41,14 +41,18 @@
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+;
 
+/// Wrapper for Ogre::SceneManager.
 class SceneService
 :   public Zen::Engine::Rendering::I_SceneService
-,   public Memory::managed_self_ref<Zen::Engine::Rendering::I_SceneService>
 {
     /// @name Types
     /// @{
 public:
+    typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptModule>    pScriptModule_type;
+    typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptEngine>    pScriptEngine_type;
+
     typedef Zen::Memory::managed_weak_ptr<Zen::Engine::Rendering::I_Light>  wpLight_type;
     /// @}
 
@@ -59,6 +63,7 @@ public:
     virtual pSceneNode_type createChildNode(const std::string& _name);
     virtual pParticleSystem_type createParticleSystem(const std::string& _name, const std::string& _resource);
     virtual void setAmbientLight(Math::Real _red, Math::Real _green, Math::Real _blue, Math::Real _alpha);
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -69,16 +74,28 @@ public:
 
     /// @name SceneService implementation
     /// @{
+public:
+    pSceneNode_type createSceneNode(const std::string& _name);
+
+    void setSkyBox(bool _enable, const std::string& _materialName);
+    /// @}
+
+    /// @name Static methods
+    /// @{
 private:
+    friend class SceneNode;
     static void destroySceneNode(wpSceneNode_type _pNode);
     static void destroyParticleSystem(wpParticleSystem_type _pParticleSystem);
     static void onDestroyLight(wpLight_type& _wpLight);
+
+protected:
+    friend class RenderingService;
     /// @}
 
     /// @name 'Structors
     /// @{
 public:
-             SceneService();
+             SceneService(const std::string& _name, int _sceneType);
     virtual ~SceneService();
     /// @}
 
@@ -90,6 +107,8 @@ private:
 
     typedef std::map<std::string, Engine::Camera::I_Camera*>    cameras_type;
     cameras_type        m_cameras;
+
+    Zen::Scripting::script_module*  m_pModule;
 
     /// @}
 

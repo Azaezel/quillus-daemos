@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Worlds Game Client
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -23,45 +23,57 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "GameClient.hpp"
 #include "GUIManager.hpp"
-#include "GameObject.hpp"
-#include "GameGrid.hpp"
-#include "GridObject.hpp"
-#include "SimpleBrain.hpp"
-#include "CreepManager.hpp"
 
 #include <Zen/Core/Math/Vector3.hpp>
 #include <Zen/Core/Math/Quaternion4.hpp>
 #include <Zen/Core/Math/Ray.hpp>
 
+#include <Zen/Core/Plugins/I_Application.hpp>
+#include <Zen/Core/Plugins/I_PluginManager.hpp>
+#include <Zen/Core/Plugins/I_Configuration.hpp>
+#include <Zen/Core/Plugins/I_ConfigurationElement.hpp>
+
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
 #include <Zen/Core/Scripting/ObjectReference.hpp>
 
 #include <Zen/Engine/Core/I_GameGroup.hpp>
 #include <Zen/Engine/Core/I_ActionMap.hpp>
 #include <Zen/Engine/Core/I_GameObjectBehaviors.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
 
-#include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>
 #include <Zen/Engine/Rendering/I_SceneService.hpp>
 #include <Zen/Engine/Rendering/I_SceneNode.hpp>
 #include <Zen/Engine/Rendering/I_Light.hpp>
 #include <Zen/Engine/Rendering/I_RenderableResource.hpp>
 #include <Zen/Engine/Rendering/I_Camera.hpp>
 
+#include <Zen/Engine/Widgets/I_WidgetService.hpp>
+
+#include <Zen/Engine/World/I_Sky.hpp>
+#include <Zen/Engine/World/I_Terrain.hpp>
+
 #include <Zen/plugins/ZOgre/I_OgreRenderingCanvas.hpp>
 
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 
-#include <Zen/Engine/Input/I_InputService.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
+#include <Zen/Engine/Input/I_KeyMap.hpp>
 
 #include <Zen/Engine/Camera/I_CameraManager.hpp>
 
+#include <Zen/Enterprise/AppServer/I_ApplicationServer.hpp>
+#include <Zen/Enterprise/AppServer/I_ApplicationService.hpp>
+#include <Zen/Enterprise/AppServer/I_ApplicationServerManager.hpp>
+#include <Zen/Enterprise/AppServer/I_ProtocolService.hpp>
+#include <Zen/Enterprise/AppServer/I_ResourceLocation.hpp>
+
+
 #include <Zen/Starter/Base/BaseCommon/I_BaseGameObject.hpp>
+
+#include <Zen/plugins/ZOgre/I_OgreRenderingCanvas.hpp>
+
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -76,17 +88,14 @@ namespace Zen {
 namespace Worlds {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 GameClient::GameClient(WindowHandle_type _pParent)
-:   m_base(Engine::Base::I_BaseGameClient::getSingleton())
+:   m_initialized(false)
+,   m_base(Engine::Base::I_BaseGameClient::getSingleton())
 ,   m_game(Engine::Base::I_BaseGame::getSingleton())
 ,   m_pScriptObject(NULL)
-,   m_pRoot(NULL)
-,   m_pRenderWindow(NULL)
 ,   m_pGUIManager(NULL)
 ,   m_moveDirection(0.0f, 0.0f, 0.0f)
 ,   m_zoomAmount(0.0f)
-,   m_pGameGrid(NULL)
-,   m_pCreepManager(NULL)
-,   m_pBrain(NULL)
+,   m_pSky()
 {
     m_base.setWindowHandle(_pParent);
 }
@@ -104,75 +113,39 @@ GameClient::getHandle() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Scripting::I_ObjectReference*
-GameClient::getScriptObject()
-{
-    return m_pScriptObject;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 GameClient::init()
 {
-#ifdef _DEBUG
-    std::string appWindowTitle("Zen Cyber Tower Defense - DEBUG");
-#else
-    std::string appWindowTitle("Zen Cyber Tower Defense");
-#endif
-    unsigned windowWidth = 1024;
-    unsigned windowHeight = 768;
-
-    m_base.initRenderingService("ogre", appWindowTitle.c_str(), windowWidth, windowHeight);
-
-    // Initialize the ZOgre rendering, scene,  and resource services
-    // TODO Remove m_pRenderWindow.  We need it for now since the ZCrazyEddie plugin is
-    //      incomplete.
-    m_pRoot = Ogre::Root::getSingletonPtr();
-    m_pRenderWindow = dynamic_cast<Ogre::RenderWindow*>(m_pRoot->getRenderTarget(appWindowTitle.c_str()));
-    m_base.initSceneService("ogre");
-    m_base.initRenderingResourceService("ogre");
-
-    // Initialize teh ZNewton physics and resource services
-    game().initPhysicsService("ZNewton");
-    setupPhysicsMaterials();
-    game().initPhysicsResourceService("ZNewton");
-
-    // Initialize the keyboard (and mouse in this case since the ZInput plugin handles both)
-    base().initInputService("keyboard");
-
-    // Initialize the widget service
-    base().initWidgetService("cegui");
-
-    // Initialize the ZMicroPather A* navigation service.
-    game().initNavigationService("upather");
-
-    // Set the window size of the input service so that mouse events are scaled properly.
-    base().getInputService().setWindowSize(m_base.getRenderingCanvas().getWidth(), m_base.getRenderingCanvas().getHeight());
+    std::cout << "GameClient::init()" << std::endl;
 
     base().onBeforeFrameRenderedEvent.connect(boost::bind(&GameClient::beforeRender, this, _1));
 
     setupResourcePaths();
 
-    // Initialize the widget service
-    m_pGUIManager.reset(new GUIManager(*this));
-
-    // Create the Game Grid
-    m_pGameGrid = new GameGrid(*this, 26, 26);
-
-    // Create the Creep Manager
-    m_pCreepManager = new CreepManager(*m_pGameGrid);
-
-    createScriptTypes();
-
     // Possibly the rest of this should be done later and we should show
     // an initial game screen or splash screens here.
+
+    std::cout << "GUI Manager init" << std::endl;
+    m_pGUIManager->init();
 
     createActions();
     createDefaultMapping();
     createBehaviors();
     createScene();
 
+    initServices();
 
+    Zen::Engine::Core::I_ActionMap& actionMap = game().getActionMap();
+    if (actionMap["onInitDone"].isValid())
+    {
+        std::cout << "hooking up onInitDone" << std::endl;
+        boost::any scriptObject(getScriptObject());
+        actionMap["onInitDone"]->dispatch(scriptObject);
+    }
+    else
+    {
+        std::cout << "Script didn't register handler for onInitDone" << std::endl;
+    }
     return true;
 }
 
@@ -182,22 +155,22 @@ GameClient::setupResourcePaths()
 {
     boost::filesystem::path rootPath;
 
-    // Mesh resources and standins
-    rootPath = boost::filesystem::system_complete(boost::filesystem::path("resources/Meshes/towers", boost::filesystem::native)).normalize();
-    m_base.getRenderingResourceService().addResourceLocation(rootPath.string(), "FileSystem", "General", false);
-
-    rootPath = boost::filesystem::system_complete(boost::filesystem::path("resources/Meshes/misc", boost::filesystem::native)).normalize();
-    m_base.getRenderingResourceService().addResourceLocation(rootPath.string(), "FileSystem", "General", false);
-
-    rootPath = boost::filesystem::system_complete(boost::filesystem::path("standins/Meshes", boost::filesystem::native)).normalize();
-    m_base.getRenderingResourceService().addResourceLocation(rootPath.string(), "FileSystem", "General", false);
-
+#if 0 // Moved to script
     // GUI resources and standins
-    rootPath = boost::filesystem::system_complete(boost::filesystem::path("resources/GUI", boost::filesystem::native)).normalize();
-    m_base.getRenderingResourceService().addResourceLocation(rootPath.string(), "FileSystem", "General", false);
+    rootPath = boost::filesystem::system_complete(boost::filesystem::path("resources/gui/imagesets", boost::filesystem::native)).normalize();
+    base().getRenderingResourceService().addResourceLocation(rootPath.string(), "FileSystem", "General", false);
 
-    rootPath = boost::filesystem::system_complete(boost::filesystem::path("standins/GUI", boost::filesystem::native)).normalize();
-    m_base.getRenderingResourceService().addResourceLocation(rootPath.string(), "FileSystem", "General", false);
+    rootPath = boost::filesystem::system_complete(boost::filesystem::path("resources/gui/looknfeel", boost::filesystem::native)).normalize();
+    base().getRenderingResourceService().addResourceLocation(rootPath.string(), "FileSystem", "General", false);
+
+    rootPath = boost::filesystem::system_complete(boost::filesystem::path("resources/gui/schemes", boost::filesystem::native)).normalize();
+    base().getRenderingResourceService().addResourceLocation(rootPath.string(), "FileSystem", "General", false);
+
+    rootPath = boost::filesystem::system_complete(boost::filesystem::path("resources/gui/fonts", boost::filesystem::native)).normalize();
+    base().getRenderingResourceService().addResourceLocation(rootPath.string(), "FileSystem", "General", false);
+#endif // deprecated
+
+    base().getRenderingResourceService().initialiseAllResourceGroups();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -208,47 +181,59 @@ GameClient::run()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-/// HACK This is because I_BaseGameClient has no way to get us to GameClient*
-static GameClient* sm_pTheOnlyGameClient;
-void
-script_setDifficultyLevel(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
+Engine::Widgets::I_WidgetService&
+GameClient::getWidgetService()
 {
-    int difficultyLevel = (int)boost::any_cast<float>(_parms[0]);
-
-    sm_pTheOnlyGameClient->setDifficultyLevel(difficultyLevel);
+    return m_base.getWidgetService();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-GameClient::createScriptTypes()
+Engine::Rendering::I_RenderingCanvas&
+GameClient::getRenderingCanvas()
 {
-    sm_pTheOnlyGameClient = this;
+    return m_base.getRenderingCanvas();
+}
 
-    // Register more methods to the gameClient script type
-    pScriptType_type pGameClientScriptType = m_base.getGameClientScriptType();
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initRenderingService(const std::string& _type, const std::string& _title, int _xRes, int _yRes)
+{
+    return m_base.initRenderingService(_type, _title, _xRes, _yRes);
+}
 
-    pGameClientScriptType->addMethod("setDifficultyLevel", "Set the difficulty level of this game.", script_setDifficultyLevel);
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initRenderingResourceService(const std::string& _type)
+{
+    return m_base.initRenderingResourceService(_type);
+}
 
-    // Register additional script types
-    // TODO These should be static
-    m_pGUIManager->initScriptType();
-    m_pGameGrid->initScriptType();
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initTerrainService(const std::string& _type)
+{
+    return game().initTerrainService(_type);
+}
 
-    CreepManager::initScriptType(*this);
-    GameObject::initScriptType(*this);
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initSkyService(const std::string& _type)
+{
+    return game().initSkyService(_type);
+}
 
-    // Tell m_base we're done.  After the modules are activated then you cannot
-    // modify any script types.
-    m_base.activateScriptModules();
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initInputService(const std::string& _type)
+{
+    return m_base.initInputService(_type);
+}
 
-    // Create the script object for this game client
-    m_pScriptObject = new ScriptObjectReference_type
-        (base().getScriptModule(), base().getScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
-
-    // Create the other script objects
-    m_pGUIManager->createScriptObject();
-    m_pGameGrid->createScriptObject();
-    m_pCreepManager->createScriptObject();
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+GameClient::initWidgetService(const std::string& _type)
+{
+    return m_base.initWidgetService(_type);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -259,93 +244,59 @@ GameClient::createScene()
     Zen::Engine::Rendering::I_SceneService::pLight_type pLight = m_base.getSceneService().createLight("default", "Light");
     pLight->setPosition(0.0f, 0.0f, 50.0f);
 
-    // Load the background scene
-    GameObject* pGameObject = new GameObject(game().getRootGroup(), "walls");
-    pGameObject->loadRenderable("Walls.mesh");
-    pGameObject->base().setPosition(0, 0, 0, false);
-    m_gameObjects.push_back(pGameObject);
-
-    pGameObject = new GameObject(game().getRootGroup(), "walltops");
-    pGameObject->loadRenderable("WallTops.mesh");
-    pGameObject->base().setPosition(0, 0, 0, false);
-    m_gameObjects.push_back(pGameObject);
-
-    pGameObject = new GameObject(game().getRootGroup(), "plane");
-    pGameObject->loadRenderable("Plane.mesh");
-    pGameObject->base().setPosition(0, 0, 0, false);
-    m_gameObjects.push_back(pGameObject);
-
     // Set the camera in the correct location
     Zen::Engine::Rendering::I_RenderingCanvas& canvas = base().getRenderingCanvas();
     Zen::Engine::Rendering::I_Camera& camera = canvas.selectCamera("default");
-    camera.setPosition(7.296, 0.0262, 30.0);
+    //camera.setPosition(7.296f, 0.0262f, 30.0f);
+    camera.setPosition(146.0f, 101.0f, 221.0f);
     camera.setNearClipDistance(0.1f);
-    camera.setFarClipDistance(150.0f);
+    camera.setFarClipDistance(99999.0f*6.0f);
     camera.setAspectRatio((Zen::Math::Real)canvas.getWidth() / (Zen::Math::Real)canvas.getHeight());
     camera.setHorizontalFOV(Zen::Math::Degree(60));
 
-    // Probably this is not the best place to put this.
-    m_pClickWorld = game().getPhysicsService()->createWorld();
-
-    // Create a physics shape for the click plane.
-    m_pClickPlane = m_pClickWorld->createShape();
-
-    // Get the game grid extents
-    Math::Point3 minPt, maxPt;
-    assert(m_pGameGrid != NULL);
-    m_pGameGrid->getLocalExtents(minPt, maxPt);
-
-    // Initialize the click plane physics shape
-    m_pClickPlane->initBoxShape(
-        maxPt.m_x - minPt.m_x,
-        maxPt.m_y - minPt.m_y,
-        1.0f
-    );
-
-    // Set the click plane shape such that it's 
-    // facing surface aligns with the game grid.
-    m_pClickPlane->setPosition(
-        Math::Point3(
-            0.0f,
-            0.0f,
-            0.5f
-        )
-    );
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 GameClient::createActions()
 {
-    // Create some actions
-    game().getActionMap().createAction("Quit", boost::bind(&Engine::Base::I_BaseGameClient::quit, &m_base, _1));
+    // Connect the main keymap to the widget service.
+    // This will make it so the key map responds to keys that the
+    // GUI doesn't handle.
+    base().getKeyMap().connect(base().getWidgetService());
+    base().getKeyMap().enable(true);
 
-    game().getActionMap().createAction("Left", boost::bind(&GameClient::moveLeft, this, _1));
-    game().getActionMap().createAction("Right", boost::bind(&GameClient::moveRight, this, _1));
-    game().getActionMap().createAction("Up", boost::bind(&GameClient::moveUp, this, _1));
-    game().getActionMap().createAction("Down", boost::bind(&GameClient::moveDown, this, _1));
+    Zen::Engine::Core::I_ActionMap& actionMap = game().getActionMap();
 
-    game().getActionMap().createAction("Zoom", boost::bind(&GameClient::zoom, this, _1));
-    game().getActionMap().createAction("Print", boost::bind(&GameClient::print, this, _1));
+    // Create some actions (this should really be done in script)
+    actionMap.createAction("Quit", boost::bind(&GameClient::quit, this, _1));
+
+    actionMap.createAction("Left", boost::bind(&GameClient::moveLeft, this, _1));
+    actionMap.createAction("Right", boost::bind(&GameClient::moveRight, this, _1));
+    actionMap.createAction("Up", boost::bind(&GameClient::moveUp, this, _1));
+    actionMap.createAction("Down", boost::bind(&GameClient::moveDown, this, _1));
+
+    actionMap.createAction("Zoom", boost::bind(&GameClient::zoom, this, _1));
+    actionMap.createAction("Print", boost::bind(&GameClient::print, this, _1));
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 GameClient::createDefaultMapping()
 {
-    // Map some keys to actions
-    base().getInputMap().mapKeyInput("q", game().getActionMap()["Quit"]);
-
-    Zen::Engine::Input::I_InputMap& inputMap = base().getInputMap();
+    Zen::Engine::Input::I_KeyMap& keyMap = base().getKeyMap();
     Zen::Engine::Core::I_ActionMap& actionMap = game().getActionMap();
 
-    inputMap.mapKeyInput("a", actionMap["Left"]);
-    inputMap.mapKeyInput("d", actionMap["Right"]);
-    inputMap.mapKeyInput("w", actionMap["Up"]);
-    inputMap.mapKeyInput("s", actionMap["Down"]);
+    // Map some keys to actions
+    keyMap.mapKeyInput("q", actionMap["Quit"]);
 
-    inputMap.mapKeyInput("x", actionMap["Zoom"]);
-    inputMap.mapKeyInput("p", actionMap["Print"]);
+    keyMap.mapKeyInput("a", actionMap["Left"]);
+    keyMap.mapKeyInput("d", actionMap["Right"]);
+    keyMap.mapKeyInput("w", actionMap["Up"]);
+    keyMap.mapKeyInput("s", actionMap["Down"]);
+
+    keyMap.mapKeyInput("x", actionMap["Zoom"]);
+    keyMap.mapKeyInput("p", actionMap["Print"]);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -362,6 +313,51 @@ GameClient::setupPhysicsMaterials()
     // TODO - only the default material works, since the objects are made in script
     //   this code needs to be transferred to script and then applied to the
     //   physics shapes after they're created.
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::initServices()
+{
+    // Get a reference to the app server manager
+    Zen::Enterprise::AppServer::I_ApplicationServerManager& manager =
+        Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton();
+
+    // Initialize the main application server
+    m_pAppServer = &Enterprise::AppServer::I_ApplicationServer::getInstance("main");
+
+    m_pAppServer->registerDefaultScriptEngine(base().getScriptEnginePtr());
+
+    // Load the TCP/IP protocol adapter and install it as the "services" protocol adapter.
+    m_pProtocolService = manager.createProtocolService(*m_pAppServer, "tcp-binary");
+    m_pAppServer->installProtocol(m_pProtocolService, "services");
+
+    Zen::Plugins::I_PluginManager& pluginManager = Zen::Plugins::I_PluginManager::getSingleton();
+    Zen::Plugins::I_PluginManager::app_ptr_type pApp = pluginManager.getApplication();
+
+    // Get the application configuration
+    typedef Plugins::I_ConfigurationElement::const_ptr_type pConfig_type;
+    pConfig_type pAppConfig = pApp->getConfiguration().getConfigurationElement("application");
+
+    // Use the application configuration to load application services and protocol adapters.
+    pConfig_type pApplications = pAppConfig->getChild("applications");
+    if (pApplications)
+    {
+        m_pAppServer->installApplications(pApplications);
+    }
+
+    // Install the protocols
+    pConfig_type pProtocols = pAppConfig->getChild("protocols");
+
+    if (pProtocols)
+    {
+        m_pAppServer->installProtocols(pProtocols);
+    }
+
+    // The application server must be started before any applications are actually installed.
+    // The require() makes it so that this call will block until the application server
+    // is fully operational.
+    m_pAppServer->start()->requireCondition();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -385,24 +381,10 @@ GameClient::beforeRender(double _elapsedTime)
     // Do everything else that needs to be done before the screen is rendered
 
     // Update the physics world
-    game().getPhysicsService()->stepSimulation(_elapsedTime);
-
-    // Only do this once every 30 frames.
-    static int frameCount = 0;
-
-    // Only do this if the GameGrid cursor is enabled
-    if (m_pGameGrid->getCursorEnabled())
+    if (_elapsedTime > 0.0f)
     {
-        queryCursor();
+        game().getPhysicsService()->stepSimulation(_elapsedTime);
     }
-
-    // Update the creep manager
-    m_pCreepManager->tick(_elapsedTime);
-
-    //static long cash = 12345678;
-    //m_pGUIManager->setCash(cash++);
-    // This updates all physics worlds we've created:
-    game().getPhysicsService()->stepSimulation(_elapsedTime);
 
     // Change the camera position
     Zen::Engine::Rendering::I_RenderingCanvas& canvas = base().getRenderingCanvas();
@@ -415,8 +397,26 @@ GameClient::beforeRender(double _elapsedTime)
 
     camera.setPosition(position.m_x, position.m_y, position.m_z);
 
-    boost::any elapsedTime((Math::Real)_elapsedTime);
-    game().getActionMap()["onTick"]->dispatch(elapsedTime);
+    if (_elapsedTime > 0.0f)
+    {
+        boost::any elapsedTime((Math::Real)_elapsedTime);
+        game().getActionMap()["onTick"]->dispatch(elapsedTime);
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::quit(boost::any& _parameter)
+{
+    Zen::Engine::Input::I_InputService::pKeyEventPayload_type pEvent = boost::any_cast<Zen::Engine::Input::I_InputService::pKeyEventPayload_type>(_parameter);
+
+    if (pEvent->getPressedState())
+    {
+        base().quit(_parameter);
+    }
+    else
+    {
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -524,8 +524,6 @@ GameClient::handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _event)
     if (_event.wasClicked())
     {
         queryCursor();
-
-        m_pGameGrid->handleClickEvent();
     }
 }
 
@@ -533,91 +531,41 @@ GameClient::handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _event)
 void
 GameClient::queryCursor()
 {
-    struct ClickCollisionVisitor
-    :	public Zen::Engine::Physics::I_PhysicsWorld::I_CollisionVisitor
-    {
-        virtual bool visit(pPhysicsShape_type _Shape, Math::Vector3 _normal, Math::Real _distance)
-        {
-            // TODO Compute the position of the intersection by
-            // using m_ray and _distance, and then pass the results
-            // to updateGridCursor()
-            Math::Point3 intersection = m_ray.getOrigin() + m_ray.getDirection() * _distance;
-
-            m_gameClient.getGameGrid().updateGridCursor(
-                intersection
-            );
-
-            // Only check one collision.
-            return false;
-        }
-
-        virtual bool filter(pPhysicsShape_type _filterType)
-        {
-            // Check everything
-            return true;
-        }
-
-        ClickCollisionVisitor(GameClient& _gameClient, Math::Ray& _ray)
-        :   m_gameClient(_gameClient)
-        ,   m_ray(_ray)
-        {
-        }
-
-    private:
-        GameClient&	m_gameClient;
-        Math::Ray&	m_ray;
-
-    };	// struct CursorCollisionVisitor
-
-    int x, y;
-    m_pGUIManager->getMousePosition(x, y);
-
-    // Get the ray by querying the rendering service
-
-    Zen::Engine::Rendering::I_Camera& 
-        camera = base().getRenderingCanvas().getCurrentCamera();
-
-    Math::Ray ray(
-        camera.getViewportRay(x,y)
-    );
-
-    ClickCollisionVisitor visitor(*this, ray);
-
-    // TODO Use the click world to do the ray cast
-    m_pClickWorld->rayCast(
-        ray,
-        40.0f,	// Placeholder for now
-        visitor
-    );
-
-
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-GameGrid&
-GameClient::getGameGrid() const
-{
-    return *m_pGameGrid;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-GameClient::setDifficultyLevel(int _difficultyLevel)
+GameClient::setGameName(const std::string& _name)
 {
-    // TODO Implement based on the difficulty level
+    m_gameName = _name;
+}
 
-    if (m_pBrain == NULL)
-    {
-        std::cout << "The scarecrow needs a brain. Creating one...\n";
-        m_pBrain = new SimpleBrain(*m_pGameGrid);
-        m_pBrain->init();
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+GameClient::getGameName() const
+{
+    return m_gameName;
+}
 
-        if( m_pCreepManager != NULL )
-        {
-            m_pCreepManager->setBrain(*m_pBrain);
-        }
-    }
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::createSkybox(const std::string& _resource)
+{
+    Zen::Engine::World::I_SkyService::config_type config;
+    config["type"] = "skybox";
+    config["resourceName"] = _resource;
 
+    m_pSky = game().getSkyService()->createSky(config);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+GameClient::createTerrain(const std::string& _resource)
+{
+    Zen::Math::Matrix4 matXfm(Zen::Math::Matrix4::INIT_IDENTITY);
+
+    m_pTerrain = game().getTerrainService()->createTerrain();
+    m_pTerrain->loadVisualization(_resource + ".cfg", matXfm);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -23,79 +23,72 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_COMMUNITY_CHAT_COMMON_I_CHANNEL_HPP_INCLUDED
-#define ZEN_COMMUNITY_CHAT_COMMON_I_CHANNEL_HPP_INCLUDED
+#ifndef ZEN_COMMUNITY_CHATCOMMON_I_CHANNEL_HPP_INCLUDED
+#define ZEN_COMMUNITY_CHATCOMMON_I_CHANNEL_HPP_INCLUDED
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Core/Memory/managed_ptr.hpp>
+#include <Zen/Core/Event/Event.hpp>
 #include <Zen/Core/Event/future_return_value.hpp>
 
-#include <Zen/Spaces/ObjectModel/I_Object.hpp>
+#include <Zen/Community/AccountCommon/I_PermissibleResource.hpp>
 
-#include <string>
+#include <boost/cstdint.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Community {
-namespace Chat {
 namespace Common {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class I_Session;
+class I_ChannelMemberModel;         // This will be a non-persisted model
+class I_ChannelMemberController;
 
-class I_Users;
-class I_ChannelInfo;
-class I_ChannelPermissions;
-class I_ChannelSession;
-
-/// Represents a chat channel
+/// I_Channel
 class CHATCOMMON_DLL_LINK I_Channel
-:   public Spaces::ObjectModel::I_Object
+:   public I_PermissibleResource
 {
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<I_Users>                            pUsers_type;
-    typedef Event::future_return_value<pUsers_type>                 pFutureUsers_type;
+//    typedef Memory::managed_ptr<I_Channel>                              pChannel_type;
+//
+//    typedef pChannel_type                                               pScriptObject_type;
+//    typedef Zen::Scripting::ObjectReference<I_Channel>                  ScriptObjectReference_type;
+//    typedef ScriptObjectReference_type                                  ScriptWrapper_type;
+//    typedef ScriptWrapper_type*                                         pScriptWrapper_type;
 
-    typedef Memory::managed_ptr<I_ChannelInfo>                      pChannelInfo_type;
-    typedef Event::future_return_value<pChannelInfo_type>           pFutureChannelInfo_type;
+    typedef Memory::managed_ptr<I_ChannelMemberModel>                   pChannelMemberModel_type;
+    typedef Memory::managed_weak_ptr<I_ChannelMemberModel>              wpChannelMemberModel_type;
+    typedef Event::future_return_value<pChannelMemberModel_type>        FutureChannelMemberModel_type;
+    typedef Memory::managed_ptr<FutureChannelMemberModel_type>          pFutureChannelMemberModel_type;
 
-    typedef Memory::managed_ptr<I_ChannelSession>                   pChannelSession_type;
-    typedef Event::future_return_value<pChannelSession_type>        pFutureChannelSession_type;
-
-    typedef Memory::managed_ptr<I_ChannelPermissions>               pChannelPermissions_type;
-    typedef Event::future_return_value<pChannelPermissions_type>    pFutureChannelPermissions_type;
+    typedef Memory::managed_ptr<I_ChannelMemberController>              pChannelMemberController_type;
+    typedef Memory::managed_weak_ptr<I_ChannelMemberController>         wpChannelMemberController_type;
+    typedef Event::future_return_value<pChannelMemberController_type>   FutureChannelMemberController_type;
+    typedef Memory::managed_ptr<FutureChannelMemberController_type>     pFutureChannelMemberController_type;
     /// @}
 
     /// @name I_Channel interface
     /// @{
 public:
-    /// Get the channel name
-    virtual const std::string& getName() const = 0;
+    virtual boost::uint64_t getChannelId() = 0;
 
-    /// Get a snapshot of the current users in channel.
-    /// @return List/collection of users in channel
-    virtual pFutureUsers_type getUsers() = 0;
+    virtual const std::string getChannelName() = 0;
 
-    /// Get channel information
-    /// @return Channel info
-    /// @todo TR - I think this needs to be collapsed.  I_Channel is I_ChannelInfo
-    ///         and does not associated with a I_ChannelSession until 
-    virtual pFutureChannelInfo_type getInfo() = 0;
+    virtual const std::string getChannelDescription() = 0;
 
-    /// Join a chat channel
-    /// @param _pChannel Channel to join
-    /// @return Future chat channel session
-    virtual pFutureChannelSession_type join() = 0;
+    virtual pFutureChannelMemberModel_type createChannelMemberModel() = 0;
 
-    /// Get the channel permissions
-    /// @return Channel permissions
-    virtual pFutureChannelPermissions_type getPermissions() = 0;
-
+    virtual pFutureChannelMemberController_type createChannelMemberController(I_ChannelMemberModel& _model) = 0;
     /// @}
 
     /// @name 'Structors
     /// @{
+protected:
              I_Channel();
     virtual ~I_Channel();
     /// @}
@@ -104,15 +97,13 @@ public:
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Common
-}   // namespace Chat
 }   // namespace Community
 namespace Memory {
-    /// I_Channel is managed by a factory method
-    template<>
-    struct is_managed_by_factory<Community::Chat::Common::I_Channel>
-        :   public boost::true_type{};
-}   // namespace Memory
+	/// I_Channel is managed by factory
+	template<>
+	struct is_managed_by_factory<Community::Common::I_Channel> : public boost::true_type{};
+}	// namespace Memory
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_COMMUNITY_CHAT_COMMON_I_CHANNEL_HPP_INCLUDED
+#endif // ZEN_COMMUNITY_CHATCOMMON_I_CHANNEL_HPP_INCLUDED

@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRE
 list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
 
 Find_Package(IndieZen REQUIRED)
-Find_Package(Boost REQUIRED )
+Find_Package(Boost REQUIRED program_options filesystem)
 
 #-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 # Include ZenServer source file
@@ -21,15 +21,19 @@ set ( ZenServer_SRC
 <%SourceList%>
     )
 
+add_definitions( ${Zen_DEFINITIONS} )
+    
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 
-link_directories ( ${DEV_LIB} )
+link_directories ( ${DEV_LIB} ${Boost_LIBRARY_DIRS} )
 
 add_executable( ZenServer ${ZenServer_SRC} )
 
 add_dependencies( ZenServer ZenCore ZenEnterprise )
 
-target_link_libraries( ZenServer ZenCore ZenEnterprise )
+message("Boost libraries: ${Boost_LIBRARIES}")
+
+target_link_libraries( ZenServer ZenCore ZenEnterprise ${Boost_LIBRARIES} )
 
 set_target_properties ( ZenServer 
 						PROPERTIES

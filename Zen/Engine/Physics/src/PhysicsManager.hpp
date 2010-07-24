@@ -36,6 +36,7 @@
 #include <Zen/Core/Plugins/ServiceCache.hpp>
 
 #include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting/script_module.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -69,11 +70,8 @@ public:
 public:
     void onFrame(FrameDelta_type frameDelta);
 
-    /// Register the script classes with the scripting engine
-    void registerScriptTypes(pScriptEngine_type _pEngine);
-
     /// Register a service with a script engine
-    void registerScriptEngine(pScriptEngine_type _pEngine, pPhysicsService_type _pService);
+    void registerScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -91,10 +89,10 @@ private:
     pScriptEngine_type              m_pDefaultScriptEngine;
     bool                            m_scriptTypesInitialized;
 
-    pScriptModule_type              m_pPhysicsModule;
+    Zen::Scripting::script_module*	m_pPhysicsModule;
     pScriptType_type                m_pPhysicsServiceType;
     pScriptType_type                m_pPhysicsZoneType;
-    pScriptType_type                m_pCollisionShapeType;
+    pScriptType_type                m_pPhysicsActorType;
 
     /// @}
 

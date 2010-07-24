@@ -28,6 +28,8 @@
 #ifndef ZEN_ENGINE_WORLD_WORLD_MANAGER_HPP_INCLUDED
 #define ZEN_ENGINE_WORLD_WORLD_MANAGER_HPP_INCLUDED
 
+#include <Zen/Core/Scripting.hpp>
+
 #include "../I_WorldManager.hpp"
 
 #include "../I_WorldServiceFactory.hpp"
@@ -45,9 +47,6 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-    namespace Scripting {
-        class I_ScriptType;
-    }   // namespace Scripting
 namespace Engine {
 namespace World {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -82,11 +81,9 @@ public:
     /// @name Additional Implementation
     /// @{
 private:
-    /// Register the script classes with the scripting engine
-    void registerScriptTypes(pScriptEngine_type _pEngine);
-
-    /// Register a service with a script engine
-    void registerScriptEngine(pScriptEngine_type _pEngine, pTerrainService_type _pService);
+    /// Register the script module with all of the previously
+    /// created sky services.
+    void registerSkyScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -109,10 +106,7 @@ private:
 
     bool                            m_scriptTypesInitialized;
 
-    pScriptModule_type              m_pZoneModule;
-    pScriptType_type                m_pTerrainServiceType;
-    pScriptType_type                m_pTerrainType;
-
+    Zen::Scripting::script_module*  m_pWorldModule;
     /// @}
 
 };  // class WorldManager

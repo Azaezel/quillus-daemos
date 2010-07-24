@@ -11,7 +11,7 @@ set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRE
 list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
 
 Find_Package(IndieZen REQUIRED)
-Find_Package(Boost REQUIRED )
+Find_Package(Boost REQUIRED regex )
 Find_Package(wxWidgets REQUIRED)
 Find_Package(Ogitor REQUIRED)
 Find_Package(OGRE REQUIRED)
@@ -38,6 +38,8 @@ add_library ( WorldBuilder ${LIB_TYPE} ${WorldBuilder_SRC} )
 add_dependencies(WorldBuilder ZenCore ZenEngine ZenEnterprise Workbench WorkbenchCommon GameBuilderCommon WorldBuilderCommon ZOgre )
 
 target_link_libraries( WorldBuilder ${Boost_LIBRARIES} ${wxWidgets_LIBRARIES} ZenCore ZenEngine ZenEnterprise Workbench WorkbenchCommon GameBuilderCommon WorldBuilderCommon ZOgre ${OGITOR_LIBRARIES} ${OGRE_LIBRARIES})
+
+create_zenstudio_vcproj_userfile(WorldBuilder)
 
 set_target_properties ( WorldBuilder 
 						PROPERTIES

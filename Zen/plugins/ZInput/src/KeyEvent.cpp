@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -25,6 +25,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "KeyEvent.hpp"
+#include "KeyState.hpp"
 
 #include <Zen/Core/Scripting/ObjectReference.hpp>
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
@@ -37,10 +38,10 @@
 namespace Zen {
 namespace ZInput {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-KeyEvent::KeyEvent(const OIS::KeyEvent& _event, const bool _isPressed, const KeyState& _state)
+KeyEvent::KeyEvent(const OIS::KeyEvent& _event, const bool _isPressed, KeyState* _pState)
 :   m_event(_event)
 ,   m_isPressed(_isPressed)
-,   m_keyState(_state)
+,   m_pKeyState(_pState)
 ,   m_pScriptObject(NULL)
 {
 }
@@ -48,6 +49,7 @@ KeyEvent::KeyEvent(const OIS::KeyEvent& _event, const bool _isPressed, const Key
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 KeyEvent::~KeyEvent()
 {
+    delete m_pKeyState;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -75,14 +77,14 @@ KeyEvent::getPressedState() const
 const Engine::Input::I_KeyState&
 KeyEvent::getKeyState() const
 {
-    return m_keyState;
+    return *m_pKeyState;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 const Engine::Input::I_KeyModifierState&
 KeyEvent::getModifierState() const
 {
-    return m_keyState.getModifierState();
+    return m_pKeyState->getModifierState();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 // Copyright (C)		2009 Denis Hilliard
 //
@@ -42,6 +42,8 @@
 #include <Zen/Engine/Rendering/I_View.hpp>
 
 #include <Zen/Engine/Input/I_InputService.hpp>
+#include <Zen/Engine/Input/I_KeyPublisher.hpp>
+#include <Zen/Engine/Input/I_MousePublisher.hpp>
 
 #include <boost/noncopyable.hpp>
 
@@ -59,7 +61,9 @@ class I_Widget;
 class I_WidgetServiceFactory;
 
 class WIDGETS_DLL_LINK I_WidgetService
-    :   public virtual Zen::Scripting::I_ScriptableType
+:   public virtual Zen::Scripting::I_ScriptableType
+,   public Input::I_KeyPublisher
+,   public Input::I_MousePublisher
 {
     /// @name Types
     /// @{
@@ -92,7 +96,16 @@ public:
     /// @{
 public:
 	/// Initialise and attach the service to a view and an input service.
-    virtual void initialise(Rendering::I_View & _view, Input::I_InputService& _input) = 0;
+    /// @param _pMousePublisher optional mouse event publisher.  The widget
+    ///		service will use this mouse publisher as a source for mouse
+    ///		input events.  Use NULL if you do not want to send mouse events
+    ///		to the widget service.
+    /// @param _pKeyPublisher optional key event publisher.  The widget service
+    ///		will use this mouse publisher as a source for key input events.
+    ///		Use NULL if you do not want to send key events to the widget service.
+    virtual void initialise(Rendering::I_View & _view,
+    		Input::I_MousePublisher* _pMousePublisher = NULL,
+    		Input::I_KeyPublisher* _pKeyPublisher = NULL) = 0;
 
     // These methods are deprecated.  I_View (or I_RenderingCanvas?) or something along
     // those lines need to indicate when it's time for the I_WidgetService to
@@ -121,8 +134,8 @@ public:
     /// Set the default font
     virtual void setDefaultFont(const std::string& _font) = 0;
 
-    // These methods are deprecated.  See the events below for the
-    // reason.
+    // These methods are deprecated. Use the I_MousePublisher and I_KeyPublisher
+    // in initialize() instead.
 #if 0	// deprecated
 	/// Inject a key press into the WidgetService
 	virtual void onKeyPress(key_type _key) = 0;
@@ -171,18 +184,9 @@ public:
     static const std::string& getExtensionPointName();
     /// @}
 
-
     /// @name Events
     /// @{
 public:
-    // TODO: The I_WidgetService should subscribe to the I_InputService
-    // events.  If the widget service does not use the event, it should
-    // re-fire the event using these events.  Games that have GUI's should
-    // not use the input service events directly.  Instead, it should use
-    // these events.
-    key_event               onKeyEvent;
-    MouseMoveEvent_type     onMouseMoveEvent;
-    MouseClickEvent_type    onMouseClickEvent;
     ServiceEvent_type       onDestroyEvent;
     /// @}
 

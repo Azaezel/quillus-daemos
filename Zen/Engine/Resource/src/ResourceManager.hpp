@@ -26,6 +26,8 @@
 #ifndef ZEN_ENGINE_RESOURCE_RESOURCE_MANAGER_HPP_INCLUDED
 #define ZEN_ENGINE_RESOURCE_RESOURCE_MANAGER_HPP_INCLUDED
 
+#include <Zen/Core/Scripting.hpp>
+
 #include "../I_ResourceManager.hpp"
 #include "../I_CompoundResource.hpp"
 
@@ -33,9 +35,6 @@
 #include "../I_ResourceService.hpp"
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Scripting/I_ScriptEngine.hpp>
-#include <Zen/Core/Scripting/I_ScriptModule.hpp>
-#include <Zen/Core/Scripting/I_ScriptType.hpp>
 #include <Zen/Core/Plugins/ServiceCache.hpp>
 
 #include <string>
@@ -53,11 +52,7 @@ class ResourceManager
     /// @name Types
     /// @{
 public:
-    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptEngine> pScriptEngine_type;
-    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptModule> pScriptModule_type;
-    typedef Zen::Memory::managed_ptr<Scripting::I_ScriptType>   pScriptType_type;
-
-    typedef Zen::Plugins::ServiceCache<I_ResourceService>       resource_service_cache_type;
+    typedef Zen::Plugins::ServiceCache<I_ResourceService>       ResourceServiceCache_type;
     typedef std::map< std::string, std::string >                config_type;
     /// @}
 
@@ -67,17 +62,14 @@ public:
     virtual pCompoundResourceService_type createCompoundResource();
     virtual pResourceService_type create(const std::string& _type, config_type& _config);
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
-    virtual pScriptModule_type getDefaultScriptModule();
+    virtual pScriptModule_type getDefaultResourceScriptModule();
     /// @}
 
     /// @name Additional Implementation
     /// @{
 private:
     /// Register the script classes with the scripting engine
-    void registerScriptTypes(pScriptEngine_type _pEngine);
-
-    /// Register a service with a script engine
-    void registerScriptEngine(pScriptEngine_type _pEngine, pResourceService_type _pService);
+    void registerResourceScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -90,15 +82,13 @@ public:
     /// @name Member Variables
     /// @{
 private:
-    resource_service_cache_type     m_resourceServiceCache;
+    ResourceServiceCache_type       m_resourceServiceCache;
 
     pScriptEngine_type              m_pDefaultScriptEngine;
 
     bool                            m_scriptTypesInitialized;
 
-    pScriptModule_type              m_pResourceModule;
-    pScriptType_type                m_pResourceServiceType;
-    pScriptType_type                m_pResourceType;
+    Zen::Scripting::script_module*  m_pResourceModule;
     /// @}
 
 };  // class ResourceManager

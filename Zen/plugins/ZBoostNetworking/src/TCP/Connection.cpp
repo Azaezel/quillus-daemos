@@ -21,16 +21,22 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "Connection.hpp"
 #include "../Endpoint.hpp"
 
 #include "../TransmissionControlProtocolService.hpp"
 
+#include <Zen/Core/Threading/MutexFactory.hpp>
 #include <Zen/Core/Utility/runtime_exception.hpp>
+
 #include <Zen/Enterprise/Networking/I_Endpoint.hpp>
 #include <Zen/Enterprise/AppServer/I_Response.hpp>
 
 #include <boost/bind.hpp>
+
+#include <iostream>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -42,13 +48,16 @@ Connection::Connection(boost::asio::io_service& _ioService, TransmissionControlP
 :   m_socket(_ioService)
 ,   m_strand(_ioService)
 ,   m_protocolService(_protocolService)
+,   m_pPeerEndpoint()
 ,   m_connected(false)
+,   m_pWriteQueueGuard(Threading::MutexFactory::create())
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Connection::~Connection()
 {
+    Threading::MutexFactory::destroy(m_pWriteQueueGuard);
     // m_pHandler is destroyed in Connection::write()
 }
 
@@ -63,6 +72,7 @@ Connection::getSocketReference()
 void
 Connection::connect(pEndpoint_type _pEndpoint)
 {
+    // Connect to a server.
     m_pPeerEndpoint = _pEndpoint;
 
     typedef Memory::managed_ptr<Endpoint>   pConcreteEndpoint_type;
@@ -147,7 +157,7 @@ Connection::write(const char* _buffer, boost::uint32_t _size)
 
     Threading::CriticalSection lock(m_pWriteQueueGuard);
 
-    bool writeInProgress = m_writeMessages.empty();
+    bool writeInProgress = !m_writeMessages.empty();
     m_writeMessages.push_back(pMsg);
 
     // Write the message on the front of the queue if a write wasn't
@@ -195,7 +205,7 @@ Connection::handleReadHeader(const boost::system::error_code& _errorCode)
 void
 Connection::handleReadBody(const boost::system::error_code& _errorCode)
 {
-    if (!_errorCode && m_readMessage.decodeHeader())
+    if (!_errorCode)
     {
         m_protocolService.onHandleMessage(shared_from_this(), m_readMessage);
         readMore();
@@ -224,7 +234,7 @@ Connection::handleWrite(const boost::system::error_code& _errorCode)
     else
     {
         // The write failed, so don't delete the message
-
+        std::cout << _errorCode.message() << std::endl;
         m_connected = false;
         m_protocolService.onDisconnected(shared_from_this());
     }

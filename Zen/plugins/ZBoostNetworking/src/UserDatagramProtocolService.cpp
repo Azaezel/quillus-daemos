@@ -23,6 +23,7 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
 
 #include "UserDatagramProtocolService.hpp"
 #include "UDP/Message.hpp"
@@ -166,7 +167,7 @@ UserDatagramProtocolService::start()
 
                     if( ec )
                     {
-                        std::cout << "Error: " << ec << std::endl;
+                        std::cout << "ASIO Error: " << ec << std::endl;
                     }
                 }
                 catch(...)
@@ -191,6 +192,9 @@ UserDatagramProtocolService::start()
     };
 
     m_pWork = new boost::asio::io_service::work(m_ioService);
+
+    // Reserve the correct amount of space.
+    m_threads.reserve(m_threadCount);
 
     // Start some threads that will execute m_ioService.run()
     for(int x = 0; x < m_threadCount; ++x)
@@ -276,6 +280,20 @@ UserDatagramProtocolService::sendTo(pMessage_type _pMessage,
     pTask->initialize(this, _pMessage, _pEndpoint);
 
     m_pThreadPool->pushRequest(pTask);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+UserDatagramProtocolService::getConnectedEvent()
+{
+    throw Utility::runtime_exception("UserDatagramProtocolService::getConnectedEvent(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+UserDatagramProtocolService::getDisconnectedEvent()
+{
+    throw Utility::runtime_exception("UserDatagramProtocolService::getConnectedEvent(): Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

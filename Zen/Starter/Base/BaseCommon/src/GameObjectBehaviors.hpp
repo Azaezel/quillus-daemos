@@ -68,12 +68,11 @@ public:
     /// @{
 public:
     void setScale(Core::I_BaseGameObject& _object, float _x, float _y, float _z);
-    void handlePhysicsTransform(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_TransformEventData& _eventData);
-    void handlePhysicsForce(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_ApplyForcesEventData& _eventData);
-	bool handleBoundBoxCollision(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_BeginCollisionEventData& _eventData);
-    void handleCollision(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_DuringCollisionEventData& _eventData);
-    void handleCollisionResolution(Core::I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_EndCollisionEventData& _eventData);
-
+    void handlePhysicsTransform(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_TransformEventData& _eventData);
+    void handlePhysicsForce(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_ApplyForcesEventData& _eventData);
+	bool handleBoundBoxCollision(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_BeginCollisionEventData& _eventData);
+    void handleCollision(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_DuringCollisionEventData& _eventData);
+    void handleCollisionResolution(Core::I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_EndCollisionEventData& _eventData);
     /// @}
 
     /// @name Default Behavior implementation

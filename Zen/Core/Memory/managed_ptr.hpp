@@ -367,14 +367,16 @@ inline
 another_element_type
 managed_ptr<element_type>::as()
 {
+    // TODO Make this work
+#if 0
     /// You cannot use this method if the pointer management style
     /// between element_type and another_element_type does not match
-    BOOST_STATIC_ASSERT((is_managed_by_factory<element_type>::value)
-        != (is_managed_by_factory<another_element_type>::value));
+    BOOST_STATIC_ASSERT_BOOL_CAST((is_managed_by_factory<element_type>::value)
+        == (is_managed_by_factory<another_element_type>::value));
+#endif 
 
-    // Construct an empty pointer
+    // Construct a pointer of the new type and return it.
     another_element_type newPointer(*this);
-
     return newPointer;
 }
 

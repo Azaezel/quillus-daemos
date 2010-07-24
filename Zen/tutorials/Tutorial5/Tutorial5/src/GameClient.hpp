@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Game Tutorial
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -38,7 +38,7 @@
 #include <Zen/Engine/Client/I_GameClient.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 #include <Zen/Engine/World/I_SkyService.hpp>
 #include <Zen/Engine/World/I_TerrainService.hpp>
@@ -72,6 +72,18 @@ public:
     /// @{
 public:
     virtual const WindowHandle_type getHandle() const;
+    virtual void activateGameClientScriptModule();
+    virtual Zen::Engine::Widgets::I_WidgetService& getWidgetService();
+    virtual Zen::Engine::Rendering::I_RenderingCanvas& getRenderingCanvas();
+    virtual Zen::Engine::Resource::I_ResourceService& getRenderingResourceService();
+    virtual Zen::Engine::World::I_TerrainService& getTerrainService();
+    virtual Zen::Engine::World::I_SkyService& getSkyService();
+    virtual bool initRenderingService(const std::string& _type, const std::string& _title, int _xRes, int _yRes);
+    virtual bool initRenderingResourceService(const std::string& _type);
+    virtual bool initTerrainService(const std::string& _type);
+    virtual bool initSkyService(const std::string& _type);
+    virtual bool initInputService(const std::string& _type);
+    virtual bool initWidgetService(const std::string& _type);
     virtual bool init();
     virtual void run();
     /// @}
@@ -80,6 +92,12 @@ public:
     /// @{
 public:
     virtual Zen::Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
+    /// @name I_ScriptableService implementation.
+    /// @{
+public:
+    virtual void registerScriptEngine(pScriptEngine_type _pScriptEngine);
     /// @}
 
     /// @name GameClient implementation

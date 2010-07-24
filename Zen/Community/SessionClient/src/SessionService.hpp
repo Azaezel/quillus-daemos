@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -21,52 +21,48 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//	Matthew Alan Gray mgray@indiezen.org
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef ZEN_COMMUNITY_SESSIONCLIENT_SESSION_SERVICE_HPP_INCLUDED
 #define ZEN_COMMUNITY_SESSIONCLIENT_SESSION_SERVICE_HPP_INCLUDED
 
-#include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Memory/managed_weak_ptr.hpp>
-#include <Zen/Core/Memory/managed_self_ref.hpp>
+#include <Zen/Core/Event/I_EventManager.hpp>
+#include <Zen/Core/Event/I_EventService.hpp>
 
-#include <Zen/Enterprise/AppServer/I_ApplicationService.hpp>
-#include <Zen/Enterprise/AppServer/I_ApplicationServer.hpp>
+#include <Zen/Enterprise/AppServer/scriptable_generic_service.hpp>
 
 #include <Zen/Community/SessionCommon/I_SessionService.hpp>
 
+#include <Zen/Community/SessionProtocol/I_LoginRequest.hpp>
+#include <Zen/Community/SessionProtocol/I_LoginResponse.hpp>
+
+#include <boost/cstdint.hpp>
+
+#include <set>
 #include <map>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-	namespace Threading {
-		class I_Mutex;
-	}	// namespace Threading
-    namespace Networking {
-        class I_Endpoint;
-    }   // namespace Networking
 namespace Community {
     namespace Common {
         class I_Attribute;
+        class I_Session;
     }   // namespace Common
 namespace Client {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-;
+class Session;
 
 class SessionService
-:   public Zen::Community::Common::I_SessionService
-,   public Zen::Memory::managed_self_ref<Common::I_SessionService>
+:   public Zen::Enterprise::AppServer::scriptable_generic_service
+        <Zen::Community::Common::I_SessionService, SessionService>
 {
     /// @name Types
     /// @{
 public:
-    typedef Zen::Memory::managed_ptr<Zen::Networking::I_Endpoint>   pEndpoint_type;
-
-	typedef std::map<unsigned int, pResponseHandler_type>		    Handlers_type;
-
-    typedef Zen::Memory::managed_ptr<Common::I_Attribute>           pAttribute_type;
-    typedef Zen::Event::future_return_value<pAttribute_type>        FutureAttribute_type;
-    typedef Zen::Memory::managed_ptr<FutureAttribute_type>          pFutureAttribute_type;
+    /// For now pSession_type is a raw pointer.
+    /// The session is never destroyed until the system is shutdown.
+    typedef Common::I_Session*                          pSession_type;
+    typedef std::set<pSession_type>                     Sessions_type;
     /// @}
 
     /// @name I_StartupShutdownParticipant implementation
@@ -76,43 +72,47 @@ public:
     virtual Zen::Threading::I_Condition* prepareToStart(Zen::Threading::ThreadPool& _threadPool);
     virtual void start();
     virtual Zen::Threading::I_Condition* prepareToStop();
-    virtual void stop();    
+    virtual void stop();
     /// @}
 
-    /// @name I_RequestHandler implementation
+    /// @name I_ScriptableType
     /// @{
 public:
-    virtual void handleRequest(pRequest_type _pRequest, pResponseHandler_type _pResponseHandler);
+    virtual const std::string& getScriptTypeName();
+    virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
-    /// @name I_ApplicationService implementation
+    /// @name I_ScriptableService implementation
     /// @{
 public:
-    virtual Zen::Enterprise::AppServer::I_ApplicationServer& getApplicationServer();
-    virtual void handleMessage(pMessage_type _pMessage);
+    virtual void registerScriptEngine(pScriptEngine_type _pScriptEngine);
     /// @}
 
     /// @name I_SessionService implementation
     /// @{
 public:
-#if 0   // deprecated
-    virtual void requestSession(pEndpoint_type _pDestinationEndpoint, 
+    virtual void requestLogin(pEndpoint_type _pDestinationEndpoint, 
                               const std::string& _name, 
-                              const std::string& _password,
-                              pResponseHandler_type _pResponseHandler);
-#endif  // deprecated
-
-    virtual pFutureSession_type requestSession(pEndpoint_type _pDestinationEndpoint, 
-                                             const std::string& _name, 
-                                             const std::string& _password);
+                              const std::string& _password);
+private:
+    virtual Common::I_Session& getSession(boost::uint64_t _sessionId);
+public:
+    virtual Event::I_Event& getSessionEvent();
     /// @}
 
-	/// @name SessionService implementation
-	/// @{
+    /// @name SessionService implementation
+    /// @{
 public:
-    pFutureAttribute_type requestAttribute(const Common::I_Session& _session,
-                                           const std::string& _key);
-	/// @}
+    pScriptModule_type getScriptModule();
+
+    /// Script interface for login.
+    void scriptLogin(const std::string& _server, const std::string& _port, const std::string& _name, const std::string& _password);
+
+    typedef Zen::Community::Session::Protocol::I_LoginResponse::pResponse_type pLoginResponse_type;
+    void handleLoginResponse(pResponse_type _pResponse, Zen::Community::Session::Protocol::I_LoginRequest& _request, Session* _pSession);
+
+    void handleOnDisconnected(boost::any _anyEndpoint);
+    /// @}
 
     /// @name 'Structors
     /// @{
@@ -125,12 +125,21 @@ protected:
     /// @name Member Variables
     /// @{
 private:
-    Zen::Enterprise::AppServer::I_ApplicationServer&    m_appServer;
-    Zen::Threading::ThreadPool*                         m_pThreadPool;
+    pScriptEngine_type                                  m_pScriptEngine;
+    Zen::Scripting::script_module*                      m_pScriptModule;
+    Scripting::I_ObjectReference*                       m_pScriptObject;
 
-	/// Map from MessageID() to the response handler
-	Handlers_type										m_responseHandlers;
-	Zen::Threading::I_Mutex*							m_pHandlersMutex;
+    Sessions_type                                       m_sessions;
+
+    typedef std::map<boost::uint32_t, pSession_type>    SessionIdIndex_type;
+    SessionIdIndex_type                                 m_sessionIdIndex;
+
+    typedef std::map<pEndpoint_type, pSession_type>     EndpointIndex_type;
+    EndpointIndex_type                                  m_endpointIndex;
+
+    typedef std::map<std::string, pEndpoint_type>       AddressIndex_type;
+    AddressIndex_type                                   m_addressIndex;
+
     /// @}
 
 };  // class SessionService

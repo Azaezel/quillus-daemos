@@ -1,9 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Community Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
-// Copyright (C)        2009 Jason Smith
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -23,58 +22,116 @@
 //
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
-//  Jason Smith jsmith@airsteampunk.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_COMMUNITY_CHAT_SERVER_CHAT_SERVICE_HPP_INCLUDED
-#define ZEN_COMMUNITY_CHAT_SERVER_CHAT_SERVICE_HPP_INCLUDED
+#ifndef ZEN_COMMUNITY_CHATSERVER_CHAT_SERVICE_HPP_INCLUDED
+#define ZEN_COMMUNITY_CHATSERVER_CHAT_SERVICE_HPP_INCLUDED
+
+#include <Zen/Enterprise/AppServer/scriptable_generic_service.hpp>
 
 #include <Zen/Community/ChatCommon/I_ChatService.hpp>
 
+#include <Zen/Enterprise/Database/I_DatabaseManager.hpp>
+#include <Zen/Enterprise/Database/I_DatabaseConnection.hpp>
+
+#include <boost/cstdint.hpp>
+
+#include <string>
+#include <map>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+    namespace Threading {
+        class I_Mutex;
+    }   // namespace Threading
+    namespace Networking {
+        class I_Endpoint;
+    }   // namespace Networking
 namespace Community {
-namespace Chat {
 namespace Server {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class ChatService
-:   public Common::I_ChatService
+:   public Zen::Enterprise::AppServer::scriptable_generic_service
+        <Zen::Community::Common::I_ChatService, ChatService>
 {
     /// @name Types
     /// @{
 public:
     /// @}
 
+    /// @name I_StartupShutdownParticipant implementation
+    /// @{
+public:
+    virtual void setConfiguration(const Zen::Plugins::I_ConfigurationElement& _config);
+    virtual Zen::Threading::I_Condition* prepareToStart(Zen::Threading::ThreadPool& _threadPool);
+    virtual void start();
+    virtual Zen::Threading::I_Condition* prepareToStop();
+    virtual void stop();
+    /// @}
+
+    /// @name I_ScriptableType
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
+    virtual Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
+    /// @name I_ScriptableService implementation
+    /// @{
+public:
+    virtual void registerScriptEngine(pScriptEngine_type _pScriptEngine);
+    /// @}
+
     /// @name I_ChatService implementation
     /// @{
 public:
-    virtual pFutureChatSession_type connect(pSession_type _pSession);
+    virtual pFutureChannelModel_type createChannelModel();
+    virtual pFutureChannelController_type createChannelController(Common::I_ChannelModel& _model);
+
+    virtual boost::uint32_t getAccessFlags() const;
+    virtual void setAccessFlags(boost::uint32_t _accessFlags);
+    virtual const Common::I_Account& getOwner() const;
+    virtual void setOwner(const Common::I_Account& _owner);
+    virtual const Common::I_Group& getGroup() const;
+    virtual void setGroup(const Common::I_Group& _group);
     /// @}
 
     /// @name ChatService implementation
+    /// @{
+public:
+    const std::string& getDatabaseConnectionName() const;
+private:
+    pScriptModule_type getScriptModule();
+    /// @}
+
+    /// @name Static methods
     /// @{
 public:
     /// @}
 
     /// @name 'Structors
     /// @{
-public:
-             ChatService();
+protected:
+    friend class ChatServiceFactory;
+             ChatService(Zen::Enterprise::AppServer::I_ApplicationServer& _appServer);
     virtual ~ChatService();
     /// @}
 
-    /// @name Member variables
+    /// @name Member Variables
     /// @{
 private:
+    pScriptEngine_type                                  m_pScriptEngine;
+    Zen::Scripting::script_module*                      m_pScriptModule;
+    Scripting::I_ObjectReference*                       m_pScriptObject;
+    const Zen::Plugins::I_ConfigurationElement*         m_pDatabaseConfig;
     /// @}
 
 };  // class ChatService
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Server
-}   // namespace Chat
 }   // namespace Community
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_COMMUNITY_CHAT_SERVER_CHAT_SERVICE_HPP_INCLUDED
+#endif // ZEN_COMMUNITY_CHATSERVER_CHAT_SERVICE_HPP_INCLUDED

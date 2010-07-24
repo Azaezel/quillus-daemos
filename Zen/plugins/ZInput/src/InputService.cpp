@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -25,7 +25,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "InputService.hpp"
-#include "InputMap.hpp"
+//#include "KeyMap.hpp"
+#include "KeyState.hpp"
 #include "KeyEvent.hpp"
 #include "MouseClickEvent.hpp"
 #include "MouseMoveEvent.hpp"
@@ -102,10 +103,14 @@ InputService::InputService(config_type &_config)
 
     m_pKeyboard->setEventCallback(this);
 
-    m_pKeyboard->setTextTranslation(OIS::Keyboard::Ascii);    
+    m_pKeyboard->setTextTranslation(OIS::Keyboard::Ascii);
 
     m_pMouse = static_cast<OIS::Mouse*>(m_pInputManager->createInputObject(OIS::OISMouse, true));
     m_pMouse->setEventCallback(this);
+
+    /// TODO This is a hack.
+    m_pMouse->getMouseState().width = 800;
+    m_pMouse->getMouseState().height = 600;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -154,14 +159,14 @@ InputService::keyPressed(const OIS::KeyEvent& _keyEvent)
 {
     Engine::Input::KeyCode_enum code = (Engine::Input::KeyCode_enum)_keyEvent.key;
 
-    KeyModifierState::KeyModifierMap_type::const_iterator iter = 
+    KeyModifierState::KeyModifierMap_type::const_iterator iter =
         KeyModifierState::sm_keyModifierPressedMap.find(code);
     if( iter != KeyModifierState::sm_keyModifierPressedMap.end() )
     {
         iter->second(m_pKeyModifierState, *this);
     }
 
-    pKeyEvent_type pKeyEvent(new KeyEvent(_keyEvent, true, KeyState(code,m_pKeyModifierState)));
+    pKeyEvent_type pKeyEvent(new KeyEvent(_keyEvent, true, new KeyState(code, m_pKeyModifierState)));
 
     onKeyEvent(pKeyEvent);
 
@@ -174,14 +179,14 @@ InputService::keyReleased(const OIS::KeyEvent& _keyEvent)
 {
     Engine::Input::KeyCode_enum code = (Engine::Input::KeyCode_enum)_keyEvent.key;
 
-    KeyModifierState::KeyModifierMap_type::const_iterator iter = 
+    KeyModifierState::KeyModifierMap_type::const_iterator iter =
         KeyModifierState::sm_keyModifierReleasedMap.find(code);
     if( iter != KeyModifierState::sm_keyModifierReleasedMap.end() )
     {
         iter->second(m_pKeyModifierState, *this);
     }
 
-    pKeyEvent_type pKeyEvent(new KeyEvent(_keyEvent, false, KeyState(code,m_pKeyModifierState)));
+    pKeyEvent_type pKeyEvent(new KeyEvent(_keyEvent, false, new KeyState(code, m_pKeyModifierState)));
 
     onKeyEvent(pKeyEvent);
 
@@ -192,11 +197,12 @@ InputService::keyReleased(const OIS::KeyEvent& _keyEvent)
 bool
 InputService::mouseMoved(const OIS::MouseEvent& _mouseEvent)
 {
-    MouseMoveEvent mouseEvent(_mouseEvent, *m_pKeyModifierState);
+    pMouseMoveEvent_type pMouseEvent(
+        new MouseMoveEvent(_mouseEvent, *m_pKeyModifierState)
+    );
 
-    onMouseMoveEvent(mouseEvent);
+    onMouseMoveEvent(pMouseEvent);
 
-	// ALWAYS return TRUE from this function, unless you want the input buffer to be cleared by OIS
     return true;
 }
 
@@ -204,9 +210,11 @@ InputService::mouseMoved(const OIS::MouseEvent& _mouseEvent)
 bool
 InputService::mousePressed(const OIS::MouseEvent& _mouseEvent, OIS::MouseButtonID _button)
 {
-    MouseClickEvent mouseEvent(_mouseEvent, true, _button, *m_pKeyModifierState);
+    pMouseClickEvent_type pMouseEvent(
+        new MouseClickEvent(_mouseEvent, true, _button, *m_pKeyModifierState)
+    );
 
-    onMouseClickEvent(mouseEvent);
+    onMouseClickEvent(pMouseEvent);
 
     return true;
 }
@@ -215,42 +223,46 @@ InputService::mousePressed(const OIS::MouseEvent& _mouseEvent, OIS::MouseButtonI
 bool
 InputService::mouseReleased(const OIS::MouseEvent& _mouseEvent, OIS::MouseButtonID _button)
 {
-    MouseClickEvent mouseEvent(_mouseEvent, false, _button, *m_pKeyModifierState);
+    pMouseClickEvent_type pMouseEvent(
+        new MouseClickEvent(_mouseEvent, false, _button, *m_pKeyModifierState)
+    );
 
-    onMouseClickEvent(mouseEvent);
+    onMouseClickEvent(pMouseEvent);
 
     return true;
 }
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-InputService::pInputMap_type
-InputService::createInputMap(const std::string& _name)
+#if 0
+InputService::pKeyMap_type
+InputService::createKeyMap(const std::string& _name)
 {
-    std::map< std::string, wpInputMap_type >::iterator iter = m_inputMapMap.find(_name);
+    std::map< std::string, wpKeyMap_type >::iterator iter = m_inputMapMap.find(_name);
     if( iter != m_inputMapMap.end() )
     {
         return iter->second.lock();
     }
     else
     {
-        InputMap* pRawInputMap(new InputMap(getSelfReference()));
+        KeyMap* pRawKeyMap(new KeyMap(getSelfReference()));
 
-        pInputMap_type pInputMap(pRawInputMap, 
+        pKeyMap_type pKeyMap(pRawKeyMap,
                                  boost::bind(&InputService::destroy, this, _1));
 
-        m_inputMapMap[_name] = wpInputMap_type(pInputMap);
-        m_inputMapIdx[pRawInputMap] = _name;
+        m_inputMapMap[_name] = wpKeyMap_type(pKeyMap);
+        m_inputMapIdx[pRawKeyMap] = _name;
 
-        return pInputMap;
+        return pKeyMap;
     }
 
-    return pInputMap_type();
+    return pKeyMap_type();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
-InputService::enableInputMap(const std::string& _name)
+void
+InputService::enableKeyMap(const std::string& _name)
 {
-    std::map< std::string, wpInputMap_type >::iterator iter = m_inputMapMap.find(_name);
+    std::map< std::string, wpKeyMap_type >::iterator iter = m_inputMapMap.find(_name);
     if( iter != m_inputMapMap.end() )
     {
         iter->second->focus();
@@ -258,10 +270,10 @@ InputService::enableInputMap(const std::string& _name)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
-InputService::disableInputMap(const std::string& _name)
+void
+InputService::disableKeyMap(const std::string& _name)
 {
-    std::map< std::string, wpInputMap_type >::iterator iter = m_inputMapMap.find(_name);
+    std::map< std::string, wpKeyMap_type >::iterator iter = m_inputMapMap.find(_name);
     if( iter != m_inputMapMap.end() )
     {
         iter->second->unfocus();
@@ -269,10 +281,10 @@ InputService::disableInputMap(const std::string& _name)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
-InputService::enableAllInputMaps()
+void
+InputService::enableAllKeyMaps()
 {
-    std::map< std::string, wpInputMap_type >::iterator iter = m_inputMapMap.begin();
+    std::map< std::string, wpKeyMap_type >::iterator iter = m_inputMapMap.begin();
     while( iter != m_inputMapMap.end() )
     {
         iter->second->focus();
@@ -281,16 +293,17 @@ InputService::enableAllInputMaps()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void 
-InputService::disableAllInputMaps()
+void
+InputService::disableAllKeyMaps()
 {
-    std::map< std::string, wpInputMap_type >::iterator iter = m_inputMapMap.begin();
+    std::map< std::string, wpKeyMap_type >::iterator iter = m_inputMapMap.begin();
     while( iter != m_inputMapMap.end() )
     {
         iter->second->unfocus();
         iter++;
     }
 }
+#endif
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
@@ -300,47 +313,59 @@ InputService::changeState(Engine::Input::I_KeyModifierState* _pState)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#if 0
 void
-InputService::destroy(wpInputMap_type _pInputMap)
+InputService::destroy(wpKeyMap_type _pKeyMap)
 {
-    /// Fire the InputMap onDestroyEvent
-    _pInputMap->onDestroyEvent(_pInputMap.get());
+    /// Fire the KeyMap onDestroyEvent
+    _pKeyMap->onDestroyEvent(_pKeyMap.get());
 
-    /// Delete the InputMap
-    InputMap* const pInputMap = dynamic_cast<InputMap*>(_pInputMap.get());
-    if( pInputMap != NULL )
+    /// Delete the KeyMap
+    KeyMap* const pKeyMap = dynamic_cast<KeyMap*>(_pKeyMap.get());
+    if( pKeyMap != NULL )
     {
-        /// Find the InputMap cache index
-        std::map< InputMap*, std::string >::iterator index = m_inputMapIdx.find(pInputMap);
+        /// Find the KeyMap cache index
+        std::map< KeyMap*, std::string >::iterator index = m_inputMapIdx.find(pKeyMap);
         if( index != m_inputMapIdx.end() )
         {
-            /// Find the InputMap cache entry
-            std::map< std::string, wpInputMap_type >::iterator inputMap = m_inputMapMap.find(index->second);
+            /// Find the KeyMap cache entry
+            std::map< std::string, wpKeyMap_type >::iterator inputMap = m_inputMapMap.find(index->second);
             if( inputMap != m_inputMapMap.end() )
             {
-                /// Erase the InputMap cache entry
+                /// Erase the KeyMap cache entry
                 m_inputMapMap.erase(inputMap);
             }
             else
             {
-                throw Zen::Utility::runtime_exception("Zen::ZInput::InputService::destroy() : Cannot locate InputMap in m_inputMapMap.");
+                throw Zen::Utility::runtime_exception("Zen::ZInput::InputService::destroy() : Cannot locate KeyMap in m_inputMapMap.");
             }
 
-            /// Erase the InputMap cache index entry
+            /// Erase the KeyMap cache index entry
             m_inputMapIdx.erase(index);
-    
-            /// Delete the raw InputMap pointer
-            delete pInputMap;
+
+            /// Delete the raw KeyMap pointer
+            delete pKeyMap;
         }
         else
         {
-            throw Zen::Utility::runtime_exception("Zen::ZInput::InputService::destroy() : Cannot locate InputMap index in m_inputMapIdx.");
+            throw Zen::Utility::runtime_exception("Zen::ZInput::InputService::destroy() : Cannot locate KeyMap index in m_inputMapIdx.");
         }
     }
     else
     {
-        throw Zen::Utility::runtime_exception("Zen::ZInput::InputService::destroy() : _pInputMap is not a valid InputMap.");
+        throw Zen::Utility::runtime_exception("Zen::ZInput::InputService::destroy() : _pKeyMap is not a valid KeyMap.");
     }
+}
+#endif
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static Zen::Scripting::script_module* sm_pScriptModule = NULL;
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+InputService::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    sm_pScriptModule = &_module;
+
+    MouseClickEvent::registerScriptModule(_module);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -350,9 +375,10 @@ InputService::getScriptObject()
     // TODO Make thread safe?
     if (m_pScriptObject == NULL)
     {
-        m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Input::I_InputServiceManager::getSingleton().getDefaultScriptModule(), 
-            Engine::Input::I_InputServiceManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+        m_pScriptObject = new ScriptWrapper_type(sm_pScriptModule->getScriptModule(),
+            sm_pScriptModule->getScriptModule()->getScriptType(getScriptTypeName()),
+            this->getSelfReference().lock()
+        );
     }
 
     return m_pScriptObject;

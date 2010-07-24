@@ -25,8 +25,7 @@
 #define ZEN_ZOGRE_RESOURCE_SERVICE_HPP_INCLUDED
 
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
-
-#include <Zen/Core/Memory/managed_self_ref.hpp>
+#include <Zen/Engine/Rendering/I_RenderingService.hpp>
 
 #include <OgreRoot.h>
 
@@ -40,15 +39,25 @@ namespace ZOgre {
 
 class ResourceService
 :   public Engine::Resource::I_ResourceService
-,   public Memory::managed_self_ref<Engine::Resource::I_ResourceService>
 {
-    /// @name I_RenderingService implementation
+    /// @name Types
     /// @{
 public:
-    virtual void addResourceLocation(const std::string& _path, const std::string& _type, 
+    typedef Memory::managed_ptr<Engine::Rendering::I_RenderingService>  pSceneService_type;
+    /// @}
+
+    /// @name I_ResourceService implementation
+    /// @{
+public:
+    virtual void addResourceLocation(const std::string& _path, const std::string& _type,
         const std::string& _group, bool _recursive = false);
 
+    virtual void initialiseAllResourceGroups();
+
     virtual pResource_type loadResource(config_type& _config);
+
+    virtual const std::string& getScriptSingletonName() const;
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -73,16 +82,17 @@ public:
     /// @name Member Variables
     /// @{
 private:
-    Ogre::Root&                 m_root;
-    Ogre::ResourceGroupManager& m_groupManager;
+    Ogre::Root&                     m_root;
+    Ogre::ResourceGroupManager&     m_groupManager;
 
     /// True if the group manager has been initialized
-    volatile bool               m_bInitialized;
+    volatile bool                   m_bInitialized;
 
-    ScriptObjectReference_type* m_pScriptObject;
+    ScriptObjectReference_type*     m_pScriptObject;
+    Zen::Scripting::script_module*  m_pModule;
 
-    Threading::I_Mutex*         m_pGroupInitLock;
-    Ogre::SceneManager*         m_pSceneManager;
+    Threading::I_Mutex*             m_pGroupInitLock;
+    //Ogre::SceneManager*         m_pSceneManager;
     /// @}
 
 };  // class RenderingService

@@ -1,8 +1,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Matthew Alan Gray
+// Copyright (C) 2001 - 2010 Tony Richards
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -25,54 +25,103 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 #include "RenderingView.hpp"
-#include <Zen/Engine/Rendering/I_SceneService.hpp>
-
 #include "NullContext.hpp"
 
+#include <Zen/Core/Threading/CriticalSection.hpp>
+
+#include <Zen/Core/Event/I_EventService.hpp>
+
+#include <Zen/Engine/Rendering/I_SceneService.hpp>
+
 #include <iostream>
+#include <sstream>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-RenderingView::RenderingView(Zen::Engine::Rendering::I_Context& _context, const std::string& _windowName, unsigned int _width, unsigned int _height)
+RenderingView::RenderingView(Zen::Scripting::script_module& _module, Zen::Engine::Rendering::I_Context& _context, const std::string& _windowName, unsigned int _width, unsigned int _height)
 :   m_root(Ogre::Root::getSingleton())
 ,   m_context(_context)
 ,   m_pRenderWindow(NULL)
 ,   m_pCanvas(NULL)
+,   m_module(_module)
+,   m_pEventService(Zen::Event::I_EventManager::getSingleton().create("eventService"))
+,   m_pScriptObject(NULL)
 {
     std::cout << "new RenderingView" << std::endl;
 
     Ogre::NameValuePairList nvpl;
+    bool useParentWindow = false;
 
 #ifdef WIN32
-    //nvpl["externalWindowHandle"] = Ogre::StringConverter::toString((int)m_context.getParentWindow());
-    nvpl["parentWindowHandle"] = Ogre::StringConverter::toString((int)m_context.getParentWindow());
-#else
-#if 0 // not working yet
-    // Retrieving the display, screen and window values from the Pigment window
-    Display* dpy = XOpenDisplay (g_getenv ("DISPLAY"));
-    gint screen = DefaultScreen (dpy);
-    Window win;
-    // viewport was created with pgm_viewport_factory_make ("opengl", &viewport);
-    pgm_viewport_get_embedding_id(viewport, &win);
+    // TODO Do something like the way the not WIN32 works
+    if (m_context.getParentWindow() != NULL)
+    {
+        useParentWindow = true;
+        nvpl["externalWindowHandle"] = Ogre::StringConverter::toString((int)m_context.getParentWindow());
+        std::cout << "ZOgre::RenderingView is using parent window handle" << std::endl;
+    }
+    else
+    {
+        std::cout << "ZOgre::RenderingView is not using parent window handle" << std::endl;
+    }
 
-    misc["parentWindowHandle"] =  StringConverter::toString((long)dpy) + ":" +
-                                        StringConverter::toString((int)screen) + ":" +
-                                        StringConverter::toString((long)win);
-#endif // not working on other platforms?
+    //nvpl["parentWindowHandle"] = Ogre::StringConverter::toString((int)m_context.getParentWindow());
+#else
+    if (*m_context.getParentWindow())
+    {
+        useParentWindow = true;
+        nvpl["externalWindowHandle"] = m_context.getParentWindow();
+        std::cout << "ZOgre::RenderingView using " << m_context.getParentWindow() << " as the external window handle." << std::endl;
+    }
+    else
+    {
+        std::cout << "ZOgre::RenderingView not using parent window handle" << std::endl;
+    }
 #endif
     nvpl["title"] = _windowName.c_str();
 
-    m_pRenderWindow = m_root.createRenderWindow(_windowName.c_str(), _width, _height, false, &nvpl);
+    if (!useParentWindow)
+    {
+        Ogre::Root::getSingleton().getRenderSystem()->setConfigOption("Full Screen", "No");
 
-    Ogre::Root::getSingleton().initialise(false, "IndieZen Rendering Window");
+        std::stringstream str;
+        str << _width << " x " << _height;
+        Ogre::Root::getSingleton().getRenderSystem()->setConfigOption("Video Mode", str.str());
+    }
+
+    std::cout << "OGRE: Ogre::Root::getSingleton().initialise(!useParentWindow, _windowName.c_str());" << std::endl;
+    Ogre::Root::getSingleton().initialise(!useParentWindow, _windowName.c_str());
+
+    if (useParentWindow)
+    {
+        std::cout << "OGRE: m_root.createRenderWindow(_windowName.c_str(), _width, _height, false, &nvpl);" << std::endl;
+        m_pRenderWindow = m_root.createRenderWindow(_windowName.c_str(), _width, _height, false, &nvpl);
+    }
+    else
+    {
+        std::cout << "OGRE: m_root.getAutoCreatedWindow();" << std::endl;
+        m_pRenderWindow = m_root.getAutoCreatedWindow();
+    }
+
+    assert(m_pRenderWindow != NULL);
+
+    Ogre::WindowEventUtilities::addWindowEventListener(m_pRenderWindow, this);
+
+    // Dunno why this is done.
+    std::cout << "OGRE: Ogre::RenderWindow::removeAllViewports()" << std::endl;
+    m_pRenderWindow->removeAllViewports();
 
     // Set the window value in the _context
     NullContext* pContext = dynamic_cast<NullContext*>(&_context);
 
+    assert(pContext);
+
     if (pContext != NULL)
     {
+        // TODO This might be different depending on the OS.
+        std::cout << "OGRE: Ogre::RenderWindow::getCustomAttribute(\"WINDOW\", &pContext->m_pHandle);" << std::endl;
         m_pRenderWindow->getCustomAttribute("WINDOW", &pContext->m_pHandle);
     }
 }
@@ -80,6 +129,11 @@ RenderingView::RenderingView(Zen::Engine::Rendering::I_Context& _context, const 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 RenderingView::~RenderingView()
 {
+	if (m_pRenderWindow)
+	{
+		Ogre::WindowEventUtilities::removeWindowEventListener(m_pRenderWindow, this);
+	}
+    std::cout << "RenderingView::~RenderingView()" << std::endl;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -99,6 +153,8 @@ RenderingView::createSubView(int _x, int _y, int _width, int _height)
 Engine::Rendering::I_Canvas&
 RenderingView::getCanvas()
 {
+	assert(m_pCanvas != NULL);
+
     return *m_pCanvas;
 }
 
@@ -106,7 +162,7 @@ RenderingView::getCanvas()
 bool
 RenderingView::initCanvas()
 {
-    m_pCanvas = new RenderingCanvas(this);
+    m_pCanvas = new RenderingCanvas(m_module, this);
     return true;
 }
 
@@ -115,6 +171,95 @@ Ogre::RenderWindow&
 RenderingView::getRenderWindow()
 {
     return *m_pRenderWindow;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+RenderingView::getScriptObject()
+{
+    // TODO Make thread safe?
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptObjectReference_type(
+            m_module.getScriptModule(),
+            m_module.getScriptModule()->getScriptType(getScriptTypeName()),
+            this
+        );
+    }
+    return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+RenderingView::windowMoved(Ogre::RenderWindow* _pRenderWindow)
+{
+	boost::any anyThis(this);
+	getViewMovedEvent().fireEvent(anyThis);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+RenderingView::windowResized(Ogre::RenderWindow* _pRenderWindow)
+{
+	boost::any anyThis(this);
+	getViewResizedEvent().fireEvent(anyThis);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+RenderingView::windowClosing(Ogre::RenderWindow* _pRenderWindow)
+{
+	// HACK Assume the window can close.  This is a bad
+	// assumption.  Look at the todo documentation for this class
+	// for some thoughts on how to implement this in a thread-safe
+	// asynchronous way.
+	// It must be asynchronous in order to support scripts handling
+	// this event.
+	return true;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+RenderingView::windowClosed(Ogre::RenderWindow* _pRenderWindow)
+{
+	boost::any anyThis(this);
+	getViewClosedEvent().fireEvent(anyThis);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+RenderingView::windowFocusChange(Ogre::RenderWindow* _pRenderWindow)
+{
+	boost::any anyThis(this);
+	getViewFocusChangedEvent().fireEvent(anyThis);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+RenderingView::getViewMovedEvent()
+{
+	return m_pEventService->getEvent("Ogre/RenderingView/viewMoved");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+RenderingView::getViewResizedEvent()
+{
+	return m_pEventService->getEvent("Ogre/RenderingView/viewResized");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+RenderingView::getViewClosedEvent()
+{
+	return m_pEventService->getEvent("Ogre/RenderingView/viewClosed");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_Event&
+RenderingView::getViewFocusChangedEvent()
+{
+	return m_pEventService->getEvent("Ogre/RenderingView/focusChaged");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

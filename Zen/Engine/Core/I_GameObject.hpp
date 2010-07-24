@@ -55,7 +55,7 @@ namespace Engine {
     namespace Physics
     {
         class I_PhysicsZone;
-        class I_CollisionShape;
+        class I_PhysicsActor;
         class I_PhysicsMaterial;
         class I_PhysicsJoint;
     }   // namespace Physics
@@ -79,13 +79,17 @@ public:
 };
 
 class GAMECORE_DLL_LINK I_GameObject
+:   public virtual Zen::Scripting::I_ScriptableType
 {
     /// @name Types
     /// @{
 public:
+    typedef I_GameObject*                                       pScriptObject_type;
+    typedef Zen::Scripting::ObjectReference<I_GameObject>       ScriptObjectReference_type;
+
     typedef Zen::Memory::managed_ptr<Rendering::I_SceneNode>            pSceneNode_type;
-    typedef Zen::Memory::managed_ptr<Physics::I_PhysicsZone>           pPhysicsZone_type;
-    typedef Zen::Memory::managed_ptr<Physics::I_CollisionShape>           pCollisionShape_type;
+    typedef Zen::Memory::managed_ptr<Physics::I_PhysicsZone>            pPhysicsZone_type;
+    typedef Zen::Memory::managed_ptr<Physics::I_PhysicsActor>           pPhysicsActor_type;
     typedef Zen::Memory::managed_ptr<Physics::I_PhysicsMaterial>        pPhysicsMaterial_type;
     typedef Zen::Memory::managed_ptr<Physics::I_PhysicsJoint>           pPhysicsJoint_type;
     typedef Zen::Memory::managed_ptr<Resource::I_Resource>              pResource_type;
@@ -93,12 +97,19 @@ public:
     typedef Zen::Memory::managed_ptr<MoveManager::I_Controllable>       pControllable_type;
     /// @}
 
-    /// @name I_BaseGameObject interface
+    /// @name I_GameObject interface
     /// @{
 public:
+    virtual const I_BaseGameObject& base() const = 0;
     virtual I_BaseGameObject& base() = 0;
     virtual I_GameObjectData* getData() = 0;
     virtual void setData(I_GameObjectData* _pData) = 0;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 };
 
@@ -113,8 +124,8 @@ class GAMECORE_DLL_LINK I_BaseGameObject
     /// @{
 public:
     typedef Zen::Memory::managed_ptr<Rendering::I_SceneNode>            pSceneNode_type;
-    typedef Zen::Memory::managed_ptr<Physics::I_PhysicsZone>           pPhysicsZone_type;
-    typedef Zen::Memory::managed_ptr<Physics::I_CollisionShape>           pCollisionShape_type;
+    typedef Zen::Memory::managed_ptr<Physics::I_PhysicsZone>            pPhysicsZone_type;
+    typedef Zen::Memory::managed_ptr<Physics::I_PhysicsActor>           pPhysicsActor_type;
     typedef Zen::Memory::managed_ptr<Physics::I_PhysicsMaterial>        pPhysicsMaterial_type;
     typedef Zen::Memory::managed_ptr<Physics::I_PhysicsJoint>           pPhysicsJoint_type;
     typedef Zen::Memory::managed_ptr<Resource::I_Resource>              pResource_type;
@@ -168,18 +179,18 @@ public:
     /// that scene node first.
     virtual void attachToSceneNode(pSceneNode_type _pSceneNode) = 0;
 
-    /// Attach a physics shape to this game object
-    /// A game object can only be attached to one physics shape.  If
-    /// a game object is already attached to a physics shape, this 
-    /// method will unattach it from that shape and attach it the one
+    /// Attach a physics actor to this game object
+    /// A game object can only be attached to one physics actor.  If
+    /// a game object is already attached to a physics actor, this 
+    /// method will unattach it from that actor and attach it the one
     /// specified in this call.
     /// @note When this method is called, the implementation must call
     ///         _pPhysicsActor->setGameObject(*this); 
-    /// @see Physics::I_CollisionShape
-    virtual void attachCollisionShape(pCollisionShape_type _pCollisionShape) = 0;
+    /// @see Physics::I_PhysicsActor
+    virtual void attachPhysicsActor(pPhysicsActor_type _pPhysicsActor) = 0;
 
     /// Get the physics shape to which this object is attached
-    virtual pCollisionShape_type getCollisionShape() = 0;
+    virtual pPhysicsActor_type getPhysicsActor() = 0;
 
     /// Attach a controllable instance to this game object
     /// A game object can only be attached to one controllable instance. If

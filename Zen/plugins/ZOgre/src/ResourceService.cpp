@@ -36,6 +36,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <stddef.h>
 
@@ -48,10 +49,11 @@ ResourceService::ResourceService()
 ,   m_groupManager(Ogre::ResourceGroupManager::getSingleton())
 ,   m_bInitialized(false)
 ,   m_pScriptObject(NULL)
+,   m_pModule(NULL)
 {
     m_pGroupInitLock = Threading::MutexFactory::create();
 
-    m_pSceneManager = m_root.getSceneManager("default");
+    //m_pSceneManager = m_root.getSceneManager("default");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -69,8 +71,8 @@ ResourceService::addResourceLocation(const std::string& _path, const std::string
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Engine::Resource::I_ResourceService::pResource_type
-ResourceService::loadResource(config_type& _config)
+void
+ResourceService::initialiseAllResourceGroups()
 {
     if (!m_bInitialized)
     {
@@ -82,14 +84,22 @@ ResourceService::loadResource(config_type& _config)
             m_bInitialized = true;
         }
     }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Engine::Resource::I_ResourceService::pResource_type
+ResourceService::loadResource(config_type& _config)
+{
+    initialiseAllResourceGroups();
 
     // TODO Maintain a pointer to this object
 
-    // TODO Don't assume this is a renderable mesh.
     if (_config["type"] == "entity")
     {
-        Ogre::Entity* pEntity = m_pSceneManager->createEntity(_config["label"], _config["fileName"]);
-        ResourceEntity* pRawPointer = new ResourceEntity(pEntity, m_pSceneManager);
+        Ogre::SceneManager* pScene = m_root.getSceneManager(_config["scene"]);
+
+        Ogre::Entity* pEntity = pScene->createEntity(_config["label"], _config["fileName"]);
+        ResourceEntity* pRawPointer = new ResourceEntity(pEntity,pScene);
         pResource_type pResourceEntity(pRawPointer, boost::bind(&ResourceService::destroyResource, this, _1));
         wpResource_type pWeakPtr(pResourceEntity);
         pRawPointer->setSelfReference(pWeakPtr);
@@ -98,8 +108,10 @@ ResourceService::loadResource(config_type& _config)
     }
     else if (_config["type"] == "terrain")
     {
+        Ogre::SceneManager* pScene = m_root.getSceneManager(_config["scene"]);
+
         std::cout << "ZOgre::loadResource() loading terrain..." << std::endl;
-        m_pSceneManager->setWorldGeometry(_config["fileName"]);
+        pScene->setWorldGeometry(_config["fileName"]);
 
         // return an empty resource, since there's no ogre Entity created by setWorldGeometry()
         pResource_type emptyResource;
@@ -107,8 +119,10 @@ ResourceService::loadResource(config_type& _config)
     }
     else if (_config["type"] == "skybox")
     {
+        Ogre::SceneManager* pScene = m_root.getSceneManager(_config["scene"]);
+
         std::cout << "ZOgre::loadResource() loading skybox..." << std::endl;
-        m_pSceneManager->setSkyBox(true, _config["resourceName"], 99999*3, true);
+        pScene->setSkyBox(true, _config["resourceName"], boost::lexical_cast<Math::Real,std::string>(_config["distance"]), true);
 
         // return an empty resource, since there's no ogre Entity created by setSkyBox()
         pResource_type emptyResource;
@@ -141,6 +155,16 @@ ResourceService::destroyResource(wpResource_type _pResource)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static std::string sm_scriptSingletonName("renderingResourceService");
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+ResourceService::getScriptSingletonName() const
+{
+    return sm_scriptSingletonName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Scripting::I_ObjectReference*
 ResourceService::getScriptObject()
 {
@@ -148,11 +172,19 @@ ResourceService::getScriptObject()
     if (m_pScriptObject == NULL)
     {
         m_pScriptObject = new ScriptObjectReference_type(
-            Engine::Resource::I_ResourceManager::getSingleton().getDefaultScriptModule(), 
-            Engine::Resource::I_ResourceManager::getSingleton().getDefaultScriptModule()->getScriptType(getScriptTypeName()), getSelfReference().lock());
+            m_pModule->getScriptModule(),
+            m_pModule->getScriptModule()->getScriptType(getScriptTypeName()), 
+            getSelfReference().lock());
     }
 
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    m_pModule = &_module;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

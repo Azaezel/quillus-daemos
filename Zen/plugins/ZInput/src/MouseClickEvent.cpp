@@ -106,12 +106,29 @@ MouseClickEvent::getScriptObject()
 
         if(pModule.isValid())
         {
-            m_pScriptObject = new ScriptObjectReference_type
-                (pModule, pModule->getScriptType(getScriptTypeName()), this);
+            m_pScriptObject = new ScriptObjectReference_type(
+                pModule, 
+                pModule->getScriptType(getScriptTypeName()), 
+                getSelfReference().lock()
+            );
         }
     }
 
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Scripting::script_module* MouseClickEvent::sm_pModule = NULL;
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+MouseClickEvent::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    sm_pModule = &_module;
+
+    Zen::Scripting::script_type<MouseClickEvent>(_module.getScriptModule()->getScriptType("MouseClickEvent"))
+        .addMethod("getButton", &MouseClickEvent::scriptGetButton)
+        .activate()
+    ;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

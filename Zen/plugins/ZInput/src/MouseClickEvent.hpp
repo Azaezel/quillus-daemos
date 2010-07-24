@@ -57,6 +57,18 @@ public:
     virtual Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
+    /// @name MouseClickEvent implementation
+    /// @{
+public:
+    static void registerScriptModule(Zen::Scripting::script_module& _module);
+
+    inline
+    int scriptGetButton()
+    {
+        return static_cast<int>(getButton());
+    }
+    /// @}
+
     /// @name 'Structors
     /// @{
 public:
@@ -72,6 +84,8 @@ private:
     OIS::MouseButtonID                          m_button;
     const Engine::Input::I_KeyModifierState&    m_modifierState;
     Scripting::I_ObjectReference*               m_pScriptObject;
+
+    static Zen::Scripting::script_module*       sm_pModule;
     /// @}
 
 };  // class MouseClickEvent

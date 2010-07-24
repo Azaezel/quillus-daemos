@@ -36,24 +36,24 @@ namespace Community {
     }   // namespace Common
 namespace Server {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+class SessionService;
 
 /// Session Session
 class Session
-:   Common::I_Session
+:   public Common::I_Session
 {
     /// @name Types
     /// @{
 public:
-    typedef Zen::Memory::managed_ptr<Common::I_SessionService>    pSessionService_type;
     /// @}
 
     /// @name I_Session interface
     /// @{
 public:
     virtual SessionState_type getSessionState() const;
-    virtual boost::int32_t getSessionId() const;
+    virtual boost::uint32_t getSessionId() const;
     virtual const pEndpoint_type getEndpoint() const;
-    virtual pFutureAttribute_type getAttribute(const std::string& _key) const;
+    //virtual pFutureAttribute_type getAttribute(const std::string& _key) const;
     /// @}
 
     /// @name Session interface
@@ -63,11 +63,10 @@ public:
 
     /// @name 'Structors
     /// @{
-protected:
-    friend class LoginResponseHandler;
-             Session(pSessionService_type _pParent,
-                     boost::int32_t _sessionId,
-                     SessionState_type _sessionState,
+public:
+             Session(SessionService& _parent,
+                     boost::uint32_t _sessionId,
+                     const SessionState_type _sessionState,
                      pEndpoint_type _pEndpoint);
     virtual ~Session();
     /// @}
@@ -75,8 +74,8 @@ protected:
     /// @name Member variables
     /// @{
 private:
-    pSessionService_type          m_pParent;
-    boost::int32_t              m_sessionId;
+    SessionService&             m_session;
+    boost::uint32_t              m_sessionId;
     SessionState_type           m_sessionState;
     const pEndpoint_type        m_pEndpoint;
     /// @}

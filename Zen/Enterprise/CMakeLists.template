@@ -11,7 +11,7 @@ set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRE
 list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
 
 Find_Package(IndieZen REQUIRED)
-Find_Package(Boost REQUIRED )
+Find_Package(Boost REQUIRED program_options)
 
 SET (LIB_TYPE SHARED)
 
@@ -24,7 +24,7 @@ set ( ZenEnterprise_SRC
 <%SourceList%>
     )
 
-add_definitions( -DZENENTERPRISE_EXPORTS )
+add_definitions( -DZENENTERPRISE_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${LIBXML2_INCLUDE_DIR} )
 
@@ -34,7 +34,9 @@ add_library ( ZenEnterprise ${LIB_TYPE} ${ZenEnterprise_SRC} )
 
 add_dependencies(ZenEnterprise ZenCore)
 
-target_link_libraries( ZenEnterprise )
+message("Boost libraries: ${Boost_LIBRARIES}")
+
+target_link_libraries( ZenEnterprise ZenCore ${Boost_LIBRARIES} )
 
 set_target_properties ( ZenEnterprise 
 						PROPERTIES

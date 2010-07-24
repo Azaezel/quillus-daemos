@@ -28,9 +28,12 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Core/Math/Math.hpp>
 #include <Zen/Core/Math/Radian.hpp>
 #include <Zen/Core/Math/Vector3.hpp>
+#include <Zen/Core/Math/Quaternion4.hpp>
 #include <Zen/Core/Math/Matrix4.hpp>
 #include <Zen/Core/Math/Ray.hpp>
 
@@ -52,6 +55,17 @@ class RENDERING_DLL_LINK I_Camera
 {
     /// @name Types
     /// @{
+public:
+    typedef I_Camera*                               pScriptObject_type;
+    typedef Scripting::ObjectReference<I_Camera>    ScriptObjectReference_type;
+    typedef ScriptObjectReference_type              ScriptWrapper_type;
+    typedef ScriptWrapper_type*                     pScriptWrapper_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
     /// @}
 
     /// @name I_Camera interface
@@ -79,6 +93,12 @@ public:
     /// If the camera is attached to a scene node, this position is relative to the parent
     /// scene node.
     virtual Math::Point3 getPosition() const = 0;
+
+    /// Set the orientation of this camera using a quaternion.
+    virtual void setOrientation(const Math::Real _w, const Math::Real _x, const Math::Real _y, const Math::Real _z) = 0;
+
+    /// Get the orientation of this camera.
+    virtual Math::Quaternion4 getOrientation() const = 0;
 
     /// Set the direction of this camera (in the World coordinate frame).
     /// It is important to note that this direction is not related to any attached scene node.

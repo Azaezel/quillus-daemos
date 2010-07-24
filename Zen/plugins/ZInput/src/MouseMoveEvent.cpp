@@ -39,7 +39,8 @@ namespace ZInput {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 MouseMoveEvent::MouseMoveEvent(const OIS::MouseEvent& _event,
                                const Engine::Input::I_KeyModifierState& _state)
-:   m_event(_event)
+//:   m_event(_event)
+:   m_mouseState(_event.state)
 ,   m_modifierState(_state)
 ,   m_pScriptObject(NULL)
 {
@@ -54,42 +55,42 @@ MouseMoveEvent::~MouseMoveEvent()
 int
 MouseMoveEvent::getXDelta()
 {
-    return m_event.state.X.rel;
+    return m_mouseState.X.rel;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int
 MouseMoveEvent::getYDelta()
 {
-    return m_event.state.Y.rel;
+    return m_mouseState.Y.rel;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int
 MouseMoveEvent::getZDelta()
 {
-    return m_event.state.Z.rel;
+    return m_mouseState.Z.rel;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int
 MouseMoveEvent::getX()
 {
-    return m_event.state.X.abs;
+    return m_mouseState.X.abs - m_mouseState.X.rel;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int
 MouseMoveEvent::getY()
 {
-    return m_event.state.Y.abs;
+    return m_mouseState.Y.abs - m_mouseState.Y.rel;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int
 MouseMoveEvent::getZ()
 {
-    return m_event.state.Z.abs;
+    return m_mouseState.Z.abs - m_mouseState.Z.rel;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -110,8 +111,11 @@ MouseMoveEvent::getScriptObject()
 
         if(pModule.isValid())
         {
-            m_pScriptObject = new ScriptObjectReference_type
-                (pModule, pModule->getScriptType(getScriptTypeName()), this);
+            m_pScriptObject = new ScriptObjectReference_type(
+                pModule, 
+                pModule->getScriptType(getScriptTypeName()), 
+                getSelfReference().lock()
+            );
         }
     }
 

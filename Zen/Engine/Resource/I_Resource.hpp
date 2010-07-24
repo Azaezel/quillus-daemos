@@ -28,8 +28,7 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
@@ -51,6 +50,7 @@ public:
     {
         THREESPACE_RESOURCE,
         SOUND_BUFFER_RESOURCE,
+        COLLISION_RESOURCE,
         COMPOUND_RESOURCE
     };
 

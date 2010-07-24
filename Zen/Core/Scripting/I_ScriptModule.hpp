@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Core Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -30,6 +30,8 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
+
 #include <Zen/Core/Event/Event.hpp>
 
 #include <string>
@@ -49,6 +51,7 @@ class I_ObjectReference;
 /// so just ignore this layer in those cases, but you still need to create
 /// the modules nonetheless.
 class SCRIPTING_DLL_LINK I_ScriptModule
+:   public Memory::managed_self_ref<I_ScriptModule>
 {
     /// @name Types
     /// @{
@@ -66,7 +69,7 @@ public:
     /// @name I_ScriptModule interface
     /// @{
 public:
-    /// Create a type or class
+    /// Create a type or class.
     /// @param _typeName name of the type as exposed to the scripting language.  Some languages
     ///         prepend the module name (such as Python).
     /// @param _docString documentation string that is used by the scripting language if
@@ -82,14 +85,13 @@ public:
     /// or modified once the module has been activated.
     virtual void activate() = 0;
 
-    /// Create a new script object and binds it to a C++ object
+    /// Create a new script object and binds it to a C++ object.
     /// @param _name Name of the object
     /// @param _pType Type of the object
     /// @param _pObject C++ version of the object
-    /// @todo 
     virtual void createObject(pScriptType_type _pType, I_ObjectReference* _pObject) = 0;
 
-    /// Create a new global script object and binds it to a C++ object
+    /// Create a new global script object and binds it to a C++ object.
     /// @param _name Name of the object
     /// @param _pType Type of the object
     /// @param _pObject C++ version of the object

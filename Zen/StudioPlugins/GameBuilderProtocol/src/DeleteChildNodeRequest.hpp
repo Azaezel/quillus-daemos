@@ -19,9 +19,10 @@
 
 #include "../I_DeleteChildNodeRequest.hpp"
 
-#include "Message.hpp"
+#include "Request.hpp"
 
 #include <Zen/Enterprise/AppServer/I_MessageFactory.hpp>
+#include <Zen/Enterprise/AppServer/I_MessageType.hpp>
 
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -39,13 +40,12 @@ namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class DeleteChildNodeRequest
 :   public I_DeleteChildNodeRequest
-,   public Message
+,   public Request
 {
     /// @name Types
     /// @{
 public:
     enum { type = 103 };  // TODO Should we be hardcoding this?
-    typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_MessageType>         pMessageType_type;
     
     typedef Zen::Memory::managed_weak_ptr<Zen::Enterprise::AppServer::I_Request>    wpRequest_type;
     /// @}
@@ -65,7 +65,8 @@ public:
     /// @name I_Message implementation
     /// @{
 public:
-    virtual unsigned int getMessageId() const { return Message::getMessageId(); } 
+    virtual boost::uint32_t getMessageId() const { return Message::getMessageId(); } 
+    virtual pMessageType_type getMessageType() const { return getStaticMessageType(); }
     /// @}
 
     /// @name Static methods
@@ -73,9 +74,11 @@ public:
 public:
     static void registerMessage(Zen::Enterprise::AppServer::I_ApplicationServer& _appServer);
 
-    static pMessageHeader_type createMessageHeader();
+    static pMessageHeader_type createMessageHeader(boost::uint32_t _messageId);
 
     static void destroy(wpRequest_type _wpRequest);
+    
+    static pMessageType_type getStaticMessageType();    
     /// @}
     
     /// @name 'Structors
@@ -86,12 +89,12 @@ protected:
              /// This constructor is used by the static create
              /// methods for creating outbound messages.
              DeleteChildNodeRequest(pEndpoint_type _pSourceEndpoint,
-                               pEndpoint_type _pDestinationEndpoint);
+                           pEndpoint_type _pDestinationEndpoint);
              /// This constructor is used by the message factory
              /// for creating inbound messages.
              DeleteChildNodeRequest(pMessageHeader_type _pMessageHeader,
-                               pEndpoint_type _pSourceEndpoint,
-                               pEndpoint_type _pDestinationEndpoint);
+                           pEndpoint_type _pSourceEndpoint,
+                           pEndpoint_type _pDestinationEndpoint);
     virtual ~DeleteChildNodeRequest();
     /// @}
 

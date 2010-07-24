@@ -102,6 +102,13 @@ PhysicsResourceService::loadResource(config_type& _config)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+PhysicsResourceService::initialiseAllResourceGroups()
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 PhysicsResourceService::destroyResource(wpResource_type)
 {
     // TODO Call onDestroy and delete
@@ -121,6 +128,15 @@ PhysicsResourceService::getScriptObject()
     return m_pScriptObject;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static std::string sm_scriptSingletonName("physicsResourceService");
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+PhysicsResourceService::getScriptSingletonName() const
+{
+    return sm_scriptSingletonName;
+}
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZNewton
 }   // namespace Zen

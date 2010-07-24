@@ -36,6 +36,8 @@
 
 #include <boost/bind.hpp>
 
+#include <iostream>
+
 #include <string>
 #include <set>
 
@@ -43,8 +45,9 @@
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Project::Project(Zen::Studio::Workbench::I_ProjectExplorerController& _controller, const std::string& _name)
-:   I_Project(_name)
-,   m_controller(_controller)
+:   Zen::Studio::Workbench::I_Project(_name)    // This must be first
+,   Zen::Studio::Workbench::Project(_controller, _name)
+,   GameBuilder::I_Project()
 ,   m_pSubscriptionsGuard(Zen::Threading::MutexFactory::create())
 {
     GameObjectType::onOpened.connect(boost::bind(&Project::handleOpenedDocument, this, _1));
@@ -88,57 +91,13 @@ Project::remove(pDatabaseConnection_type _pDBConn)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-boost::uint64_t
-Project::getProjectId() const
-{
-    return m_projectId;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-Project::setProjectId(boost::uint64_t _projectId)
-{
-    m_projectId = _projectId;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 Project::onCreated()
 {
     /// Create the default child node
     Zen::Studio::Workbench::I_ExplorerNode::pUserData_type pData(new Folder(*this, "Game Object Types"));
 
-    m_controller.createChildNode(*getNode(), pData);
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Studio::Workbench::I_ProjectExplorerController&
-Project::getController()
-{
-    return m_controller;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Zen::Studio::Workbench::I_WorkbenchService&
-Project::getWorkbenchService()
-{
-    return m_controller.getWorkbenchService();
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Project::pDatabaseConnection_type
-Project::getDatabaseConnection()
-{
-    // TODO Eventually this project needs its own database connection.
-    return getWorkbenchService().getDatabaseConnection();
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-const boost::filesystem::path&
-Project::getControlPath()
-{
-    // TODO Eventually this project needs its own control path.
-    return getWorkbenchService().getControlPath();
+    getController().createChildNode(*getNode(), pData);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -154,6 +113,7 @@ destroySubscription(Zen::Memory::managed_weak_ptr<Zen::Spaces::ObjectModel::I_Su
 
         if (pSubscription)
         {
+            std::cout << "Project::unsubscribe()" << std::endl;
             delete pSubscription;
             return;
         }
@@ -166,9 +126,14 @@ destroySubscription(Zen::Memory::managed_weak_ptr<Zen::Spaces::ObjectModel::I_Su
 Project::pSubscription_type
 Project::subscribe(pProjectListener_type _pListener, pFilter_type _pFilter)
 {
-    Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
+    // Only the insert needs to be guarded.
+    {
+        Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
 
-    m_listeners.insert(_pListener);
+        m_listeners.insert(_pListener);
+    }
+
+    std::cout << "Project::subscribe()" << std::endl;
 
     // Notify the listener of the current state of the project.
     notifyView(_pListener);
@@ -254,6 +219,7 @@ Project::notifyView(pProjectListener_type _pListener)
 void
 Project::handleOpenedDocument(GameObjectTypeDocument* _pDocument)
 {
+    // TODO Guard
     m_documentSubscriptions[_pDocument] = _pDocument->subscribe(this);
 }
 
@@ -261,7 +227,16 @@ Project::handleOpenedDocument(GameObjectTypeDocument* _pDocument)
 void
 Project::handleClosedDocument(GameObjectTypeDocument* _pDocument)
 {
+    // TODO Guard
     m_documentSubscriptions.erase(_pDocument);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Project::onDocumentModified(I_GameObjectTypeDocument& _gameObjectTypeDocument)
+{
+    std::cout << "Project::onDocumentModified()" << std::endl;
+    notifyViewsOfChange(_gameObjectTypeDocument);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -290,7 +265,10 @@ Project::onElementModified(I_GameObjectElement& _element, int _row)
 void
 Project::notifyViewsOfChange(I_GameObjectTypeDocument& _document)
 {
-    Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
+    // This lock is redundant since we're only using a single thread.  When
+    // we switch to mulltiple threads, I'll work on updating the event
+    // model and re-evaluate the need for all locks.
+    //Zen::Threading::CriticalSection lock(m_pSubscriptionsGuard);
 
     for(ProjectSubscribers_type::iterator iter = m_listeners.begin(); iter != m_listeners.end(); iter++)
     {

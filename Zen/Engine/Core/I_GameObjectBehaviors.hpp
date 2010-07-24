@@ -26,7 +26,7 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <boost/function.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -111,7 +111,7 @@ public:
         /// opportunity to modify the physics behavior, but event handling stops
         /// for this frame as soon as a behavior returns false for this method.
         /// Normally this method should return true unless the behavior needs to abort the physics event handling.
-        virtual bool handlePhysicsTransform(I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_TransformEventData& _eventData) = 0;
+        virtual bool handlePhysicsTransform(I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_TransformEventData& _eventData) = 0;
     protected:
                  I_PhysicsTransformBehavior();
         virtual ~I_PhysicsTransformBehavior();
@@ -128,7 +128,7 @@ public:
         /// opportunity to modify the physics forces, but event handling stops
         /// for this frame as soon as a behavior returns false for this method.
         /// Normally this method should return true unless the behavior should stop processing.
-        virtual bool handlePhysicsForce(I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_ApplyForcesEventData& _eventData) = 0;
+        virtual bool handlePhysicsForce(I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_ApplyForcesEventData& _eventData) = 0;
     protected:
                  I_PhysicsForceBehavior();
         virtual ~I_PhysicsForceBehavior();
@@ -150,7 +150,7 @@ public:
         /// Normally this method should return true unless the behavior should stop processing.
         ///
         /// @return Normally this method should return true unless the behavior needs to abort the physics event handling.
-        virtual bool handleBoundBoxCollision(I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_BeginCollisionEventData& _eventData) = 0;
+        virtual bool handleBoundBoxCollision(I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_BeginCollisionEventData& _eventData) = 0;
 
         /// Handle the collision for an object.
         ///
@@ -169,10 +169,10 @@ public:
         /// This method is called for every collision that occurs between the two aforementioned _shape and _otherShape in
         /// handleBoundBoxCollision().  If no collisions occur, this method won't be called.  Use this method to override
         /// the results of the collision.
-        virtual bool handleCollision(I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_DuringCollisionEventData& _eventData) = 0;
+        virtual bool handleCollision(I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_DuringCollisionEventData& _eventData) = 0;
 
         /// This is called after all of the collisions for two objects have been handled.
-		virtual void handleCollisionResolution(I_BaseGameObject& _gameObject, Physics::I_CollisionShape::I_EndCollisionEventData& _eventData) = 0; 
+		virtual void handleCollisionResolution(I_BaseGameObject& _gameObject, Physics::I_PhysicsActor::I_EndCollisionEventData& _eventData) = 0; 
 
     protected:
                  I_CollisionBehavior();

@@ -33,6 +33,9 @@
 #include <Zen/Core/Plugins/I_Module.hpp>
 #include <Zen/Core/Plugins/I_Plugin.hpp>
 #include <Zen/Core/Utility/runtime_exception.hpp>
+#include <Zen/Core/Utility/I_LogManager.hpp>
+#include <Zen/Core/Utility/I_LogService.hpp>
+#include <Zen/Core/Utility/I_Log.hpp>
 
 #include <boost/bind.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -65,9 +68,15 @@ PluginManager::installApplication(const boost::filesystem::path& _configFile)
 {
     m_pApplication.reset();
 
+    // Initialize the default logging service.
+    // TODO Don't hardcode log name and params.
+    Utility::I_LogManager::pLogService_type pLogService = 
+        Utility::I_LogManager::getSingleton().create("zenLogService");
+    pLogService->createLog("Zen.log");
+
     // Need the raw pointer; this is safe since this line and the next won't throw
     // an exception.
-    Application* const pApplication = new Application();
+    Application* const pApplication = new Application(pLogService);
     m_pApplication = boost::shared_ptr<I_Application>(pApplication);
 
     pApplication->parseConfigurationFile(_configFile);
@@ -334,12 +343,11 @@ PluginManager::loadPlugin(PluginInfo* const _pPluginInfo)
     // TODO Don't assume this is a dynamic plugin
     I_ModuleManager::service_ptr_type pModuleService = I_ModuleManager::getSingleton().getService(I_ModuleManager::DYNAMIC);
 
-    // TODO Move the rest of this code over to ModuleService
+    // Load the module.
     I_ModuleService::module_ptr_type pModule = pModuleService->load(_pPluginInfo->getName());
 
     if (pModule != NULL)
     {
-
         pPlugin = pModule->getPlugin(pPluginInfo->getName());
 
         // Save the indexed plugin

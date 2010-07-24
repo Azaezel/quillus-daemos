@@ -32,7 +32,7 @@
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 #include <Zen/Engine/Rendering/I_SceneService.hpp>
 
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 #include <boost/bind.hpp>
 
@@ -44,7 +44,7 @@ namespace Base {
 GameObject::GameObject(BaseGame& _client, const std::string& _name)
 :   m_game(_client)
 ,   m_name(_name)
-,   m_pCollisionShape()
+,   m_pPhysicsActor()
 ,   m_pGameObject(NULL)
 {
 }
@@ -101,16 +101,16 @@ GameObject::attachToSceneNode(pSceneNode_type _pSceneNode)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-GameObject::attachCollisionShape(pCollisionShape_type _pCollisionShape)
+GameObject::attachPhysicsActor(pPhysicsActor_type _pPhysicsActor)
 {
-    m_pCollisionShape = _pCollisionShape;
+    m_pPhysicsActor = _pPhysicsActor;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-GameObject::pCollisionShape_type
-GameObject::getCollisionShape()
+GameObject::pPhysicsActor_type
+GameObject::getPhysicsActor()
 {
-    return m_pCollisionShape;
+    return m_pPhysicsActor;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -169,9 +169,9 @@ GameObject::setPosition(const Math::Point3& _position, bool _overridePhysics)
 
     m_position = _position;
 
-    if (_overridePhysics && getCollisionShape().isValid() )
+    if (_overridePhysics && getPhysicsActor().isValid() )
     {
-        getCollisionShape()->setPosition(_position);
+        getPhysicsActor()->setPosition(_position);
     }
 }
 
@@ -201,9 +201,9 @@ GameObject::setOrientation(const Math::Quaternion4& _orientation, bool _override
     getSceneNode()->setRotation(_orientation);
     m_orientation = _orientation;
 
-    if (_overridePhysics && getCollisionShape().isValid() )
+    if (_overridePhysics && getPhysicsActor().isValid() )
     {
-        getCollisionShape()->setOrientation(_orientation);
+        getPhysicsActor()->setOrientation(_orientation);
     }
 }
 

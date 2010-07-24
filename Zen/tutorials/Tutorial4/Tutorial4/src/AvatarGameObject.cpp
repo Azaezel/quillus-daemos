@@ -24,15 +24,16 @@
 //  Walt Collins (Arcanor) - wcollins@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
 //
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #include "AvatarGameObject.hpp"
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 #include <Zen/Engine/Physics/I_PhysicsMaterial.hpp>
+#include <Zen/Engine/Physics/I_CollisionShape.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Game {
@@ -47,25 +48,25 @@ AvatarGameObject::AvatarGameObject(Zen::Engine::Core::I_GameGroup& _group, const
     // TODO call m_baseObject.setUserData(this); or something like that so you can get back
     // to AvatarGameObject from a I_GameObject
 
-    m_pShape = base().getCollisionShape();
-    m_pShape->setName(base().getName());
+    m_pActor = base().getPhysicsActor();
+    //m_pActor->setName(base().getName());
 
-    // TODO replace?
-    m_pShape->initCapsuleShape(0.5f, 1.5f);
+    m_pZone = m_pActor->getPhysicsZone();
+
+    m_pActor->setCollisionShape(m_pZone->createCapsuleShape(0.5f, 1.5f));
 
     // mass of 1.0f is inappropriate, but we need to set a non-zero value here
-    m_pShape->setMass(75.0f);
+    m_pActor->setMass(75.0f);
 
     //m_pShape->setAngularDamping(Zen::Math::Vector3(1.0f, 1.0f, 1.0f));
 
-    m_pZone = m_pShape->getPhysicsZone();
-    m_pUpJoint = m_pZone->createJoint();
-    m_pUpJoint->attachShape(m_pShape);
-    m_pUpJoint->initUpVectorJoint(Zen::Math::Vector3(0.0f, 1.0f, 0.0f));
+    //m_pUpJoint = m_pZone->createJoint();
+    //m_pUpJoint->attachActor(m_pActor);
+    //m_pUpJoint->initUpVectorJoint(Zen::Math::Vector3(0.0f, 1.0f, 0.0f));
 
 	m_moveSpeed = 10.0f;	//too much lower than this, and you can't overcome your own inertia
-	m_stepHeight = 85.0f;	//gravity counterforce for moevemt. Keep slightly below gravity. 
-							//too high, you start to float. To low, it's like youre dragging your feet.  
+	m_stepHeight = 85.0f;	//gravity counterforce for moevemt. Keep slightly below gravity.
+							//too high, you start to float. To low, it's like youre dragging your feet.
 							//Also by it's nature influences how steep a slope you can climb without going at an angle.
 	m_turnSpeed = 94.2477f;	//30PI
 }

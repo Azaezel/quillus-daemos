@@ -15,8 +15,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-ReplicationTypeProperty::ReplicationTypeProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _value, Property* _pParent)
-:   Property(_publisher, "Replication Type", _value, _pParent)
+ReplicationTypeProperty::ReplicationTypeProperty(Properties& _properties, const std::string& _value, Property* _pParent)
+:   Property(_properties, "Replication Type", _value, _pParent)
 {
 }
 

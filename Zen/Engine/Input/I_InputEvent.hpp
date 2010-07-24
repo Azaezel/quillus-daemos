@@ -35,7 +35,10 @@ namespace Zen {
 namespace Engine {
 namespace Input {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+;
 
+/// @note I'm not sure why this is here.
+/// Should the other input events derive from this?
 class INPUTMANAGER_DLL_LINK I_InputEvent
 {
     /// @name Types

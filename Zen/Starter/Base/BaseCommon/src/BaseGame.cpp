@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Base Starter Kit
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -28,16 +28,9 @@
 #include "BehavioredGameObject.hpp"
 #include "GameObject.hpp"
 
-#include <Zen/Engine/Rendering/I_RenderingService.hpp>
-#include <Zen/Engine/Rendering/I_RenderingServiceFactory.hpp>
-
-#include <Zen/Engine/Rendering/I_RenderingManager.hpp>
-#include <Zen/Engine/Rendering/I_View.hpp>
-#include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>
-#include <Zen/Engine/Rendering/I_SceneManager.hpp>
-#include <Zen/Engine/Rendering/I_SceneService.hpp>
-#include <Zen/Engine/Rendering/I_SceneServiceFactory.hpp>
-#include <Zen/Engine/Rendering/I_Context.hpp>
+#include <Zen/Core/Scripting.hpp>
+#include <Zen/Core/Event/I_ActionMap.hpp>
+#include <Zen/Core/Event/I_EventService.hpp>
 
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 #include <Zen/Engine/Resource/I_ResourceManager.hpp>
@@ -47,24 +40,17 @@
 #include <Zen/Engine/World/I_TerrainService.hpp>
 #include <Zen/Engine/World/I_SkyService.hpp>
 
-#include <Zen/Engine/Camera/I_CameraManager.hpp>
-#include <Zen/Engine/Camera/I_CameraService.hpp>
-#include <Zen/Engine/Camera/I_Camera.hpp>
-
 #include <Zen/Engine/Physics/I_PhysicsManager.hpp>
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
-#include <Zen/Engine/Physics/I_PhysicsShape.hpp>
+#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
+#include <Zen/Engine/Physics/I_PhysicsActor.hpp>
 
-#include <Zen/Engine/Input/I_InputServiceManager.hpp>
-#include <Zen/Engine/Input/I_InputService.hpp>
-#include <Zen/Engine/Input/I_InputMap.hpp>
-#include <Zen/Engine/Input/I_KeyEvent.hpp>
+#include <Zen/Engine/World/I_WorldManager.hpp>
+#include <Zen/Engine/World/I_TerrainService.hpp>
+#include <Zen/Engine/World/I_SkyService.hpp>
 
 #include <Zen/Engine/Navigation/I_NavigationManager.hpp>
 #include <Zen/Engine/Navigation/I_NavigationService.hpp>
-
-#include <Zen/Engine/Client/I_GameClient.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptingManager.hpp>
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
@@ -102,31 +88,15 @@ namespace Engine {
 namespace Base {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 BaseGame::BaseGame()
+:   m_pScriptObject(NULL)
+,   m_pMainGroup(NULL)
+,   m_pEventService(Zen::Event::I_EventManager::getSingleton().create("eventService"))
 {
-    m_pMainGroup = NULL;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 BaseGame::~BaseGame()
 {
-    int x = 0;
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Core::I_ActionMap&
-BaseGame::getActionMap(const std::string& _actionMapName)
-{
-    ActionMaps_type::iterator iter = m_actionMapMap.find(_actionMapName);
-    if (iter != m_actionMapMap.end())
-    {
-        return *iter->second;
-    }
-    else
-    {
-        ActionMap* pActionMap = new ActionMap();
-        m_actionMapMap[_actionMapName] = pActionMap;
-        return *pActionMap;
-    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -156,6 +126,8 @@ BaseGame::initScriptModule(pScriptEngine_type _pScriptEngine)
 {
     m_pScriptEngine = _pScriptEngine;
     m_pModule = m_pScriptEngine->createScriptModule("BaseGame", "Base Game");
+
+    m_pEventService->registerScriptEngine(_pScriptEngine);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -177,20 +149,6 @@ static Zen::Scripting::I_ObjectReference*
 script_getRootGroup(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
 {
     return I_BaseGame::getSingleton().getRootGroup().getScriptObject();
-}
-
-static Zen::Scripting::I_ObjectReference*
-script_getActionMap(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
-{
-    if (_parms.size() == 0)
-    {
-        return I_BaseGame::getSingleton().getActionMap().getScriptObject();
-    }
-    else
-    {
-        std::string name = boost::any_cast<std::string>(_parms[0]);
-        return I_BaseGame::getSingleton().getActionMap(name).getScriptObject();
-    }
 }
 
 static Zen::Scripting::I_ObjectReference*
@@ -222,7 +180,7 @@ script_initBoxShape(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boo
 static void
 script_setMass(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
 {
-    Zen::Scripting::ObjectReference<Physics::I_CollisionShape>* pObject = dynamic_cast<Zen::Scripting::ObjectReference<Physics::I_CollisionShape>*>(_pObject);
+    Zen::Scripting::ObjectReference<Physics::I_PhysicsActor>* pObject = dynamic_cast<Zen::Scripting::ObjectReference<Physics::I_PhysicsActor>*>(_pObject);
 }
 
 static void
@@ -280,14 +238,14 @@ script_setOrientation(Zen::Scripting::I_ObjectReference* _pObject, std::vector<b
 }
 
 static Zen::Scripting::I_ObjectReference*
-script_getCollisionShape(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
+script_getPhysicsActor(Zen::Scripting::I_ObjectReference* _pObject, std::vector<boost::any> _parms)
 {
     Engine::Core::I_BaseGameObject::ScriptObjectReference_type* pObject = dynamic_cast<Engine::Core::I_BaseGameObject::ScriptObjectReference_type*>(_pObject);
 
     I_BaseGameObject* pGameObject = dynamic_cast<I_BaseGameObject*>(pObject->getObject());
 
-    Zen::Engine::Core::I_BaseGameObject::pCollisionShape_type pCollisionShape = pGameObject->getCollisionShape();
-    Zen::Scripting::I_ObjectReference* pScriptObject = pCollisionShape->getScriptObject();
+    Zen::Engine::Core::I_BaseGameObject::pPhysicsActor_type pPhysicsActor = pGameObject->getPhysicsActor();
+    Zen::Scripting::I_ObjectReference* pScriptObject = pPhysicsActor->getScriptObject();
     return pScriptObject;
 }
 
@@ -299,8 +257,15 @@ BaseGame::initScriptTypes()
     m_pGameScriptType = m_pModule->createScriptType("Game", "Game", 0);
     m_pGameScriptType->addMethod("getRootGroup", "Get the root GameGroup",
         &script_getRootGroup);
-    m_pGameScriptType->addMethod("getActionMap", "Get the ActionMap",
-        &script_getActionMap);
+
+    /// TODO This is a hack
+    Zen::Scripting::script_type<I_BaseGame>(m_pGameScriptType)
+        .addMethod("getPhysicsService", &I_BaseGame::getPhysicsService)
+        .addMethod("getTerrainService", &I_BaseGame::getTerrainService)
+        .addMethod("getSkyService", &I_BaseGame::getSkyService)
+        .addMethod("setCurrentPhysicsZone", &I_BaseGame::setCurrentPhysicsZone)
+        .activate()
+    ;
 
     // Create the GameGroup type
     m_pGameGroupScriptType = m_pModule->createScriptType("GameGroup", "Game Group", 0);
@@ -325,31 +290,18 @@ BaseGame::initScriptTypes()
         &script_setScale);
     m_pGameObjectScriptType->addMethod("setOrientation", "Set the orientation of this object",
         &script_setOrientation);
-    m_pGameObjectScriptType->addMethod("getCollisionShape", "Get the Physics Shape of this object",
-        &script_getCollisionShape);
+    m_pGameObjectScriptType->addMethod("getPhysicsActor", "Get the Physics Shape of this object",
+        &script_getPhysicsActor);
 
-    // Create the PhysicsZone script type
-    m_pPhysicsZoneScriptType = m_pModule->createScriptType("PhysicsZone", "Physics World", 0);
-
-#if 0 // not implemented?
-    m_pPhysicsZoneScriptType->addMethod("createShape", "Create a Physics Shape",
-        &script_createShape);
-#endif
-
-    // Create the CollisionShape script type
-    m_pCollisionShapeScriptType = m_pModule->createScriptType("CollisionShape", "Physics Shape", 0);
-    m_pCollisionShapeScriptType->addMethod("initBoxShape", "",
-        &script_initBoxShape);
-    m_pCollisionShapeScriptType->addMethod("setMass", "",
-        &script_setMass);
+    Zen::Scripting::script_type<I_BaseGameObject>(m_pGameObjectScriptType)
+        .addMethod("getSceneNode", &I_BaseGameObject::getSceneNode)
+        .activate()
+    ;
 
 #if 0 // TODO This needs to be implemented to support multiple worlds.
     m_pGameClientScriptType->addMethod("getPhysicsZone", "",
         &script_getPhysicsZone);
 #endif
-
-    dynamic_cast<ActionMap*>(&getActionMap())->registerScriptModule(m_pModule);
-
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -382,6 +334,8 @@ BaseGame::createScriptObjects()
 bool
 BaseGame::initPhysicsService(const std::string& _type)
 {
+    std::cout << "Initializing Physics service: " << _type << std::endl;
+
     // was "ZNewton"
     Zen::Engine::Physics::I_PhysicsManager::config_type config;
 
@@ -389,13 +343,12 @@ BaseGame::initPhysicsService(const std::string& _type)
     m_pPhysicsService =
         Zen::Engine::Physics::I_PhysicsManager::getSingleton().create(_type, config);
 
-    if (m_pPhysicsService.isValid())
+    if (!m_pPhysicsService.isValid())
     {
         std::cout << "Error: couldn't initPhysicsService()" << std::endl;
     }
 
-    // Initialize the first world
-    m_pPhysicsZone = getPhysicsService()->createZone();
+    std::cout << "Physics Service created, checking for scripting support." << std::endl;
 
     // Register the script engine with the Physics Manager
     if (m_pScriptEngine.isValid())
@@ -403,6 +356,63 @@ BaseGame::initPhysicsService(const std::string& _type)
         Zen::Engine::Physics::I_PhysicsManager::getSingleton().registerDefaultScriptEngine(m_pScriptEngine);
     }
 
+    std::cout << "BaseGame::initPhysicsService(): Success!" << std::endl;
+    return true;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+BaseGame::initTerrainService(const std::string& _type)
+{
+    std::cout << "Initializing Terrain service: " << _type << std::endl;
+
+    Zen::Engine::World::I_WorldManager::config_type config;
+
+    m_pTerrainService =
+        Zen::Engine::World::I_WorldManager::getSingleton().createTerrainService(_type, config);
+
+    if(!m_pTerrainService.isValid())
+    {
+        std::cout << "Error: couldn't init Terrain service" << std::endl;
+    }
+
+    std::cout << "Terrain Service created, checking for scripting support." << std::endl;
+
+    // Register the script engine with the Terrain Manager
+    if( m_pScriptEngine.isValid())
+    {
+        Zen::Engine::World::I_WorldManager::getSingleton().registerDefaultScriptEngine(m_pScriptEngine);
+    }
+
+    std::cout << "BaseGame::initTerrainService(): Success!" << std::endl;
+    return true;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+BaseGame::initSkyService(const std::string& _type)
+{
+    std::cout << "Initializing Sky service: " << _type << std::endl;
+
+    Zen::Engine::World::I_WorldManager::config_type config;
+
+    m_pSkyService =
+        Zen::Engine::World::I_WorldManager::getSingleton().createSkyService(_type, config);
+
+    if(!m_pSkyService.isValid())
+    {
+        std::cout << "Error: couldn't init Sky service" << std::endl;
+    }
+
+    std::cout << "Sky Service created, checking for scripting support." << std::endl;
+
+    // Register the script engine with the Terrain Manager
+    if(m_pScriptEngine.isValid())
+    {
+        Zen::Engine::World::I_WorldManager::getSingleton().registerDefaultScriptEngine(m_pScriptEngine);
+    }
+
+    std::cout << "BaseGame::initSkyService(): Success!" << std::endl;
     return true;
 }
 
@@ -413,6 +423,12 @@ BaseGame::getCurrentPhysicsZone()
     return m_pPhysicsZone;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+BaseGame::setCurrentPhysicsZone(BaseGame::pPhysicsZone_type _pPhysicsZone)
+{
+    m_pPhysicsZone = _pPhysicsZone;
+}
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool
 BaseGame::initPhysicsResourceService(const std::string& _type)
@@ -432,14 +448,7 @@ BaseGame::initPhysicsResourceService(const std::string& _type)
     m_pPhysicsResourceService =
         Resource::I_ResourceManager::getSingleton().create(_type, config);
 
-    pScriptModule_type const pModule = Resource::I_ResourceManager::getSingleton().getDefaultScriptModule();
-
-    if (pModule.isValid())
-    {
-        new Scripting::ObjectReference<Resource::I_ResourceService>(pModule,
-            pModule->getScriptType(m_pPhysicsResourceService->getScriptTypeName()),
-            m_pPhysicsResourceService, "physicsResourceService");
-    }
+    pScriptModule_type const pModule = Resource::I_ResourceManager::getSingleton().getDefaultResourceScriptModule();
 
     return true;
 }
@@ -449,6 +458,20 @@ BaseGame::pPhysicsService_type
 BaseGame::getPhysicsService()
 {
     return m_pPhysicsService;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+BaseGame::pTerrainService_type
+BaseGame::getTerrainService()
+{
+    return m_pTerrainService;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+BaseGame::pSkyService_type
+BaseGame::getSkyService()
+{
+    return m_pSkyService;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -465,7 +488,7 @@ BaseGame::initNavigationService(const std::string& _type)
     m_pNavigationService =
         Zen::Engine::Navigation::I_NavigationManager::getSingleton().create(_type);
 
-    if (m_pNavigationService.isValid())
+    if (!m_pNavigationService.isValid())
     {
         std::cout << "Error: couldn't create NavigationService" << std::endl;
         return false;
@@ -479,6 +502,13 @@ Navigation::I_NavigationService&
 BaseGame::getNavigationService()
 {
     return *m_pNavigationService;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Event::I_ActionMap&
+BaseGame::getActionMap()
+{
+    return m_pEventService->getActionMap("default");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -47,6 +47,7 @@ public:
 public:
     virtual bool cellPropertiesChangeEachRow() const;
     virtual bool cellPropertiesChangeEachColumn() const;
+    virtual const Zen::Studio::Workbench::I_Property* getPropertyByFullName(const std::string& _fullName);
     /// @}
 
     /// @name Properties overrides

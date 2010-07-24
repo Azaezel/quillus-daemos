@@ -31,7 +31,7 @@
 #include <Zen/Core/Memory/managed_self_ref.hpp>
 #include <Zen/Core/Utility/runtime_exception.hpp>
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
-//#include <Zen/Engine/Physics/I_PhysicsWorld.hpp>
+//#include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -53,7 +53,7 @@ public:
     /// @name I_PhysicsService implementation
     /// @{
 public:
-    virtual pPhysicsZone_type createZone(void);
+    virtual pPhysicsZone_type createZone(const Math::Vector3& _min, const Math::Vector3& _max);
 	virtual void stepSimulation(double _elapsedTime);
     /// @}
 

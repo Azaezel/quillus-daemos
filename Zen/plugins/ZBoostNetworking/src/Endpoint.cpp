@@ -23,6 +23,8 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "Endpoint.hpp"
 #include "HyperTextTransportProtocolService.hpp"
 
@@ -32,6 +34,8 @@
 
 #include <Zen/Enterprise/AppServer/I_ProtocolService.hpp>
 
+#include <sstream>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Enterprise {
@@ -40,7 +44,11 @@ namespace AppServer {
 Endpoint::Endpoint(wpProtocolService_type _pProtocolAdapter, const boost::asio::ip::tcp::endpoint& _endpoint)
 :   m_pProtocolAdapter(_pProtocolAdapter)
 ,   m_endpoint(_endpoint)
+,   m_isLocal(true)
 {
+    std::stringstream endpointStream;
+    endpointStream << _endpoint;
+    m_endpointString = endpointStream.str();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -67,6 +75,20 @@ const Zen::Networking::I_Address&
 Endpoint::getAddress() const
 {
     throw new Utility::runtime_exception("Endpoint::getAddress(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Endpoint::setIsLocal(bool _isLocal)
+{
+    m_isLocal = _isLocal;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Endpoint::isLocal() const
+{
+    return m_isLocal;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

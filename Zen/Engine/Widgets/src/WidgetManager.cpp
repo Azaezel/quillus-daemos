@@ -55,7 +55,7 @@ WidgetManager::~WidgetManager()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_WidgetManager::pService_type
-WidgetManager::create(const std::string& _type, config_type& _config)
+WidgetManager::create(const std::string& _type, config_type& _config, pScriptEngine_type _pScriptEngine)
 {
     Threading::CriticalSection guard(m_serviceCache.getLock());
 
@@ -76,66 +76,51 @@ WidgetManager::create(const std::string& _type, config_type& _config)
         throw Zen::Utility::runtime_exception(errorMessage.str());
     }
 
-    pService = m_serviceCache.cacheService(_type, pFactory->create(_type, _config));
-
-    if( m_pDefaultScriptEngine.isValid() )
-    {
-        registerScriptEngine(m_pDefaultScriptEngine, pService);
-    }
+    pService = m_serviceCache.cacheService(_type, pFactory->create(_type, _config, _pScriptEngine));
 
     return pService;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-WidgetManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
+WidgetManager::registerWidgetsScriptModule()
 {
-    registerScriptTypes(_pEngine);
+    Threading::CriticalSection guard(m_serviceCache.getLock());
 
-    /// Register all of the existing services
-    if(!m_pDefaultScriptEngine.isValid())
+    for(ServiceCache_type::iterator iter = m_serviceCache.begin(); iter != m_serviceCache.end(); iter++)
     {
-        Threading::CriticalSection guard(m_serviceCache.getLock());
-
-        for(ServiceCache_type::iterator iter = m_serviceCache.begin(); iter != m_serviceCache.end(); iter++)
-        {
-            registerScriptEngine(_pEngine, iter->second);
-        }
+        //iter->second->registerScriptModule(*m_pWidgetsModule);
     }
-
-    m_pDefaultScriptEngine = _pEngine;
-    m_scriptTypesInitialized = false;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 WidgetManager::pScriptModule_type
 WidgetManager::getDefaultScriptModule()
 {
-    return m_pWidgetsModule;
+    return m_pWidgetsModule->getScriptModule();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-WidgetManager::registerScriptEngine(pScriptEngine_type _pEngine, pService_type _pService)
-{
-    new I_WidgetService::ScriptObjectReference_type(m_pWidgetsModule, m_pWidgetServiceType, _pService, "widgetService");
-}
-
-//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-WidgetManager::registerScriptTypes(pScriptEngine_type _pEngine)
+WidgetManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
 {
     /// Don't bother if the types have already been initialized
     if (m_scriptTypesInitialized == true || !_pEngine.isValid())
         return;
 
     // Create a Widgets module
-    m_pWidgetsModule = _pEngine->createScriptModule("Widgets", "Zen Widgets Module");
+    m_pWidgetsModule = new Zen::Scripting::script_module(_pEngine, "Widgets", "Zen Widgets Module");
 
-    // Expose I_WidgetService to the Script Engine
-    m_pWidgetServiceType = m_pWidgetsModule->createScriptType("WidgetService", "Widget Service", 0);
+    m_pWidgetsModule->addType<I_WidgetService>("WidgetService", "Widget Service")
+
+    ;
+
+    m_scriptTypesInitialized = true;
+    m_pDefaultScriptEngine = _pEngine;
 
     m_pWidgetsModule->activate();
+
+    registerWidgetsScriptModule();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

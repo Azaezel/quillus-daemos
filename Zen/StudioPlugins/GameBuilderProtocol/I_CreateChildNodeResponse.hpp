@@ -35,20 +35,22 @@ namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class GAMEBUILDERPROTOCOL_DLL_LINK I_CreateChildNodeResponse
-:   public Zen::Enterprise::AppServer::I_Response
-,   public virtual GameBuilder::I_Message
+:   public virtual Zen::Enterprise::AppServer::I_Response
 {
     /// @name Types
     /// @{
 public:
     typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_Response>   pResponse_type;
+
     /// @}
 
     /// @name Static methods
     /// @{
 public:
     static pResponse_type create(pEndpoint_type _pSourceEndpoint,
-                                pEndpoint_type _pDestinationEndpoint);
+                                pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId);
+
+    static pMessageType_type getStaticMessageType();
     /// @}
 
     /// @name 'Structors

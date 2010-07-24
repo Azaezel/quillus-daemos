@@ -31,6 +31,7 @@
 #include <Zen/Enterprise/AppServer/I_Message.hpp>
 
 #include <boost/noncopyable.hpp>
+#include <boost/cstdint.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -49,6 +50,9 @@ public:
     /// @name I_Response interface.
     /// @{
 public:
+    /// Get the message Id associated with the request that 
+    /// resulted in this response.
+    virtual boost::uint64_t getRequestMessageId() const = 0;
     /// @}
 
     /// @name Events

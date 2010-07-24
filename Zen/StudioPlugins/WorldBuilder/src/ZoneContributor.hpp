@@ -30,10 +30,6 @@
 
 #include <OgreConfig.h>
 
-#if OGRE_MEMORY_ALLOCATOR == OGRE_MEMORY_ALLOCATOR_NED
-#error Oops
-#endif
-
 #include <map>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -30,15 +30,19 @@
 #include <Zen/Core/Math/Point3.hpp>
 #include <Zen/Core/Math/Vector3.hpp>
 
+#include <iostream>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Camera::Camera(RenderingCanvas& _canvas, Ogre::Camera& _camera, const std::string& _name)
+Camera::Camera(Zen::Scripting::script_module& _module, RenderingCanvas& _canvas, Ogre::Camera& _camera, const std::string& _name)
 :   m_canvas(_canvas)
 ,   m_camera(_camera)
 ,   m_name(_name)
 ,   m_pSceneNode(NULL)
+,   m_pScriptObject(NULL)
+,   m_module(_module)
 {
 }
 
@@ -120,6 +124,38 @@ Camera::getPosition() const
     }
 
     return Math::Point3(position.x, position.y, position.z);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+Camera::setOrientation(const Math::Real _w, const Math::Real _x, const Math::Real _y, const Math::Real _z)
+{
+    if (m_pSceneNode)
+    {
+        m_pSceneNode->setOrientation(_w,_x,_y,_z);
+    }
+    else
+    {
+        m_camera.setOrientation(Ogre::Quaternion(_w,_x,_y,_z));
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Math::Quaternion4
+Camera::getOrientation() const
+{
+    Ogre::Quaternion orientation;
+
+    if (m_pSceneNode)
+    {
+        orientation = m_pSceneNode->getOrientation();
+    }
+    else
+    {
+        orientation = m_camera.getOrientation();
+    }
+
+    return Math::Quaternion4(orientation.w,orientation.x,orientation.y,orientation.z);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -255,7 +291,7 @@ Camera::getViewportRay(int _x, int _y)
     // Convert the values to Real
     Ogre::Real x((Ogre::Real)_x);
     Ogre::Real y((Ogre::Real)_y);
-    
+
     // Normalise them based on the size of the screen.
     x = x / m_canvas.getWidth();
     y = y / m_canvas.getHeight();
@@ -267,6 +303,23 @@ Camera::getViewportRay(int _x, int _y)
         Math::Vector3(ray.getDirection().ptr())
     );
 }
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+Camera::getScriptObject()
+{
+    // TODO Make thread safe?
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptObjectReference_type(
+            m_module.getScriptModule(),
+            m_module.getScriptModule()->getScriptType(getScriptTypeName()),
+            this
+        );
+    }
+    return m_pScriptObject;
+}
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZOgre
 }   // namespace Zen

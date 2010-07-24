@@ -26,13 +26,15 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Scripting.hpp>
+
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
-#include <Zen/Core/Event/Event.hpp>
-#include <Zen/Core/Math/Math.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Event/Event.hpp>
+
+#include <Zen/Core/Math/Math.hpp>
 
 #include <string>
 
@@ -51,6 +53,7 @@ class I_ParticleSystem;
 
 class RENDERING_DLL_LINK I_SceneService
 :   public Zen::Scripting::I_ScriptableType
+,   public Memory::managed_self_ref<Zen::Engine::Rendering::I_SceneService>
 {
     /// @name Types
     /// @{
@@ -60,6 +63,8 @@ public:
 
     typedef Zen::Memory::managed_ptr<I_SceneService>    pScriptObject_type;
     typedef Scripting::ObjectReference<I_SceneService>  ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                  ScriptWrapper_type;
+    typedef ScriptWrapper_type*                         pScriptWrapper_type;
 
     typedef Memory::managed_weak_ptr<I_SceneService>    wpSceneService_type;
 
@@ -88,6 +93,8 @@ public:
 
     /// set the ambient light for the scene
     virtual void setAmbientLight(Math::Real _red = 0.75f, Math::Real _green = 0.75f, Math::Real _blue = 0.75f, Math::Real _alpha = 1.0f) = 0;
+
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -125,7 +132,7 @@ protected:
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Rendering
 }   // namespace Engine
-namespace Memory 
+namespace Memory
 {
     /// I_SceneService is managed by a factory
     template<>

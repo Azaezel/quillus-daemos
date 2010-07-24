@@ -33,6 +33,7 @@
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
+#include <Zen/Core/Scripting/script_module.hpp>
 #include <Zen/Core/Plugins/ServiceCache.hpp>
 
 #include <Zen/Core/Scripting/ObjectReference.hpp>
@@ -67,12 +68,14 @@ public:
 
     typedef Zen::Memory::managed_ptr<I_InputService>        pInputService_type;
     typedef Zen::Memory::managed_weak_ptr<I_InputService>   wpInputService_type;
+    typedef Zen::Memory::managed_weak_ptr<I_InputMapService> wpInputMapService_type;
     /// @}
 
     /// @name I_InputServiceManager implementation
     /// @{
 public:
     virtual pService_type create(const std::string& _type, config_type& _config);
+    virtual pInputMapService_type createInputMapService();
     virtual void registerDefaultScriptEngine(pScriptEngine_type _pEngine);
     virtual pScriptModule_type getDefaultScriptModule();
     /// @}
@@ -84,12 +87,11 @@ public:
     /// @param _pService Weak pointer to service being destroyed.
     void onDestroy(wpInputService_type _pService);
 
-private:
-    /// Register the script classes with the scripting engine
-    void registerScriptTypes(pScriptEngine_type _pEngine);
+    void destroyInputMapService(wpInputMapService_type _wpInputMapService);
 
-    /// Register a service with a script engine
-    void registerScriptEngine(pScriptEngine_type _pEngine, pInputService_type _pService);
+private:
+    /// Register the script module with all of the previously created services.
+    void registerScriptModule();
     /// @}
 
     /// @name 'Structors
@@ -108,11 +110,11 @@ private:
 
     bool                        m_scriptTypesInitialized;
 
-    pScriptModule_type          m_pInputModule;
-    pScriptType_type            m_pInputServiceType;
-    pScriptType_type            m_pInputMapType;
-    pScriptType_type            m_pKeyEventType;
-    pScriptType_type            m_pInput;
+    Zen::Scripting::script_module*	m_pInputModule;
+    pScriptType_type            	m_pInputServiceType;
+    pScriptType_type            	m_pKeyMapType;
+    pScriptType_type            	m_pKeyEventType;
+    pScriptType_type            	m_pInput;
 
     pScriptType_type            m_pSceneServiceType;
     pScriptType_type            m_pSceneNodeType;

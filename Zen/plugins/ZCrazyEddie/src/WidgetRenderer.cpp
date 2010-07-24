@@ -32,6 +32,8 @@
 
 #include <Ogre.h>
 
+#include <iostream>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZCrazyEddie {
@@ -55,7 +57,12 @@ WidgetRenderer::WidgetRenderer(Zen::Engine::Rendering::I_View& _view)
 
     if( pView != NULL )
     {
+        std::cout << "Bootstraping CEGUI OgreRenderer" << std::endl;
         m_pWidgetRenderer = &CEGUI::OgreRenderer::bootstrapSystem(pView->getRenderWindow());
+    }
+    else
+    {
+        std::cout << "Error, no OGRE renderer." << std::endl;
     }
 }
 
@@ -89,6 +96,10 @@ WidgetRenderer::getScreenWidth()
 CEGUI::OgreRenderer&
 WidgetRenderer::getCEGUIRenderer()
 {
+    if (m_pWidgetRenderer == NULL)
+    {
+        throw Utility::runtime_exception("WidgetRenderer::getCEGUIRenderer(): Error, m_pWidgetRenderer is NULL.");
+    }
     return *m_pWidgetRenderer;
 }
 

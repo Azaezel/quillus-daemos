@@ -28,7 +28,10 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
+#include <Zen/Enterprise/AppServer/I_ResourceLocation.hpp>
+
 #include <boost/noncopyable.hpp>
+#include <boost/cstdint.hpp>
 
 namespace boost {
 namespace archive {
@@ -45,7 +48,6 @@ namespace Zen {
 namespace Enterprise {
 namespace AppServer {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-class I_ResourceLocation;
 class I_MessageHeader;
 class I_MessageType;
 
@@ -75,11 +77,20 @@ public:
     ///     the current process.
     virtual pEndpoint_type getDestinationEndpoint() = 0;
 
+    /// Get the source resource of this message.
+    virtual pResourceLocation_type getSourceLocation() = 0;
+
     /// Get the destination resource of this message.
     virtual pResourceLocation_type getDestinationLocation() = 0;
 
     /// Get the message header.
     virtual pMessageHeader_type getMessageHeader() const = 0;
+
+    /// Get the message Id of this message.
+    virtual boost::uint64_t getMessageId() const = 0;
+
+    /// This method returns the message type.
+    virtual pMessageType_type getMessageType() const = 0;
 
     /// Deserialize this message from an input archive.
     /// The protocol adapter deserializes the header, creates the appropriate message

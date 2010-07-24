@@ -36,12 +36,19 @@ I_DeleteChildNodeResponse::~I_DeleteChildNodeResponse()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_DeleteChildNodeResponse::pResponse_type
 I_DeleteChildNodeResponse::create(pEndpoint_type _pSourceEndpoint,
-					   pEndpoint_type _pDestinationEndpoint)
+					   pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId)			   
 {
     DeleteChildNodeResponse* pDeleteChildNodeResponse(new DeleteChildNodeResponse(_pSourceEndpoint,
-                                          _pDestinationEndpoint));
+                                          _pDestinationEndpoint, _requestMessageId));
 
-    return pResponse_type(pDeleteChildNodeResponse, DeleteChildNodeResponse::destroy);
+    return pResponse_type((Response*)pDeleteChildNodeResponse, DeleteChildNodeResponse::destroy);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_DeleteChildNodeResponse::pMessageType_type
+I_DeleteChildNodeResponse::getStaticMessageType()			   
+{
+    return DeleteChildNodeResponse::sm_pType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

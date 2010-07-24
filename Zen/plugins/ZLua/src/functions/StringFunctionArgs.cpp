@@ -31,7 +31,7 @@
 namespace Zen {
 namespace ZLua {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#define METHOD_MAX_SIZE 100
+#define METHOD_MAX_SIZE 200
 
 // Create the hundred C methods
 

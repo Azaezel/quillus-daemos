@@ -23,6 +23,7 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
 
 #include "Message.hpp"
 
@@ -101,18 +102,18 @@ Message::getDestinationLocation()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned int
+boost::uint32_t
 Message::getMessageID() const
 {
     return m_messageID;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned int
+boost::uint32_t
 Message::getNewMessageID()
 {
     static Zen::Threading::SpinLock sm_spinLock;
-    static unsigned int sm_lastID = 0;
+    static boost::uint32_t sm_lastID = 0;
 
     Zen::Threading::xCriticalSection lock(sm_spinLock);
     return ++sm_lastID;

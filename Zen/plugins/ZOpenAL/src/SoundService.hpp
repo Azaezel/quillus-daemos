@@ -26,9 +26,8 @@
 #ifndef ZEN_ZOPENAL_SOUND_SERVICE_HPP_INCLUDED
 #define ZEN_ZOPENAL_SOUND_SERVICE_HPP_INCLUDED
 
-#include <Zen/Core/Memory/managed_self_ref.hpp>
-
 #include <Zen/Engine/Sound/I_SoundService.hpp>
+
 #include <Zen/Core/Threading/I_Mutex.hpp>
 #include <Zen/Core/Math/Matrix4.hpp>
 #include <vector>
@@ -46,30 +45,41 @@ namespace ZOpenAL {
 
 class SoundService
 :   public Engine::Sound::I_SoundService
-,   public Memory::managed_self_ref<Engine::Sound::I_SoundService>
 {
     /// @name Types
     /// @{
 public:
     typedef std::map< std::string, std::string >                config_type;
-    typedef ResourceService                                     pResourceService;
-    typedef Engine::Sound::I_SoundResource::pSoundResource_type pSoundResource_type;
+    typedef std::set<wpSource_type>                             Sources_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
     /// @name I_SoundService implementation
     /// @{
 public:
+	virtual void muteAll(bool bMute);
     virtual pSource_type createSource(pSoundResource_type _pResource);
     virtual pSource_type createSource(pSoundResource_type _pResource, Math::Point3 _pos);
     virtual pSource_type createSource(pSoundResource_type _pResource, Math::Real _x, Math::Real _y);
-public:
-	virtual void muteAll(bool bMute);
-    virtual void setListenMatrix(Math::Matrix4 _listenMatrix);
-    virtual Math::Matrix4 getListenMatrix();
-    void    sortVectorbyLooping(std::vector<pSource_type> * _vector);
-    virtual void sortSounds();
     virtual void setListenRadius(Math::Real _radius);
     virtual Math::Real getListenRadius();
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
+    /// @}
+
+    /// @name SoundService implementation
+    /// @{
+public:
+    void destroySource(wpSource_type _wpSource);
+    /// @}
+
+    /// @name Static methods
+    /// @{
+public:
     /// @}
 
     /// @name Event handlers
@@ -88,13 +98,16 @@ public:
     /// @name Member Variables
     /// @{
 private:
-    Math::Matrix4 m_ListenMatrix;
-    Math::Real m_listenRadius;
-	std::vector<pSource_type> m_SoundSources;
-    Math::Real m_maxSources;
-    pResourceService m_resourceService;
-	bool m_bMainMuted;
-    ALboolean m_bEAX;
+    Math::Real                      m_listenRadius;
+    boost::uint8_t                  m_maxSources;
+	bool                            m_isMuted;
+    bool                            m_eaxEnabled;
+
+    Zen::Threading::I_Mutex*        m_pSourcesMutex;
+    Sources_type                    m_sources;
+
+    Zen::Scripting::script_module*  m_pModule;
+    ScriptObjectReference_type*     m_pScriptObject;
     /// @}
 
 };  // class SoundService

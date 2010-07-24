@@ -22,7 +22,7 @@
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // This project is part of the Zen Engine Tutorials
-// 
+//
 // For more details, click on the link below for the IndieZen.org documentation:
 //
 // http://www.indiezen.org/wiki/wiki/zoss/Engine/Tutorials
@@ -46,9 +46,9 @@ class AvatarCollisionBehavior
     /// @name I_CollisionBehavior implementation
     /// @{
 public:
-    virtual bool handleBoundBoxCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_BeginCollisionEventData& _eventData);
-    virtual bool handleCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_DuringCollisionEventData& _eventData);
-	virtual void handleCollisionResolution(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_CollisionShape::I_EndCollisionEventData& _eventData); 
+    virtual bool handleBoundBoxCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_BeginCollisionEventData& _eventData);
+    virtual bool handleCollision(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_DuringCollisionEventData& _eventData);
+	virtual void handleCollisionResolution(Zen::Engine::Core::I_BaseGameObject& _gameObject, Zen::Engine::Physics::I_PhysicsActor::I_EndCollisionEventData& _eventData);
 	/// @}
 
     /// @name AvatarCollisionBehavior implementation

@@ -27,8 +27,6 @@
 
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 
-#include <Zen/Core/Memory/managed_self_ref.hpp>
-
 #include <boost/filesystem.hpp>
 #include <vorbis/vorbisfile.h>
 #include "Resource.hpp"
@@ -40,14 +38,13 @@ namespace ZOpenAL {
 
 class ResourceService
 :   public Engine::Resource::I_ResourceService
-,   public Memory::managed_self_ref<Engine::Resource::I_ResourceService>
 {
     /// @name Types
     /// @{
 public:
     typedef Memory::managed_weak_ptr<Engine::Resource::I_ResourceService>   wpResourceService_type;
     typedef Zen::Memory::managed_ptr<Scripting::I_ScriptModule>             pScriptModule_type;
-    typedef int (*LPOVOPENCALLBACKS)(void *datasource, OggVorbis_File *vf,char *initial, long ibytes, ov_callbacks callbacks);
+    typedef int (*LPOVOPENCALLBACKS)(void*,OggVorbis_File*,char*,long,ov_callbacks);
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -61,9 +58,10 @@ public:
 public:
     virtual void addResourceLocation(const std::string& _path, const std::string& _type, 
         const std::string& _group, bool _recursive = false);
-    //virtual void removeResourceLocation(const std::string& _path, const std::string& _type, 
-    //    const std::string& _group, bool _recursive = false);
+    virtual void initialiseAllResourceGroups();
     virtual pResource_type loadResource(config_type& _config);
+    virtual const std::string& getScriptSingletonName() const;
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
     /// @}
 
     /// @name Event handlers
@@ -76,6 +74,7 @@ protected:
 private:
     void destroyResource(wpResource_type);
     bool findFile(const boost::filesystem::path& _dir_path, const std::string& _file_name, boost::filesystem::path& _path_found);
+    ALvoid* loadVorbisBuffer(const char* _fileName, ALenum* _format, ALsizei* _size, ALfloat* _frequency);
     /// @}
 
     /// @name 'Structors
@@ -84,12 +83,12 @@ public:
              ResourceService();
     virtual ~ResourceService();
     /// @}
+
     /// @ OpenAL Specific
     /// @{
 private:
-            ov_callbacks	m_file_callbacks;
-            ALvoid * LoadVorbisBuffer(const char *_fileName, ALenum *_format, ALsizei *_size, ALfloat *_frequency);
     /// @}
+
     /// @name Member Variables
     /// @{
 private:
@@ -98,11 +97,20 @@ private:
 		std::string path;
 		bool recursive;
 	};
-	std::list<ResourceLocation*> m_locationList;
 
-    pScriptModule_type          m_pScriptModule;
-    ScriptObjectReference_type* m_pScriptObject;
+    /// True if the group manager has been initialized
+    Threading::I_Mutex*             m_pGroupInitLock;
+    volatile bool                   m_bInitialized;
+
+    Threading::I_Mutex*             m_pLocationListMutex;
+    std::list<ResourceLocation*>    m_locationList;
+
+    ScriptObjectReference_type*     m_pScriptObject;
+    Zen::Scripting::script_module*  m_pModule;
+
+    ov_callbacks	                m_file_callbacks;
     /// @}
+
 };  // class ResourceService
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -34,6 +34,7 @@ namespace archive {
 } // namespace boost
 
 #include <boost/noncopyable.hpp>
+#include <boost/cstdint.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -69,7 +70,7 @@ public:
     virtual pMessageHeader_type getMessageHeader(boost::archive::polymorphic_iarchive& _archive) const = 0;
 
     /// Create a message header for the given message type.
-    virtual pMessageHeader_type createMessageHeader(pMessageType_type _pMessageType) const = 0;
+    virtual pMessageHeader_type createMessageHeader(pMessageType_type _pMessageType, boost::uint64_t _messageId, boost::uint64_t _requestId, const std::string& _srcLocation, const std::string& _destLocation) const = 0;
     /// @}
 
     /// @name 'Structors

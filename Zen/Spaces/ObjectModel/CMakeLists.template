@@ -26,7 +26,7 @@ set ( ZenObjectModel_SRC
 <%SourceList%>
     )
 
-add_definitions( -DOBJECTMODEL_EXPORTS )
+add_definitions( -DOBJECTMODEL_EXPORTS ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 

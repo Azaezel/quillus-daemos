@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Engine Base Starter Kit
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -26,14 +26,13 @@
 
 #include "../I_BaseGameClient.hpp"
 
+#include <Zen/Core/Event/I_EventManager.hpp>
+
 #include <Zen/Core/Utility/I_EnvironmentHandler.hpp>
 
 #include <Zen/Core/Plugins/I_PluginManager.hpp>
 #include <Zen/Core/Plugins/I_ExtensionRegistry.hpp>
 #include <Zen/Core/Plugins/I_Application.hpp>
-
-#include <Zen/Core/Scripting/I_ScriptingManager.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
 
 #include <Zen/Engine/Resource/I_ResourceManager.hpp>
 #include <Zen/Engine/Core/I_GameGroup.hpp>
@@ -47,9 +46,6 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
-    namespace Scripting {
-        class I_ScriptEngine;
-    }   // namespace Scripting
 namespace Engine {
     namespace Camera {
         class I_CameraService;
@@ -62,13 +58,11 @@ namespace Engine {
         class I_RenderingService;
         class I_SceneService;
     }   // namespace Rendering
-    namespace World {
-        class I_TerrainService;
-    }   // namespace World
     namespace Input {
         class I_InputService;
+        class I_InputMapService;
         class I_KeyEvent;
-        class I_InputMap;
+        class I_KeyMap;
     }   // namespace Input
     namespace Core {
         class I_Action;
@@ -92,7 +86,11 @@ class BaseClient
     /// @name Types
     /// @{
 public:
-    typedef Memory::managed_ptr<Scripting::I_ScriptEngine>              pScriptEngine_type;
+    typedef BaseClient*                                     pScriptObject_type;
+    typedef Scripting::ObjectReference<BaseClient>          ScriptObjectReference_type;
+    typedef ScriptObjectReference_type                      ScriptWrapper_type;
+    typedef ScriptWrapper_type*                             pScriptWrapper_type;
+    typedef Zen::Event::I_EventManager::pEventService_type  pEventService_type;
     /// @}
 
     /// @name I_BaseGameClient Initializers
@@ -105,8 +103,6 @@ public:
     virtual bool initRenderingResourceService(const std::string& _type);
     virtual bool initInputService(const std::string& _type);
     virtual bool initWaterService(const std::string& _type);
-    virtual bool initTerrainService(const std::string& _type);
-    virtual bool initSkyService(const std::string& _type);
     virtual bool initWidgetService(const std::string& _type);
     virtual bool initSoundService(const std::string& _type);
     virtual void activateScriptModules();
@@ -116,13 +112,14 @@ public:
     /// @{
 public:
     virtual Scripting::I_ScriptEngine& getScriptEngine();
+    virtual pScriptEngine_type getScriptEnginePtr();
     virtual Resource::I_ResourceService& getRenderingResourceService();
     virtual Input::I_InputService& getInputService();
     virtual Rendering::I_RenderingService& getRenderingService();
     virtual Client::I_GameClient::WindowHandle_type getWindowHandle();
-    virtual World::I_WaterService& getWaterService();
     virtual World::I_TerrainService& getTerrainService();
     virtual World::I_SkyService& getSkyService();
+    virtual World::I_WaterService& getWaterService();
     virtual Widgets::I_WidgetService& getWidgetService();
     /// @}
 
@@ -137,6 +134,13 @@ public:
     virtual void run();
     /// @}
 
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual const std::string& getScriptTypeName();
+    virtual Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
     /// @name Getter Methods
     /// @{
 public:
@@ -147,15 +151,15 @@ public:
 
     /// Get the primary scene service.
     /// The scene service maintains and manipulates the scene graph.
-    virtual Rendering::I_SceneService&  getSceneService();
+    virtual pSceneService_type  getSceneService();
 
     /// Get the primary rendering canvas.
     /// The rendering canvas is the primary 3d canvas where everything
     /// is drawn.
     Rendering::I_RenderingCanvas& getRenderingCanvas();
 
-    /// Get the primary InputMap
-    virtual Input::I_InputMap& getInputMap();
+    /// Get the primary KeyMap
+    virtual Input::I_KeyMap& getKeyMap();
 
     virtual Core::I_BehaviorService& getBehaviorService();
 
@@ -205,17 +209,14 @@ protected:
     Zen::Memory::managed_ptr<Rendering::I_RenderingService> m_pRenderingService;
     Zen::Memory::managed_ptr<Resource::I_ResourceService>   m_pRenderingResourceService;
     Zen::Memory::managed_ptr<Rendering::I_SceneService>     m_pSceneService;
-    Zen::Memory::managed_ptr<Camera::I_CameraService>       m_pCameraService;
-    Zen::Memory::managed_ptr<Camera::I_Camera>              m_pCamera;
     Zen::Memory::managed_ptr<Input::I_InputService>         m_pInputService;
+    Zen::Memory::managed_ptr<Input::I_InputMapService>      m_pInputMapService;
     Zen::Memory::managed_ptr<World::I_WaterService>         m_pWaterService;
-    Zen::Memory::managed_ptr<World::I_TerrainService>       m_pTerrainService;
-    Zen::Memory::managed_ptr<World::I_SkyService>           m_pSkyService;
     Zen::Memory::managed_ptr<Widgets::I_WidgetService>      m_pWidgetService;
     Zen::Memory::managed_ptr<Sound::I_SoundService>         m_pSoundService;
 
     /// Primary input map for the game
-    Zen::Memory::managed_ptr<Input::I_InputMap>             m_pMainInputMap;
+    Zen::Memory::managed_ptr<Input::I_KeyMap>               m_pMainKeyMap;
 
     Core::I_GameGroup::ScriptObjectReference_type*          m_pScriptMainGroup;
 
@@ -232,8 +233,11 @@ protected:
 
     pScriptEngine_type                      m_pScriptEngine;
     pScriptModule_type                      m_pModule;
+    pScriptWrapper_type                     m_pScriptObject;
 
     pScriptType_type                        m_pGameClientScriptType;
+    pEventService_type                      m_pEventService;
+
     /// @}
 
 };  // class BaseClient

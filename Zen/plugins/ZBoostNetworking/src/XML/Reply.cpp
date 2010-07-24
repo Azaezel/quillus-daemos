@@ -23,6 +23,8 @@
 //  Tony Richards trichards@indiezen.com
 //  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "Reply.hpp"
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
@@ -101,9 +103,12 @@ public:
 } static sm_statusHeaderMap;
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Reply::Reply(pEndpoint_type _pDestinationEndpoint, StatusType _status, const std::string& _body, const std::string& _contentType)
+Reply::Reply(pEndpoint_type _pDestinationEndpoint, StatusType _status, 
+             const std::string& _body, const std::string& _contentType,
+             unsigned int _requestMessageId)
 :   m_pDestinationEndpoint(_pDestinationEndpoint)
 ,   m_content(_body)
+,   m_requestMessageId(_requestMessageId)
 {
     m_status = _status;
     //m_content = sm_statusReplyMap[_status];
@@ -117,6 +122,7 @@ Reply::Reply(pEndpoint_type _pDestinationEndpoint, StatusType _status, const std
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Reply::Reply()
+:   m_requestMessageId(0)
 {
 }
 
@@ -141,6 +147,14 @@ Reply::getDestinationEndpoint()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Reply::pResourceLocation_type
+Reply::getSourceLocation()
+{
+    // TODO Implement?
+    return pResourceLocation_type();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Reply::pResourceLocation_type
 Reply::getDestinationLocation()
 {
     // TODO Implement?
@@ -152,6 +166,24 @@ Reply::pMessageHeader_type
 Reply::getMessageHeader() const
 {
     throw Utility::runtime_exception("Reply::getMessageHeader(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+boost::uint64_t
+Reply::getMessageId() const
+{
+    static Zen::Threading::SpinLock sm_spinLock;
+    static boost::uint64_t sm_lastId = 0;
+
+    Zen::Threading::xCriticalSection lock(sm_spinLock);
+    return ++sm_lastId;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+boost::uint64_t
+Reply::getRequestMessageId() const
+{
+    return m_requestMessageId;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -180,6 +212,13 @@ Reply::toBuffers(std::stringstream& _stream)
     }
 
     _stream << "\r\n" << m_content;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Reply::pMessageType_type
+Reply::getMessageType() const
+{
+    throw Zen::Utility::runtime_exception("XML::Reply::getMessageType() : Error, not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

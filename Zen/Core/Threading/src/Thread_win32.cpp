@@ -25,13 +25,21 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifdef THREADMODEL_WIN32
 
+#include <assert.h>
+
 #include "Thread_win32.hpp"
 
 #include "../I_Runnable.hpp"
+#include "../SpinLock.hpp"
+#include "../CriticalSection.hpp"
 
-//Define this in your main_env_vars.vsprops file if you need to use CPP threading for some reason
-//If you're not sure, keep it this way.
-//#define USE_CPP_THREADING
+#include <stdexcept>
+#include <sstream>
+#include <map>
+
+#ifdef DEBUG
+#include <iostream>
+#endif // DEBUG
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -40,6 +48,8 @@ namespace Threading {
 
 Thread_win32::Thread_win32(I_Runnable *const _pRunnable)
 :	m_pRunnable(_pRunnable)
+,   m_threadHandle()
+,   m_threadId()
 ,	m_isStarted(false)
 ,	m_isJoined(false)
 {
@@ -52,10 +62,10 @@ Thread_win32::~Thread_win32()
 	{
 		stop();
 
-		if (::GetCurrentThreadId() != m_threadId)
-		{
+        //if (::GetCurrentThreadId() != getThreadId())
+		//{
 			join();
-		}
+		//}
 
 #ifdef USE_CPP_THREADING
 		::CloseHandle(m_threadHandle);
@@ -67,7 +77,7 @@ Thread_win32::~Thread_win32()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef USE_CPP_THREADING
-extern "C" 
+extern "C"
 {
 void threadFunctionC(void* _pThis)
 {
@@ -81,6 +91,8 @@ Thread_win32::start()
 {
 	if (!m_isStarted)
 	{
+        NativeThreadId_win32* const pNativeThreadId_win32 = new NativeThreadId_win32();
+        m_threadId.m_pNativeThreadId = pNativeThreadId_win32;
 #ifdef USE_CPP_THREADING
 		m_threadHandle = ::CreateThread(NULL, 0, threadFunction,
 			this, 0, &m_threadId);
@@ -124,13 +136,24 @@ Thread_win32::join()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Thread::ThreadId
+Thread_win32::getWin32CurrentThreadId()
+{
+    return ThreadId(new NativeThreadId_win32(::GetCurrentThreadId()));
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const I_Thread::ThreadId&
+Thread_win32::getThreadId() const
+{
+    return m_threadId;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 DWORD WINAPI
 Thread_win32::threadFunction (::LPVOID _pThis)
 {
     Thread_win32* const pThis = static_cast <Thread_win32*> (_pThis);
-#ifndef USE_CPP_THREADING
-    pThis->m_threadId = ::GetCurrentThreadId();
-#endif
 	try
 	{
 		pThis->m_pRunnable->run();
@@ -142,6 +165,47 @@ Thread_win32::threadFunction (::LPVOID _pThis)
     _endthread();
 #endif
     return 0;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Thread_win32::NativeThreadId_win32::operator==(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+{
+    const NativeThreadId_win32* const pNativeThreadId_win32 = dynamic_cast<const NativeThreadId_win32*>(&_id);
+    return (pNativeThreadId_win32 != NULL) && (m_nativeThreadId == pNativeThreadId_win32->m_nativeThreadId);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Thread_win32::NativeThreadId_win32::operator!=(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+{
+    const NativeThreadId_win32* const pNativeThreadId_win32 = dynamic_cast<const NativeThreadId_win32*>(&_id);
+    return (pNativeThreadId_win32 == NULL) && (m_nativeThreadId != pNativeThreadId_win32->m_nativeThreadId);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+Thread_win32::NativeThreadId_win32::operator<(const I_Thread::ThreadId::I_NativeThreadId& _id) const
+{
+    const NativeThreadId_win32* const pNativeThreadId_win32 = dynamic_cast<const NativeThreadId_win32*>(&_id);
+    assert(pNativeThreadId_win32 != NULL);
+    return (m_nativeThreadId < pNativeThreadId_win32->m_nativeThreadId);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_Thread::ThreadId::I_NativeThreadId*
+Thread_win32::NativeThreadId_win32::clone() const
+{
+    return new Thread_win32::NativeThreadId_win32(m_nativeThreadId);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+std::string
+Thread_win32::NativeThreadId_win32::toString() const
+{
+    std::ostringstream oStream;
+    oStream << std::hex << std::uppercase << "0x" << m_nativeThreadId;
+    return oStream.str();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

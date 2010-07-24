@@ -21,6 +21,8 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#include <boost/asio.hpp>
+
 #include "ProtocolServiceFactory.hpp"
 #include "HyperTextTransportProtocolService.hpp"
 #include "UserDatagramProtocolService.hpp"

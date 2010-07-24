@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Core Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -42,6 +42,8 @@ namespace Zen {
 namespace Scripting {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_ObjectReference;
+class I_ScriptMethod;
+class I_ScriptModule;
 
 class SCRIPTING_DLL_LINK I_ScriptType
 {
@@ -51,6 +53,7 @@ public:
     typedef Zen::Memory::managed_ptr<I_ScriptType>                      pScriptType_type;
     typedef Zen::Memory::managed_weak_ptr<I_ScriptType>                 wpScriptType_type;
     typedef Zen::Event::Event<wpScriptType_type>                        scriptTypeEvent_type;
+    typedef Zen::Memory::managed_ptr<I_ScriptModule>                    pScriptModule_type;
 
     typedef I_ObjectReference*                                          pObjectReference_type;
 
@@ -68,11 +71,20 @@ public:
 
     typedef int(*int_function_no_args_type)(pObjectReference_type);
     typedef int(*int_function_args_type)(pObjectReference_type, std::vector<boost::any>);
-/// @}
+    /// @}
 
     /// @name I_ScriptType interface
     /// @{
 public:
+    /// Get the module to which this type belongs.
+    virtual pScriptModule_type getScriptModule() = 0;
+
+    /// Get the name of this type.
+    virtual const std::string& getTypeName() = 0;
+
+    /// Get the documentation / short description of this type.
+    virtual const std::string& getDocumentation() = 0;
+
     /// Add a method to this type that takes no arguments and returns void
     virtual void addMethod(const std::string& _name, const std::string& _docString, void_function_no_args_type _function) = 0;
 
@@ -102,6 +114,9 @@ public:
 
     /// Add a method to this type that takes arguments and returns a bool
     virtual void addMethod(const std::string& _name, const std::string& _docString, int_function_args_type _function) = 0;
+
+    /// Add a generic I_ScriptMethod.
+    virtual void addMethod(const std::string& _name, const std::string& _docString, I_ScriptMethod* _pMethod) = 0;
 
     /// Activate the type.  No more methods or attributes can be modified
     /// once the type is activated.

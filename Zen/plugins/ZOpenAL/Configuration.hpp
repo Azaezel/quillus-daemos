@@ -23,8 +23,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 /// @author  John S. Givler, Ph.D.(Computer Science)
 
-#ifndef INDIEZEN_ZOPENAL_CONFIGURAGION_HPP_INCLUDED
-#define INDIEZEN_ZOPENAL_CONFIGURAGION_HPP_INCLUDED
+#ifndef ZEN_ZOPENAL_CONFIGURAGION_HPP_INCLUDED
+#define ZEN_ZOPENAL_CONFIGURAGION_HPP_INCLUDED
 
 #ifdef  _MSC_VER
 #    pragma once
@@ -102,5 +102,5 @@
 #endif  // ! ZOPENAL_EXPORTS
 
 
-#endif  // INDIEZEN_ZOPENAL_CONFIGURAGION_HPP_INCLUDED
+#endif  // ZEN_ZOPENAL_CONFIGURAGION_HPP_INCLUDED
 

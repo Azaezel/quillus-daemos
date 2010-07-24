@@ -19,11 +19,11 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-ReplicationPropertyGroup::ReplicationPropertyGroup(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, Property* _pParent)
-:   PropertyGroup(_publisher, "Replication", _pParent)
-,   m_replicationType(_publisher, "", this)
-,   m_replicationDirection(_publisher, "", this)
-,   m_scopator(_publisher, "", "Scopator Extension Point", this)
+ReplicationPropertyGroup::ReplicationPropertyGroup(Properties& _properties, Property* _pParent)
+:   PropertyGroup(_properties, "Replication", _pParent)
+,   m_replicationType(_properties, "", this)
+,   m_replicationDirection(_properties, "", this)
+,   m_scopator(_properties, "", "Scopator Extension Point", this)
 {
 }
 

@@ -70,6 +70,7 @@ public:
     virtual config_list_ptr_type getChildren() const;
     virtual config_list_ptr_type getChildren(const std::string& _name) const;
     virtual void getChildren(const std::string& _name, I_ConfigurationElementVisitor& _visitor) const;
+    virtual void getChildren(I_ConfigurationElementVisitor& _visitor) const;
     virtual const_ptr_type getChild(const std::string& _name) const;
     virtual const std::string& getName() const;
     virtual bool isValid() const;

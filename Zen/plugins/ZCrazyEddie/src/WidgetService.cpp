@@ -41,6 +41,7 @@
 
 #include <Zen/Engine/Input/I_MouseMoveEvent.hpp>
 #include <Zen/Engine/Input/I_MouseClickEvent.hpp>
+#include <Zen/Engine/Input/I_KeyEvent.hpp>
 
 #include <Zen/Engine/Rendering/I_View.hpp>
 
@@ -58,14 +59,19 @@
 #include <string>
 
 #include <Ogre.h>
+
 #include <CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h>
+#include <CEGUI/ScriptingModules/LuaScriptModule/CEGUILua.h>
+
+#include <Zen/plugins/ZLua/I_LuaScriptEngine.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZCrazyEddie {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-WidgetService::WidgetService()
-:   m_widgetCache()
+WidgetService::WidgetService(pScriptEngine_type _pScriptEngine)
+:   m_pScriptEngine(_pScriptEngine)
+,   m_widgetCache()
 ,   m_pWidgetRenderer(NULL)
 ,   m_pWidgetSystem(NULL)
 ,   m_pWidgetWindowManager(NULL)
@@ -95,49 +101,38 @@ WidgetService::~WidgetService()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 WidgetService::initialise(Zen::Engine::Rendering::I_View& _view,
-                          Zen::Engine::Input::I_InputService& _input)
+                          Zen::Engine::Input::I_MousePublisher* _pMousePublisher,
+                          Zen::Engine::Input::I_KeyPublisher* _pKeyPublisher)
 {
-    // Connect WidgetService::onMouseMoveEvent to InputService::onMouseMoveEvent
-    _input.onMouseMoveEvent.connect(
-        boost::bind(
-            &MouseMoveEvent_type::operator(),
-            &onMouseMoveEvent,
-            _1
-        )
-    );
-
-    onMouseMoveEvent.connect(
-        boost::bind(
-            &WidgetService::handleMouseMoveEvent,
-            this,
-            _1
-        )
-    );
-
-    // Connect WidgetService::onMouseClickEvent to InputService::onMouseClickEvent
-    _input.onMouseClickEvent.connect(
-        boost::bind(
-            &MouseClickEvent_type::operator(),
-            &onMouseClickEvent,
-            _1
-        )
-    );
-
-    onMouseClickEvent.connect(
-        boost::bind(
-            &WidgetService::handleMouseClickEvent,
-            this,
-            _1
-        )
-    );
+    // Connect the input events to the handlers
+    _pMousePublisher->onMouseMoveEvent.connect(boost::bind(&WidgetService::handleMouseMoveEvent, this, _1));
+    _pMousePublisher->onMouseClickEvent.connect(boost::bind(&WidgetService::handleMouseClickEvent, this, _1));
+    _pKeyPublisher->onKeyEvent.connect(boost::bind(&WidgetService::handleKeyPressed, this, _1));
 
     m_pWidgetRenderer.reset(new WidgetRenderer(_view));
 
     // TODO handle the case where m_pWidgetSystem may be initialized more than once.
-    m_pWidgetSystem = &CEGUI::System::getSingleton().create((m_pWidgetRenderer->getCEGUIRenderer()));
+    assert(m_pWidgetSystem == NULL);
 
+    std::cout << "Initialzing CEGUI Widget System" << std::endl;
+    m_pWidgetSystem = &CEGUI::System::getSingleton();
+
+    // Initialize the Script system
+    // TODO This should only be done if ZCRAZYEDDIE_USE_LUA is defined
+    Zen::ZLua::I_LuaScriptEngine* pScriptEngine = dynamic_cast<Zen::ZLua::I_LuaScriptEngine*>(m_pScriptEngine.get());
+    if (pScriptEngine)
+    {
+        CEGUI::LuaScriptModule* pScriptModule = &CEGUI::LuaScriptModule::create(pScriptEngine->getState());
+        m_pWidgetSystem->setScriptingModule(pScriptModule);
+    }
+
+    //std::cout << "Initialzing CEGUI Singletons" << std::endl;
+    //m_pWidgetSystem->createSingletons();
+
+    std::cout << "Initializing CEGUI Logger" << std::endl;
     CEGUI::Logger::getSingleton().setLoggingLevel(CEGUI::Informative);
 
+    std::cout << "Initializing CEGUI Window Manager" << std::endl;
     m_pWidgetWindowManager = CEGUI::WindowManager::getSingletonPtr();
 }
 
@@ -321,7 +316,8 @@ WidgetService::hideMouseCursor()
 #ifdef WIN32
     ::ShowCursor(false);
 #else
-    SDL_ShowCursor(SDL_DISABLE);
+    // TR - Why is this deadlocking?
+    //SDL_ShowCursor(SDL_DISABLE);
 #endif
 }
 
@@ -423,13 +419,13 @@ WidgetService::handleDestroyWidget(const CEGUI::EventArgs& _eventArgs)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-WidgetService::handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _event)
+WidgetService::handleMouseClickEvent(pMouseClickEvent_type _pEvent)
 {
     bool handled = false;
 
-    if( _event.wasClicked() )
+    if( _pEvent->wasClicked() )
     {
-        switch( _event.getButton() )
+        switch( _pEvent->getButton() )
         {
         case Zen::Engine::Input::BUTTON_ID_LEFT:
             handled = m_pWidgetSystem->injectMouseButtonDown(CEGUI::LeftButton);
@@ -441,7 +437,7 @@ WidgetService::handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _eve
     }
     else
     {
-        switch( _event.getButton() )
+        switch( _pEvent->getButton() )
         {
         case Zen::Engine::Input::BUTTON_ID_LEFT:
             handled = m_pWidgetSystem->injectMouseButtonUp(CEGUI::LeftButton);
@@ -452,23 +448,24 @@ WidgetService::handleMouseClickEvent(Zen::Engine::Input::I_MouseClickEvent& _eve
         }
     }
 
-    if( !handled )
+    if(!handled)
     {
-        /// TODO Handle unhandled mouse click event ?
+        // Unhandled mouse events are forwarded to the widget service events
+        onMouseClickEvent(_pEvent);
     }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-WidgetService::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event)
+WidgetService::handleMouseMoveEvent(pMouseMoveEvent_type _pEvent)
 {
 	static int cursorVisible = 0;
     static bool widgetMouseVisible = false;
 
-    if( (unsigned int)_event.getX() == m_pWidgetRenderer->getScreenWidth() ||
-        (unsigned int)_event.getY() == m_pWidgetRenderer->getScreenHeight() ||
-        _event.getX() == 0 ||
-        _event.getY() == 0)
+    if( (unsigned int)_pEvent->getX() == m_pWidgetRenderer->getScreenWidth() ||
+        (unsigned int)_pEvent->getY() == m_pWidgetRenderer->getScreenHeight() ||
+        _pEvent->getX() == 0 ||
+        _pEvent->getY() == 0)
     {
 #ifdef WIN32
         // Show the OS Cursor; might need to do it more than once
@@ -517,13 +514,14 @@ WidgetService::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
         }
     }
 
-    //m_pWidgetService->setMousePosition(_event.getX(), _event.getY());
-    CEGUI::System::getSingleton().injectMousePosition(_event.getX(), _event.getY());
+    // TODO If editing, this event needs to be interpreted by the editor instead
+    // of forwarded to CEGUI.
+    bool handled = CEGUI::System::getSingleton().injectMousePosition(_pEvent->getX(), _pEvent->getY());
 
-    m_mouseX = _event.getX();
-    m_mouseY = _event.getY();
+    m_mouseX = _pEvent->getX();
+    m_mouseY = _pEvent->getY();
 
-    if (_event.getZDelta() != 0)
+    if (_pEvent->getZDelta() != 0)
     {
         //m_pWidgetSErvice->setMouseWheelDelta(_event.getZDelta());
     }
@@ -531,6 +529,38 @@ WidgetService::handleMouseMoveEvent(Zen::Engine::Input::I_MouseMoveEvent& _event
     // If the shift key is down, the mouse moves the camera, otherwise the mouse moves
     // the direction that the player is facing.
     //Zen::Engine::Rendering::I_Camera& camera = m_gameClient.base().getRenderingCanvas().getCurrentCamera();
+
+    if (!handled)
+    {
+        // If the event wasn't handled, forward it to the widget service event.
+        onMouseMoveEvent(_pEvent);
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+WidgetService::handleKeyPressed(pKeyEvent_type _pKeyEvent)
+{
+    // TODO Inject key down or inject chars?
+    bool handled = CEGUI::System::getSingleton().injectChar(_pKeyEvent->getChar());
+
+    if (!handled)
+    {
+        if (_pKeyEvent->getPressedState())
+        {
+            handled = CEGUI::System::getSingleton().injectKeyDown(_pKeyEvent->getKeyCode());
+        }
+        else
+        {
+            handled = CEGUI::System::getSingleton().injectKeyUp(_pKeyEvent->getKeyCode());
+        }
+    }
+
+    if (!handled)
+    {
+        // If the event wasn't handled, forward it to the widget service event.
+        onKeyEvent(_pKeyEvent);
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

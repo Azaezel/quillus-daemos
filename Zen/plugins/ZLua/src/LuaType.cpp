@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Gaem Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -26,9 +26,14 @@
 #include "LuaMethod.hpp"
 #include "LuaEngine.hpp"
 
+#include <Zen/Core/Scripting/I_ObjectReference.hpp>
+
 #include <sstream>
 
 #include <stddef.h>
+
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -42,37 +47,11 @@ LuaType::LuaType(LuaModule* _pModule, const std::string& _name, const std::strin
     std::ostringstream fullName;
     fullName << m_pModule->getName() << "." << m_name;
     m_fullName = fullName.str();
-
-#if 0
-    memset(&m_type, 0, sizeof(PyTypeObject));
-
-
-    m_type._ob_next     = 0;
-    m_type._ob_prev     = 0;
-    m_type.ob_refcnt    = 1;
-    m_type.ob_type      = NULL;
-    m_type.ob_size      = 0;
-    m_type.tp_name      = m_fullName.c_str();
-    m_type.tp_basicsize = _rawSize;
-    m_type.tp_flags     = Py_TPFLAGS_DEFAULT;
-    m_type.tp_doc       = m_docString.c_str();
-
-    // Is this correct?
-    m_type.tp_new       = PyType_GenericNew;
-
-    PyType_Ready(&m_type);
-
-    Py_INCREF(&m_type);
-#endif
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 LuaType::~LuaType()
 {
-#if 0
-    Py_DECREF(m_pClassDict);
-    Py_DECREF(m_pClass);
-#endif
 }
 
 void
@@ -120,6 +99,11 @@ LuaType::activate()
     lua_pushvalue(L, -2);
     lua_settable(L, -3);
 
+    // __gc = the garbage collector
+    lua_pushstring(L, "__gc");
+    lua_pushcfunction(L, *(lua_CFunction*)&boost::bind(&LuaType::gc, this, _1));
+    lua_settable(L, -3);
+
     //luaL_openlib(L, NULL, arraylib_m, 0);
 
     // Add the methods to this __index
@@ -130,6 +114,38 @@ LuaType::activate()
 
     // And pop the table off the stack
     lua_pop(L, 1);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+LuaType::pScriptModule_type
+LuaType::getScriptModule()
+{
+    return getModule().getSelfReference().lock();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+LuaType::getTypeName()
+{
+    return m_name;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+LuaType::getDocumentation()
+{
+    return m_docString;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+int
+LuaType::gc(lua_State* L)
+{
+    std::cout << "DEBUG: Lua garbage collector called for " << m_name << std::endl;
+    /// TODO Determine how to 'clean up' a LuaObject correctly such that it 
+    /// either deletes an allocated object or decrements the use count of 
+    /// an associated managed pointer.
+    return 0;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

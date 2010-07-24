@@ -26,7 +26,7 @@
 
 #include "View.hpp"
 
-#include <Zen/Studio/Workbench/I_SceneViewWidget.hpp>
+#include <Zen/Studio/Workbench/I_SceneView.hpp>
 
 #include <Zen/Studio/WorkbenchCommon/I_SceneModel.hpp>
 
@@ -34,6 +34,9 @@
 #include <Zen/Engine/Rendering/I_Context.hpp>
 #include <Zen/Engine/Rendering/I_RenderingCanvas.hpp>
 #include <Zen/Engine/Rendering/I_SceneManager.hpp>
+
+#include <Zen/Engine/Resource/I_ResourceManager.hpp>
+#include <Zen/Engine/Resource/I_ResourceService.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -47,7 +50,7 @@ namespace Workbench {
 /// Use this to directly manipulate the scene view widget.
 class SceneViewWidget
 :   public View
-,   public Zen::Studio::Workbench::I_SceneViewWidget
+,   public Zen::Studio::Workbench::I_SceneView
 {
 private:
     DECLARE_EVENT_TABLE();
@@ -56,6 +59,7 @@ private:
     /// @{
 public:
     typedef Zen::Engine::Rendering::I_SceneManager::pSceneService_type  pSceneService_type;
+    typedef Zen::Engine::Resource::I_ResourceManager::pResourceService_type pResourceService_type;
     /// @}
 
     /// @name I_View implementation
@@ -70,6 +74,8 @@ public:
     /// @name I_SceneView implementation
     /// @{
 public:
+    virtual Zen::Engine::Rendering::I_View* getSceneView();
+    virtual Zen::Engine::Rendering::I_Context* getContext();
     /// @}
 
     /// @name SceneViewWidget implementation
@@ -80,8 +86,39 @@ public:
     /// Get a reference to the rendering canvas.
     Zen::Engine::Rendering::I_RenderingCanvas& getRenderingCanvas();
 
-	void onSize(wxSizeEvent& e);
-	void onPaint(wxPaintEvent& e);
+	void onSize(wxSizeEvent& _event);
+	void onPaint(wxPaintEvent& _event);
+
+    void handleSetFocus(wxFocusEvent& _event);
+    void handleKillFocus(wxFocusEvent& _event);
+    void handleActivate(wxActivateEvent& _event);
+
+    void handleSetCursor(wxSetCursorEvent& _event);
+
+    void handleKeyDown(wxKeyEvent& _event);
+    void handleKeyUp(wxKeyEvent& _event);
+
+    void handleEnterWindow(wxMouseEvent& _event);
+    void handleLeaveWindow(wxMouseEvent& _event);
+    void handleMotion(wxMouseEvent& _event);
+    void handleLeftDown(wxMouseEvent& _event);
+    void handleLeftUp(wxMouseEvent& _event);
+    void handleRightDown(wxMouseEvent& _event);
+    void handleRightUp(wxMouseEvent& _event);
+    void handleMiddleDown(wxMouseEvent& _event);
+    void handleMiddleUp(wxMouseEvent& _event);
+    void handleMouseWheel(wxMouseEvent& _event);
+
+    enum ZenMouseButtons
+    {
+        ZMB_LEFT = 1,
+        ZMB_RIGHT = 2,
+        ZMB_MIDDLE = 4
+    };
+
+    /// Get a bitmap of the mouse buttons that are down.
+    /// Use the ZenMouseButtons for the values.
+    unsigned int getMouseButtons(wxMouseEvent& _event);
 
     void updateView();
     /// @}
@@ -101,6 +138,9 @@ private:
     Zen::Engine::Rendering::I_View*             m_pRenderingView;
     I_SceneModel::pSubscription_type            m_pSubscription;
     pSceneService_type                          m_pSceneService;
+    pResourceService_type                       m_pRenderingResourceService;
+
+    int                                         m_enterWindowCount;
     /// @}
 
 };  // class SceneViewWidget

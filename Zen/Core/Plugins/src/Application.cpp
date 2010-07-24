@@ -27,6 +27,10 @@
 #include "XMLConfigurationElement.hpp"
 #include "PluginManager.hpp"
 
+#include <Zen/Core/Utility/I_LogService.hpp>
+#include <Zen/Core/Utility/I_Log.hpp>
+#include <Zen/Core/Utility/log_stream.hpp>
+
 #include <boost/bind.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -40,7 +44,9 @@ namespace Zen {
 namespace Plugins {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-Application::Application()
+Application::Application(Utility::I_LogManager::pLogService_type _pLogService)
+:   m_logStreamBuffer(_pLogService->getStreamBuffer())
+,   m_logStream(m_logStreamBuffer)
 {
     m_config.listenElement("application",   boost::bind(&Application::onApplicationElement, this, _1));
 
@@ -95,19 +101,18 @@ Application::getProviderName() const
 bool
 Application::parseConfigurationFile(const boost::filesystem::path& _configFile)
 {
-    // TODO Log Debug
-    std::cout << "DEBUG: Parsing configuration file: " << _configFile.string() << std::endl;
+    m_logStream << "DEBUG: Parsing configuration file: " << _configFile.string() << std::endl;
 
     // TODO Make sure the required elements are present, etc and return false
     //      if any errors occur.
     const bool rc = m_config.parse(_configFile);
 
-    // TODO Log Debug
-    std::cout << "DEBUG: Done parsing." << std::endl;
-    std::cout << "DEBUG: Application Id: " << getId() << std::endl;
-    std::cout << "DEBUG:           Name: " << getName() << std::endl;
-    std::cout << "DEBUG:        Version: " << getVersion() << std::endl;
-    std::cout << "DEBUG:       Provider: " << getProviderName() << std::endl;
+    m_logStream << "DEBUG: Done parsing." << std::endl;
+    m_logStream << "DEBUG: Application Id: " << getId() << std::endl;
+    m_logStream << "DEBUG:           Name: " << getName() << std::endl;
+    m_logStream << "DEBUG:        Version: " << getVersion() << std::endl;
+    m_logStream << "DEBUG:       Provider: " << getProviderName() << std::endl;
+
     return rc;
 }
 

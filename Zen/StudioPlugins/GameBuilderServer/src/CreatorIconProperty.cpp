@@ -17,8 +17,8 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace GameBuilder {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-CreatorIconProperty::CreatorIconProperty(Zen::Studio::Workbench::I_PropertiesPublisher& _publisher, const std::string& _value, Property* _pParent)
-:   Property(_publisher, "Creator Icon", _value, _pParent)
+CreatorIconProperty::CreatorIconProperty(Properties& _properties, const std::string& _value, Property* _pParent)
+:   Property(_properties, "Creator Icon", _value, _pParent)
 {
 }
 

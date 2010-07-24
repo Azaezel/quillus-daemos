@@ -115,7 +115,6 @@ ProjectContributor::getExplorerNodeDecorations(Zen::Studio::Workbench::I_Explore
 void
 ProjectContributor::addZoneAspect(Zen::Studio::Workbench::I_ExplorerNode& _selectedNode)
 {
-    std::cout << "ProjectContributor::addZoneAspect(): Begin" << std::endl;
     GameBuilder::I_Project* pProject = dynamic_cast<GameBuilder::I_Project*>(_selectedNode.getUserData().get());
 
     if (pProject)
@@ -123,15 +122,27 @@ ProjectContributor::addZoneAspect(Zen::Studio::Workbench::I_ExplorerNode& _selec
         // TODO Make sure the project doesn't already have this aspect.
         // TODO What else to do to add an aspect to a project?
 
-        std::cout << "ProjectContributor::addZoneAspect(): About to createNodeUserData" << std::endl;
+        // Create the Zones folder under the project folder.
+        Zen::Studio::Workbench::I_Project* pProject = _selectedNode.getProject();
+        if (pProject)
+        {
+            const boost::filesystem::path& projectPath = pProject->getProjectPath();
+            boost::filesystem::path zonePath = projectPath / "Zones";
+            if (!boost::filesystem::exists(zonePath))
+            {
+                boost::filesystem::create_directories(zonePath);
+            }
 
-        Zen::Studio::Workbench::I_ExplorerNode::pUserData_type
-            pData = m_service.getWorkbench().getWorkbenchService().
-            createNodeUserData(0, "WorldBuilder::ZoneFolder", _selectedNode);
+            Zen::Studio::Workbench::I_ExplorerNode::pUserData_type
+                pData = m_service.getWorkbench().getWorkbenchService().
+                createNodeUserData(0, "WorldBuilder::ZoneFolder", _selectedNode);
 
-        std::cout << "ProjectContributor::addZoneAspect(): About to createChildNode" << std::endl;
-        pProject->getController().createChildNode(*pProject->getNode(), pData);
-        std::cout << "ProjectContributor::addZoneAspect(): Done" << std::endl;
+            pProject->getController().createChildNode(*pProject->getNode(), pData);
+        }
+        else
+        {
+            throw Zen::Utility::runtime_exception("WorldBuilder::ProjectContributor::addZoneAspect(): Error, can't add a zone aspect to an explorer node that isn't associated with a project.");
+        }
     }
     else
     {

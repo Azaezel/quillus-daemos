@@ -10,7 +10,7 @@
   <plugin-path path="C:/dev/Zen/tutorials/Tutorial2"/>
   <module-path path="C:/dev/bin"/>
 
-` <requires>
+  <requires>
     <import plugin="Framework"/>
     <import plugin="ZOgre"/>
     <import plugin="ZInput"/>

@@ -53,6 +53,7 @@ public:
 public:
     inline Degree& operator=(const Degree& _right) { m_degree = _right.m_degree; return *this; }
     inline Degree& operator=(const Real& _right) { m_degree = _right; return *this; }
+    inline operator Real() const { return m_degree; }
     /// @}
 
     /// @name 'Structors
