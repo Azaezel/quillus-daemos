@@ -41,6 +41,8 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+
+
     namespace Enterprise {
         namespace AppServer {
             class I_ApplicationServer;
@@ -73,7 +75,9 @@ public:
     virtual pEndpoint_type getDestinationEndpoint() { return Message::getDestinationEndpoint(); }
     virtual pMessageHeader_type getMessageHeader() const { return Message::getMessageHeader(); }
 
+    virtual pResourceLocation_type getSourceLocation() { return Message::getSourceLocation(); }
     virtual pResourceLocation_type getDestinationLocation();
+
     virtual void serialize(pMessageHeader_type _pMessageHeader, boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
     /// @}
@@ -81,21 +85,21 @@ public:
     /// @name I_Message implementation
     /// @{
 public:
-    virtual boost::uint32_t getMessageId() const { return Message::getMessageId(); } 
+    virtual boost::uint64_t getMessageId() const { return Message::getMessageId(); } 
     virtual pMessageType_type getMessageType() const { return getStaticMessageType(); }
     /// @}
 
     /// @name Dominance for Response
     /// @{
 public:
-    virtual unsigned int getRequestMessageId() const { return Response::getRequestMessageId(); }
+    virtual boost::uint64_t getRequestMessageId() const { return Response::getRequestMessageId(); }
     /// @}
     /// @name Static methods
     /// @{
 public:
     static void registerMessage(Zen::Enterprise::AppServer::I_ApplicationServer& _appServer);
 
-    static pMessageHeader_type createMessageHeader(boost::uint32_t _messageId, boost::uint32_t _requestId);
+    static pMessageHeader_type createMessageHeader(boost::uint64_t _messageId, boost::uint64_t _requestId);
 
     static void destroy(wpResponse_type _wpResponse);
     
@@ -110,7 +114,7 @@ protected:
              /// This constructor is used by the static create
              /// methods for creating outbound messages.
              ChildNodeResponse(pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId);
+                           pEndpoint_type _pDestinationEndpoint, boost::uint64_t _requestMessageId);
              /// This constructor is used by the message factory
              /// for creating inbound messages.
              ChildNodeResponse(pMessageHeader_type _pMessageHeader,

@@ -25,8 +25,10 @@ Find_Package(OGRE)
 if (OGRE_FOUND)
 	message("-- ZOgre")
 	add_subdirectory("${ZEN_HOME}/plugins/ZOgre" ZOgre)
+	message("-- ZOgreTerrain")
+	add_subdirectory("${ZEN_HOME}/plugins/ZOgreTerrain" ZOgreTerrain)
 else(OGRE_FOUND)
-	message("-- ZOgre will NOT be compiled.  OGRE was not found.")
+	message("-- ZOgre and ZOgreTerrain will NOT be compiled.  OGRE was not found.")
 endif(OGRE_FOUND)
 
 #-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-

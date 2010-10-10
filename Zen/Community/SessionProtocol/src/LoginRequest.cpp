@@ -144,7 +144,7 @@ LoginRequest::registerMessage(Zen::Enterprise::AppServer::I_ApplicationServer& _
 LoginRequest::pMessageHeader_type
 LoginRequest::createMessageHeader(boost::uint64_t _messageId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, "", "",0);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, 0, "", "");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

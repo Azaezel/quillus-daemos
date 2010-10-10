@@ -57,6 +57,7 @@ Project::Project(Zen::Studio::Workbench::I_ProjectExplorerController& _controlle
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Project::~Project()
 {
+    Zen::Threading::MutexFactory::destroy(m_pSubscriptionsGuard);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -64,6 +65,22 @@ Zen::Studio::Workbench::I_ExplorerNodeType&
 Project::getType() const
 {
     return I_Project::getNodeType();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Project::registerProperties(Zen::Studio::Workbench::I_PropertiesPublisher& _properties)
+{
+    /// TODO Implement
+    throw Zen::Utility::runtime_exception("Not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Studio::Workbench::I_PropertiesPublisher&
+Project::getPropertiesPublisher()
+{
+    /// TODO Implement
+    throw Zen::Utility::runtime_exception("Not implemented.");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

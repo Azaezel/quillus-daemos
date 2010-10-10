@@ -30,6 +30,9 @@
 #include "../I_PhysicsActor.hpp"
 #include "../I_PhysicsZone.hpp"
 #include "../I_PhysicsService.hpp"
+#include "../I_CollisionShape.hpp"
+
+#include <Zen/Engine/World/I_TerrainChunk.hpp>
 
 #include <Zen/Core/Math/Point3.hpp>
 
@@ -149,9 +152,13 @@ PhysicsManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
     // Expose I_PhysicsZone to the Script Engine
     m_pPhysicsModule->addType<I_PhysicsZone>("PhysicsZone", "Physics Zone")
         .addMethod("setBoundary", &I_PhysicsZone::setBoundary)
+        .addMethod("createHeightFieldShape", &I_PhysicsZone::createHeightFieldShape)
     		// TODO add the methods needed by tutorial 4
     		//.addMethod()
 	;
+
+    m_pPhysicsModule->addType<I_CollisionShape>("CollisionShape", "Collision Shape")
+    ;
 
     // Expose I_PhysicsActor to the Script Engine
     m_pPhysicsModule->addType<I_PhysicsActor>("PhysicsActor", "Physics Actor")

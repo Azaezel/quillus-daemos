@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Walt Collins
 // Copyright (C)        2008 Matthew Alan Gray
 //
@@ -29,8 +29,12 @@
 #include "WorldManager.hpp"
 
 #include <Zen/Engine/World/I_Terrain.hpp>
+#include <Zen/Engine/World/I_TerrainGroup.hpp>
+#include <Zen/Engine/World/I_TerrainChunk.hpp>
+#include <Zen/Engine/World/I_TerrainHeightfield.hpp>
 #include <Zen/Engine/World/I_Sky.hpp>
 #include <Zen/Engine/Physics/I_PhysicsZone.hpp>
+#include <Zen/Engine/Rendering/I_SceneService.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptEngine.hpp>
 #include <Zen/Core/Scripting/I_ScriptModule.hpp>
@@ -128,7 +132,14 @@ WorldManager::createTerrainService(const std::string& _type, config_type& _confi
         return pService;
     }
 
-    return m_terrainServiceCache.cacheService(_type, pFactory->create(_type, _config));
+    pService = pFactory->create(_type, _config);
+
+    if (m_pDefaultScriptEngine.isValid())
+    {
+        pService->registerScriptModule(*m_pWorldModule);
+    }
+
+    return m_terrainServiceCache.cacheService(_type, pService);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -209,10 +220,29 @@ WorldManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
 
     m_pWorldModule->addType<I_TerrainService>("TerrainService", "TerrainService")
         .addMethod("createTerrain", &I_TerrainService::createTerrain)
+        .addMethod("createTerrainGroup", &I_TerrainService::createTerrainGroup)
         .addMethod("setPhysicsZone", &I_TerrainService::setPhysicsZone)
+        .addMethod("setSceneService", &I_TerrainService::setSceneService)
+        .addMethod("setMaxPixelError", &I_TerrainService::setMaxPixelError)
+        .addMethod("setCompositeMapDistance", &I_TerrainService::setCompositeMapDistance)
     ;
 
     m_pWorldModule->addType<I_Terrain>("Terrain", "Terrain")
+    ;
+
+    m_pWorldModule->addType<I_TerrainGroup>("TerrainGroup", "TerrainGroup")
+        .addMethod("setName", &I_TerrainGroup::setName)
+        .addMethod("getName", &I_TerrainGroup::getName)
+        .addMethod("setOrigin", &I_TerrainGroup::setOrigin)
+        .addMethod("getOrigin", &I_TerrainGroup::getOrigin)
+        .addMethod("setTerrainSize", &I_TerrainGroup::setTerrainSize)
+        .addMethod("getTerrainSize", &I_TerrainGroup::getTerrainSize)
+        .addMethod("setWorldSize", &I_TerrainGroup::setWorldSize)
+        .addMethod("getWorldSize", &I_TerrainGroup::getWorldSize)
+        .addMethod("load", &I_TerrainGroup::load)
+    ;
+
+    m_pWorldModule->addType<I_TerrainChunk>("TerrainChunk", "TerrainChunk")
     ;
 
     m_pWorldModule->addType<I_SkyService>("SkyService", "SkyService")
@@ -228,6 +258,7 @@ WorldManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
     m_pDefaultScriptEngine = _pEngine;
 
     registerSkyScriptModule();
+    registerTerrainScriptModule();
 
     // TODO Register the script module with the other services
 }
@@ -236,7 +267,14 @@ WorldManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
 WorldManager::pScriptModule_type
 WorldManager::getDefaultWorldScriptModule()
 {
-    return m_pWorldModule->getScriptModule();
+    if (m_pWorldModule != NULL)
+    {
+        return m_pWorldModule->getScriptModule();
+    }
+    else
+    {
+        return pScriptModule_type();
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -246,6 +284,19 @@ WorldManager::registerSkyScriptModule()
     Threading::CriticalSection guard(m_skyServiceCache.getLock());
 
     for(skyServiceCache_type::iterator iter = m_skyServiceCache.begin(); iter != m_skyServiceCache.end(); iter++)
+    {
+        iter->second->registerScriptModule(*m_pWorldModule);
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+WorldManager::registerTerrainScriptModule()
+{
+    Threading::CriticalSection guard(m_terrainServiceCache.getLock());
+
+    for (terrainServiceCache_type::iterator iter = m_terrainServiceCache.begin();
+         iter != m_terrainServiceCache.end(); ++iter)
     {
         iter->second->registerScriptModule(*m_pWorldModule);
     }

@@ -65,6 +65,10 @@ public:
     script_type<ScriptableClass_type>&
     addType(const std::string& _typeName, const std::string& _typeDoc);
 
+    template<typename ScriptableClass_type>
+    derived_script_type<ScriptableClass_type>&
+    addDerivedType(script_type_interface& _baseType, const std::string& _typeName, const std::string& _typeDoc);
+
     /// Activate this module.
     /// When a module is activated, all of the classes within the module are
     /// finalized and registered.  You cannot add more classes to the module and
@@ -73,6 +77,8 @@ public:
 
     /// Get the underlying I_ScriptModule class.
     pScriptModule_type getScriptModule();
+
+    script_type_interface& getScriptType(const std::string& _typeName);
     /// @}
 
     /// @name 'Structors

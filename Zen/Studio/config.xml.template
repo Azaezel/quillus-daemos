@@ -16,12 +16,15 @@
     <import plugin="WorkbenchServer"/>
     <import plugin="GameBuilder"/>
     <import plugin="GameBuilderServer"/>
+	<import plugin="TerrainBuilder"/>
+	<import plugin="TerrainBuilderServer"/>
     <import plugin="WorldBuilder"/>
     <import plugin="WorldBuilderServer"/>
     <import plugin="ArtLibrary"/>
     <import plugin="ArtLibraryServer"/>
     <import plugin="ZSQLite"/>
     <import plugin="ZOgre"/>
+    <import plugin="ZSky"/>
     <import plugin="ZBoostNetworking"/>
   </requires>
 

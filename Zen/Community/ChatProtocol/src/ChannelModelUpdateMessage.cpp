@@ -191,7 +191,7 @@ ChannelModelUpdateMessage::registerMessage(Zen::Enterprise::AppServer::I_Applica
 ChannelModelUpdateMessage::pMessageHeader_type
 ChannelModelUpdateMessage::createMessageHeader(boost::uint64_t _messageId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, "", "",0);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, 0, "", "");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

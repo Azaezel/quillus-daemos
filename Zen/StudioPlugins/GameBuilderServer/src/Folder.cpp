@@ -51,6 +51,22 @@ Folder::getType() const
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+Folder::registerProperties(Zen::Studio::Workbench::I_PropertiesPublisher& _properties)
+{
+    /// TODO Implement
+    throw Zen::Utility::runtime_exception("Not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Studio::Workbench::I_PropertiesPublisher&
+Folder::getPropertiesPublisher()
+{
+    /// TODO Implement
+    throw Zen::Utility::runtime_exception("Not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 Folder::insert(pDatabaseConnection_type _pDBConn)
 {
     pGameObjectFolderDataMap_type pFolderDM =

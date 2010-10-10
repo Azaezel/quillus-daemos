@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="TerrainBuilder"
+   name="Zen Studio Terrain Builder Plug-in"
+   version="0.6.0"
+   provider-name="IndieZen.com">
+
+    <runtime>
+        <library name="TerrainBuilder">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+        <import plugin="Workbench"/>
+    </requires>
+
+    <extension
+        point="Zen::Studio::Workbench::ContributorService"
+        id="TerrainBuilder:ContributorService">
+        <contributor-service
+            class="TerrainBuilder::ContributorService"
+        />
+    </extension>
+
+</plugin>

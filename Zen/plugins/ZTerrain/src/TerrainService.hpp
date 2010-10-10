@@ -29,7 +29,6 @@
 #include <Zen/Engine/World/I_TerrainService.hpp>
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
-#include <Zen/Core/Memory/managed_self_ref.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -38,7 +37,6 @@ namespace ZTerrain {
 
 class TerrainService
 :   public Engine::World::I_TerrainService
-,   public Memory::managed_self_ref<Zen::Engine::World::I_TerrainService>
 {
     /// @name Types
     /// @{
@@ -53,13 +51,21 @@ public:
     virtual pPhysicsZone_type getPhysicsZone(void);
     virtual void setPhysicsService(pPhysicsService_type _pService);
     virtual void setPhysicsResourceService(pPhysicsResourceService_type _pService);
+    virtual void setSceneService(pSceneService_type _pService);
     virtual void setRenderingService(pRenderingService_type _pService);
     virtual void setRenderingResourceService(pRenderingResourceService_type _pService);
     virtual pPhysicsService_type getPhysicsService(void);
     virtual pPhysicsResourceService_type getPhysicsResourceService(void);
+    virtual pSceneService_type getSceneService(void);
     virtual pRenderingService_type getRenderingService(void);
     virtual pRenderingResourceService_type getRenderingResourceService(void);
     virtual pTerrain_type createTerrain(config_type& _physicsConfig, config_type& _renderingConfig);
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
+
+    virtual pTerrainGroup_type createTerrainGroup(const std::string& _name);
+
+    virtual void setMaxPixelError(Zen::Math::Real _pixelError);
+    virtual void setCompositeMapDistance(Zen::Math::Real _distance);
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -92,6 +98,7 @@ private:
     pPhysicsZone_type m_pPhysicsZone;
     pPhysicsService_type m_pPhysicsService;
     pPhysicsResourceService_type m_pPhysicsResourceService;
+    pSceneService_type m_pSceneService;
     pRenderingService_type m_pRenderingService;
     pRenderingResourceService_type m_pRenderingResourceService;
 

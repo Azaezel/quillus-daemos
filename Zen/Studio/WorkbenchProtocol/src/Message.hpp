@@ -60,12 +60,14 @@ public:
     virtual pEndpoint_type getSourceEndpoint();
     virtual pEndpoint_type getDestinationEndpoint();
     virtual pMessageHeader_type getMessageHeader() const;
+    virtual pResourceLocation_type getSourceLocation() const;
+    virtual pResourceLocation_type getDestinationLocation() const;
     /// @}
     
     /// @name I_Message implementation
     /// @{
 public:
-    virtual boost::uint32_t getMessageId() const;
+    virtual boost::uint64_t getMessageId() const;
     virtual pMessageType_type getMessageType() const;
     /// @}
 
@@ -73,7 +75,7 @@ public:
     /// @{
 public:
     static void destroyMessageFactory(wpMessageFactory_type _wpMessageFactory);
-    static boost::uint32_t getNewMessageId();
+    static boost::uint64_t getNewMessageId();
     /// @}
 
     /// @name 'Structors

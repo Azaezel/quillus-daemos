@@ -49,14 +49,14 @@ public:
     virtual pEndpoint_type getSourceEndpoint() { return Message::getSourceEndpoint(); }
     virtual pEndpoint_type getDestinationEndpoint() { return Message::getDestinationEndpoint(); }
     virtual pMessageHeader_type getMessageHeader() const { return Message::getMessageHeader(); }
-    virtual boost::uint32_t getMessageId() const { return Message::getMessageId(); }
+    virtual boost::uint64_t getMessageId() const { return Message::getMessageId(); }
     virtual pMessageType_type getMessageType() const { return Message::getMessageType(); }
     /// @}
     
     /// @name Zen::Enterprise::AppServer::I_Response implementation
     /// @{
 public:
-    virtual unsigned int getRequestMessageId() const;
+    virtual boost::uint64_t getRequestMessageId() const;
     /// @}
 
     /// @name 'Structors

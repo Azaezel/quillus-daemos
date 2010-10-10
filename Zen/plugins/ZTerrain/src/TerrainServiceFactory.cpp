@@ -61,13 +61,10 @@ TerrainServiceFactory::create(const std::string& _type, Engine::World::I_Terrain
 {
     TerrainService* pRawService = new TerrainService();
 
-	TerrainServiceFactory::pTerrainService_type pService(pRawService, boost::bind(&TerrainServiceFactory::destroy, this, _1));
-
-    wpTerrainService_type pWeakPtr(pService);
-
-    pRawService->setSelfReference(pWeakPtr);
-
-    return pService;
+    return TerrainServiceFactory::pTerrainService_type(
+        pRawService, 
+        boost::bind(&TerrainServiceFactory::destroy, this, _1)
+    );
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -47,6 +47,7 @@ BEGIN_EVENT_TABLE(ProjectExplorerView,wxPanel)
 	EVT_TREE_ITEM_RIGHT_CLICK(ID_WXTREECTRL1,ProjectExplorerView::handleRightClick)
 	EVT_TREE_BEGIN_LABEL_EDIT(ID_WXTREECTRL1,ProjectExplorerView::handleBeginLabelEdit)
 	EVT_TREE_END_LABEL_EDIT(ID_WXTREECTRL1,ProjectExplorerView::handleEndLabelEdit)
+    EVT_TREE_SEL_CHANGED(ID_WXTREECTRL1,ProjectExplorerView::handleSelection)
     EVT_TREE_ITEM_ACTIVATED(ID_WXTREECTRL1,ProjectExplorerView::handleActivate)
     EVT_TREE_BEGIN_DRAG(ID_WXTREECTRL1,ProjectExplorerView::handleBeginDrag)
     EVT_TREE_END_DRAG(ID_WXTREECTRL1,ProjectExplorerView::handleEndDrag)
@@ -374,7 +375,33 @@ void ProjectExplorerView::handleEndLabelEdit(wxTreeEvent& event)
     if (!event.IsEditCancelled())
     {
         pNode->setDisplayName(wx2std(event.GetLabel()));
+
+        /// Doing this to refresh the properties on rename.
+        Zen::Studio::Workbench::I_ExplorerNode::onDeselect(pNode);
+        Zen::Studio::Workbench::I_ExplorerNode::onSelect(pNode);
     }
+}
+
+void ProjectExplorerView::handleSelection(wxTreeEvent& event)
+{
+    if (event.GetOldItem().IsOk())
+    {
+        InternalTreeItemData* const pOldInternalData =
+            dynamic_cast<InternalTreeItemData*>(WxTreeCtrl1->GetItemData(event.GetOldItem()));
+
+        Zen::Studio::Workbench::I_ExplorerNode* const pOldNode =
+            pOldInternalData->getNode();
+
+        Zen::Studio::Workbench::I_ExplorerNode::onDeselect(pOldNode);
+    }
+
+    InternalTreeItemData* const pInternalData =
+        dynamic_cast<InternalTreeItemData*>(WxTreeCtrl1->GetItemData(event.GetItem()));
+
+    Zen::Studio::Workbench::I_ExplorerNode* const pNode =
+        pInternalData->getNode();
+
+    Zen::Studio::Workbench::I_ExplorerNode::onSelect(pNode);
 }
 
 void ProjectExplorerView::handleActivate(wxTreeEvent& event)

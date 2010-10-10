@@ -60,6 +60,14 @@ SceneService::~SceneService()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Ogre::SceneManager&
+SceneService::getOgreSceneManager()
+{
+    assert(m_pSceneManager != NULL);
+    return *m_pSceneManager;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SceneService::pLight_type
 SceneService::createLight(const std::string& _type, const std::string& _name)
 {

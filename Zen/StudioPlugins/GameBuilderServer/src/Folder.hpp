@@ -53,6 +53,8 @@ public:
     virtual void load(pDatabaseConnection_type _pDBConn);
     virtual void save(pDatabaseConnection_type _pDBConn);
     virtual void remove(pDatabaseConnection_type _pDBConn);
+    virtual void registerProperties(Zen::Studio::Workbench::I_PropertiesPublisher& _properties);
+    virtual Zen::Studio::Workbench::I_PropertiesPublisher& getPropertiesPublisher();
     /// @}
 
     /// @name I_Folder implementation

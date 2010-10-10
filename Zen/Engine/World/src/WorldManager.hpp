@@ -84,6 +84,7 @@ private:
     /// Register the script module with all of the previously
     /// created sky services.
     void registerSkyScriptModule();
+    void registerTerrainScriptModule();
     /// @}
 
     /// @name 'Structors

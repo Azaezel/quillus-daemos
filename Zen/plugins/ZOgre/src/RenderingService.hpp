@@ -32,10 +32,14 @@
 
 #include <OgreRoot.h>
 
+#include <map>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZOgre {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+class RenderingView;
 
 class RenderingService
 :   public Zen::Engine::Rendering::I_RenderingService
@@ -45,6 +49,9 @@ class RenderingService
 public:
     typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptModule>    pScriptModule_type;
     typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptEngine>    pScriptEngine_type;
+
+    typedef std::map<RenderingView*, std::pair<std::string,int> >       ViewIdx_type;
+    typedef std::map<std::pair<std::string,int>, RenderingView*>        ViewMap_type;
     /// @}
 
 
@@ -83,6 +90,9 @@ private:
 
     ScriptObjectReference_type*     m_pScriptObject;
     Zen::Scripting::script_module*  m_pModule;
+
+    ViewIdx_type                    m_viewIdx;
+    ViewMap_type                    m_viewMap;
     /// @}
 
 };  // class RenderingService

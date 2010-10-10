@@ -113,7 +113,7 @@ CreateChildNodeRequest::registerMessage(Zen::Enterprise::AppServer::I_Applicatio
         pMessageRegistry = dynamic_cast<Zen::Enterprise::AppServer::I_NumericTypeMessageRegistry*>
             (sm_pMessageRegistry);
 
-    if( !sm_pMessageFactory.isValid() )
+    if (!sm_pMessageFactory.isValid())
     {
         sm_pMessageFactory = pMessageFactory_type(new MessageFactory, destroyMessageFactory);
     }
@@ -128,9 +128,9 @@ CreateChildNodeRequest::registerMessage(Zen::Enterprise::AppServer::I_Applicatio
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 CreateChildNodeRequest::pMessageHeader_type
-CreateChildNodeRequest::createMessageHeader(boost::uint32_t _messageId)
+CreateChildNodeRequest::createMessageHeader(boost::uint64_t _messageId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId,0);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, 0, "", "");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -157,7 +157,7 @@ CreateChildNodeRequest::getDestinationLocation()
 {
     if(!sm_pResourceLocation.isValid())
     {
-        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginServer");
+        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/gameBuilderServer");
     }
     return sm_pResourceLocation;
 }

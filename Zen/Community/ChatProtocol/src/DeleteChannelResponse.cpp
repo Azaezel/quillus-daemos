@@ -111,7 +111,7 @@ DeleteChannelResponse::registerMessage(Zen::Enterprise::AppServer::I_Application
 DeleteChannelResponse::pMessageHeader_type
 DeleteChannelResponse::createMessageHeader(boost::uint64_t _messageId, boost::uint64_t _requestId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, "", "",_requestId);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, _requestId, "", "");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

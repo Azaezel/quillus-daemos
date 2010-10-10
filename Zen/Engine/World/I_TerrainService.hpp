@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Walt Collins
 //
 //  This software is provided 'as-is', without any express or implied
@@ -28,11 +28,11 @@
 
 #include "Configuration.hpp"
 
-#include <Zen/Core/Scripting/I_ScriptableType.hpp>
-#include <Zen/Core/Scripting/ObjectReference.hpp>
+#include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
+#include <Zen/Core/Memory/managed_self_ref.hpp>
 #include <Zen/Core/Event/Event.hpp>
 
 #include <map>
@@ -50,14 +50,17 @@ namespace Engine {
     }
     namespace Rendering {
         class I_RenderingService;
+        class I_SceneService;
     }
 namespace World {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class I_Terrain;
+class I_TerrainGroup;
 
 class WORLD_DLL_LINK I_TerrainService
 :   public virtual Zen::Scripting::I_ScriptableType
+,   public Memory::managed_self_ref<Zen::Engine::World::I_TerrainService>
 {
     /// @name Types
     /// @{
@@ -71,12 +74,16 @@ public:
     typedef Memory::managed_weak_ptr<I_TerrainService>                  wpTerrainService_type;
     typedef Event::Event<wpTerrainService_type>                         terrainServiceEvent_type;
     typedef std::map<std::string, std::string>                          config_type;
-    typedef Memory::managed_ptr<Engine::Physics::I_PhysicsZone>			pPhysicsZone_type;
+    typedef Memory::managed_ptr<Engine::Physics::I_PhysicsZone>         pPhysicsZone_type;
     typedef Memory::managed_ptr<I_Terrain>                              pTerrain_type;
     typedef Memory::managed_weak_ptr<I_Terrain>                         wpTerrain_type;
 
+    typedef Memory::managed_ptr<I_TerrainGroup>                         pTerrainGroup_type;
+    typedef Memory::managed_weak_ptr<I_TerrainGroup>                    wpTerrainGroup_type;
+
     typedef Memory::managed_ptr<Engine::Physics::I_PhysicsService>      pPhysicsService_type;
     typedef Memory::managed_ptr<Engine::Resource::I_ResourceService>    pPhysicsResourceService_type;
+    typedef Memory::managed_ptr<Engine::Rendering::I_SceneService>      pSceneService_type;
     typedef Memory::managed_ptr<Engine::Rendering::I_RenderingService>  pRenderingService_type;
     typedef Memory::managed_ptr<Engine::Resource::I_ResourceService>    pRenderingResourceService_type;
     /// @}
@@ -87,14 +94,22 @@ public:
     virtual void setPhysicsZone(pPhysicsZone_type _pPhysicsZone) = 0;
     virtual pPhysicsZone_type getPhysicsZone(void) = 0;
     virtual void setPhysicsService(pPhysicsService_type _pService) = 0;
+    virtual void setSceneService(pSceneService_type _pService) = 0;
     virtual void setRenderingService(pRenderingService_type _pService) = 0;
     virtual void setPhysicsResourceService(pPhysicsResourceService_type _pService) = 0;
     virtual void setRenderingResourceService(pRenderingResourceService_type _pService) = 0;
     virtual pPhysicsService_type getPhysicsService(void) = 0;
     virtual pPhysicsResourceService_type getPhysicsResourceService(void) = 0;
+    virtual pSceneService_type getSceneService(void) = 0;
     virtual pRenderingService_type getRenderingService(void) = 0;
     virtual pRenderingResourceService_type getRenderingResourceService(void) = 0;
     virtual pTerrain_type createTerrain(config_type& _physicsConfig, config_type& _renderingConfig) = 0;
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
+
+    virtual pTerrainGroup_type createTerrainGroup(const std::string& _name) = 0;
+
+    virtual void setMaxPixelError(Zen::Math::Real _pixelError) = 0;
+    virtual void setCompositeMapDistance(Zen::Math::Real _distance) = 0;
     /// @}
 
     /// @name I_ScriptableType implementation

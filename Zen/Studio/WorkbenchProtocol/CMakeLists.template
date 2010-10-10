@@ -34,7 +34,7 @@ add_library ( WorkbenchProtocol ${LIB_TYPE} ${WorkbenchProtocol_SRC} )
 
 add_dependencies(WorkbenchProtocol ZenCore ZenEnterprise)
 
-target_link_libraries( WorkbenchProtocol )
+target_link_libraries( WorkbenchProtocol ZenCore ZenEnterprise )
 
 set_target_properties ( WorkbenchProtocol 
 						PROPERTIES

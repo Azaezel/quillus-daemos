@@ -159,7 +159,7 @@ CreateChannelRequest::registerMessage(Zen::Enterprise::AppServer::I_ApplicationS
 CreateChannelRequest::pMessageHeader_type
 CreateChannelRequest::createMessageHeader(boost::uint64_t _messageId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, "", "",0);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, 0, "", "");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

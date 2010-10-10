@@ -77,6 +77,22 @@ GameObjectType::getType() const
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+GameObjectType::registerProperties(Zen::Studio::Workbench::I_PropertiesPublisher& _properties)
+{
+    /// TODO Implement
+    throw Zen::Utility::runtime_exception("Not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Studio::Workbench::I_PropertiesPublisher&
+GameObjectType::getPropertiesPublisher()
+{
+    /// TODO Implement
+    throw Zen::Utility::runtime_exception("Not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 GameObjectType::insert(pDatabaseConnection_type _pDBConn)
 {
     // First, insert the document properties.

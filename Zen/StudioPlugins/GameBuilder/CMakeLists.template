@@ -25,8 +25,9 @@ SET (LIB_TYPE SHARED)
 set ( GameBuilder_SRC
 <%SourceList%>
     )
-
-add_definitions( -DGAMEBUILDER_EXPORTS ${wxWidgets_DEFINITIONS} ${wxWidgets_CXX_FLAGS} ${Zen_DEFINITIONS})
+# TR - I removed ${wxWidgets_DEFINITIONS}  from add_definitions 
+# This made it work on Linux, but does it break other OS?
+add_definitions( -DGAMEBUILDER_EXPORTS ${wxWidgets_CXX_FLAGS} ${Zen_DEFINITIONS})
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${wxWidgets_INCLUDE_DIRS} )
 

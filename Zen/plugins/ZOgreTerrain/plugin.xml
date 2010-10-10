@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="ZOgreTerrain"
+   name="IndieZen Ogre Terrain Plug-in"
+   version="0.2.0"
+   provider-name="IndieZen.org">
+
+    <runtime>
+        <library name="ZOgreTerrain">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+    </requires>
+
+	<extension
+          point="Zen::Engine::World::TerrainService"
+          id="ZOgreTerrain"
+          name="IndieZen Ogre Terrain Service"
+          type="ZOgreTerrain">
+		<!-- This "type" attribute shouldn't be here; it should be down below but there's a bug in  -->
+		<terrain-service
+              class="Zen::ZOgreTerrain::TerrainService"
+              type="ZOgreTerrain">
+		</terrain-service>
+	</extension>
+
+</plugin>

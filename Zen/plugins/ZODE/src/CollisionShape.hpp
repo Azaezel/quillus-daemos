@@ -61,6 +61,7 @@ public:
     /// @{
 public:
     dGeomID getGeomId() const;
+    void setGeometryId(dGeomID _geometryId);
     /// @}
 
     /// @name 'Structors

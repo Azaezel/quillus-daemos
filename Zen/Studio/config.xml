@@ -6,22 +6,25 @@
    version="0.6.0"
    provider-name="IndieZen.org">
 
-  <plugin-path path="C:/dev/Zen/plugins"/>
-  <plugin-path path="C:/dev/Zen/Studio"/>
-  <plugin-path path="C:/dev/Zen/StudioPlugins"/>
-  <module-path path="C:/dev/bin"/>
+  <plugin-path path="/home/sgtflame/dev/export/indiezen/Zen/plugins"/>
+  <plugin-path path="/home/sgtflame/dev/export/indiezen/Zen/Studio"/>
+  <plugin-path path="/home/sgtflame/dev/export/indiezen/Zen/StudioPlugins"/>
+  <module-path path="/home/sgtflame/dev/export/indiezen/bin/"/>
 
   <requires>
     <import plugin="Workbench"/>
     <import plugin="WorkbenchServer"/>
     <import plugin="GameBuilder"/>
     <import plugin="GameBuilderServer"/>
+	<import plugin="TerrainBuilder"/>
+	<import plugin="TerrainBuilderServer"/>
     <import plugin="WorldBuilder"/>
     <import plugin="WorldBuilderServer"/>
     <import plugin="ArtLibrary"/>
     <import plugin="ArtLibraryServer"/>
     <import plugin="ZSQLite"/>
     <import plugin="ZOgre"/>
+    <import plugin="ZSky"/>
     <import plugin="ZBoostNetworking"/>
   </requires>
 

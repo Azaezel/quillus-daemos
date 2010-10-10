@@ -93,11 +93,42 @@ script_module::addType(const std::string& _typeName, const std::string& _typeDoc
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+template<typename ScriptableClass_type>
+inline
+derived_script_type<ScriptableClass_type>&
+script_module::addDerivedType(script_type_interface& _baseType, const std::string& _typeName, const std::string& _typeDoc)
+{
+    // Modules cannot add new types if the module has already been activated.
+    assert(!m_activated);
+
+    derived_script_type<ScriptableClass_type>*
+    const pScriptType =
+        new derived_script_type<ScriptableClass_type>
+            (_baseType, *this, _typeName, _typeDoc);
+
+    m_scriptTypes[_typeName] = pScriptType;
+
+    return *pScriptType;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 inline
 script_module::pScriptModule_type
 script_module::getScriptModule()
 {
     return m_pModule;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+inline
+script_type_interface&
+script_module::getScriptType(const std::string& _typeName)
+{
+    script_type_interface* pScriptType = m_scriptTypes[_typeName];
+
+    assert(pScriptType != NULL);
+
+    return *pScriptType;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

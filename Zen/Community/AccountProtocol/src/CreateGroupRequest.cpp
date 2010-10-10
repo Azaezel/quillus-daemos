@@ -160,7 +160,7 @@ CreateGroupRequest::registerMessage(Zen::Enterprise::AppServer::I_ApplicationSer
 CreateGroupRequest::pMessageHeader_type
 CreateGroupRequest::createMessageHeader(boost::uint64_t _messageId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, "", "",0);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, 0, "", "");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

@@ -132,6 +132,7 @@ RenderingView::~RenderingView()
 	if (m_pRenderWindow)
 	{
 		Ogre::WindowEventUtilities::removeWindowEventListener(m_pRenderWindow, this);
+        m_root.getRenderSystem()->destroyRenderWindow(m_pRenderWindow->getName());
 	}
     std::cout << "RenderingView::~RenderingView()" << std::endl;
 }

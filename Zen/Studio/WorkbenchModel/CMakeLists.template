@@ -34,7 +34,7 @@ add_library ( WorkbenchModel ${LIB_TYPE} ${WorkbenchModel_SRC} )
 
 add_dependencies(WorkbenchModel ZenCore ZenEnterprise)
 
-target_link_libraries( WorkbenchModel )
+target_link_libraries( WorkbenchModel ZenCore ZenEnterprise )
 
 set_target_properties ( WorkbenchModel 
 						PROPERTIES

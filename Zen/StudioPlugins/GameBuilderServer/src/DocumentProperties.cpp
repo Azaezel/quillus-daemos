@@ -57,6 +57,13 @@ DocumentProperties::getController()
     return *this;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const Zen::Studio::Workbench::I_Property*
+DocumentProperties::getPropertyByName(const std::string& _name) const
+{
+    // TODO Implement.
+    return NULL;
+}
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 bool

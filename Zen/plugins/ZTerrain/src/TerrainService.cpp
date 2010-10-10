@@ -32,7 +32,10 @@
 #include <Zen/Engine/Physics/I_PhysicsService.hpp>
 #include <Zen/Engine/Physics/I_PhysicsZone.hpp>
 #include <Zen/Engine/Physics/I_PhysicsActor.hpp>
+
+#include <Zen/Engine/Rendering/I_SceneService.hpp>
 #include <Zen/Engine/Rendering/I_RenderingService.hpp>
+
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 #include <Zen/Engine/Resource/I_Resource.hpp>
 
@@ -81,6 +84,13 @@ TerrainService::setPhysicsService(pPhysicsService_type _pService)
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+TerrainService::setSceneService(pSceneService_type _pService)
+{
+    m_pSceneService = _pService;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 TerrainService::setRenderingService(pRenderingService_type _pService)
 {
     m_pRenderingService = _pService;
@@ -105,6 +115,13 @@ TerrainService::pPhysicsService_type
 TerrainService::getPhysicsService(void)
 {
     return m_pPhysicsService;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+TerrainService::pSceneService_type
+TerrainService::getSceneService(void)
+{
+    return m_pSceneService;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -184,6 +201,32 @@ TerrainService::getScriptObject()
     }
 
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+TerrainService::registerScriptModule(Zen::Scripting::script_module& _module)
+{
+    // TODO Implement
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+TerrainService::pTerrainGroup_type
+TerrainService::createTerrainGroup(const std::string& _name)
+{
+    throw Zen::Utility::runtime_exception("TerrainService::createTerrainGroup() : Not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+TerrainService::setMaxPixelError(Zen::Math::Real _pixelError)
+{
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void 
+TerrainService::setCompositeMapDistance(Zen::Math::Real _distance)
+{
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

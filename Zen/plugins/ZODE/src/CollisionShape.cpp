@@ -101,6 +101,23 @@ CollisionShape::getGeomId() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+CollisionShape::setGeometryId(dGeomID _geometryId)
+{
+    if( m_geometryId != NULL )
+    {
+        dGeomDestroy( m_geometryId );
+    }
+
+    m_geometryId = _geometryId;
+
+    if( m_geometryId != NULL )
+    {
+        dGeomSetData(m_geometryId, this);
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZODE
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

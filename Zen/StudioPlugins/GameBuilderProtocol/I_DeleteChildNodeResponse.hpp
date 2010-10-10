@@ -38,7 +38,6 @@ class GAMEBUILDERPROTOCOL_DLL_LINK I_DeleteChildNodeResponse
     /// @{
 public:
     typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_Response>   pResponse_type;
-
     /// @}
 
     /// @name Static methods

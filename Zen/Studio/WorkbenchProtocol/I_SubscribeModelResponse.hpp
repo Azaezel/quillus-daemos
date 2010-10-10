@@ -54,7 +54,6 @@ class WORKBENCHPROTOCOL_DLL_LINK I_SubscribeModelResponse
     /// @{
 public:
     typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_Response>   pResponse_type;
-
     /// @}
 
     /// @name Static methods

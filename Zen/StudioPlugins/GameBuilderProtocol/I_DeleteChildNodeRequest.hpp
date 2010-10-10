@@ -38,7 +38,6 @@ class GAMEBUILDERPROTOCOL_DLL_LINK I_DeleteChildNodeRequest
     /// @{
 public:
     typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_Request>   pRequest_type;
-
     /// @}
 
     /// @name Static methods

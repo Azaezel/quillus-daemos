@@ -49,6 +49,9 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Engine {
+    namespace World {
+        class I_TerrainChunk;
+    }   // namespace World
 namespace Physics {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_CollisionShape;
@@ -86,6 +89,7 @@ public:
 
     typedef Memory::managed_ptr<I_PhysicsJoint>             pPhysicsJoint_type;
 
+    typedef Memory::managed_ptr<Engine::World::I_TerrainChunk>  pTerrainChunk_type;
 
     typedef std::vector<pPhysicsMaterial_type>              materials_vector_type;
     /// @}
@@ -154,6 +158,9 @@ public:
     /// A Capsule physics shape is a collision shape that is defined by a capsule.
     /// What is a capsule?
     virtual pCollisionShape_type createCapsuleShape(Zen::Math::Real _radius = 1.0f, Zen::Math::Real _height = 1.0f) = 0;
+
+    /// Create a heightfield collision shape from a terrain chunk.
+    virtual pCollisionShape_type createHeightFieldShape(pTerrainChunk_type _pTerrainChunk) = 0;
 
     /// @todo I don't like this interface.  If we're loading from a file, we should go through
     ///     a resource manager.

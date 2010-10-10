@@ -29,6 +29,9 @@ namespace Zen {
 namespace Studio {
 namespace Workbench {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+I_ExplorerNode::ExplorerNodeEvent_type I_ExplorerNode::onSelect;
+I_ExplorerNode::ExplorerNodeEvent_type I_ExplorerNode::onDeselect;
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 I_ExplorerNode::I_ExplorerNode()
 {
 }

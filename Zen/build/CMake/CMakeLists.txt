@@ -147,6 +147,24 @@ if (ZEN_BUILD_ZEN_STUDIO)
         endforeach(PROJECT_PATH)
     endif()
 
+    # Do the Terrain Builder plugin
+    option(ZEN_BUILD_TERRAIN_BUILDER "Build Zen Studio Terrain Builder plugin" FALSE)
+    if (ZEN_BUILD_TERRAIN_BUILDER)
+
+        set ( ZEN_TERRAIN_BUILDER_PROJECTS
+            StudioPlugins/TerrainBuilderCommon
+            StudioPlugins/TerrainBuilder
+            StudioPlugins/TerrainBuilderModel
+       		#StudioPlugins/TerrainBuilderProtocol
+            StudioPlugins/TerrainBuilderServer
+        )
+
+        foreach(PROJECT_PATH ${ZEN_TERRAIN_BUILDER_PROJECTS})
+            message("-- ${PROJECT_PATH}") 
+            add_subdirectory("${ZEN_HOME}/${PROJECT_PATH}" "${PROJECT_PATH}")
+        endforeach(PROJECT_PATH)
+    endif()
+
     # Do the Art Library plugin
     option(ZEN_BUILD_ART_LIBRARY "Build Zen Studio Art Library plugin" FALSE)
     if (ZEN_BUILD_ART_LIBRARY)

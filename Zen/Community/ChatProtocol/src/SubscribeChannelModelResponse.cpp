@@ -127,7 +127,7 @@ SubscribeChannelModelResponse::registerMessage(Zen::Enterprise::AppServer::I_App
 SubscribeChannelModelResponse::pMessageHeader_type
 SubscribeChannelModelResponse::createMessageHeader(boost::uint64_t _messageId, boost::uint64_t _requestId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, "", "",_requestId);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, _requestId, "", "");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

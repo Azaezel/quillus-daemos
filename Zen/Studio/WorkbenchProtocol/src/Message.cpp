@@ -30,6 +30,7 @@
 
 #include <Zen/Enterprise/Networking/I_Endpoint.hpp>
 
+#include <Zen/Enterprise/AppServer/I_ApplicationServerManager.hpp>
 #include <Zen/Enterprise/AppServer/I_ResourceLocation.hpp>
 #include <Zen/Enterprise/AppServer/I_MessageHeader.hpp>
 #include <Zen/Enterprise/AppServer/I_MessageFactory.hpp>
@@ -72,6 +73,26 @@ Message::getDestinationEndpoint()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Message::pResourceLocation_type
+Message::getSourceLocation() const
+{
+    return Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton()
+        .createLocation(
+            getMessageHeader()->getDestinationLocation()
+        );
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Message::pResourceLocation_type
+Message::getDestinationLocation() const
+{
+    return Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton()
+        .createLocation(
+            getMessageHeader()->getDestinationLocation()
+        );
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Message::pMessageHeader_type
 Message::getMessageHeader() const
 {
@@ -79,14 +100,14 @@ Message::getMessageHeader() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-boost::uint32_t
+boost::uint64_t
 Message::getMessageId() const
 {
     return getMessageHeader()->getMessageId();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-boost::uint32_t
+boost::uint64_t
 Message::getNewMessageId()
 {
     static Zen::Threading::SpinLock sm_spinLock;
@@ -109,7 +130,7 @@ Message::destroyMessageFactory(wpMessageFactory_type _wpMessageFactory)
 {
     MessageFactory* pFactory = dynamic_cast<MessageFactory*>(_wpMessageFactory.get());
 
-    if( pFactory != NULL )
+    if (pFactory != NULL)
     {
         delete pFactory;
     }
