@@ -67,7 +67,9 @@ RenderingCanvas::RenderingCanvas(Zen::Scripting::script_module& _module, Renderi
 
     std::cout << "adding Viewport" << std::endl;
     std::cout << "OGRE: Ogre::RenderWindow::addViewPort(&m_pCurrentCamera->getOgreCamera());" << std::endl;
-    m_pViewPort = _pView->getRenderWindow().addViewport(&m_pCurrentCamera->getOgreCamera());
+
+    int zOrder = _pView->getRenderWindow().getNumViewports();
+    m_pViewPort = _pView->getRenderWindow().addViewport(&m_pCurrentCamera->getOgreCamera(), zOrder);
 
     //m_pSceneManager->setViewport(m_pViewPort);
 
@@ -197,6 +199,8 @@ RenderingCanvas::getHeight() const
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+RenderingCanvas::OgreCameras_type RenderingCanvas::m_ogreCameras;
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Engine::Rendering::I_Camera&
 RenderingCanvas::createCamera(const std::string& _name)
 {
@@ -208,7 +212,24 @@ RenderingCanvas::createCamera(const std::string& _name)
     {
         // Camera wasn't found, so create it
         std::cout << "OGRE: Ogre::SceneManager::createCamera(_name);" << std::endl;
-        Ogre::Camera* pOgreCamera = m_pSceneManager->createCamera(_name);
+    
+        Ogre::Camera* pOgreCamera = NULL;
+        OgreCameras_type::iterator ogreCamera = 
+            m_ogreCameras.find(
+                std::pair<std::string,Ogre::SceneManager*>(_name,m_pSceneManager)
+            );
+
+        if (ogreCamera != m_ogreCameras.end())
+        {
+            pOgreCamera = ogreCamera->second;
+        }
+        else
+        {
+            pOgreCamera = m_pSceneManager->createCamera(_name);
+            m_ogreCameras[std::pair<std::string, Ogre::SceneManager*>(_name,m_pSceneManager)] =
+                pOgreCamera;
+        }
+
         assert(pOgreCamera);
 
         Camera* pCamera = new Camera(m_module, *this, *pOgreCamera, _name);

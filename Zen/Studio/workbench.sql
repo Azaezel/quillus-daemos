@@ -125,6 +125,17 @@ CREATE TABLE "SceneModel"
     "explorerNodeId" INTEGER NOT NULL
 );
 
+DROP TABLE IF EXISTS "SceneEntity";
+
+CREATE TABLE "SceneEntity"
+(
+    "sceneEntityId" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,
+    "sceneModelId" INTEGER NOT NULL ,
+    "parentEntityId" INTEGER ,
+    "propertiesId" INTEGER NOT NULL,
+    "name" VARCHAR NOT NULL
+);
+
 DROP TABLE IF EXISTS "ZoneFolder";
 
 CREATE TABLE "ZoneFolder" 
@@ -189,4 +200,34 @@ CREATE TABLE "ArtAssetDocument"
     "artAssetDocumentId" INTEGER PRIMARY KEY  NOT NULL , 
     "explorerNodeId" INTEGER NOT NULL , 
     "name" VARCHAR NOT NULL 
+);
+
+
+DROP TABLE IF EXISTS "TerrainFolder";
+
+CREATE TABLE "TerrainFolder" 
+(
+    "terrainFolderId" INTEGER PRIMARY KEY  NOT NULL , 
+    "explorerNodeId" INTEGER NOT NULL , 
+    "name" VARCHAR NOT NULL 
+);
+
+DROP TABLE IF EXISTS "TerrainGroup";
+
+CREATE TABLE "TerrainGroup" 
+(
+    "terrainGroupId" INTEGER PRIMARY KEY  NOT NULL , 
+    "explorerNodeId" INTEGER NOT NULL , 
+    "name" VARCHAR NOT NULL ,
+    "propertiesId" INTEGER NOT NULL
+);
+
+DROP TABLE IF EXISTS "TerrainChunk";
+
+CREATE TABLE "TerrainChunk" 
+(
+    "terrainChunkId" INTEGER PRIMARY KEY  NOT NULL , 
+    "explorerNodeId" INTEGER NOT NULL , 
+    "name" VARCHAR NOT NULL ,
+    "propertiesId" INTEGER NOT NULL
 );

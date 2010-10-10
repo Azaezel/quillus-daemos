@@ -49,8 +49,9 @@ namespace Workbench {
 /// a GUI or for anything else requiring notifications of a scene model
 /// modification.
 /// @see I_SceneModel::subscribe()
+/// TODO - MG - Does this need to be moved to WorkbenchCommon?
 class WORKBENCH_DLL_LINK I_SceneView
-:   public virtual Zen::Studio::Workbench::I_View
+:   public virtual I_View
 {
     /// @name Types
     /// @{
@@ -80,6 +81,7 @@ public:
     typedef Zen::Event::Event<const MouseEventPayload_type&>        MouseEvent;
     typedef Zen::Event::Event<const MouseWheelEventPayload_type&>   MouseWheelEvent;
 
+    typedef std::map<std::string, std::string>                      config_type;
     /// @}
 
     /// @name I_SceneView interface
@@ -90,6 +92,15 @@ public:
 
     /// Get the Zen Engine rendering context.
     virtual Zen::Engine::Rendering::I_Context* getContext() = 0;
+
+    /// Document name modified notification.
+    virtual void onNameModified(const std::string& _shortName, const std::string& _longName) = 0;
+
+    /// Set the skybox properties
+    virtual void setSkyboxProperties(const std::string& _type, config_type _config) = 0;
+
+    /// Add a resource location
+    virtual void addResourceLocation(const std::string& _path, const std::string& _type, const std::string& _group, bool _recursive) = 0;
     /// @}
 
     /// @name Events

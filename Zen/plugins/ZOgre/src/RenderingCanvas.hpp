@@ -116,6 +116,9 @@ private:
 
     Ogre::Viewport*     m_pViewPort;
 
+    typedef std::map<std::pair<std::string,Ogre::SceneManager*>, Ogre::Camera*>  OgreCameras_type;
+    static OgreCameras_type m_ogreCameras;
+
     typedef std::map<std::string, Camera*>  Cameras_type;
     Cameras_type        m_cameras;
     Camera*             m_pCurrentCamera;

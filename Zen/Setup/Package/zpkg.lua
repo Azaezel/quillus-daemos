@@ -407,6 +407,12 @@ function generateBuildHandler(startArg)
 		["StudioPlugins/WorldBuilderProtocol"] = {},
 		["StudioPlugins/WorldBuilderServer"] = {},
         
+		["StudioPlugins/TerrainBuilder"] = {},
+		["StudioPlugins/TerrainBuilderCommon"] = {},
+		["StudioPlugins/TerrainBuilderModel"] = {},
+		["StudioPlugins/TerrainBuilderProtocol"] = {},
+		["StudioPlugins/TerrainBuilderServer"] = {},
+        
         ["StudioPlugins/ArtLibrary"] = {},
         ["StudioPlugins/ArtLibraryCommon"] = {},
         ["StudioPlugins/ArtLibraryModel"] = {},
@@ -416,6 +422,7 @@ function generateBuildHandler(startArg)
 		["plugins/Framework"] = {},
         ["plugins/ZInput"] = {},
 		["plugins/ZOgre"] = {},
+        ["plugins/ZOgreTerrain"] = {},
 		["plugins/ZCrazyEddie"] = {},
 		["plugins/ZLua"] = {},
 		["plugins/ZSQLite"] = {},

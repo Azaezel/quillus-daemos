@@ -38,6 +38,10 @@
 #include <Zen/Engine/Resource/I_ResourceManager.hpp>
 #include <Zen/Engine/Resource/I_ResourceService.hpp>
 
+#include <Zen/Engine/World/I_WorldManager.hpp>
+#include <Zen/Engine/World/I_SkyService.hpp>
+#include <Zen/Engine/World/I_Sky.hpp>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Studio {
@@ -58,8 +62,10 @@ private:
     /// @name Types
     /// @{
 public:
-    typedef Zen::Engine::Rendering::I_SceneManager::pSceneService_type  pSceneService_type;
+    typedef Zen::Engine::Rendering::I_SceneManager::pSceneService_type      pSceneService_type;
     typedef Zen::Engine::Resource::I_ResourceManager::pResourceService_type pResourceService_type;
+    typedef Zen::Engine::World::I_WorldManager::pSkyService_type            pSkyService_type;
+    typedef Zen::Engine::World::I_SkyService::pSky_type                     pSky_type;
     /// @}
 
     /// @name I_View implementation
@@ -76,6 +82,9 @@ public:
 public:
     virtual Zen::Engine::Rendering::I_View* getSceneView();
     virtual Zen::Engine::Rendering::I_Context* getContext();
+    virtual void onNameModified(const std::string& _shortName, const std::string& _longName);
+    virtual void setSkyboxProperties(const std::string& _type, config_type _config);
+    virtual void addResourceLocation(const std::string& _path, const std::string& _type, const std::string& _group, bool _recursive);
     /// @}
 
     /// @name SceneViewWidget implementation
@@ -139,6 +148,8 @@ private:
     I_SceneModel::pSubscription_type            m_pSubscription;
     pSceneService_type                          m_pSceneService;
     pResourceService_type                       m_pRenderingResourceService;
+    pSkyService_type                            m_pSkyService;
+    pSky_type                                   m_pSky;
 
     int                                         m_enterWindowCount;
     /// @}

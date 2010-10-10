@@ -54,9 +54,7 @@ class script_type
     /// @name Types
     /// @{
 public:
-    typedef std::map<std::string, I_ScriptMethod*>          Methods_type;
     typedef Zen::Memory::managed_ptr<I_ScriptType>          pScriptType_type;
-    typedef Zen::Memory::managed_ptr<I_ScriptModule>        pScriptModule_type;
     typedef Zen::Memory::managed_weak_ptr<I_ScriptModule>   wpScriptModule_type;
     typedef std::map<std::string, I_ScriptableType*>        GlobalObjects_type;
     /// @}
@@ -70,6 +68,12 @@ public:
     ///		pScriptType_type.
     /// @see script_type::script_type(pScriptType_type)
     virtual void activate();
+
+    /// Get the methods that have been added so far.
+    virtual Methods_type& getMethods();
+
+    /// Get the script_module<> for this type.
+    virtual script_module& getModule();
 
 private:
     virtual void createGlobals();
@@ -108,7 +112,7 @@ public:
     /// getScriptModule() will return a valid script module if this constructor
     /// is used.
     script_type(pScriptType_type pScriptType_type);
-private:
+protected:
     friend class script_module;
     /// Create a script type.
     /// This constructor is invoked by script_module.
@@ -119,7 +123,7 @@ private:
 
     /// @name Member Variables
     /// @{
-private:
+protected:
     /// Script module that contains this script type.
     /// This is the template version.  Either m_pModule or m_pScriptModule
     /// are valid, but generally not both.
@@ -141,12 +145,49 @@ private:
 
     Methods_type        m_methods;
 
+    bool                m_activated;
+
     pScriptType_type    m_pScriptType;
 
     GlobalObjects_type  m_globalObjects;
     /// @}
 
 };  // class script_type
+
+/// Extend script_type to handle derived types.
+template<typename ScriptableClass_type>
+class derived_script_type
+:   public script_type<ScriptableClass_type>
+{
+    /// @name Types
+    /// @{
+public:
+    typedef std::map<std::string, I_ScriptMethod*>          Methods_type;
+    typedef Zen::Memory::managed_ptr<I_ScriptType>          pScriptType_type;
+    typedef Zen::Memory::managed_ptr<I_ScriptModule>        pScriptModule_type;
+    typedef Zen::Memory::managed_weak_ptr<I_ScriptModule>   wpScriptModule_type;
+    typedef std::map<std::string, I_ScriptableType*>        GlobalObjects_type;
+    /// @}
+
+    /// @name script_type overrides
+    /// @{
+public:
+    virtual void activate();
+    /// @}
+
+    /// @name 'Structors
+    /// @{
+public:
+    derived_script_type(script_type_interface& _baseType, script_module& _module, const std::string& _typeName, const std::string& _documentation);
+    /// @}
+
+    /// @name Member Variables
+    /// @{
+private:
+    script_type_interface&  m_baseType;
+    /// @}
+
+};  // class derived_script_type
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Scripting

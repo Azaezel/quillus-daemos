@@ -27,6 +27,8 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+
+
     namespace Enterprise {
         namespace AppServer {
             class I_ApplicationServer;
@@ -57,7 +59,9 @@ public:
     virtual pEndpoint_type getDestinationEndpoint() { return Message::getDestinationEndpoint(); }
     virtual pMessageHeader_type getMessageHeader() const { return Message::getMessageHeader(); }
 
+    virtual pResourceLocation_type getSourceLocation() { return Message::getSourceLocation(); }
     virtual pResourceLocation_type getDestinationLocation();
+
     virtual void serialize(pMessageHeader_type _pMessageHeader, boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
     /// @}
@@ -65,7 +69,7 @@ public:
     /// @name I_Message implementation
     /// @{
 public:
-    virtual boost::uint32_t getMessageId() const { return Message::getMessageId(); } 
+    virtual boost::uint64_t getMessageId() const { return Message::getMessageId(); } 
     virtual pMessageType_type getMessageType() const { return getStaticMessageType(); }
     /// @}
 
@@ -74,7 +78,7 @@ public:
 public:
     static void registerMessage(Zen::Enterprise::AppServer::I_ApplicationServer& _appServer);
 
-    static pMessageHeader_type createMessageHeader(boost::uint32_t _messageId);
+    static pMessageHeader_type createMessageHeader(boost::uint64_t _messageId);
 
     static void destroy(wpRequest_type _wpRequest);
     

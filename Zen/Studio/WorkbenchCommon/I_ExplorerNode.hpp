@@ -43,6 +43,7 @@ namespace Workbench {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_Project;
 class I_ExplorerNodeType;
+class I_PropertiesPublisher;
 
 /// Explorer Node.
 class WORKBENCHCOMMON_DLL_LINK I_ExplorerNode
@@ -73,6 +74,12 @@ public:
         /// Your extension to UserData should return the type of node this user
         /// data belongs
         virtual I_ExplorerNodeType& getType() const = 0;
+
+        /// Register the properties for this user data.
+        virtual void registerProperties(Zen::Studio::Workbench::I_PropertiesPublisher& _properties) = 0;
+
+        /// Get the properties publisher for this user data.
+        virtual I_PropertiesPublisher& getPropertiesPublisher() = 0;
     public:
         UserData(I_ExplorerNode* _pNode)
         :   m_pNode(_pNode)
@@ -133,6 +140,8 @@ public:
     /// @{
 public:
     ExplorerNodeEvent_type  onModified;
+    static ExplorerNodeEvent_type  onSelect;
+    static ExplorerNodeEvent_type  onDeselect;
     /// @}
 
     /// @name 'Structors

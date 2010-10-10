@@ -31,6 +31,8 @@
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
 
+#include <iostream>
+
 #include <stddef.h>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -94,7 +96,10 @@ MessageFactory::create(pMessageHeader_type _pMessageHeader, pEndpoint_type _pSou
    
     }
 
-    // TODO Error?
+    // TODO Throw an exception?
+    std::cout << "GameBuilderMessageFactory::getMessageType(): Error, wrong message type - " <<
+            getMessageType(_pMessageHeader) << std::endl;
+
     return pMessage_type();
 }
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

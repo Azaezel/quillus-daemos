@@ -34,6 +34,7 @@
 #include <Zen/Studio/WorkbenchCommon/I_SceneModel.hpp>
 #include <Zen/Studio/WorkbenchCommon/I_SceneModelType.hpp>
 #include <Zen/Studio/WorkbenchCommon/I_SceneAction.hpp>
+#include <Zen/Studio/WorkbenchCommon/I_SceneViewable.hpp>
 
 #include <Zen/Spaces/ObjectModel/I_Subscription.hpp>
 
@@ -86,12 +87,12 @@ SceneViewWidget::SceneViewWidget(wxWindow* _pParent, Workbench* _pWorkbench, pVi
     // when it becomes available.
 
     // Create the rendering view.
-	createGUIControls();
+    createGUIControls();
 
     // TODO Subscribing may add a large number of scene nodes.
     // Make it so that this is batched and redraw the view
-    I_SceneModel* pModel = m_pViewable.as<Memory::managed_ptr<I_SceneModel> >().get();
-    m_pSubscription = pModel->subscribe(this);
+    I_SceneViewable* pViewable = m_pViewable.as<Memory::managed_ptr<I_SceneViewable> >().get();
+    m_pSubscription = pViewable->subscribe(this);
 
     this->SetFocus();
 }
@@ -140,6 +141,39 @@ SceneViewWidget::getContext()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+SceneViewWidget::onNameModified(const std::string& _shortName, const std::string& _longName)
+{
+    /// TODO implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneViewWidget::setSkyboxProperties(const std::string& _type, config_type _config)
+{
+    m_pSkyService = Engine::World::I_WorldManager::getSingleton()
+        .createSkyService(
+            _type,
+            _config
+        );
+
+    if (m_pSkyService.isValid())
+    {
+        m_pSkyService->setRenderingService(m_pWorkbench->getRenderingService());
+        m_pSkyService->setRenderingResourceService(m_pRenderingResourceService);
+
+        m_pSky = m_pSkyService->createSky(_config);
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneViewWidget::addResourceLocation(const std::string& _path, const std::string& _type, const std::string& _group, bool _recursive)
+{
+    m_pRenderingResourceService->addResourceLocation(_path, _type, _group, _recursive);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 SceneViewWidget::createGUIControls()
 {
 #ifdef WIN32
@@ -147,26 +181,26 @@ SceneViewWidget::createGUIControls()
 #else
     // Ogre 1.7 + Linux + GLX platform wants a string of the format display:screen:window,
     // which has variable types ulong:uint:ulong.
-	GtkWidget* pWidget = GetHandle();
-	gtk_widget_realize(pWidget);
+    GtkWidget* pWidget = GetHandle();
+    gtk_widget_realize(pWidget);
 
     std::stringstream handleStream;
 
     // Get the Display
-	Display* pDisplay = GDK_WINDOW_XDISPLAY(pWidget->window );
+    Display* pDisplay = GDK_WINDOW_XDISPLAY(pWidget->window );
 
     // Window is a typedef for XID, which is a typedef for unsigned int
-	Window wid = GDK_WINDOW_XWINDOW(pWidget->window);
+    Window wid = GDK_WINDOW_XWINDOW(pWidget->window);
 
-	// Get the right display (DisplayString() returns ":display.screen")
+    // Get the right display (DisplayString() returns ":display.screen")
     std::string displayStr = DisplayString(pDisplay);
 
     // TODO Need to use stl / boost intead of OGRE for substr
     // see http://www.boost.org/doc/libs/1_39_0/doc/html/string_algo/usage.html
-	displayStr = displayStr.substr(1, (displayStr.find( ".", 0 ) - 1 ));
+    displayStr = displayStr.substr(1, (displayStr.find( ".", 0 ) - 1 ));
 
-	// Put all together
-	handleStream << displayStr << ':' << DefaultScreen(pDisplay) << ':' << wid;
+    // Put all together
+    handleStream << displayStr << ':' << DefaultScreen(pDisplay) << ':' << wid;
     const std::string handle = handleStream.str();
 
     std::cout << "GTK2+ using handle " << handle << " as the parent for creating the OGRE window." << std::endl;
@@ -218,7 +252,7 @@ SceneViewWidget::onSize(wxSizeEvent& _event)
 {
     std::cout << "SceneViewWidget::onSize()" << std::endl;
 
-	wxSize sz = GetClientSize();
+    wxSize sz = GetClientSize();
 
     bool manualRepaint = false;
 

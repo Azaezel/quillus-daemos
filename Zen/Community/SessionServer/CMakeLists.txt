@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6) 
 
-project (ChatClient)
-set ( PROJECT_PREFIX "Community/ChatClient" )
+project (SessionServer)
+set ( PROJECT_PREFIX "Community/SessionServer" )
 
 if ( NOT INDIEZEN_PARENT)
 	find_path ( INDIEZEN_PARENT Zen .. ../.. ../../.. ENV )
@@ -26,47 +26,43 @@ source_group(
 
 
 	
-set ( ChatClient_SRC
-    src/ChannelMemberModelProxy.cpp
-    src/ChatServiceFactory.hpp
-    src/ChannelController.cpp
-    src/Channel.hpp
-    src/ChannelController.hpp
-    src/ChatServiceFactory.cpp
-    src/ChannelMemberModelProxy.hpp
-    src/ChatService.cpp
-    src/Channel.cpp
-    src/ChatService.hpp
-    src/ChannelMemberController.hpp
-    src/ChannelMemberController.cpp
-    src/ChannelModelProxy.hpp
-    src/ChannelModelProxy.cpp
-    src/ChatClientPlugin.cpp
+set ( SessionServer_SRC
+    src/Attribute.cpp
+    src/Attribute.hpp
+    src/SessionServiceFactory.cpp
+    src/SessionServerPlugin.cpp
+    src/SessionService.cpp
+    src/SessionService.hpp
+    src/SessionServiceFactory.hpp
+    src/AccountView.hpp
+    src/Session.cpp
+    src/Session.hpp
+    src/AccountView.cpp
     Configuration.hpp
 
     )
 
-add_definitions( -DACCOUNTCLIENT_EXPORTS ${Zen_DEFINITIONS} )
+add_definitions( -DSESSIONSERVER_EXPORTS ${Zen_DEFINITIONS} )
 
 include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} )
 
 link_directories ( ${DEV_LIB} ${Boost_LIBRARY_DIRS} )
 
-add_library ( ChatClient ${LIB_TYPE} ${ChatClient_SRC} )
+add_library ( SessionServer ${LIB_TYPE} ${SessionServer_SRC} )
 
-add_dependencies(ChatClient ZenCore ZenEngine ZenEnterprise ZenObjectModel ChatCommon ChatProtocol)
+add_dependencies(SessionServer ZenCore ZenEngine ZenEnterprise AccountCommon SessionCommon SessionProtocol SessionModel )
 
-target_link_libraries(ChatClient ZenCore ZenEngine ZenEnterprise ZenObjectModel ChatCommon ChatProtocol ${Boost_LIBRARIES} )
+target_link_libraries(SessionServer ZenCore ZenEngine ZenEnterprise AccountCommon SessionCommon SessionProtocol SessionModel ${Boost_LIBRARIES} )
 
-set_target_properties ( ChatClient
+set_target_properties ( SessionServer
 						PROPERTIES
 						DEBUG_POSTFIX "_d"
 					)
 
 if (MSVC_IDE)
     # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
-    set_target_properties ( ChatClient PROPERTIES PREFIX "../../bin/" )
-	set_target_properties ( ChatClient PROPERTIES IMPORT_PREFIX "../../lib/" )
+    set_target_properties ( SessionServer PROPERTIES PREFIX "../../bin/" )
+	set_target_properties ( SessionServer PROPERTIES IMPORT_PREFIX "../../lib/" )
 endif(MSVC_IDE)
 
 
@@ -79,7 +75,7 @@ install ( FILES
 
 
 install ( TARGETS
-	ChatClient
+	SessionServer
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib

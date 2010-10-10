@@ -40,6 +40,7 @@ public:
     virtual const std::string& getPropertiesName() const;
     virtual pSubscription_type subscribe(pPropertiesListener_type _pListener) { return Properties::subscribe(_pListener); }
     virtual Zen::Studio::Workbench::I_PropertiesController& getController();
+    virtual const Zen::Studio::Workbench::I_Property* getPropertyByName(const std::string& _name) const;
     /// @}
 
     /// @name Properties overrides

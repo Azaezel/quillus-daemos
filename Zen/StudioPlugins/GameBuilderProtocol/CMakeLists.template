@@ -34,7 +34,7 @@ add_library (GameBuilderProtocol ${LIB_TYPE} ${Workbench_SRC} )
 
 add_dependencies(GameBuilderProtocol ZenCore ZenEngine ZenEnterprise WorkbenchCommon)
 
-target_link_libraries( GameBuilderProtocol  ${Boost_LIBRARIES} )
+target_link_libraries( GameBuilderProtocol ZenCore ZenEngine ZenEnterprise WorkbenchCommon ${Boost_LIBRARIES} )
 
 set_target_properties ( GameBuilderProtocol 
 						PROPERTIES

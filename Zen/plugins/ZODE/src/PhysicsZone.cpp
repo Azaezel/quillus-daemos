@@ -28,12 +28,15 @@
 #include "PhysicsActor.hpp"
 #include "PhysicsMaterial.hpp"
 #include "CollisionShape.hpp"
+#include "HeightfieldCollisionShape.hpp"
 
 #include <Zen/Core/Math/Vector3.hpp>
 
 #include <Zen/Core/Scripting/I_ScriptType.hpp>
 
 #include <Zen/Engine/Physics/I_PhysicsManager.hpp>
+
+#include <Zen/Engine/World/I_TerrainHeightfield.hpp>
 
 //#include <dVector.h> //no likey. recheck
 //refnotes: http://docs.taoframework.com/Tao.Ode/Tao.Ode.Ode.dHashSpaceCreate.html
@@ -232,6 +235,38 @@ PhysicsZone::createCapsuleShape(float _radius, float _height)
     pCollisionShape_type pCollisionShape(
         pRawCollisionShape,
         &destroyCollisionShape
+    );
+
+    return pCollisionShape;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsZone::destroyHeightfieldCollisionShape(wpCollisionShape_type _pCollisionShape)
+{
+    HeightfieldCollisionShape* pRaw = 
+        dynamic_cast<HeightfieldCollisionShape*>(_pCollisionShape.get());
+
+    if( pRaw != NULL )
+    {
+        delete pRaw;
+    }
+    else
+    {
+        throw Zen::Utility::runtime_exception("PhysicsZone::destroyHeightfieldCollisionShape() : Invalid type.");
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+PhysicsZone::pCollisionShape_type
+PhysicsZone::createHeightFieldShape(pTerrainChunk_type _pTerrainChunk)
+{
+    HeightfieldCollisionShape* pRawCollisionShape =
+        new HeightfieldCollisionShape(m_spaceId, _pTerrainChunk);
+
+    pCollisionShape_type pCollisionShape(
+        pRawCollisionShape,
+        &destroyHeightfieldCollisionShape
     );
 
     return pCollisionShape;

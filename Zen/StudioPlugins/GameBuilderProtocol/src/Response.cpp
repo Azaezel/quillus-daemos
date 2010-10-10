@@ -42,7 +42,7 @@ Response::~Response()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-unsigned int 
+boost::uint64_t
 Response::getRequestMessageId() const
 {
     return getMessageHeader()->getRequestId();

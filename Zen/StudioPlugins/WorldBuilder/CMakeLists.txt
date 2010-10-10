@@ -1,0 +1,97 @@
+cmake_minimum_required (VERSION 2.6) 
+
+project (WorldBuilder)
+set ( PROJECT_PREFIX "StudioPlugins/WorldBuilder" )
+
+if ( NOT INDIEZEN_PARENT)
+	find_path ( INDIEZEN_PARENT Zen .. ../.. ../../.. ENV )
+endif (NOT INDIEZEN_PARENT)
+
+set(CMAKE_MODULE_PATH "${INDIEZEN_PARENT}/Zen/build/CMake/Modules" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
+list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
+
+Find_Package(IndieZen REQUIRED)
+Find_Package(Boost REQUIRED regex )
+Find_Package(wxWidgets REQUIRED)
+Find_Package(Ogitor REQUIRED)
+Find_Package(OGRE REQUIRED)
+
+SET (LIB_TYPE SHARED)
+
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+# Include various modules of Zen Engine
+
+source_group(
+    src\\
+	REGULAR_EXPRESSION 
+	src/*.*
+	)
+
+
+	
+set ( WorldBuilder_SRC
+    src/ProjectContributor.cpp
+    src/SimpleLayerPanel.hpp
+    src/TerrainLayerPanel.cpp
+    src/ContributorService.hpp
+    src/ProjectContributor.hpp
+    src/ZoneContributor.hpp
+    src/WorldBuilderPlugin.cpp
+    src/ContributorService.cpp
+    src/ZoneLayerView.hpp
+    src/SimpleLayerPanel.cpp
+    src/ZoneContributor.cpp
+    src/ContributorServiceFactory.hpp
+    src/OgitorsController.hpp
+    src/OgitorsController.cpp
+    src/TerrainLayerPanel.hpp
+    src/ZoneFolderContributor.hpp
+    src/ZoneFolderContributor.cpp
+    src/ContributorServiceFactory.cpp
+    src/ZenOgitorsSystem.hpp
+    src/Creator.cpp
+    src/Creator.hpp
+    src/ZoneLayerView.cpp
+    src/ZenOgitorsSystem.cpp
+
+    )
+
+add_definitions( -DWORLDBUILDER_EXPORTS ${wxWidgets_DEFINITIONS} ${wxWidgets_CXX_FLAGS} ${Zen_DEFINITIONS} )
+
+include_directories ( ${Boost_INCLUDE_DIR} ${INDIEZEN_PARENT} ${wxWidgets_INCLUDE_DIRS} ${OGRE_INCLUDE_DIR} ${OGITOR_INCLUDE_DIR} )
+
+link_directories ( ${DEV_LIB} ${wxWidgets_LIB_DIR} ${Boost_LIBRARY_DIRS} )
+
+add_library ( WorldBuilder ${LIB_TYPE} ${WorldBuilder_SRC} )
+
+add_dependencies(WorldBuilder ZenCore ZenEngine ZenEnterprise Workbench WorkbenchCommon GameBuilderCommon WorldBuilderCommon ZOgre )
+
+target_link_libraries( WorldBuilder ${Boost_LIBRARIES} ${wxWidgets_LIBRARIES} ZenCore ZenEngine ZenEnterprise Workbench WorkbenchCommon GameBuilderCommon WorldBuilderCommon ZOgre ${OGITOR_LIBRARIES} ${OGRE_LIBRARIES})
+
+create_zenstudio_vcproj_userfile(WorldBuilder)
+
+set_target_properties ( WorldBuilder 
+						PROPERTIES
+						DEBUG_POSTFIX "_d"
+					)
+
+if (MSVC_IDE)
+    # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
+    set_target_properties ( WorldBuilder PROPERTIES PREFIX "../../bin/" )
+	set_target_properties ( WorldBuilder PROPERTIES IMPORT_PREFIX "../../lib/" )
+endif(MSVC_IDE)
+
+
+install ( FILES 
+    plugin.xml
+    DESTINATION
+    Zen/${PROJECT_PREFIX}/
+)
+
+
+install ( TARGETS
+	WorldBuilder
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+)

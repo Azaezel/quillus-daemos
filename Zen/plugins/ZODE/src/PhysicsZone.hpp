@@ -63,6 +63,7 @@ public:
     virtual pCollisionShape_type createBoxShape(Zen::Math::Real _dx = 1.0f, Zen::Math::Real _dy = 1.0f, Zen::Math::Real _dz = 1.0f);
     virtual pCollisionShape_type createOvoidShape(Zen::Math::Real _radiusX = 1.0f, Zen::Math::Real _radiusY = 1.0f, Zen::Math::Real _radiusZ = 1.0f);
     virtual pCollisionShape_type createCapsuleShape(Zen::Math::Real _radius = 1.0f, Zen::Math::Real _height = 1.0f);
+    virtual pCollisionShape_type createHeightFieldShape(pTerrainChunk_type _pTerrainChunk);
     virtual pCollisionShape_type createHeightFieldShapeFromRaw(std::string _filename, size_t _size, float _maxHeight, float _scaleXY, const Math::Matrix4& _transform, bool _bSerialize);
     virtual pCollisionShape_type createHeightFieldShapeFromSerialization(std::string _filename, const Math::Matrix4& _transform);
     virtual pCollisionShape_type createConvexHullShape(std::string _filename);
@@ -86,6 +87,7 @@ public:
 public:
     static void destroyMaterial(wpPhysicsMaterial_type _pMaterial);
     static void destroyCollisionShape(wpCollisionShape_type _pCollisionShape);
+    static void destroyHeightfieldCollisionShape(wpCollisionShape_type _pCollisionShape);
     /// @}
 
     /// @name 'Structors

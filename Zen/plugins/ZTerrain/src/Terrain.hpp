@@ -61,6 +61,7 @@ public:
     virtual bool loadVisualization(const std::string& _ogreSpecificConfigFileName, const Math::Matrix4& _transform);
     virtual bool loadPhysicsFromRaw(const std::string& _rawFileName, size_t _size, float _maxHeight, float _scaleXY, const Math::Matrix4& _transform, bool _bSerialize);
     virtual bool loadPhysicsFromSerialization(const std::string& _serializationFileName, const Math::Matrix4& _transform);
+	virtual void updateLight(Engine::Rendering::I_Light& _light) {};
     /// @}
 
     /// @name I_ScriptableType implementation

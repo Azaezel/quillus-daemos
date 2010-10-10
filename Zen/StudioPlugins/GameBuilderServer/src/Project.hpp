@@ -65,6 +65,8 @@ public:
     /// @{
 public:
     virtual Zen::Studio::Workbench::I_ExplorerNodeType& getType() const;
+    virtual void registerProperties(Zen::Studio::Workbench::I_PropertiesPublisher& _properties);
+    virtual Zen::Studio::Workbench::I_PropertiesPublisher& getPropertiesPublisher();
     /// @}
 
     /// @name Workbench::I_Project overrides

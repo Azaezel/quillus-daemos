@@ -80,7 +80,8 @@ namespace Memory
 {
     /// I_PropertiesListener is NOT managed by a factory (should it be?)
     template<>
-    struct is_managed_by_factory<Zen::Studio::Workbench::I_PropertiesListener> : public boost::false_type{};
+    struct is_managed_by_factory<Zen::Studio::Workbench::I_PropertiesListener> 
+    :   public boost::false_type{};
 }   // namespace Memory
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

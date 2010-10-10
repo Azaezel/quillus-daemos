@@ -187,10 +187,3 @@ ZenServer::runScriptInit()
 }   // namespace ZenServer
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-namespace boost {
-    namespace program_options {
-        const unsigned options_description::m_default_line_length = 80;
-        std::string arg;
-    }
-}

@@ -40,7 +40,7 @@ DeleteChildNodeResponse::pMessageType_type DeleteChildNodeResponse::sm_pType;
 Zen::Enterprise::AppServer::I_MessageRegistry* DeleteChildNodeResponse::sm_pMessageRegistry = NULL;
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 DeleteChildNodeResponse::DeleteChildNodeResponse(pEndpoint_type _pSourceEndpoint,
-                           pEndpoint_type _pDestinationEndpoint, boost::uint32_t _requestMessageId)
+                           pEndpoint_type _pDestinationEndpoint, boost::uint64_t _requestMessageId)
 :   Response(DeleteChildNodeResponse::createMessageHeader(getNewMessageId(), _requestMessageId), _pSourceEndpoint, _pDestinationEndpoint)        
 {
 }
@@ -81,7 +81,7 @@ DeleteChildNodeResponse::registerMessage(Zen::Enterprise::AppServer::I_Applicati
         pMessageRegistry = dynamic_cast<Zen::Enterprise::AppServer::I_NumericTypeMessageRegistry*>
             (sm_pMessageRegistry);
 
-    if( !sm_pMessageFactory.isValid() )
+    if (!sm_pMessageFactory.isValid())
     {
         sm_pMessageFactory = pMessageFactory_type(new MessageFactory, destroyMessageFactory);
     }
@@ -96,9 +96,9 @@ DeleteChildNodeResponse::registerMessage(Zen::Enterprise::AppServer::I_Applicati
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 DeleteChildNodeResponse::pMessageHeader_type
-DeleteChildNodeResponse::createMessageHeader(boost::uint32_t _messageId, boost::uint32_t _requestId)
+DeleteChildNodeResponse::createMessageHeader(boost::uint64_t _messageId, boost::uint64_t _requestId)
 {
-    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId,_requestId);
+    return sm_pMessageRegistry->createMessageHeader(sm_pType, _messageId, _requestId, "", "");
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -125,7 +125,7 @@ DeleteChildNodeResponse::getDestinationLocation()
 {
     if(!sm_pResourceLocation.isValid())
     {
-        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/loginClient");
+        sm_pResourceLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton().createLocation("/gameBuilderClient");
     }
     return sm_pResourceLocation;
 }

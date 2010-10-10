@@ -26,11 +26,18 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Core/Memory/managed_ptr.hpp>
+
+#include <string>
+#include <map>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace Scripting {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-;
+class I_ScriptMethod;
+class I_ScriptModule;
+class script_module;
 
 /// Script Type interface.
 /// This class is used as the base interface for script_type.
@@ -38,6 +45,13 @@ namespace Scripting {
 /// and allow script_module to contain a collection of script_type.
 class SCRIPTING_DLL_LINK script_type_interface
 {
+    /// @name Types
+    /// @{
+public:
+    typedef std::map<std::string, I_ScriptMethod*>          Methods_type;
+    typedef Zen::Memory::managed_ptr<I_ScriptModule>        pScriptModule_type;
+    /// @}
+
     /// @name script_type_interface interface
     /// @{
 private:
@@ -51,6 +65,13 @@ private:
 
     /// Create the global objects.
     virtual void createGlobals() = 0;
+
+public:
+    /// Get the script_module<> for this type.
+    virtual script_module& getModule() = 0;
+
+    /// Get the methods that have been added so far.
+    virtual Methods_type& getMethods() = 0;
     /// @}
 
     /// @name 'Structors

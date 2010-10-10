@@ -41,7 +41,6 @@ class GAMEBUILDERPROTOCOL_DLL_LINK I_CreateChildNodeRequest
     /// @{
 public:
     typedef Zen::Memory::managed_ptr<Zen::Enterprise::AppServer::I_Request>   pRequest_type;
-
     /// @}
 
     /// @name Getter / Setter methods

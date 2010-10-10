@@ -32,6 +32,8 @@
 
 #include <Zen/Engine/Rendering/I_RenderingManager.hpp>
 
+#include <boost/lexical_cast.hpp>
+
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZOgre {
@@ -40,6 +42,7 @@ RenderingService::RenderingService()
 :   m_root(Ogre::Root::getSingleton())
 ,   m_pScriptObject(NULL)
 ,   m_pModule(NULL)
+,   m_viewMap()
 {
     std::cout << "new RenderingService" << std::endl;
 
@@ -71,6 +74,14 @@ RenderingService::RenderingService()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 RenderingService::~RenderingService()
 {
+    ViewMap_type::iterator iter = m_viewMap.begin();
+    while (iter != m_viewMap.end())
+    {
+        delete iter->second;
+        iter++;
+    }
+    m_viewMap.clear();
+    m_viewIdx.clear();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -90,15 +101,49 @@ RenderingService::createContext(window_handle_type _pParent)
 void
 RenderingService::destroyContext(Zen::Engine::Rendering::I_Context* _pContext)
 {
-    // TODO Implement
+    NullContext* pContext =
+        dynamic_cast<NullContext*>(_pContext);
+
+    if (pContext != NULL)
+    {
+        delete pContext;
+    }
+
+    // TODO Error?
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Zen::Engine::Rendering::I_View*
 RenderingService::createView(Zen::Engine::Rendering::I_Context& _context, const std::string& _windowName, unsigned int _width, unsigned int _height)
 {
+    int viewId = -1;
+    ViewMap_type::iterator iter = m_viewMap.begin();
+    while (iter != m_viewMap.end() || (m_viewMap.begin() == m_viewMap.end() && viewId == -1))
+    {
+        if (viewId != -1)
+        {
+            iter = m_viewMap.find(
+                std::pair<std::string,int>(
+                    _windowName + ":" + boost::lexical_cast<std::string, int>(viewId), 
+                    viewId
+                )
+            );
+        }
+
+        viewId++;
+    }
+
     // TODO Pass _context to the constructor?
-    RenderingView* pView = new RenderingView(*m_pModule, _context, _windowName, _width, _height);
+    RenderingView* pView = new RenderingView(
+        *m_pModule, 
+        _context, 
+        _windowName + ":" + boost::lexical_cast<std::string, int>(viewId), 
+        _width, 
+        _height
+    );
+
+    m_viewIdx[pView] = std::pair<std::string,int>(_windowName, viewId);
+    m_viewMap[std::pair<std::string,int>(_windowName, viewId)] = pView;
 
     return pView;
 }
@@ -107,7 +152,21 @@ RenderingService::createView(Zen::Engine::Rendering::I_Context& _context, const 
 void
 RenderingService::destroyView(Zen::Engine::Rendering::I_View* _pView)
 {
-    // TODO Implement
+    RenderingView* pView = 
+        dynamic_cast<RenderingView*>(_pView);
+
+    if (pView != NULL)
+    {
+        ViewIdx_type::iterator iter = m_viewIdx.find(pView);
+        if (iter != m_viewIdx.end())
+        {
+            delete pView;
+            m_viewMap.erase(iter->second);
+            m_viewIdx.erase(iter);
+        }
+    }
+
+    // TODO Error?
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

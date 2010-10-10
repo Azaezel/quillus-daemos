@@ -35,6 +35,9 @@ class script_module;
 template<typename ScriptableClass_type>
 class script_type;
 
+template<typename ScriptableClass_type>
+class derived_script_type;
+
 class script_type_interface;
 
 template<typename ScriptableClass_type, class Method_type, typename Return_type, class DispatchHelper_type>

@@ -24,13 +24,12 @@
 #ifndef ZEN_ZOGRE_SCENE_SERVICE_HPP_INCLUDED
 #define ZEN_ZOGRE_SCENE_SERVICE_HPP_INCLUDED
 
+#include "../I_OgreSceneService.hpp"
 #include "NullCamera.hpp"
 
 #include <Zen/Core/Scripting.hpp>
 
 #include <Zen/Core/Utility/runtime_exception.hpp>
-
-#include <Zen/Engine/Rendering/I_SceneService.hpp>
 
 #include "Ogre.hpp"
 
@@ -45,7 +44,7 @@ namespace ZOgre {
 
 /// Wrapper for Ogre::SceneManager.
 class SceneService
-:   public Zen::Engine::Rendering::I_SceneService
+:   public I_OgreSceneService
 {
     /// @name Types
     /// @{
@@ -54,6 +53,12 @@ public:
     typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptEngine>    pScriptEngine_type;
 
     typedef Zen::Memory::managed_weak_ptr<Zen::Engine::Rendering::I_Light>  wpLight_type;
+    /// @}
+
+    /// @name I_OgreSceneService implementation
+    /// @{
+public:
+    virtual Ogre::SceneManager& getOgreSceneManager();
     /// @}
 
     /// @name I_SceneService implementation

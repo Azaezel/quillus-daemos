@@ -37,7 +37,9 @@ set (wxWidgets_USE_UNICODE TRUE)
 
 message("wx Flag: ${wxWidgets_DEFINITIONS} + ${wxWidgets_CXX_FLAGS} + ${wxWidgets_INCLUDE_DIRS}")
 
-add_definitions( -DWORKBENCH_EXPORTS ${wxWidgets_DEFINITIONS} ${wxWidgets_CXX_FLAGS} ${Zen_DEFINITIONS} )
+# TR - I removed ${wxWidgets_DEFINITIONS}  from add_definitions 
+# This made it work on Linux, but does it break other OS?
+add_definitions( -DWORKBENCH_EXPORTS ${wxWidgets_CXX_FLAGS} ${Zen_DEFINITIONS} )
 
 message("GTK: ${GTK_INCLUDE_DIR}")
 
@@ -49,7 +51,7 @@ add_library ( Workbench ${LIB_TYPE} ${Workbench_SRC} )
 
 add_dependencies(Workbench ZenCore ZenEngine ZenEnterprise WorkbenchCommon)
 
-target_link_libraries( Workbench WorkbenchCommon ${Boost_LIBRARIES} ${wxWidgets_LIBRARIES} )
+target_link_libraries( Workbench ZenCore ZenEngine ZenEnterprise WorkbenchCommon ${Boost_LIBRARIES} ${wxWidgets_LIBRARIES} )
 
 # TODO Only if using 2.8
 #target_link_libraries( Workbench debug wxcode_${wxWidgets_CONFIGURATION}28d_propgrid )

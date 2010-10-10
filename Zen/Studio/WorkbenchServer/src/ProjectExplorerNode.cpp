@@ -83,6 +83,7 @@ ProjectExplorerNode::setDisplayName(const std::string& _name)
     if (m_pUserData.isValid())
     {
         return m_pUserData->setName(_name);
+        onModified(this);
     }
     else
     {

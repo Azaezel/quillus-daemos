@@ -24,7 +24,7 @@
 #ifndef ZEN_ZOGRE_NULL_LIGHT_HPP_INCLUDED
 #define ZEN_ZOGRE_NULL_LIGHT_HPP_INCLUDED
 
-#include <Zen/Engine/Rendering/I_Light.hpp>
+#include "../I_OgreLight.hpp"
 
 #include <OgreRoot.h>
 
@@ -35,7 +35,7 @@ namespace ZOgre {
 
 /// Default NULL Light for manually manipulating an Ogre Light
 class NullLight
-:   public Engine::Rendering::I_Light
+:   public I_OgreLight
 {
     /// @name Types
     /// @{
@@ -43,6 +43,12 @@ public:
     typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptModule>    pScriptModule_type;
     typedef Zen::Memory::managed_ptr<Zen::Scripting::I_ScriptEngine>    pScriptEngine_type;
     /// @}
+
+	/// @name I_OgreLight implementation
+	/// @{
+public:
+	virtual Ogre::Light& getOgreLight(); 
+	/// @}
 
     /// @name I_Light implementation
     /// @{

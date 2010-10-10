@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="TerrainBuilderServer"
+   name="Zen Studio Terrain Builder Server Plug-in"
+   version="0.6.0"
+   provider-name="IndieZen.com">
+
+    <runtime>
+        <library name="TerrainBuilderServer">
+            <export name="*"/>
+        </library>
+    </runtime>
+
+    <requires>
+        <import plugin="Framework"/>
+        <import plugin="Workbench"/>
+    </requires>
+
+	<extension 
+		point="Zen::Studio::Workbench::ProjectService"
+		id="TerrainBuilderProject"
+		type="terrainBuilder">
+		<project-type
+			class="Zen::Studio::TerrainProjectService"
+			name="Terrain Project">
+			<document-type
+				name="Terrain"
+				file-extension="terrain"/>
+		</project-type>
+	</extension>
+	
+	<extension
+		point="Zen::Studio::Workbench::ProjectWizardService"
+		id="TerrainBuilderWizard"
+		type="terrainWizard">
+		<project-type
+			class="Zen::Studio::TerrainProjectService"
+			name="Terrain Project Wizard"/>
+	</extension>
+	
+    <extension
+        point="Zen::Studio::Workbench::ExplorerNode"
+        id="TerrainBuilder::TerrainChunkNode"
+        type="TerrainBuilder::TerrainChunkNode">
+        <explorer-node
+            class="TerrainBuilder::TerrainChunkNode"/>
+        <properties>
+            <property name="Some Property" type="STRING_TYPE"/>
+        </properties>
+    </extension>
+    
+    <extension
+		point="Zen::Studio::Workbench::ExplorerNode"
+		id="TerrainBuilder::TerrainGroupNode"
+		type="TerrainBuilder::TerrainGroupNode">
+        <explorer-node
+            class="TerrainBuilder::TerrainGroupNode"/>
+        <properties>
+            <property name="Resource Group" type="CATEGORY_TYPE">
+                <property name="Name" type="STRING_TYPE"/>
+                <property name="Path" type="STRING_TYPE"/>
+            </property>
+			<!--TODO Maybe pull in the properties from the extension
+				point selected in the property 'Skybox Type' to 
+				determine all other properties in 'Skybox 
+				Properties'-->
+			<property name="Skybox Properties" type="CATEGORY_TYPE">
+				<!--TODO Maybe create an enumeration for the property
+					below based on available Zen::Engine::World::Sky
+					extension points in Zen::Plugins-->
+				<property name="Skybox Type" type="STRING_TYPE"/>
+				<property name="Scene Manager" type="STRING_TYPE"/>
+				<property name="Resource Name" type="STRING_TYPE"/>
+				<property name="Distance" type="STRING_TYPE"/>
+			</property>
+        </properties>
+    </extension>
+
+    <extension
+		point="Zen::Studio::Workbench::ExplorerNode"
+		id="TerrainBuilder::Project"
+		type="TerrainBuilder::Project">
+        <explorer-node
+            class="TerrainBuilder::Project"/>
+    </extension>
+
+	<extension
+		point="Zen::Studio::Workbench::ExplorerNode"
+		id="TerrainBuilder::Folder"
+		type="TerrainBuilder::Folder">
+		<explorer-node
+			class="TerrainBuilder::Folder"/>
+	</extension>
+
+</plugin>

@@ -40,6 +40,7 @@ namespace Workbench {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class I_PropertiesListener;
 class I_PropertiesController;
+class I_Property;
 
 /// Properties Publisher interface.
 class WORKBENCHCOMMON_DLL_LINK I_PropertiesPublisher
@@ -66,6 +67,8 @@ public:
 
     /// Get the controller that can be used to modify a property.
     virtual I_PropertiesController& getController() = 0;
+
+    virtual const I_Property* getPropertyByName(const std::string& _name) const = 0;
     /// @}
 
     /// @name 'Structors

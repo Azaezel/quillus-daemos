@@ -69,6 +69,7 @@ class ProjectExplorerView
 		void handleRightClick(wxTreeEvent& event);
 		void handleBeginLabelEdit(wxTreeEvent& event);
 		void handleEndLabelEdit(wxTreeEvent& event);
+        void handleSelection(wxTreeEvent& event);
         void handleActivate(wxTreeEvent& event);
         void handleBeginDrag(wxTreeEvent& event);
         void handleEndDrag(wxTreeEvent& event);

@@ -78,6 +78,7 @@ public:
     /// @{
 public:
     virtual Zen::Enterprise::AppServer::I_ApplicationServer& getApplicationServer();
+    virtual pResourceLocation_type getServiceLocation();
     virtual void handleMessage(pMessage_type _pMessage);
     /// @}
 
@@ -149,6 +150,7 @@ protected:
     /// @{
 private:
     Zen::Enterprise::AppServer::I_ApplicationServer&                m_appServer;
+    pResourceLocation_type                                          m_pLocation;
     Zen::Threading::ThreadPool*                                     m_pThreadPool;
 
     /// Path to the workbench control directory where the SQLite database

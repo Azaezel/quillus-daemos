@@ -37,6 +37,7 @@
 
 #include <Zen/Enterprise/Networking/I_Endpoint.hpp>
 
+#include <Zen/Enterprise/AppServer/I_ApplicationServerManager.hpp>
 #include <Zen/Enterprise/AppServer/I_Request.hpp>
 #include <Zen/Enterprise/AppServer/I_ResponseHandler.hpp>
 #include <Zen/Enterprise/AppServer/I_ProtocolService.hpp>
@@ -79,6 +80,8 @@ WorkbenchService::~WorkbenchService()
 void
 WorkbenchService::setConfiguration(const Zen::Plugins::I_ConfigurationElement& _config)
 {
+    m_pLocation = Zen::Enterprise::AppServer::I_ApplicationServerManager::getSingleton()
+        .createLocation(_config.getAttribute("location"));
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -133,6 +136,13 @@ Zen::Enterprise::AppServer::I_ApplicationServer&
 WorkbenchService::getApplicationServer()
 {
     return m_appServer;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+WorkbenchService::pResourceLocation_type
+WorkbenchService::getServiceLocation()
+{
+    return m_pLocation;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

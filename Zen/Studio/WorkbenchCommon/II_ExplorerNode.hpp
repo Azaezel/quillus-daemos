@@ -64,6 +64,16 @@ public:
             throw Utility::runtime_exception("II_ExplorerNode::getType(): Error, this method should not be called.");
         }
 
+        virtual void registerProperties(Zen::Studio::Workbench::I_PropertiesPublisher& _properties)
+        {
+            throw Utility::runtime_exception("II_ExplorerNode::registerProperties(): Error, this method should not be called.");
+        }
+
+        virtual I_PropertiesPublisher& getPropertiesPublisher()
+        {
+            throw Utility::runtime_exception("II_ExplorerNode::registerProperties(): Error, this method should not be called.");
+        }
+
         virtual void insert(pDatabaseConnection_type _pDBConn) {}
         virtual void load(pDatabaseConnection_type _pDBConn) {}
         virtual void save(pDatabaseConnection_type _pDBConn) {}

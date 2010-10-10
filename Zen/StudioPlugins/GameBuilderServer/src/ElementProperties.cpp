@@ -57,6 +57,14 @@ ElementProperties::getController()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const Zen::Studio::Workbench::I_Property*
+ElementProperties::getPropertyByName(const std::string& _name) const
+{
+    // TODO Implement.
+    return NULL;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ElementProperties::notifyListener(pPropertiesListener_type _pListener)
 {

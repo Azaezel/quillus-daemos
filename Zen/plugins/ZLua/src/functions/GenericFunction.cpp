@@ -24,8 +24,11 @@
 
 #include "../LuaType.hpp"
 #include "../LuaMethod.hpp"
+#include "../LuaModule.hpp"
 
 #include <boost/preprocessor/iteration/local.hpp>
+
+#include <iostream>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
@@ -68,6 +71,10 @@ void
 LuaType::addMethod(const std::string& _name, const std::string& _docString, Scripting::I_ScriptMethod* _function)
 {
     unsigned item = sm_methodItem++;
+
+    std::cout << "Adding method " << item << ": " << _name << " to class " << m_name << " in module "
+            << getModule().getName() << std::endl;
+
 
     (*sm_methodTable[item].m_ppMethod) = new LuaMethod(this, _name, _docString, _function, sm_methodTable[item].m_cFunction);
 

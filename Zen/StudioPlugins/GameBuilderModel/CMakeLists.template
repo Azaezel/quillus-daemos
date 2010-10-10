@@ -35,7 +35,7 @@ add_library ( GameBuilderModel ${LIB_TYPE} ${GameBuilderModel_SRC} )
 
 add_dependencies(GameBuilderModel ZenCore ZenEngine ZenEnterprise GameBuilderCommon)
 
-target_link_libraries( GameBuilderModel ${Boost_LIBRARIES} )
+target_link_libraries( GameBuilderModel ZenCore ZenEngine ZenEnterprise GameBuilderCommon ${Boost_LIBRARIES} )
 
 set_target_properties ( GameBuilderModel 
 						PROPERTIES

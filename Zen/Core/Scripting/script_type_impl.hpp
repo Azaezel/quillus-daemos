@@ -43,6 +43,7 @@ script_type<ScriptableClass_type>::script_type(script_module& _module, const std
 ,   m_pScriptModule()
 ,   m_typeName(_typeName)
 ,   m_documentation(_documentation)
+,   m_activated(false)
 {
 }
 
@@ -55,6 +56,7 @@ script_type<ScriptableClass_type>::script_type(pScriptType_type _pScriptType)
 ,   m_typeName(_pScriptType->getTypeName())
 ,   m_documentation(_pScriptType->getDocumentation())
 ,   m_pScriptType(_pScriptType)
+,   m_activated(false)
 {
 }
 
@@ -102,11 +104,10 @@ inline
 void
 script_type<ScriptableClass_type>::activate()
 {
-    // Create m_pScriptType if it hasn't already been created.
-    if (!m_pScriptType.isValid())
-    {
-        m_pScriptType = getScriptModule()->createScriptType(m_typeName, m_documentation, 0);
-    }
+    assert(!m_activated);
+
+    // Create the m_pScriptType in the OO framework
+    m_pScriptType = getScriptModule()->createScriptType(m_typeName, m_documentation, 0);
 
     // Iterate through the script_method and register them.
     for(Methods_type::iterator iter = m_methods.begin(); iter != m_methods.end(); iter++)
@@ -115,8 +116,9 @@ script_type<ScriptableClass_type>::activate()
         // parameter is simply an empty string.
         m_pScriptType->addMethod(iter->first, "", iter->second);
     }
-}
 
+    m_activated = true;
+}
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 template<typename ScriptableClass_type>
@@ -159,6 +161,66 @@ script_type<ScriptableClass_type>::getScriptModule()
         return m_pScriptModule.lock();
     }
 }
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+template<typename ScriptableClass_type>
+inline
+script_module&
+script_type<ScriptableClass_type>::getModule()
+{
+    return *m_pModule;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+template<typename ScriptableClass_type>
+inline
+std::map<std::string, I_ScriptMethod*>&
+script_type<ScriptableClass_type>::getMethods()
+{
+    return m_methods;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+template<typename ScriptableClass_type>
+inline
+derived_script_type<ScriptableClass_type>
+::derived_script_type(script_type_interface& _baseType, script_module& _module, const std::string& _typeName, const std::string& _documentation)
+:   script_type<ScriptableClass_type>(_module, _typeName, _documentation)
+,   m_baseType(_baseType)
+{
+    // Remember that m_pScriptModule may be NULL if the base type's module
+    // has not been activated yet.
+
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+template<typename ScriptableClass_type>
+inline
+void
+derived_script_type<ScriptableClass_type>
+::activate()
+ {
+    // First, call the base class to create the script type and
+    // then register all of the methods that have been added.
+
+    script_type<ScriptableClass_type>::activate();
+
+    // Next, iterate through all of the methods from the base type
+    // and register them.
+
+    Methods_type::iterator iter;
+
+    for(iter =
+            this->m_baseType.getMethods().begin();
+            iter != this->m_baseType.getMethods().end();
+            iter++)
+    {
+        // TODO I_ScriptMethod needs to support documentation.  For now the second
+        // parameter is simply an empty string.
+        this->m_pScriptType->addMethod(iter->first, "", iter->second);
+    }
+
+ }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace Scripting

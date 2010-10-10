@@ -2,7 +2,7 @@
 // Zen Game Engine Framework
 //
 // Copyright (C) 2001 - 2009 Tony Richards
-// Copyright (C) 2008 - 2009 Walt Collins
+// Copyright (C) 2008 - 2010 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +21,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 //  Tony Richards trichards@indiezen.com
-//  Walt Collins (Arcanor) - wcollins@indiezen.com
+//  Matthew Alan Gray mgray@indiezen.org
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #ifndef ZEN_ENGINE_WORLD_I_TERRAIN_HPP_INCLUDED
 #define ZEN_ENGINE_WORLD_I_TERRAIN_HPP_INCLUDED
@@ -50,10 +50,13 @@ namespace Zen {
 namespace Engine {
     namespace Resource {
         class I_Resource;
-    }
+    }	// namespace Resource
     namespace Physics {
         class I_PhysicsActor;
-    }
+    }	// namespace Physics
+	namespace Rendering {
+		class I_Light;
+	}	// namespace Rendering
 namespace World {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 class WORLD_DLL_LINK I_Terrain
@@ -83,6 +86,7 @@ public:
     virtual bool loadVisualization(const std::string& _ogreSpecificConfigFileName, const Math::Matrix4& _transform) = 0;
     virtual bool loadPhysicsFromRaw(const std::string& _rawFileName, size_t _size, float _maxHeight, float _scaleXY, const Math::Matrix4& _transform, bool _bSerialize) = 0;
     virtual bool loadPhysicsFromSerialization(const std::string& _serializationFileName, const Math::Matrix4& _transform) = 0;
+	virtual void updateLight(Engine::Rendering::I_Light& _light) = 0;
     /// @}
 
     /// @name Events

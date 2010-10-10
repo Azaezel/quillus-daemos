@@ -34,7 +34,7 @@ add_library ( WorkbenchCommon ${LIB_TYPE} ${WorkbenchCommon_SRC} )
 
 add_dependencies(WorkbenchCommon ZenCore ZenEnterprise ${Boost_LIBRARIES} )
 
-target_link_libraries( WorkbenchCommon )
+target_link_libraries( WorkbenchCommon ZenCore ZenEnterprise ${Boost_LIBRARIES} )
 
 set_target_properties ( WorkbenchCommon 
 						PROPERTIES

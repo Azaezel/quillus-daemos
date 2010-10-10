@@ -42,6 +42,8 @@
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
+
+
     namespace Enterprise {
         namespace AppServer {
             class I_ApplicationServer;
@@ -75,7 +77,9 @@ public:
     virtual pEndpoint_type getDestinationEndpoint() { return Message::getDestinationEndpoint(); }
     virtual pMessageHeader_type getMessageHeader() const { return Message::getMessageHeader(); }
 
+    virtual pResourceLocation_type getSourceLocation() { return Message::getSourceLocation(); }
     virtual pResourceLocation_type getDestinationLocation();
+
     virtual void serialize(pMessageHeader_type _pMessageHeader, boost::archive::polymorphic_iarchive& _archive, const int _version);
     virtual void serialize(boost::archive::polymorphic_oarchive& _archive, const int _version);
     /// @}

@@ -35,7 +35,7 @@ add_library ( GameBuilderCommon ${LIB_TYPE} ${GameBuilderCommon_SRC} )
 
 add_dependencies(GameBuilderCommon ZenCore ZenEnterprise WorkbenchCommon ${Boost_LIBRARIES} ${wxWidgets_LIBRARIES} )
 
-target_link_libraries( GameBuilderCommon WorkbenchCommon )
+target_link_libraries( GameBuilderCommon ZenCore ZenEnterprise WorkbenchCommon ${Boost_LIBRARIES} )
 
 set_target_properties ( GameBuilderCommon 
 						PROPERTIES
