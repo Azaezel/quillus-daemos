@@ -28,36 +28,36 @@ source_group(
 
 	
 set ( ZCrazyEddie_SRC
-    I_WidgetService.hpp
-    src/I_WidgetService.cpp
-    src/ZCrazyEddiePlugin.cpp
-    src/ImageSet.cpp
-    src/Widget.cpp
-    src/SchemeService.cpp
-    src/WidgetService.hpp
-    src/WidgetRenderer.hpp
-    src/FontService.cpp
-    src/WidgetServiceFactory.hpp
-    src/Widget.hpp
-    src/I_SchemeService.cpp
-    src/ImageSet.hpp
-    src/WidgetProperty.hpp
-    src/ImageSetService.cpp
-    src/WidgetServiceFactory.cpp
-    src/WidgetService.cpp
-    src/SchemeService.hpp
-    src/ImageSetService.hpp
-    src/WidgetEvent.hpp
-    src/I_ImageSet.cpp
-    src/WidgetProperty.cpp
-    src/FontService.hpp
-    src/WidgetRenderer.cpp
-    src/I_ImageSetService.cpp
-    src/WidgetEvent.cpp
-    I_ImageSet.hpp
-    I_SchemeService.hpp
     Configuration.hpp
+    I_ImageSet.hpp
     I_ImageSetService.hpp
+    I_SchemeService.hpp
+    I_WidgetService.hpp
+    src/FontService.cpp
+    src/FontService.hpp
+    src/ImageSet.cpp
+    src/ImageSet.hpp
+    src/ImageSetService.cpp
+    src/ImageSetService.hpp
+    src/I_ImageSet.cpp
+    src/I_ImageSetService.cpp
+    src/I_SchemeService.cpp
+    src/I_WidgetService.cpp
+    src/SchemeService.cpp
+    src/SchemeService.hpp
+    src/Widget.cpp
+    src/Widget.hpp
+    src/WidgetEvent.cpp
+    src/WidgetEvent.hpp
+    src/WidgetProperty.cpp
+    src/WidgetProperty.hpp
+    src/WidgetRenderer.cpp
+    src/WidgetRenderer.hpp
+    src/WidgetService.cpp
+    src/WidgetService.hpp
+    src/WidgetServiceFactory.cpp
+    src/WidgetServiceFactory.hpp
+    src/ZCrazyEddiePlugin.cpp
 
     )
 
@@ -90,12 +90,12 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    plugin.xml
-    I_WidgetService.hpp
-    I_ImageSet.hpp
-    I_SchemeService.hpp
     Configuration.hpp
+    I_ImageSet.hpp
     I_ImageSetService.hpp
+    I_SchemeService.hpp
+    I_WidgetService.hpp
+    plugin.xml
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

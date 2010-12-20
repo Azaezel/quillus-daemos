@@ -27,9 +27,9 @@ source_group(
 
 	
 set ( ZoneServer_SRC
-    src/I_ZonePortalScopator.cpp
     Configuration.hpp
     I_ZonePortalScopator.hpp
+    src/I_ZonePortalScopator.cpp
 
     )
 

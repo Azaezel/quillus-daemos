@@ -27,26 +27,26 @@ source_group(
 
 	
 set ( ChatServer_SRC
-    src/ChatServerPlugin.cpp
-    src/ChannelMemberModel.hpp
-    src/ChatServiceFactory.hpp
-    src/ChannelController.cpp
+    Configuration.hpp
+    src/Channel.cpp
     src/Channel.hpp
-    src/ChannelViewProxy.cpp
+    src/ChannelController.cpp
     src/ChannelController.hpp
+    src/ChannelMemberController.cpp
+    src/ChannelMemberController.hpp
+    src/ChannelMemberModel.cpp
+    src/ChannelMemberModel.hpp
     src/ChannelMemberViewProxy.cpp
-    src/ChatServiceFactory.cpp
-    src/ChatService.cpp
+    src/ChannelMemberViewProxy.hpp
     src/ChannelModel.cpp
     src/ChannelModel.hpp
-    src/Channel.cpp
-    src/ChannelMemberViewProxy.hpp
-    src/ChatService.hpp
-    src/ChannelMemberController.hpp
+    src/ChannelViewProxy.cpp
     src/ChannelViewProxy.hpp
-    src/ChannelMemberController.cpp
-    src/ChannelMemberModel.cpp
-    Configuration.hpp
+    src/ChatServerPlugin.cpp
+    src/ChatService.cpp
+    src/ChatService.hpp
+    src/ChatServiceFactory.cpp
+    src/ChatServiceFactory.hpp
 
     )
 
@@ -75,8 +75,8 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    plugin.xml
     Configuration.hpp
+    plugin.xml
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

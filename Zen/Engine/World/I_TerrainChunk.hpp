@@ -97,6 +97,9 @@ public:
 
     /// Get the heightmap min height.
     virtual Zen::Math::Real getMinHeight() const = 0;
+
+    /// Get the terrain chunk position.
+    virtual Zen::Math::Vector3& getPosition() const = 0;
     /// @}
 
     /// @name Events
@@ -157,7 +160,7 @@ public:
         TerrainChunkId& operator= (const TerrainChunkId& _otherId)       {delete m_pNativeTerrainChunkId; m_pNativeTerrainChunkId = _otherId.m_pNativeTerrainChunkId->clone(); return *this;}
         bool            operator==(const TerrainChunkId& _otherId) const {return (m_pNativeTerrainChunkId == _otherId.m_pNativeTerrainChunkId) || ( m_pNativeTerrainChunkId &&  _otherId.m_pNativeTerrainChunkId && (*m_pNativeTerrainChunkId == *_otherId.m_pNativeTerrainChunkId));}
         bool            operator!=(const TerrainChunkId& _otherId) const {return (m_pNativeTerrainChunkId != _otherId.m_pNativeTerrainChunkId) && (!m_pNativeTerrainChunkId || !_otherId.m_pNativeTerrainChunkId || (*m_pNativeTerrainChunkId != *_otherId.m_pNativeTerrainChunkId));}
-        bool            operator< (const TerrainChunkId& _otherId) const {return (m_pNativeTerrainChunkId <  _otherId.m_pNativeTerrainChunkId);}
+        bool            operator< (const TerrainChunkId& _otherId) const {assert(m_pNativeTerrainChunkId != NULL && _otherId.m_pNativeTerrainChunkId != NULL); return (*m_pNativeTerrainChunkId <  *_otherId.m_pNativeTerrainChunkId);}
                         operator std::string ()                    const {return m_pNativeTerrainChunkId ? m_pNativeTerrainChunkId->toString() : "";}
         std::string toString()                                     const {return m_pNativeTerrainChunkId ? m_pNativeTerrainChunkId->toString() : "";}
         /// @}

@@ -28,27 +28,27 @@ source_group(
 
 	
 set ( GameBuilderCommon_SRC
-    I_ProjectListener.hpp
-    I_GameObjectTypeDocument.hpp
-    I_GameBuilderService.hpp
-    I_GameObjectTypeController.hpp
-    I_Project.hpp
-    src/I_GameObjectTypeController.cpp
-    src/I_ProjectListener.cpp
-    src/I_Folder.cpp
-    src/I_GameObjectElement.cpp
-    src/I_ProjectService.cpp
-    src/I_GameBuilderService.cpp
-    src/I_GameObjectTypeDocument.cpp
-    src/I_GameObjectTypeView.cpp
-    src/I_GameObjectType.cpp
-    src/I_Project.cpp
-    I_GameObjectElement.hpp
-    I_GameObjectType.hpp
-    I_GameObjectTypeView.hpp
-    I_ProjectService.hpp
     Configuration.hpp
     I_Folder.hpp
+    I_GameBuilderService.hpp
+    I_GameObjectElement.hpp
+    I_GameObjectType.hpp
+    I_GameObjectTypeController.hpp
+    I_GameObjectTypeDocument.hpp
+    I_GameObjectTypeView.hpp
+    I_Project.hpp
+    I_ProjectListener.hpp
+    I_ProjectService.hpp
+    src/I_Folder.cpp
+    src/I_GameBuilderService.cpp
+    src/I_GameObjectElement.cpp
+    src/I_GameObjectType.cpp
+    src/I_GameObjectTypeController.cpp
+    src/I_GameObjectTypeDocument.cpp
+    src/I_GameObjectTypeView.cpp
+    src/I_Project.cpp
+    src/I_ProjectListener.cpp
+    src/I_ProjectService.cpp
 
     )
 
@@ -77,17 +77,17 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_ProjectListener.hpp
-    I_GameObjectTypeDocument.hpp
-    I_GameBuilderService.hpp
-    I_GameObjectTypeController.hpp
-    I_Project.hpp
-    I_GameObjectElement.hpp
-    I_GameObjectType.hpp
-    I_GameObjectTypeView.hpp
-    I_ProjectService.hpp
     Configuration.hpp
     I_Folder.hpp
+    I_GameBuilderService.hpp
+    I_GameObjectElement.hpp
+    I_GameObjectType.hpp
+    I_GameObjectTypeController.hpp
+    I_GameObjectTypeDocument.hpp
+    I_GameObjectTypeView.hpp
+    I_Project.hpp
+    I_ProjectListener.hpp
+    I_ProjectService.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

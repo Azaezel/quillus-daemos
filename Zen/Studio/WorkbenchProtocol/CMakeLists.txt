@@ -27,45 +27,45 @@ source_group(
 
 	
 set ( WorkbenchProtocol_SRC
+    Configuration.hpp
+    I_ChildNodeRequest.hpp
+    I_ChildNodeResponse.hpp
+    I_Message.hpp
+    I_NewProjectRequest.hpp
     I_NewProjectResponse.hpp
+    I_SubscribeModelRequest.hpp
     I_SubscribeModelResponse.hpp
     I_WorkbenchProtocolManager.hpp
-    I_Message.hpp
-    I_SubscribeModelRequest.hpp
-    I_ChildNodeRequest.hpp
-    src/I_SubscribeModelResponse.cpp
-    src/NewProjectResponse.cpp
-    src/WorkbenchProtocolManager.cpp
-    src/I_SubscribeModelRequest.cpp
+    src/ChildNodeRequest.cpp
     src/ChildNodeRequest.hpp
     src/ChildNodeResponse.cpp
-    src/Request.hpp
-    src/Request.cpp
-    src/Message.hpp
-    src/WorkbenchProtocolManager.hpp
-    src/MessageFactory.cpp
-    src/ChildNodeRequest.cpp
-    src/I_NewProjectResponse.cpp
-    src/I_Message.cpp
     src/ChildNodeResponse.hpp
-    src/I_ChildNodeResponse.cpp
-    src/SubscribeModelRequest.cpp
-    src/NewProjectResponse.hpp
-    src/SubscribeModelResponse.cpp
-    src/Message.cpp
     src/I_ChildNodeRequest.cpp
-    src/SubscribeModelRequest.hpp
+    src/I_ChildNodeResponse.cpp
+    src/I_Message.cpp
+    src/I_NewProjectRequest.cpp
+    src/I_NewProjectResponse.cpp
+    src/I_SubscribeModelRequest.cpp
+    src/I_SubscribeModelResponse.cpp
+    src/I_WorkbenchProtocolManager.cpp
+    src/Message.cpp
+    src/Message.hpp
+    src/MessageFactory.cpp
+    src/MessageFactory.hpp
     src/NewProjectRequest.cpp
+    src/NewProjectRequest.hpp
+    src/NewProjectResponse.cpp
+    src/NewProjectResponse.hpp
+    src/Request.cpp
+    src/Request.hpp
     src/Response.cpp
     src/Response.hpp
-    src/I_NewProjectRequest.cpp
+    src/SubscribeModelRequest.cpp
+    src/SubscribeModelRequest.hpp
+    src/SubscribeModelResponse.cpp
     src/SubscribeModelResponse.hpp
-    src/MessageFactory.hpp
-    src/NewProjectRequest.hpp
-    src/I_WorkbenchProtocolManager.cpp
-    I_ChildNodeResponse.hpp
-    I_NewProjectRequest.hpp
-    Configuration.hpp
+    src/WorkbenchProtocolManager.cpp
+    src/WorkbenchProtocolManager.hpp
 
     )
 
@@ -94,15 +94,15 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_NewProjectResponse.hpp
-    I_SubscribeModelResponse.hpp
-    I_WorkbenchProtocolManager.hpp
-    I_Message.hpp
-    I_SubscribeModelRequest.hpp
+    Configuration.hpp
     I_ChildNodeRequest.hpp
     I_ChildNodeResponse.hpp
+    I_Message.hpp
     I_NewProjectRequest.hpp
-    Configuration.hpp
+    I_NewProjectResponse.hpp
+    I_SubscribeModelRequest.hpp
+    I_SubscribeModelResponse.hpp
+    I_WorkbenchProtocolManager.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

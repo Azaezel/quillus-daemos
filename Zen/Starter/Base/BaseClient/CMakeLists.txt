@@ -32,15 +32,15 @@ source_group(
 
 	
 set ( BaseClient_SRC
+    Configuration.hpp
     I_BaseGameClient.hpp
     I_BaseGameWidgetManager.hpp
     src/BaseClient.cpp
-    src/I_BaseGameClient.cpp
     src/BaseClient.hpp
     src/BaseWidgetManager.cpp
-    src/I_BaseGameWidgetManager.cpp
     src/BaseWidgetManager.hpp
-    Configuration.hpp
+    src/I_BaseGameClient.cpp
+    src/I_BaseGameWidgetManager.cpp
 
     )
 
@@ -69,9 +69,9 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
+    Configuration.hpp
     I_BaseGameClient.hpp
     I_BaseGameWidgetManager.hpp
-    Configuration.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

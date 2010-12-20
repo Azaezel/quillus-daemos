@@ -27,19 +27,19 @@ source_group(
 
 	
 set ( WorldBuilderCommon_SRC
-    I_WorldBuilderService.hpp
+    Configuration.hpp
     I_Project.hpp
+    I_ProjectService.hpp
+    I_WorldBuilderService.hpp
+    I_Zone.hpp
+    I_ZoneFolder.hpp
+    I_ZoneModel.hpp
+    src/I_Project.cpp
+    src/I_ProjectService.cpp
     src/I_WorldBuilderService.cpp
     src/I_Zone.cpp
-    src/I_ProjectService.cpp
-    src/I_Project.cpp
     src/I_ZoneFolder.cpp
     src/I_ZoneModel.cpp
-    I_ZoneModel.hpp
-    I_ZoneFolder.hpp
-    I_ProjectService.hpp
-    Configuration.hpp
-    I_Zone.hpp
 
     )
 
@@ -68,13 +68,13 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_WorldBuilderService.hpp
-    I_Project.hpp
-    I_ZoneModel.hpp
-    I_ZoneFolder.hpp
-    I_ProjectService.hpp
     Configuration.hpp
+    I_Project.hpp
+    I_ProjectService.hpp
+    I_WorldBuilderService.hpp
     I_Zone.hpp
+    I_ZoneFolder.hpp
+    I_ZoneModel.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

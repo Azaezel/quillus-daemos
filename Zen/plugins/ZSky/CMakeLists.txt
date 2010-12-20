@@ -26,17 +26,17 @@ source_group(
 
 	
 set ( ZSky_SRC
-    src/ZSkyPlugin.hpp
-    src/ZSkyPlugin.cpp
-    src/SkyService.cpp
-    src/ZSkyModule.cpp
-    src/SkyService.hpp
-    src/Sky.hpp
-    src/Sky.cpp
-    src/SkyServiceFactory.hpp
-    src/SkyServiceFactory.cpp
-    ZSkyModule.hpp
     Configuration.hpp
+    src/Sky.cpp
+    src/Sky.hpp
+    src/SkyService.cpp
+    src/SkyService.hpp
+    src/SkyServiceFactory.cpp
+    src/SkyServiceFactory.hpp
+    src/ZSkyModule.cpp
+    src/ZSkyPlugin.cpp
+    src/ZSkyPlugin.hpp
+    ZSkyModule.hpp
 
     )
 

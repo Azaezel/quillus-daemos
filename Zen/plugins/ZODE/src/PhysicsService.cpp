@@ -94,12 +94,34 @@ PhysicsService::createZone()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+PhysicsService::beginFrame()
+{
+    // TODO Guard
+    for(ZoneCollection_type::iterator iter = m_zones.begin(); iter != m_zones.end(); iter++)
+    {
+        iter->lock()->beginFrame();
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 PhysicsService::stepSimulation(double _elapsedTime)
 {
     // TODO Guard
     for(ZoneCollection_type::iterator iter = m_zones.begin(); iter != m_zones.end(); iter++)
     {
         iter->lock()->stepSimulation(_elapsedTime);
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsService::endFrame()
+{
+    // TODO Guard
+    for(ZoneCollection_type::iterator iter = m_zones.begin(); iter != m_zones.end(); iter++)
+    {
+        iter->lock()->endFrame();
     }
 }
 

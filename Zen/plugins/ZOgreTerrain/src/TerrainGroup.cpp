@@ -284,6 +284,7 @@ TerrainGroup::setTerrainSize(boost::uint16_t _terrainSize)
     if (!m_loaded)
     {
         m_pTerrainGroup->getDefaultImportSettings().terrainSize = _terrainSize;
+        return;
     }
 
     /// TODO Set entire terrain group as dirty and reload
@@ -304,6 +305,7 @@ TerrainGroup::setWorldSize(Zen::Math::Real _worldSize)
     if (!m_loaded)
     {
         m_pTerrainGroup->getDefaultImportSettings().worldSize = _worldSize;
+        return;
     }
 
     /// TODO Set entire terrain group as dirty and reload
@@ -314,7 +316,7 @@ TerrainGroup::setWorldSize(Zen::Math::Real _worldSize)
 Zen::Math::Real 
 TerrainGroup::getWorldSize() const
 {
-    return m_pTerrainGroup->getTerrainWorldSize();
+    return m_pTerrainGroup->getDefaultImportSettings().worldSize;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -322,6 +324,7 @@ void
 TerrainGroup::load(bool _synchronous)
 {
     m_pTerrainGroup->loadAllTerrains(_synchronous);
+    m_loaded = true;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -397,6 +400,13 @@ TerrainGroup::scriptRemoveTerrainChunk(int _x, int _y)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+TerrainGroup::scriptSetTerrainSize(int _size)
+{
+    setTerrainSize(_size);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Zen::Scripting::script_module* TerrainGroup::sm_pModule = NULL;
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
@@ -411,6 +421,7 @@ TerrainGroup::registerScriptModule(Zen::Scripting::script_module& _module, Zen::
         .addMethod("getTerrainChunk", &TerrainGroup::scriptGetTerrainChunk)
         .addMethod("createTerrainChunk", &TerrainGroup::scriptCreateTerrainChunk)
         .addMethod("removeTerrainChunk", &TerrainGroup::scriptRemoveTerrainChunk)
+        .addMethod("setTerrainSize", &TerrainGroup::scriptSetTerrainSize)
     ;
 }
 

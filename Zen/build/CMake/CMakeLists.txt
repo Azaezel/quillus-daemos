@@ -12,8 +12,9 @@ if ( WIN32 )
 	set(BUILD_EXE_TYPE "WIN32")
 	set(Zen_DEFINITIONS "-D_CRT_SECURE_NO_WARNINGS -DUNICODE -D_UNICODE")
 
-    # TODO This should only be on MSVC not specifically WIN32.
-    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP" )
+    if (MSVC_IDE)
+        set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP" )
+    endif (MSVC_IDE)
 endif ( WIN32 )
 
 if ( NOT INDIEZEN_PARENT)

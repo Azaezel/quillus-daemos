@@ -104,6 +104,12 @@ public:
     /// Apply a transformation matrix to this node.
     virtual void applyTransformation(Math::Matrix4 _transformationMatrix) = 0;
 
+    /// Set the pitch of this scene node.
+    virtual void pitch(const Math::Radian& _pitch, bool _parent = false, bool _local = false) = 0;
+
+    /// Set the yaw of this scene node.
+    virtual void yaw(const Math::Radian& _yaw, bool _parent = false, bool _local = false) = 0;
+
     /// Set the scale of this node, which effects any attached resources
     virtual void setScale(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z) = 0;
 

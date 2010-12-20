@@ -27,18 +27,18 @@ source_group(
 
 	
 set ( SessionServer_SRC
+    Configuration.hpp
+    src/AccountView.cpp
+    src/AccountView.hpp
     src/Attribute.cpp
     src/Attribute.hpp
-    src/SessionServiceFactory.cpp
+    src/Session.cpp
+    src/Session.hpp
     src/SessionServerPlugin.cpp
     src/SessionService.cpp
     src/SessionService.hpp
+    src/SessionServiceFactory.cpp
     src/SessionServiceFactory.hpp
-    src/AccountView.hpp
-    src/Session.cpp
-    src/Session.hpp
-    src/AccountView.cpp
-    Configuration.hpp
 
     )
 
@@ -67,8 +67,8 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    plugin.xml
     Configuration.hpp
+    plugin.xml
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

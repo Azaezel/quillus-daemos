@@ -27,13 +27,13 @@ source_group(
 
 	
 set ( SessionCommon_SRC
+    Configuration.hpp
+    I_Attribute.hpp
+    I_Session.hpp
     I_SessionService.hpp
     src/I_Attribute.cpp
     src/I_Session.cpp
     src/I_SessionService.cpp
-    I_Session.hpp
-    I_Attribute.hpp
-    Configuration.hpp
 
     )
 
@@ -62,10 +62,10 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_SessionService.hpp
-    I_Session.hpp
-    I_Attribute.hpp
     Configuration.hpp
+    I_Attribute.hpp
+    I_Session.hpp
+    I_SessionService.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

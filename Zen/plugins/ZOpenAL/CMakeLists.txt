@@ -30,22 +30,22 @@ source_group(
 
 	
 set ( ZOpenAL_SRC
-    src/ZOpenALPlugin.hpp
+    Configuration.hpp
+    src/Resource.cpp
+    src/Resource.hpp
+    src/ResourceService.cpp
+    src/ResourceService.hpp
+    src/ResourceServiceFactory.cpp
+    src/ResourceServiceFactory.hpp
+    src/SoundService.cpp
+    src/SoundService.hpp
+    src/SoundServiceFactory.cpp
     src/SoundServiceFactory.hpp
+    src/Source.cpp
+    src/Source.hpp
     src/ZOpenALModule.cpp
     src/ZOpenALPlugin.cpp
-    src/Resource.hpp
-    src/Source.hpp
-    src/ResourceServiceFactory.cpp
-    src/ResourceService.cpp
-    src/Source.cpp
-    src/ResourceServiceFactory.hpp
-    src/SoundServiceFactory.cpp
-    src/ResourceService.hpp
-    src/Resource.cpp
-    src/SoundService.hpp
-    src/SoundService.cpp
-    Configuration.hpp
+    src/ZOpenALPlugin.hpp
 
     )
 

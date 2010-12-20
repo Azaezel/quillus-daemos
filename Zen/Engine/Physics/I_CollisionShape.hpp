@@ -73,7 +73,8 @@ public:
         CYLINDER_SHAPE,
         OVOID_SHAPE,
         CAPSULE_SHAPE,
-        HEIGHTFIELD_SHAPE
+        HEIGHTFIELD_SHAPE,
+        MESH_SHAPE
     };
     /// @}
 

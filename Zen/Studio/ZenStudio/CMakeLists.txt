@@ -28,9 +28,9 @@ source_group(
 
 	
 set ( ZenStudio_SRC
+    WorkbenchLocationDlg.cpp
     WorkbenchLocationDlg.h
     ZenStudio.cpp
-    WorkbenchLocationDlg.cpp
     ZenStudio.hpp
 
     )

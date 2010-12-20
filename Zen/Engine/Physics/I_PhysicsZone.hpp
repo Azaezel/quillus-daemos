@@ -40,7 +40,10 @@
 
 #include <Zen/Core/Scripting.hpp>
 
+#include <Zen/Engine/Physics/I_PhysicsFrameListener.hpp>
+
 #include <boost/noncopyable.hpp>
+#include <boost/array.hpp>
 
 #include <string>
 #include <map>
@@ -66,6 +69,7 @@ class I_PhysicsJoint;
 class PHYSICS_DLL_LINK I_PhysicsZone
 :   public virtual Zen::Scripting::I_ScriptableType
 ,   public Memory::managed_self_ref<Zen::Engine::Physics::I_PhysicsZone>
+,   public I_PhysicsFrameListener
 {
     /// @name Types
     /// @{
@@ -111,9 +115,6 @@ public:
     /// @name I_PhysicsZone interface
     /// @{
 public:
-    /// Set the physics simulation for this zone.
-	virtual void stepSimulation(double _elapsedTime) = 0;
-
     /// Set the default gravity.
     /// @todo TR - Does this actually work?  If not then possibly should remove it.
     virtual void setGravity(const Math::Vector3& _grav) = 0;
@@ -177,6 +178,9 @@ public:
     /// @todo I don't like this interface.  If we're loading from a file, we should go through
     ///     a resource manager.
     virtual pCollisionShape_type createTreeCollisionShape(std::string _filename) = 0;
+
+    /// Create a mesh collision shape using vertices and indices.
+    virtual pCollisionShape_type createMeshShape(std::vector<Zen::Math::Point3>& _vertices, std::vector<boost::array<int, 3> >& _indices) = 0;
     /// @}
 
     /// @name I_ScriptableType implementation

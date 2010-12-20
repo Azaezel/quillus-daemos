@@ -28,43 +28,43 @@ source_group(
 
 	
 set ( GameBuilderModel_SRC
-    I_GameObjectElementDomainObject.hpp
-    I_GameObjectTypeDomainObject.hpp
-    I_GameObjectTypeDataMap.hpp
-    src/GameObjectElementDomainObject.cpp
-    src/GameObjectFolderDataCollection.cpp
-    src/GameObjectElementDomainObject.hpp
-    src/GameObjectElementDataCollection.hpp
-    src/GameObjectTypeDomainObject.hpp
-    src/GameObjectTypeDomainObject.cpp
-    src/I_GameObjectFolderDataMap.cpp
-    src/I_GameObjectTypeDomainObject.cpp
-    src/GameObjectElementDataCollection.cpp
-    src/GameObjectTypeDataCollection.cpp
-    src/GameObjectFolderDataMap.cpp
-    src/GameObjectFolderDataMap.hpp
-    src/I_GameObjectTypeDataMap.cpp
-    src/GameObjectTypeDataMap.hpp
-    src/GameObjectElementDataMap.hpp
-    src/GameObjectFolderDomainObject.cpp
-    src/I_GameObjectFolderDataCollection.cpp
-    src/GameObjectTypeDataMap.cpp
-    src/I_GameObjectElementDomainObject.cpp
-    src/I_GameObjectElementDataCollection.cpp
-    src/GameObjectElementDataMap.cpp
-    src/GameObjectFolderDomainObject.hpp
-    src/GameObjectTypeDataCollection.hpp
-    src/I_GameObjectFolderDomainObject.cpp
-    src/I_GameObjectTypeDataCollection.cpp
-    src/GameObjectFolderDataCollection.hpp
-    src/I_GameObjectElementDataMap.cpp
-    I_GameObjectFolderDataCollection.hpp
-    I_GameObjectFolderDomainObject.hpp
-    I_GameObjectTypeDataCollection.hpp
-    I_GameObjectFolderDataMap.hpp
+    Configuration.hpp
     I_GameObjectElementDataCollection.hpp
     I_GameObjectElementDataMap.hpp
-    Configuration.hpp
+    I_GameObjectElementDomainObject.hpp
+    I_GameObjectFolderDataCollection.hpp
+    I_GameObjectFolderDataMap.hpp
+    I_GameObjectFolderDomainObject.hpp
+    I_GameObjectTypeDataCollection.hpp
+    I_GameObjectTypeDataMap.hpp
+    I_GameObjectTypeDomainObject.hpp
+    src/GameObjectElementDataCollection.cpp
+    src/GameObjectElementDataCollection.hpp
+    src/GameObjectElementDataMap.cpp
+    src/GameObjectElementDataMap.hpp
+    src/GameObjectElementDomainObject.cpp
+    src/GameObjectElementDomainObject.hpp
+    src/GameObjectFolderDataCollection.cpp
+    src/GameObjectFolderDataCollection.hpp
+    src/GameObjectFolderDataMap.cpp
+    src/GameObjectFolderDataMap.hpp
+    src/GameObjectFolderDomainObject.cpp
+    src/GameObjectFolderDomainObject.hpp
+    src/GameObjectTypeDataCollection.cpp
+    src/GameObjectTypeDataCollection.hpp
+    src/GameObjectTypeDataMap.cpp
+    src/GameObjectTypeDataMap.hpp
+    src/GameObjectTypeDomainObject.cpp
+    src/GameObjectTypeDomainObject.hpp
+    src/I_GameObjectElementDataCollection.cpp
+    src/I_GameObjectElementDataMap.cpp
+    src/I_GameObjectElementDomainObject.cpp
+    src/I_GameObjectFolderDataCollection.cpp
+    src/I_GameObjectFolderDataMap.cpp
+    src/I_GameObjectFolderDomainObject.cpp
+    src/I_GameObjectTypeDataCollection.cpp
+    src/I_GameObjectTypeDataMap.cpp
+    src/I_GameObjectTypeDomainObject.cpp
 
     )
 
@@ -93,16 +93,16 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_GameObjectElementDomainObject.hpp
-    I_GameObjectTypeDomainObject.hpp
-    I_GameObjectTypeDataMap.hpp
-    I_GameObjectFolderDataCollection.hpp
-    I_GameObjectFolderDomainObject.hpp
-    I_GameObjectTypeDataCollection.hpp
-    I_GameObjectFolderDataMap.hpp
+    Configuration.hpp
     I_GameObjectElementDataCollection.hpp
     I_GameObjectElementDataMap.hpp
-    Configuration.hpp
+    I_GameObjectElementDomainObject.hpp
+    I_GameObjectFolderDataCollection.hpp
+    I_GameObjectFolderDataMap.hpp
+    I_GameObjectFolderDomainObject.hpp
+    I_GameObjectTypeDataCollection.hpp
+    I_GameObjectTypeDataMap.hpp
+    I_GameObjectTypeDomainObject.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

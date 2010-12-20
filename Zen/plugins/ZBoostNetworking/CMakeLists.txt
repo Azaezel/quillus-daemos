@@ -21,21 +21,21 @@ SET (LIB_TYPE SHARED)
 # Include ZBoostNetworking source file
 
 source_group(
-    UDP\\
-	REGULAR_EXPRESSION 
-	UDP/*.*
-	)
-
-source_group(
-    XML\\
-	REGULAR_EXPRESSION 
-	XML/*.*
-	)
-
-source_group(
     src\\
 	REGULAR_EXPRESSION 
 	src/*.*
+	)
+
+source_group(
+    src\\HTTP\\
+	REGULAR_EXPRESSION 
+	src/HTTP/*.*
+	)
+
+source_group(
+    src\\TCP\\
+	REGULAR_EXPRESSION 
+	src/TCP/*.*
 	)
 
 source_group(
@@ -51,105 +51,105 @@ source_group(
 	)
 
 source_group(
-    src\\HTTP\\
+    UDP\\
 	REGULAR_EXPRESSION 
-	src/HTTP/*.*
+	UDP/*.*
 	)
 
 source_group(
-    src\\TCP\\
+    XML\\
 	REGULAR_EXPRESSION 
-	src/TCP/*.*
+	XML/*.*
 	)
 
 
 	
 set ( ZBoostNetworking_SRC
-    UDP/I_Message.hpp
-    UDP/I_UDPService.hpp
-    XML/I_XMLResponse.hpp
-    XML/I_XMLRequest.hpp
-    XML/I_XMLProtocolService.hpp
+    Configuration.hpp
     I_WebProtocolService.hpp
-    src/ProtocolServiceFactory.hpp
-    src/UDP/SendTaskAllocator.cpp
-    src/UDP/Address.hpp
-    src/UDP/SendTask.hpp
-    src/UDP/Message.hpp
-    src/UDP/I_Message.cpp
-    src/UDP/Message.cpp
-    src/UDP/Address.cpp
-    src/UDP/SendTaskAllocator.hpp
-    src/UDP/Endpoint.cpp
-    src/UDP/MessageBuffer.hpp
-    src/UDP/I_UDPService.cpp
-    src/UDP/Endpoint.hpp
-    src/UDP/MessageBuffer.cpp
-    src/XML/RequestParser.hpp
-    src/XML/RequestGrammar.hpp
-    src/XML/RequestParserState.cpp
-    src/XML/Request.hpp
-    src/XML/RequestParser.cpp
-    src/XML/XMLProtocolService.cpp
-    src/XML/Request.cpp
-    src/XML/I_XMLResponse.cpp
-    src/XML/Message.hpp
-    src/XML/I_XMLProtocolService.cpp
-    src/XML/Message.cpp
-    src/XML/Endpoint.cpp
-    src/XML/Endpoint.hpp
-    src/XML/RequestHandler.hpp
-    src/XML/RequestGrammar.cpp
-    src/XML/Reply.cpp
-    src/XML/Connection.hpp
-    src/XML/Header.hpp
-    src/XML/RequestParserState.hpp
-    src/XML/XMLProtocolService.hpp
-    src/XML/I_XMLRequest.cpp
-    src/XML/RequestGrammar_impl.hpp
-    src/XML/RequestHandler.cpp
-    src/XML/Connection.cpp
-    src/XML/Reply.hpp
-    src/UserDatagramProtocolService.hpp
-    src/TransmissionControlProtocolService.cpp
-    src/HTTP/RequestParser.hpp
-    src/HTTP/RequestGrammar.hpp
-    src/HTTP/RequestParserState.cpp
-    src/HTTP/Request.hpp
-    src/HTTP/RequestParser.cpp
-    src/HTTP/Request.cpp
-    src/HTTP/Message.hpp
-    src/HTTP/I_WebProtocolService.cpp
-    src/HTTP/Message.cpp
-    src/HTTP/RequestHandler.hpp
-    src/HTTP/RequestGrammar.cpp
-    src/HTTP/Reply.cpp
+    I_WebRequest.hpp
+    I_WebResponse.hpp
+    message_factory.hpp
+    message_serialization_adapter.hpp
+    src/Endpoint.cpp
+    src/Endpoint.hpp
+    src/HTTP/Connection.cpp
     src/HTTP/Connection.hpp
     src/HTTP/Header.hpp
-    src/HTTP/RequestParserState.hpp
+    src/HTTP/I_WebProtocolService.cpp
+    src/HTTP/I_WebRequest.cpp
+    src/HTTP/I_WebResponse.cpp
+    src/HTTP/Message.cpp
+    src/HTTP/Message.hpp
+    src/HTTP/Reply.cpp
+    src/HTTP/Reply.hpp
+    src/HTTP/Request.cpp
+    src/HTTP/Request.hpp
+    src/HTTP/RequestGrammar.cpp
+    src/HTTP/RequestGrammar.hpp
     src/HTTP/RequestGrammar_impl.hpp
     src/HTTP/RequestHandler.cpp
-    src/HTTP/Connection.cpp
-    src/HTTP/I_WebResponse.cpp
-    src/HTTP/Reply.hpp
-    src/HTTP/I_WebRequest.cpp
+    src/HTTP/RequestHandler.hpp
+    src/HTTP/RequestParser.cpp
+    src/HTTP/RequestParser.hpp
+    src/HTTP/RequestParserState.cpp
+    src/HTTP/RequestParserState.hpp
     src/HyperTextTransportProtocolService.cpp
-    src/Endpoint.cpp
-    src/ProtocolServiceFactory.cpp
     src/HyperTextTransportProtocolService.hpp
-    src/Endpoint.hpp
-    src/UserDatagramProtocolService.cpp
-    src/TCP/Message.hpp
-    src/TCP/Message.cpp
-    src/TCP/Connection.hpp
+    src/ProtocolServiceFactory.cpp
+    src/ProtocolServiceFactory.hpp
     src/TCP/Connection.cpp
-    src/ZBoostNetworkingPlugin.cpp
+    src/TCP/Connection.hpp
+    src/TCP/Message.cpp
+    src/TCP/Message.hpp
+    src/TransmissionControlProtocolService.cpp
     src/TransmissionControlProtocolService.hpp
-    I_WebRequest.hpp
-    message_factory.hpp
-    Configuration.hpp
-    I_WebResponse.hpp
-    message_serialization_adapter.hpp
+    src/UDP/Address.cpp
+    src/UDP/Address.hpp
+    src/UDP/Endpoint.cpp
+    src/UDP/Endpoint.hpp
+    src/UDP/I_Message.cpp
+    src/UDP/I_UDPService.cpp
+    src/UDP/Message.cpp
+    src/UDP/Message.hpp
+    src/UDP/MessageBuffer.cpp
+    src/UDP/MessageBuffer.hpp
+    src/UDP/SendTask.hpp
+    src/UDP/SendTaskAllocator.cpp
+    src/UDP/SendTaskAllocator.hpp
+    src/UserDatagramProtocolService.cpp
+    src/UserDatagramProtocolService.hpp
+    src/XML/Connection.cpp
+    src/XML/Connection.hpp
+    src/XML/Endpoint.cpp
+    src/XML/Endpoint.hpp
+    src/XML/Header.hpp
+    src/XML/I_XMLProtocolService.cpp
+    src/XML/I_XMLRequest.cpp
+    src/XML/I_XMLResponse.cpp
+    src/XML/Message.cpp
+    src/XML/Message.hpp
+    src/XML/Reply.cpp
+    src/XML/Reply.hpp
+    src/XML/Request.cpp
+    src/XML/Request.hpp
+    src/XML/RequestGrammar.cpp
+    src/XML/RequestGrammar.hpp
+    src/XML/RequestGrammar_impl.hpp
+    src/XML/RequestHandler.cpp
+    src/XML/RequestHandler.hpp
+    src/XML/RequestParser.cpp
+    src/XML/RequestParser.hpp
+    src/XML/RequestParserState.cpp
+    src/XML/RequestParserState.hpp
+    src/XML/XMLProtocolService.cpp
+    src/XML/XMLProtocolService.hpp
+    src/ZBoostNetworkingPlugin.cpp
+    UDP/I_Message.hpp
+    UDP/I_UDPService.hpp
+    XML/I_XMLProtocolService.hpp
+    XML/I_XMLRequest.hpp
+    XML/I_XMLResponse.hpp
 
     )
 
@@ -185,21 +185,21 @@ install ( FILES
 )
 
 install ( FILES 
-    XML/I_XMLResponse.hpp
-    XML/I_XMLRequest.hpp
     XML/I_XMLProtocolService.hpp
+    XML/I_XMLRequest.hpp
+    XML/I_XMLResponse.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/XML/
 )
 
 install ( FILES 
-    plugin.xml
+    Configuration.hpp
     I_WebProtocolService.hpp
     I_WebRequest.hpp
-    message_factory.hpp
-    Configuration.hpp
     I_WebResponse.hpp
+    message_factory.hpp
     message_serialization_adapter.hpp
+    plugin.xml
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

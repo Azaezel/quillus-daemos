@@ -27,55 +27,55 @@ source_group(
 
 	
 set ( GameBuilderServer_SRC
-    src/ElementProperties.hpp
-    src/PersistenceProperty.hpp
-    src/GameObjectTypeDocument.hpp
-    src/GameObjectTypeController.hpp
-    src/DocumentProperties.cpp
-    src/GameObjectType.cpp
-    src/TextCellData.cpp
-    src/ExplorerNodeFactory.cpp
-    src/PropertyGroup.cpp
-    src/ReplicationPropertyGroup.cpp
-    src/Properties.hpp
-    src/GameObjectTypeDocument.cpp
-    src/Project.hpp
-    src/ExtensionPointProperty.hpp
     src/CreatorCategoryProperty.cpp
-    src/PersistenceProperty.cpp
-    src/ExtensionPointProperty.cpp
-    src/GameBuilderPlugin.cpp
-    src/Folder.hpp
-    src/GameObjectType.hpp
-    src/ProjectServiceFactory.hpp
-    src/TextCell.hpp
-    src/Project.cpp
-    src/Property.hpp
     src/CreatorCategoryProperty.hpp
     src/CreatorIconProperty.cpp
-    src/GameObjectElement.hpp
-    src/ProjectService.cpp
-    src/GameObjectElement.cpp
-    src/ReplicationDirectionProperty.hpp
-    src/CreatorPropertyGroup.hpp
     src/CreatorIconProperty.hpp
-    src/PropertyGroup.hpp
-    src/TextCell.cpp
-    src/Folder.cpp
-    src/ElementProperties.cpp
-    src/GameObjectTypeController.cpp
-    src/ReplicationTypeProperty.hpp
-    src/TextCellData.hpp
-    src/ProjectServiceFactory.cpp
-    src/Property.cpp
-    src/Properties.cpp
-    src/ReplicationDirectionProperty.cpp
-    src/ProjectService.hpp
-    src/DocumentProperties.hpp
     src/CreatorPropertyGroup.cpp
-    src/ReplicationTypeProperty.cpp
+    src/CreatorPropertyGroup.hpp
+    src/DocumentProperties.cpp
+    src/DocumentProperties.hpp
+    src/ElementProperties.cpp
+    src/ElementProperties.hpp
+    src/ExplorerNodeFactory.cpp
     src/ExplorerNodeFactory.hpp
+    src/ExtensionPointProperty.cpp
+    src/ExtensionPointProperty.hpp
+    src/Folder.cpp
+    src/Folder.hpp
+    src/GameBuilderPlugin.cpp
+    src/GameObjectElement.cpp
+    src/GameObjectElement.hpp
+    src/GameObjectType.cpp
+    src/GameObjectType.hpp
+    src/GameObjectTypeController.cpp
+    src/GameObjectTypeController.hpp
+    src/GameObjectTypeDocument.cpp
+    src/GameObjectTypeDocument.hpp
+    src/PersistenceProperty.cpp
+    src/PersistenceProperty.hpp
+    src/Project.cpp
+    src/Project.hpp
+    src/ProjectService.cpp
+    src/ProjectService.hpp
+    src/ProjectServiceFactory.cpp
+    src/ProjectServiceFactory.hpp
+    src/Properties.cpp
+    src/Properties.hpp
+    src/Property.cpp
+    src/Property.hpp
+    src/PropertyGroup.cpp
+    src/PropertyGroup.hpp
+    src/ReplicationDirectionProperty.cpp
+    src/ReplicationDirectionProperty.hpp
+    src/ReplicationPropertyGroup.cpp
     src/ReplicationPropertyGroup.hpp
+    src/ReplicationTypeProperty.cpp
+    src/ReplicationTypeProperty.hpp
+    src/TextCell.cpp
+    src/TextCell.hpp
+    src/TextCellData.cpp
+    src/TextCellData.hpp
 
     )
 

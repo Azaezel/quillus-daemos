@@ -21,8 +21,8 @@
 //
 //  Tony Richards trichards@indiezen.com
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#ifndef ZEN_ZODE_PHYSICS_SHAPE_HPP_INCLUDED
-#define ZEN_ZODE_PHYSICS_SHAPE_HPP_INCLUDED
+#ifndef ZEN_ZODE_PHYSICS_COLLISION_SHAPE_HPP_INCLUDED
+#define ZEN_ZODE_PHYSICS_COLLISION_SHAPE_HPP_INCLUDED
 
 #include <Zen/Core/Memory/managed_self_ref.hpp>
 
@@ -34,11 +34,10 @@
 namespace Zen {
 namespace ZODE {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
 class PhysicsZone;
 
 class CollisionShape
-:   public Engine::Physics::I_CollisionShape
+:   public virtual Engine::Physics::I_CollisionShape
 {
     /// @name Types
     /// @{
@@ -73,7 +72,7 @@ public:
 
     /// @name Member Variables
     /// @{
-private:
+protected:
     dGeomID                         m_geometryId;
 
     ScriptObjectReference_type*     m_pScriptObject;
@@ -89,4 +88,4 @@ private:
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-#endif // ZEN_ZODE_PHYSICS_SHAPE_HPP_INCLUDED
+#endif // ZEN_ZODE_PHYSICS_COLLISION_SHAPE_HPP_INCLUDED

@@ -20,36 +20,6 @@ SET (LIB_TYPE SHARED)
 # Include various modules of Zen Engine
 
 source_group(
-    Tutorial4\\
-	REGULAR_EXPRESSION 
-	Tutorial4/*.*
-	)
-
-source_group(
-    Tutorial4\\src\\
-	REGULAR_EXPRESSION 
-	Tutorial4/src/*.*
-	)
-
-source_group(
-    scripts\\
-	REGULAR_EXPRESSION 
-	scripts/*.*
-	)
-
-source_group(
-    scripts\\core\\
-	REGULAR_EXPRESSION 
-	scripts/core/*.*
-	)
-
-source_group(
-    scripts\\client\\
-	REGULAR_EXPRESSION 
-	scripts/client/*.*
-	)
-
-source_group(
     resources\\
 	REGULAR_EXPRESSION 
 	resources/*.*
@@ -61,28 +31,58 @@ source_group(
 	resources/Hydrax/*.*
 	)
 
+source_group(
+    scripts\\
+	REGULAR_EXPRESSION 
+	scripts/*.*
+	)
+
+source_group(
+    scripts\\client\\
+	REGULAR_EXPRESSION 
+	scripts/client/*.*
+	)
+
+source_group(
+    scripts\\core\\
+	REGULAR_EXPRESSION 
+	scripts/core/*.*
+	)
+
+source_group(
+    Tutorial4\\
+	REGULAR_EXPRESSION 
+	Tutorial4/*.*
+	)
+
+source_group(
+    Tutorial4\\src\\
+	REGULAR_EXPRESSION 
+	Tutorial4/src/*.*
+	)
+
 
 	
 set ( Tutorial4_SRC
-    Tutorial4/src/GameClient.hpp
-    Tutorial4/src/GameClientFactory.hpp
+    Tutorial4/src/AvatarCollisionBehavior.cpp
+    Tutorial4/src/AvatarCollisionBehavior.hpp
+    Tutorial4/src/AvatarGameObject.cpp
     Tutorial4/src/AvatarGameObject.hpp
     Tutorial4/src/BehaviorGroup.cpp
-    Tutorial4/src/BehaviorManager.cpp
-    Tutorial4/src/WidgetManager.hpp
-    Tutorial4/src/BehaviorManager.hpp
-    Tutorial4/src/AvatarCollisionBehavior.hpp
-    Tutorial4/src/GameClientFactory.cpp
-    Tutorial4/src/GravityBehavior.cpp
-    Tutorial4/src/GameClientPlugin.cpp
-    Tutorial4/src/GameObject.hpp
-    Tutorial4/src/GameClient.cpp
-    Tutorial4/src/AvatarCollisionBehavior.cpp
-    Tutorial4/src/AvatarGameObject.cpp
     Tutorial4/src/BehaviorGroup.hpp
+    Tutorial4/src/BehaviorManager.cpp
+    Tutorial4/src/BehaviorManager.hpp
+    Tutorial4/src/GameClient.cpp
+    Tutorial4/src/GameClient.hpp
+    Tutorial4/src/GameClientFactory.cpp
+    Tutorial4/src/GameClientFactory.hpp
+    Tutorial4/src/GameClientPlugin.cpp
+    Tutorial4/src/GameObject.cpp
+    Tutorial4/src/GameObject.hpp
+    Tutorial4/src/GravityBehavior.cpp
     Tutorial4/src/GravityBehavior.hpp
     Tutorial4/src/WidgetManager.cpp
-    Tutorial4/src/GameObject.cpp
+    Tutorial4/src/WidgetManager.hpp
 
     )
 

@@ -29,16 +29,16 @@ source_group(
 
 	
 set ( GameBuilder_SRC
-    src/ContributorService.hpp
-    src/GameBuilderPlugin.cpp
-    src/ContributorService.cpp
-    src/ContributorServiceFactory.hpp
-    src/GameObjectTypeContributor.cpp
-    src/ContributorServiceFactory.cpp
-    src/GameObjectTypeContributor.hpp
-    src/FolderContributor.hpp
-    src/FolderContributor.cpp
     Configuration.hpp
+    src/ContributorService.cpp
+    src/ContributorService.hpp
+    src/ContributorServiceFactory.cpp
+    src/ContributorServiceFactory.hpp
+    src/FolderContributor.cpp
+    src/FolderContributor.hpp
+    src/GameBuilderPlugin.cpp
+    src/GameObjectTypeContributor.cpp
+    src/GameObjectTypeContributor.hpp
 
     )
 # TR - I removed ${wxWidgets_DEFINITIONS}  from add_definitions 
@@ -70,8 +70,8 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    plugin.xml
     Configuration.hpp
+    plugin.xml
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

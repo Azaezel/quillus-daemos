@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -31,6 +31,8 @@
 
 #include <Zen/Engine/Resource/I_ResourceManager.hpp>
 #include <Zen/Engine/Rendering/I_AnimationState.hpp>
+
+#include "Mesh.hpp"
 
 #include "Ogre.hpp"
 
@@ -162,6 +164,29 @@ ResourceEntity::getAnimationStates(I_AnimationStateVisitor& _visitor) const
     _visitor.end();
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+ResourceEntity::pMesh_type
+ResourceEntity::getMesh()
+{
+    Mesh* pRawMesh = new Mesh(getEntity()->getMesh());
+
+    pMesh_type pMesh(pRawMesh, boost::bind(&ResourceEntity::destroyMesh, this, _1));
+
+    return pMesh;
+
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceEntity::destroyMesh(pMesh_type::weak_ptr_type _pMesh)
+{
+    Mesh* pMesh = dynamic_cast<Mesh*>(_pMesh.lock().get());
+
+    if (pMesh)
+    {
+        delete pMesh;
+    }
+}
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZOgre
 }   // namespace Zen

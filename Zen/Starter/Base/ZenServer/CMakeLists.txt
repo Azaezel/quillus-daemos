@@ -18,10 +18,10 @@ Find_Package(Boost REQUIRED program_options filesystem)
 
 	
 set ( ZenServer_SRC
-    ZenServer.cpp
     ApplicationServer.hpp
-    ZenServer.hpp
     main.cpp
+    ZenServer.cpp
+    ZenServer.hpp
 
     )
 

@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2008 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C)        2008 Matthew Alan Gray
 //
 //  This software is provided 'as-is', without any express or implied
@@ -37,8 +37,8 @@ namespace Zen {
 namespace Engine {
 namespace Rendering {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
 class I_AnimationState;
+class I_Mesh;
 
 class RENDERING_DLL_LINK I_RenderableResource
 :   public Resource::I_Resource
@@ -57,6 +57,7 @@ public:
     typedef Scripting::ObjectReference<I_RenderableResource>    ScriptObjectReference_type;
     typedef Zen::Memory::managed_ptr<Zen::Engine::Rendering::I_AnimationState>      pAnimationState_type;
     typedef Zen::Memory::managed_weak_ptr<Zen::Engine::Rendering::I_AnimationState> wpAnimationState_type;
+    typedef Zen::Memory::managed_ptr<I_Mesh>                    pMesh_type;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -76,6 +77,9 @@ public:
     /// Provides access to all the animation states for this resource
     /// via a visitor.
     virtual void getAnimationStates(I_AnimationStateVisitor& _visitor) const = 0;
+
+    /// Get the mesh object.
+    virtual pMesh_type getMesh() = 0;
     /// @}
 
     /// @name Inner classes

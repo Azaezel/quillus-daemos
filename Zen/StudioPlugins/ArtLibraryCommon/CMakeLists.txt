@@ -28,25 +28,25 @@ source_group(
 
 	
 set ( ArtLibraryCommon_SRC
-    I_ProjectListener.hpp
-    I_ArtAssetExplorerNode.hpp
-    I_ArtAssetController.hpp
-    I_Project.hpp
-    I_ArtAssetView.hpp
-    src/I_ArtAssetView.cpp
-    src/I_ProjectListener.cpp
-    src/I_Folder.cpp
-    src/I_ArtLibraryService.cpp
-    src/I_ProjectService.cpp
-    src/I_Project.cpp
-    src/I_ArtAssetDocument.cpp
-    src/I_ArtAssetController.cpp
-    src/I_ArtAssetExplorerNode.cpp
-    I_ArtAssetDocument.hpp
-    I_ProjectService.hpp
-    I_ArtLibraryService.hpp
     Configuration.hpp
+    I_ArtAssetController.hpp
+    I_ArtAssetDocument.hpp
+    I_ArtAssetExplorerNode.hpp
+    I_ArtAssetView.hpp
+    I_ArtLibraryService.hpp
     I_Folder.hpp
+    I_Project.hpp
+    I_ProjectListener.hpp
+    I_ProjectService.hpp
+    src/I_ArtAssetController.cpp
+    src/I_ArtAssetDocument.cpp
+    src/I_ArtAssetExplorerNode.cpp
+    src/I_ArtAssetView.cpp
+    src/I_ArtLibraryService.cpp
+    src/I_Folder.cpp
+    src/I_Project.cpp
+    src/I_ProjectListener.cpp
+    src/I_ProjectService.cpp
 
     )
 
@@ -75,16 +75,16 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_ProjectListener.hpp
-    I_ArtAssetExplorerNode.hpp
-    I_ArtAssetController.hpp
-    I_Project.hpp
-    I_ArtAssetView.hpp
-    I_ArtAssetDocument.hpp
-    I_ProjectService.hpp
-    I_ArtLibraryService.hpp
     Configuration.hpp
+    I_ArtAssetController.hpp
+    I_ArtAssetDocument.hpp
+    I_ArtAssetExplorerNode.hpp
+    I_ArtAssetView.hpp
+    I_ArtLibraryService.hpp
     I_Folder.hpp
+    I_Project.hpp
+    I_ProjectListener.hpp
+    I_ProjectService.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

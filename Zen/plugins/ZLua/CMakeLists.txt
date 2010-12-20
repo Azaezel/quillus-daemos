@@ -33,40 +33,40 @@ source_group(
 
 	
 set ( ZLua_SRC
-    src/LuaType.hpp
-    src/LuaHeap.hpp
-    src/LuaEngineFactory.hpp
-    src/ZLuaPlugin.cpp
-    src/LuaMethod.hpp
-    src/LuaType.cpp
+    I_LuaScriptEngine.hpp
     src/Config.cpp
-    src/LuaEngine.cpp
-    src/LuaModule.cpp
-    src/functions/IntFunctionArgs.cpp
+    src/Config.hpp
+    src/functions/BoolFunctionArgs.cpp
     src/functions/BoolFunctionNoArgs.cpp
     src/functions/GenericFunction.cpp
-    src/functions/BoolFunctionArgs.cpp
-    src/functions/ObjFunctionNoArgs.cpp
-    src/functions/ObjFunctionArgs.cpp
+    src/functions/IntFunctionArgs.cpp
     src/functions/IntFunctionNoArgs.cpp
+    src/functions/ObjFunctionArgs.cpp
+    src/functions/ObjFunctionNoArgs.cpp
+    src/functions/StringFunctionArgs.cpp
     src/functions/StringFunctionNoArgs.cpp
     src/functions/VoidFunctionArgs.cpp
     src/functions/VoidFunctionNoArgs.cpp
-    src/functions/StringFunctionArgs.cpp
-    src/LuaModule.hpp
     src/I_LuaScriptEngine.cpp
+    src/LuaEngine.cpp
+    src/LuaEngine.hpp
+    src/LuaEngineFactory.cpp
+    src/LuaEngineFactory.hpp
+    src/LuaHeap.cpp
+    src/LuaHeap.hpp
+    src/LuaMethod.cpp
+    src/LuaMethod.hpp
+    src/LuaModule.cpp
+    src/LuaModule.hpp
+    src/LuaObject.cpp
+    src/LuaObject.hpp
+    src/LuaType.cpp
+    src/LuaType.hpp
     src/LuaTypeMap.cpp
     src/LuaTypeMap.hpp
     src/ZLuaModule.cpp
-    src/LuaMethod.cpp
-    src/LuaObject.cpp
-    src/Config.hpp
-    src/LuaEngineFactory.cpp
-    src/LuaObject.hpp
+    src/ZLuaPlugin.cpp
     src/ZLuaPlugin.hpp
-    src/LuaHeap.cpp
-    src/LuaEngine.hpp
-    I_LuaScriptEngine.hpp
 
     )
 
@@ -95,8 +95,8 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    plugin.xml
     I_LuaScriptEngine.hpp
+    plugin.xml
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

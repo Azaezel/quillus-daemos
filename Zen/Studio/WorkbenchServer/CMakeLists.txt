@@ -27,31 +27,31 @@ source_group(
 
 	
 set ( WorkbenchServer_SRC
-    src/WorkbenchService.hpp
-    src/ProjectExplorerNode.hpp
-    src/RowHeader.hpp
-    src/WorkbenchServiceFactory.cpp
+    src/ColumnHeader.cpp
+    src/ColumnHeader.hpp
+    src/ProjectExplorerController.cpp
+    src/ProjectExplorerController.hpp
+    src/ProjectExplorerModel.cpp
+    src/ProjectExplorerModel.hpp
     src/ProjectExplorerNode.cpp
-    src/SpreadSheetCell.cpp
+    src/ProjectExplorerNode.hpp
+    src/RowHeader.cpp
+    src/RowHeader.hpp
+    src/SceneController.cpp
     src/SceneController.hpp
+    src/SceneModel.cpp
+    src/SceneModel.hpp
+    src/SpreadSheetCell.cpp
     src/SpreadSheetCell.hpp
     src/SpreadSheetController.cpp
-    src/WorkbenchServiceFactory.hpp
-    src/WorkbenchService.cpp
-    src/ColumnHeader.cpp
-    src/ProjectExplorerModel.hpp
-    src/SpreadSheetDocument.hpp
-    src/ProjectExplorerModel.cpp
-    src/ProjectExplorerController.hpp
-    src/SpreadSheetDocument.cpp
-    src/RowHeader.cpp
-    src/SceneController.cpp
-    src/WorkbenchServerPlugin.cpp
-    src/ColumnHeader.hpp
-    src/SceneModel.hpp
-    src/ProjectExplorerController.cpp
-    src/SceneModel.cpp
     src/SpreadSheetController.hpp
+    src/SpreadSheetDocument.cpp
+    src/SpreadSheetDocument.hpp
+    src/WorkbenchServerPlugin.cpp
+    src/WorkbenchService.cpp
+    src/WorkbenchService.hpp
+    src/WorkbenchServiceFactory.cpp
+    src/WorkbenchServiceFactory.hpp
 
     )
 

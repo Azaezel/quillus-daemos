@@ -27,19 +27,19 @@ source_group(
 
 	
 set ( ZMicroPather_SRC
-    src/Graph.hpp
-    src/ZMicroPatherPlugin.cpp
     src/Graph.cpp
-    src/NavigationService.hpp
-    src/NavigationService.cpp
-    src/Path.hpp
+    src/Graph.hpp
     src/micropather.cpp
-    src/Path.cpp
+    src/micropather.hpp
+    src/NavigationService.cpp
+    src/NavigationService.hpp
     src/NavigationServiceFactory.cpp
     src/NavigationServiceFactory.hpp
     src/NodeIterator.cpp
     src/NodeIterator.hpp
-    src/micropather.hpp
+    src/Path.cpp
+    src/Path.hpp
+    src/ZMicroPatherPlugin.cpp
 
     )
 

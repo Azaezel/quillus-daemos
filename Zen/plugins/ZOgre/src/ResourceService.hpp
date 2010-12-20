@@ -51,10 +51,15 @@ public:
 public:
     virtual void addResourceLocation(const std::string& _path, const std::string& _type,
         const std::string& _group, bool _recursive = false);
+    virtual void removeResourceLocation(const std::string& _path, const std::string& _group);
 
     virtual void initialiseAllResourceGroups();
+    virtual void loadResourceGroup(const std::string& _group);
+    virtual void unloadResourceGroup(const std::string& _group);
 
     virtual pResource_type loadResource(config_type& _config);
+
+    virtual void getResourceNames(I_ResourceNameVisitor& _visitor, const std::string& _group, const std::string& _pattern) const;
 
     virtual const std::string& getScriptSingletonName() const;
     virtual void registerScriptModule(Zen::Scripting::script_module& _module);

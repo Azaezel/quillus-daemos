@@ -27,19 +27,19 @@ source_group(
 
 	
 set ( SessionModel_SRC
-    I_AccountDomainObject.hpp
-    src/AccountDomainObject.cpp
-    src/AccountDataMap.hpp
-    src/AccountDataCollection.hpp
-    src/I_AccountDomainObject.cpp
-    src/AccountDomainObject.hpp
-    src/I_AccountDataCollection.cpp
-    src/AccountDataMap.cpp
-    src/I_AccountDataMap.cpp
-    src/AccountDataCollection.cpp
+    Configuration.hpp
     I_AccountDataCollection.hpp
     I_AccountDataMap.hpp
-    Configuration.hpp
+    I_AccountDomainObject.hpp
+    src/AccountDataCollection.cpp
+    src/AccountDataCollection.hpp
+    src/AccountDataMap.cpp
+    src/AccountDataMap.hpp
+    src/AccountDomainObject.cpp
+    src/AccountDomainObject.hpp
+    src/I_AccountDataCollection.cpp
+    src/I_AccountDataMap.cpp
+    src/I_AccountDomainObject.cpp
 
     )
 
@@ -68,10 +68,10 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_AccountDomainObject.hpp
+    Configuration.hpp
     I_AccountDataCollection.hpp
     I_AccountDataMap.hpp
-    Configuration.hpp
+    I_AccountDomainObject.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

@@ -27,29 +27,29 @@ source_group(
 
 	
 set ( BaseCommon_SRC
+    Configuration.hpp
+    I_BaseAction.hpp
     I_BaseGame.hpp
+    I_BaseGameObject.hpp
+    src/Action.cpp
     src/Action.hpp
-    src/I_BaseGame.cpp
+    src/ActionMap.cpp
+    src/ActionMap.hpp
     src/BaseGame.cpp
+    src/BaseGame.hpp
     src/BehavioredGameObject.cpp
     src/BehavioredGameObject.hpp
+    src/BehaviorService.cpp
     src/BehaviorService.hpp
-    src/BaseGame.hpp
-    src/ActionMap.cpp
-    src/Action.cpp
-    src/GameGroup.hpp
-    src/I_BaseAction.cpp
     src/GameGroup.cpp
+    src/GameGroup.hpp
+    src/GameObject.cpp
     src/GameObject.hpp
     src/GameObjectBehaviors.cpp
-    src/BehaviorService.cpp
-    src/ActionMap.hpp
-    src/I_BaseGameObject.cpp
     src/GameObjectBehaviors.hpp
-    src/GameObject.cpp
-    I_BaseGameObject.hpp
-    I_BaseAction.hpp
-    Configuration.hpp
+    src/I_BaseAction.cpp
+    src/I_BaseGame.cpp
+    src/I_BaseGameObject.cpp
 
     )
 
@@ -78,10 +78,10 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
+    Configuration.hpp
+    I_BaseAction.hpp
     I_BaseGame.hpp
     I_BaseGameObject.hpp
-    I_BaseAction.hpp
-    Configuration.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

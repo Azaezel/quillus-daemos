@@ -65,7 +65,28 @@ PhysicsResourceService::addResourceLocation(const std::string& _path, const std:
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+PhysicsResourceService::removeResourceLocation(const std::string& _path, const std::string& _group)
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 PhysicsResourceService::initialiseAllResourceGroups()
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsResourceService::loadResourceGroup(const std::string& _group)
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsResourceService::unloadResourceGroup(const std::string& _group)
 {
     // TODO Implement?
 }
@@ -124,6 +145,15 @@ PhysicsResourceService::loadResource(config_type& _config)
         return emptyResource;
     }
 
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsResourceService::getResourceNames(I_ResourceNameVisitor& _visitor,
+                                         const std::string& _group,
+                                         const std::string& _pattern) const
+{
+    // TODO Implement?
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

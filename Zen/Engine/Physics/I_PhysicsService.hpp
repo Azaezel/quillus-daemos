@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 // Copyright (C) 2008 - 2009 Matthew Alan Gray
 // Copyright (C) 2008 - 2009 Walt Collins
 //
@@ -30,6 +30,8 @@
 
 #include "Configuration.hpp"
 
+#include <Zen/Engine/Physics/I_PhysicsFrameListener.hpp>
+
 #include <Zen/Core/Memory/managed_ptr.hpp>
 #include <Zen/Core/Memory/managed_weak_ptr.hpp>
 #include <Zen/Core/Memory/managed_self_ref.hpp>
@@ -55,24 +57,25 @@ class I_PhysicsZone;
 class PHYSICS_DLL_LINK I_PhysicsService
 :   public virtual Zen::Scripting::I_ScriptableType
 ,   public Zen::Memory::managed_self_ref<I_PhysicsService>
+,   public I_PhysicsFrameListener
 ,   boost::noncopyable
 {
     /// @name Types
     /// @{
 public:
-    typedef std::string                                    index_type;
+typedef std::string                                             index_type;
 
     typedef Zen::Memory::managed_ptr<I_PhysicsService>          pScriptObject_type;
     typedef Zen::Scripting::ObjectReference<I_PhysicsService>   ScriptObjectReference_type;
 
-    typedef Memory::managed_ptr<I_PhysicsService>          pPhysicsService_type;
-    typedef Memory::managed_weak_ptr<I_PhysicsService>     wpPhysicsService_type;
+    typedef Memory::managed_ptr<I_PhysicsService>               pPhysicsService_type;
+    typedef Memory::managed_weak_ptr<I_PhysicsService>          wpPhysicsService_type;
 
-    typedef Event::Event<wpPhysicsService_type>            serviceEvent_type;
-    typedef Zen::Math::Real                                frameDelta_type;
-    typedef Event::Event<frameDelta_type>                  frameEvent_type;
-    typedef Memory::managed_ptr<I_PhysicsZone>            pPhysicsZone_type;
-    typedef Memory::managed_weak_ptr<I_PhysicsZone>       wpPhysicsZone_type;
+    typedef Event::Event<wpPhysicsService_type>                 serviceEvent_type;
+    typedef Zen::Math::Real                                     frameDelta_type;
+    typedef Event::Event<frameDelta_type>                       frameEvent_type;
+    typedef Memory::managed_ptr<I_PhysicsZone>                  pPhysicsZone_type;
+    typedef Memory::managed_weak_ptr<I_PhysicsZone>             wpPhysicsZone_type;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -92,13 +95,6 @@ public:
     ///     this is the case, the plugin should throw an exception
     ///     if an application attempts to create more than one zone.
     virtual pPhysicsZone_type createZone() = 0;
-
-    /// Step the physics simulations by the specified amount of time.
-    /// This will step the physics simulations for all zones and will
-    /// not return until the simulation has completed.
-    /// You might consider running I_PhysicsZone::stepSimulation() instead.
-    /// @param _elapsedTime is in seconds where 1.0 is one second.
-	virtual void stepSimulation(double _elapsedTime) = 0;
 
     /// @todo Should this be moved to I_ScriptableType?
     virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;

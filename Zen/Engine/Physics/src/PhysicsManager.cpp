@@ -153,8 +153,6 @@ PhysicsManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
     m_pPhysicsModule->addType<I_PhysicsZone>("PhysicsZone", "Physics Zone")
         .addMethod("setBoundary", &I_PhysicsZone::setBoundary)
         .addMethod("createHeightFieldShape", &I_PhysicsZone::createHeightFieldShape)
-    		// TODO add the methods needed by tutorial 4
-    		//.addMethod()
 	;
 
     m_pPhysicsModule->addType<I_CollisionShape>("CollisionShape", "Collision Shape")

@@ -27,6 +27,7 @@
 #include "PhysicsZone.hpp"
 #include "HeightfieldResource.hpp"
 #include "CollisionShape.hpp"
+#include "MeshCollisionShape.hpp"
 
 #include <Zen/Engine/Resource/I_CollisionResource.hpp>
 
@@ -72,7 +73,7 @@ PhysicsActor::getScriptObject()
         m_pScriptObject = new ScriptObjectReference_type(
             m_pModule,
             m_pModule->getScriptType(getScriptTypeName()),
-            this
+            this->getSelfReference().lock()
         );
     }
 
@@ -118,6 +119,14 @@ PhysicsActor::setCollisionShape(pCollisionShape_type _pCollisionShape)
     case Zen::Engine::Physics::I_CollisionShape::CAPSULE_SHAPE:
         {
             CollisionShape* pShape = dynamic_cast<CollisionShape*>(_pCollisionShape.get());
+
+            dGeomSetBody(pShape->getGeomId(), m_bodyId);
+
+            return;
+        }
+    case Zen::Engine::Physics::I_CollisionShape::MESH_SHAPE:
+        {
+            MeshCollisionShape* pShape = dynamic_cast<MeshCollisionShape*>(_pCollisionShape.get());
 
             dGeomSetBody(pShape->getGeomId(), m_bodyId);
 

@@ -230,13 +230,16 @@ WorldManager::registerDefaultScriptEngine(pScriptEngine_type _pEngine)
     m_pWorldModule->addType<I_Terrain>("Terrain", "Terrain")
     ;
 
+    m_pWorldModule->addType<I_Terrain>("TerrainHeightfield", "TerrainHeightfield")
+    ;
+
     m_pWorldModule->addType<I_TerrainGroup>("TerrainGroup", "TerrainGroup")
         .addMethod("setName", &I_TerrainGroup::setName)
         .addMethod("getName", &I_TerrainGroup::getName)
         .addMethod("setOrigin", &I_TerrainGroup::setOrigin)
         .addMethod("getOrigin", &I_TerrainGroup::getOrigin)
-        .addMethod("setTerrainSize", &I_TerrainGroup::setTerrainSize)
-        .addMethod("getTerrainSize", &I_TerrainGroup::getTerrainSize)
+        //.addMethod("setTerrainSize", &I_TerrainGroup::setTerrainSize)
+        //.addMethod("getTerrainSize", &I_TerrainGroup::getTerrainSize)
         .addMethod("setWorldSize", &I_TerrainGroup::setWorldSize)
         .addMethod("getWorldSize", &I_TerrainGroup::getWorldSize)
         .addMethod("load", &I_TerrainGroup::load)

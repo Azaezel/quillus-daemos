@@ -27,31 +27,31 @@ source_group(
 
 	
 set ( WorldBuilderModel_SRC
-    I_ZoneFolderDomainObject.hpp
-    I_ZoneDataCollection.hpp
-    I_ZoneDomainObject.hpp
-    src/ZoneFolderDataMap.cpp
-    src/ZoneDataMap.hpp
-    src/I_ZoneDataMap.cpp
-    src/ZoneDomainObject.hpp
-    src/ZoneFolderDataMap.hpp
-    src/I_ZoneFolderDataCollection.cpp
-    src/ZoneFolderDomainObject.hpp
-    src/ZoneDomainObject.cpp
-    src/ZoneFolderDataCollection.hpp
-    src/ZoneDataCollection.hpp
-    src/ZoneFolderDomainObject.cpp
-    src/I_ZoneDomainObject.cpp
-    src/I_ZoneFolderDomainObject.cpp
-    src/I_ZoneFolderDataMap.cpp
-    src/ZoneDataMap.cpp
-    src/ZoneFolderDataCollection.cpp
-    src/ZoneDataCollection.cpp
-    src/I_ZoneDataCollection.cpp
-    I_ZoneDataMap.hpp
     Configuration.hpp
-    I_ZoneFolderDataMap.hpp
+    I_ZoneDataCollection.hpp
+    I_ZoneDataMap.hpp
+    I_ZoneDomainObject.hpp
     I_ZoneFolderDataCollection.hpp
+    I_ZoneFolderDataMap.hpp
+    I_ZoneFolderDomainObject.hpp
+    src/I_ZoneDataCollection.cpp
+    src/I_ZoneDataMap.cpp
+    src/I_ZoneDomainObject.cpp
+    src/I_ZoneFolderDataCollection.cpp
+    src/I_ZoneFolderDataMap.cpp
+    src/I_ZoneFolderDomainObject.cpp
+    src/ZoneDataCollection.cpp
+    src/ZoneDataCollection.hpp
+    src/ZoneDataMap.cpp
+    src/ZoneDataMap.hpp
+    src/ZoneDomainObject.cpp
+    src/ZoneDomainObject.hpp
+    src/ZoneFolderDataCollection.cpp
+    src/ZoneFolderDataCollection.hpp
+    src/ZoneFolderDataMap.cpp
+    src/ZoneFolderDataMap.hpp
+    src/ZoneFolderDomainObject.cpp
+    src/ZoneFolderDomainObject.hpp
 
     )
 
@@ -80,13 +80,13 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_ZoneFolderDomainObject.hpp
-    I_ZoneDataCollection.hpp
-    I_ZoneDomainObject.hpp
-    I_ZoneDataMap.hpp
     Configuration.hpp
-    I_ZoneFolderDataMap.hpp
+    I_ZoneDataCollection.hpp
+    I_ZoneDataMap.hpp
+    I_ZoneDomainObject.hpp
     I_ZoneFolderDataCollection.hpp
+    I_ZoneFolderDataMap.hpp
+    I_ZoneFolderDomainObject.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

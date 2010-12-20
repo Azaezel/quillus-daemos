@@ -234,7 +234,6 @@ TerrainService::registerScriptModule(Zen::Scripting::script_module& _module)
     Terrain::registerScriptModule(*sm_pModule, _module);
     TerrainGroup::registerScriptModule(*sm_pModule, _module);
     TerrainChunk::registerScriptModule(*sm_pModule, _module);
-    TerrainHeightfield::registerScriptModule(*sm_pModule, _module);
 
     sm_pModule->activate();
 }
