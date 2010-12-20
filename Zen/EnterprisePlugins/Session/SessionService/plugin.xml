@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="SessionService"
+   name="Zen Enterprise Session Service"
+   version="0.6.2"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="SessionService">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+        point="Zen::Enterprise::AppServer::ApplicationService"
+        id="SessionService"
+        name="Zen Enterprise Session Service"
+        type="SessionService">
+    <application-service
+          class="Zen::Enterprise::Session::Service::SessionService">
+    </application-service>
+  </extension>
+
+</plugin>

@@ -27,31 +27,31 @@ source_group(
 
 	
 set ( ZNewton_SRC
-    ZNewtonModule.hpp
-    src/PhysicsServiceFactory.hpp
-    src/PhysicsResourceService.cpp
-    src/PhysicsServiceFactory.cpp
-    src/PhysicsService.cpp
-    src/CollisionShape.hpp
-    src/ZNewtonModule.cpp
-    src/PhysicsZone.hpp
-    src/PhysicsActor.hpp
-    src/PhysicsActor.cpp
-    src/ZNewtonPlugin.cpp
-    src/PhysicsMaterial.hpp
-    src/PhysicsJoint.hpp
-    src/ResourceServiceFactory.cpp
-    src/PhysicsJoint.cpp
-    src/CollisionShape.cpp
-    src/ZNewtonPlugin.hpp
-    src/ResourceServiceFactory.hpp
-    src/PhysicsResourceService.hpp
-    src/PhysicsResource.hpp
-    src/PhysicsMaterial.cpp
-    src/PhysicsService.hpp
-    src/PhysicsResource.cpp
-    src/PhysicsZone.cpp
     Configuration.hpp
+    src/CollisionShape.cpp
+    src/CollisionShape.hpp
+    src/PhysicsActor.cpp
+    src/PhysicsActor.hpp
+    src/PhysicsJoint.cpp
+    src/PhysicsJoint.hpp
+    src/PhysicsMaterial.cpp
+    src/PhysicsMaterial.hpp
+    src/PhysicsResource.cpp
+    src/PhysicsResource.hpp
+    src/PhysicsResourceService.cpp
+    src/PhysicsResourceService.hpp
+    src/PhysicsService.cpp
+    src/PhysicsService.hpp
+    src/PhysicsServiceFactory.cpp
+    src/PhysicsServiceFactory.hpp
+    src/PhysicsZone.cpp
+    src/PhysicsZone.hpp
+    src/ResourceServiceFactory.cpp
+    src/ResourceServiceFactory.hpp
+    src/ZNewtonModule.cpp
+    src/ZNewtonPlugin.cpp
+    src/ZNewtonPlugin.hpp
+    ZNewtonModule.hpp
 
     )
 
@@ -80,9 +80,9 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    ZNewtonModule.hpp
-    plugin.xml
     Configuration.hpp
+    plugin.xml
+    ZNewtonModule.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

@@ -27,37 +27,37 @@ source_group(
 
 	
 set ( Workbench_SRC
-    I_Message.hpp
-    I_DeleteChildNodeResponse.hpp
+    Configuration.hpp
+    I_CreateChildNodeRequest.hpp
+    I_CreateChildNodeResponse.hpp
     I_DeleteChildNodeRequest.hpp
-    src/GameBuilderProtocolManager.hpp
+    I_DeleteChildNodeResponse.hpp
+    I_GameBuilderProtocolManager.hpp
+    I_Message.hpp
+    src/CreateChildNodeRequest.cpp
     src/CreateChildNodeRequest.hpp
     src/CreateChildNodeResponse.cpp
+    src/CreateChildNodeResponse.hpp
+    src/DeleteChildNodeRequest.cpp
     src/DeleteChildNodeRequest.hpp
     src/DeleteChildNodeResponse.cpp
-    src/Request.hpp
-    src/I_CreateChildNodeResponse.cpp
     src/DeleteChildNodeResponse.hpp
-    src/I_DeleteChildNodeResponse.cpp
-    src/Request.cpp
+    src/GameBuilderProtocolManager.cpp
+    src/GameBuilderProtocolManager.hpp
     src/I_CreateChildNodeRequest.cpp
+    src/I_CreateChildNodeResponse.cpp
+    src/I_DeleteChildNodeRequest.cpp
+    src/I_DeleteChildNodeResponse.cpp
+    src/I_GameBuilderProtocolManager.cpp
+    src/I_Message.cpp
+    src/Message.cpp
     src/Message.hpp
     src/MessageFactory.cpp
-    src/I_Message.cpp
-    src/I_GameBuilderProtocolManager.cpp
-    src/Message.cpp
-    src/I_DeleteChildNodeRequest.cpp
-    src/GameBuilderProtocolManager.cpp
+    src/MessageFactory.hpp
+    src/Request.cpp
+    src/Request.hpp
     src/Response.cpp
     src/Response.hpp
-    src/DeleteChildNodeRequest.cpp
-    src/CreateChildNodeRequest.cpp
-    src/MessageFactory.hpp
-    src/CreateChildNodeResponse.hpp
-    I_CreateChildNodeResponse.hpp
-    I_GameBuilderProtocolManager.hpp
-    I_CreateChildNodeRequest.hpp
-    Configuration.hpp
 
     )
 
@@ -86,13 +86,13 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_Message.hpp
-    I_DeleteChildNodeResponse.hpp
-    I_DeleteChildNodeRequest.hpp
-    I_CreateChildNodeResponse.hpp
-    I_GameBuilderProtocolManager.hpp
-    I_CreateChildNodeRequest.hpp
     Configuration.hpp
+    I_CreateChildNodeRequest.hpp
+    I_CreateChildNodeResponse.hpp
+    I_DeleteChildNodeRequest.hpp
+    I_DeleteChildNodeResponse.hpp
+    I_GameBuilderProtocolManager.hpp
+    I_Message.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

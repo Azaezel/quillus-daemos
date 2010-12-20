@@ -27,30 +27,30 @@ source_group(
 
 	
 set ( SessionProtocol_SRC
+    Configuration.hpp
+    I_LoginRequest.hpp
+    I_LoginResponse.hpp
     I_Message.hpp
-    src/LoginRequest.hpp
+    I_SessionProtocolManager.hpp
+    src/I_LoginRequest.cpp
+    src/I_LoginResponse.cpp
+    src/I_Message.cpp
+    src/I_SessionProtocolManager.cpp
     src/LoginRequest.cpp
-    src/Request.hpp
-    src/Request.cpp
+    src/LoginRequest.hpp
+    src/LoginResponse.cpp
+    src/LoginResponse.hpp
+    src/Message.cpp
     src/Message.hpp
     src/MessageFactory.cpp
-    src/I_Message.cpp
-    src/LoginResponse.hpp
-    src/SessionProtocolManager.hpp
-    src/Message.cpp
+    src/MessageFactory.hpp
+    src/Request.cpp
+    src/Request.hpp
     src/Response.cpp
     src/Response.hpp
     src/SessionProtocolManager.cpp
-    src/I_LoginResponse.cpp
-    src/MessageFactory.hpp
+    src/SessionProtocolManager.hpp
     src/SessionProtocolPlugin.cpp
-    src/LoginResponse.cpp
-    src/I_LoginRequest.cpp
-    src/I_SessionProtocolManager.cpp
-    I_LoginRequest.hpp
-    I_SessionProtocolManager.hpp
-    I_LoginResponse.hpp
-    Configuration.hpp
 
     )
 
@@ -79,11 +79,11 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_Message.hpp
-    I_LoginRequest.hpp
-    I_SessionProtocolManager.hpp
-    I_LoginResponse.hpp
     Configuration.hpp
+    I_LoginRequest.hpp
+    I_LoginResponse.hpp
+    I_Message.hpp
+    I_SessionProtocolManager.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

@@ -30,8 +30,6 @@
 
 #include <Zen/Core/Memory/managed_ptr.hpp>
 
-#include <Zen/Core/Scripting.hpp>
-
 #include <boost/noncopyable.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

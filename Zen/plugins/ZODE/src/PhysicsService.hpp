@@ -54,8 +54,15 @@ public:
     /// @{
 public:
    	virtual pPhysicsZone_type createZone();
-	virtual void stepSimulation(double _elapsedTime);
     virtual void registerScriptModule(Zen::Scripting::script_module& _module);
+    /// @}
+
+    /// @name I_PhysicsFrameListener implementation
+    /// @{
+public:
+    virtual void beginFrame();
+    virtual void stepSimulation(double _elapsedTime);
+    virtual void endFrame();
     /// @}
 
     /// @name PhysicsService implementation

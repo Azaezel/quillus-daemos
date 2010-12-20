@@ -28,16 +28,16 @@ source_group(
 
 	
 set ( ZWGameClient_SRC
-    src/ZWGameClientPlugin.cpp
-    src/GameClient.hpp
-    src/GameClientFactory.hpp
-    src/GUIManager.cpp
-    src/GameClient_script.cpp
-    src/GameClientFactory.cpp
-    src/GameObject.hpp
     src/GameClient.cpp
-    src/GUIManager.hpp
+    src/GameClient.hpp
+    src/GameClientFactory.cpp
+    src/GameClientFactory.hpp
+    src/GameClient_script.cpp
     src/GameObject.cpp
+    src/GameObject.hpp
+    src/GUIManager.cpp
+    src/GUIManager.hpp
+    src/ZWGameClientPlugin.cpp
 
     )
 

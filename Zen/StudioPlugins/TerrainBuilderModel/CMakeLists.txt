@@ -27,43 +27,43 @@ source_group(
 
 	
 set ( TerrainBuilderModel_SRC
+    Configuration.hpp
     I_TerrainChunkDataCollection.hpp
     I_TerrainChunkDataMap.hpp
-    I_TerrainFolderDomainObject.hpp
-    I_TerrainGroupDataMap.hpp
     I_TerrainChunkDomainObject.hpp
+    I_TerrainFolderDataCollection.hpp
+    I_TerrainFolderDataMap.hpp
+    I_TerrainFolderDomainObject.hpp
     I_TerrainGroupDataCollection.hpp
+    I_TerrainGroupDataMap.hpp
     I_TerrainGroupDomainObject.hpp
-    src/TerrainFolderDomainObject.hpp
-    src/TerrainGroupDomainObject.cpp
-    src/I_TerrainFolderDataCollection.cpp
-    src/TerrainGroupDomainObject.hpp
-    src/TerrainFolderDataMap.cpp
-    src/TerrainFolderDataMap.hpp
-    src/TerrainChunkDomainObject.cpp
-    src/I_TerrainChunkDomainObject.cpp
-    src/TerrainGroupDataMap.hpp
-    src/I_TerrainGroupDomainObject.cpp
-    src/TerrainChunkDataMap.hpp
-    src/TerrainChunkDataCollection.hpp
-    src/TerrainChunkDomainObject.hpp
-    src/TerrainChunkDataCollection.cpp
-    src/TerrainFolderDataCollection.hpp
     src/I_TerrainChunkDataCollection.cpp
-    src/TerrainFolderDataCollection.cpp
-    src/I_TerrainGroupDataMap.cpp
+    src/I_TerrainChunkDataMap.cpp
+    src/I_TerrainChunkDomainObject.cpp
+    src/I_TerrainFolderDataCollection.cpp
     src/I_TerrainFolderDataMap.cpp
     src/I_TerrainFolderDomainObject.cpp
-    src/TerrainChunkDataMap.cpp
-    src/TerrainGroupDataCollection.cpp
-    src/TerrainFolderDomainObject.cpp
-    src/TerrainGroupDataMap.cpp
     src/I_TerrainGroupDataCollection.cpp
-    src/I_TerrainChunkDataMap.cpp
+    src/I_TerrainGroupDataMap.cpp
+    src/I_TerrainGroupDomainObject.cpp
+    src/TerrainChunkDataCollection.cpp
+    src/TerrainChunkDataCollection.hpp
+    src/TerrainChunkDataMap.cpp
+    src/TerrainChunkDataMap.hpp
+    src/TerrainChunkDomainObject.cpp
+    src/TerrainChunkDomainObject.hpp
+    src/TerrainFolderDataCollection.cpp
+    src/TerrainFolderDataCollection.hpp
+    src/TerrainFolderDataMap.cpp
+    src/TerrainFolderDataMap.hpp
+    src/TerrainFolderDomainObject.cpp
+    src/TerrainFolderDomainObject.hpp
+    src/TerrainGroupDataCollection.cpp
     src/TerrainGroupDataCollection.hpp
-    I_TerrainFolderDataCollection.hpp
-    Configuration.hpp
-    I_TerrainFolderDataMap.hpp
+    src/TerrainGroupDataMap.cpp
+    src/TerrainGroupDataMap.hpp
+    src/TerrainGroupDomainObject.cpp
+    src/TerrainGroupDomainObject.hpp
 
     )
 
@@ -92,16 +92,16 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
+    Configuration.hpp
     I_TerrainChunkDataCollection.hpp
     I_TerrainChunkDataMap.hpp
-    I_TerrainFolderDomainObject.hpp
-    I_TerrainGroupDataMap.hpp
     I_TerrainChunkDomainObject.hpp
-    I_TerrainGroupDataCollection.hpp
-    I_TerrainGroupDomainObject.hpp
     I_TerrainFolderDataCollection.hpp
-    Configuration.hpp
     I_TerrainFolderDataMap.hpp
+    I_TerrainFolderDomainObject.hpp
+    I_TerrainGroupDataCollection.hpp
+    I_TerrainGroupDataMap.hpp
+    I_TerrainGroupDomainObject.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

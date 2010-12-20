@@ -28,33 +28,33 @@ source_group(
 
 	
 set ( TerrainBuilderServer_SRC
-    src/TerrainChunkController.hpp
-    src/TerrainGroupNode.hpp
     src/ExplorerNodeFactory.cpp
-    src/TerrainChunkNode.cpp
-    src/Properties.hpp
-    src/Project.hpp
-    src/TerrainChunkController.cpp
-    src/Folder.hpp
-    src/ProjectServiceFactory.hpp
-    src/TerrainChunkNode.hpp
-    src/TerrainBuilderPlugin.cpp
-    src/TerrainGroupNode.cpp
-    src/Project.cpp
-    src/Property.hpp
-    src/ProjectService.cpp
-    src/TerrainChunkDocument.cpp
-    src/TerrainGroupController.cpp
+    src/ExplorerNodeFactory.hpp
     src/Folder.cpp
+    src/Folder.hpp
+    src/Project.cpp
+    src/Project.hpp
+    src/ProjectService.cpp
+    src/ProjectService.hpp
+    src/ProjectServiceFactory.cpp
+    src/ProjectServiceFactory.hpp
+    src/Properties.cpp
+    src/Properties.hpp
+    src/Property.cpp
+    src/Property.hpp
+    src/TerrainBuilderPlugin.cpp
+    src/TerrainChunkController.cpp
+    src/TerrainChunkController.hpp
+    src/TerrainChunkDocument.cpp
+    src/TerrainChunkDocument.hpp
+    src/TerrainChunkNode.cpp
+    src/TerrainChunkNode.hpp
+    src/TerrainGroupController.cpp
     src/TerrainGroupController.hpp
     src/TerrainGroupDocument.cpp
-    src/ProjectServiceFactory.cpp
-    src/Property.cpp
-    src/Properties.cpp
-    src/ProjectService.hpp
     src/TerrainGroupDocument.hpp
-    src/ExplorerNodeFactory.hpp
-    src/TerrainChunkDocument.hpp
+    src/TerrainGroupNode.cpp
+    src/TerrainGroupNode.hpp
 
     )
 

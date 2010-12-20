@@ -83,6 +83,7 @@ public:
     Ogre::TerrainGroup& getOgreTerrainGroup();
     void scriptSetOrientation(int _orientation);
     int scriptGetOrientation();
+    void scriptSetTerrainSize(int _size);
     pTerrainChunk_type scriptGetTerrainChunk(int _x, int _y);
     pTerrainChunk_type scriptCreateTerrainChunk(int _x, int _y);
     void scriptRemoveTerrainChunk(int _x, int _y);

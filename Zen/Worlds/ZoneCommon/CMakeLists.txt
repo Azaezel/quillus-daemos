@@ -27,19 +27,19 @@ source_group(
 
 	
 set ( ZoneCommon_SRC
-    I_ZonePortal.hpp
+    Configuration.hpp
+    I_ZoneControllable.hpp
+    I_ZoneGroup.hpp
     I_ZoneObject.hpp
-    I_ZoneService.hpp
+    I_ZoneObjectListener.hpp
+    I_ZonePortal.hpp
     I_ZonePortalListener.hpp
+    I_ZoneService.hpp
+    I_ZoneSession.hpp
     src/I_ZoneControllable.cpp
     src/I_ZoneObject.cpp
-    src/I_ZoneSession.cpp
     src/I_ZoneService.cpp
-    I_ZoneControllable.hpp
-    I_ZoneObjectListener.hpp
-    I_ZoneSession.hpp
-    Configuration.hpp
-    I_ZoneGroup.hpp
+    src/I_ZoneSession.cpp
 
     )
 
@@ -68,15 +68,15 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_ZonePortal.hpp
-    I_ZoneObject.hpp
-    I_ZoneService.hpp
-    I_ZonePortalListener.hpp
-    I_ZoneControllable.hpp
-    I_ZoneObjectListener.hpp
-    I_ZoneSession.hpp
     Configuration.hpp
+    I_ZoneControllable.hpp
     I_ZoneGroup.hpp
+    I_ZoneObject.hpp
+    I_ZoneObjectListener.hpp
+    I_ZonePortal.hpp
+    I_ZonePortalListener.hpp
+    I_ZoneService.hpp
+    I_ZoneSession.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

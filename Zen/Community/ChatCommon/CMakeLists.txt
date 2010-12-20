@@ -27,40 +27,40 @@ source_group(
 
 	
 set ( ChatCommon_SRC
-    I_ChannelMemberController.hpp
-    I_ChatEvent.hpp
-    I_ChatCommandModel.hpp
-    I_ChatService.hpp
-    I_ChatEventController.hpp
-    I_ChannelMemberModel.hpp
-    I_ChatCommand.hpp
-    I_ChannelView.hpp
-    I_ChatEventView.hpp
-    I_ChannelMemberView.hpp
-    I_ChannelController.hpp
-    I_ChatCommandView.hpp
-    subscription.hpp
-    src/I_Channel.cpp
-    src/I_ChatCommand.cpp
-    src/I_ChannelController.cpp
-    src/I_ChannelModel.cpp
-    src/I_ChannelMemberModel.cpp
-    src/I_ChatCommandView.cpp
-    src/I_ChatService.cpp
-    src/I_ChatCommandController.cpp
-    src/I_ChannelView.cpp
-    src/I_ChatEventView.cpp
-    src/I_ChatEventController.cpp
-    src/I_ChannelMemberController.cpp
-    src/I_ChatEvent.cpp
-    src/I_ChannelMemberView.cpp
-    src/I_ChatEventModel.cpp
-    src/I_ChatCommandModel.cpp
-    I_ChatCommandController.hpp
-    I_ChannelModel.hpp
-    I_ChatEventModel.hpp
     Configuration.hpp
     I_Channel.hpp
+    I_ChannelController.hpp
+    I_ChannelMemberController.hpp
+    I_ChannelMemberModel.hpp
+    I_ChannelMemberView.hpp
+    I_ChannelModel.hpp
+    I_ChannelView.hpp
+    I_ChatCommand.hpp
+    I_ChatCommandController.hpp
+    I_ChatCommandModel.hpp
+    I_ChatCommandView.hpp
+    I_ChatEvent.hpp
+    I_ChatEventController.hpp
+    I_ChatEventModel.hpp
+    I_ChatEventView.hpp
+    I_ChatService.hpp
+    src/I_Channel.cpp
+    src/I_ChannelController.cpp
+    src/I_ChannelMemberController.cpp
+    src/I_ChannelMemberModel.cpp
+    src/I_ChannelMemberView.cpp
+    src/I_ChannelModel.cpp
+    src/I_ChannelView.cpp
+    src/I_ChatCommand.cpp
+    src/I_ChatCommandController.cpp
+    src/I_ChatCommandModel.cpp
+    src/I_ChatCommandView.cpp
+    src/I_ChatEvent.cpp
+    src/I_ChatEventController.cpp
+    src/I_ChatEventModel.cpp
+    src/I_ChatEventView.cpp
+    src/I_ChatService.cpp
+    subscription.hpp
 
     )
 
@@ -89,24 +89,24 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_ChannelMemberController.hpp
-    I_ChatEvent.hpp
-    I_ChatCommandModel.hpp
-    I_ChatService.hpp
-    I_ChatEventController.hpp
-    I_ChannelMemberModel.hpp
-    I_ChatCommand.hpp
-    I_ChannelView.hpp
-    I_ChatEventView.hpp
-    I_ChannelMemberView.hpp
-    I_ChannelController.hpp
-    I_ChatCommandView.hpp
-    subscription.hpp
-    I_ChatCommandController.hpp
-    I_ChannelModel.hpp
-    I_ChatEventModel.hpp
     Configuration.hpp
     I_Channel.hpp
+    I_ChannelController.hpp
+    I_ChannelMemberController.hpp
+    I_ChannelMemberModel.hpp
+    I_ChannelMemberView.hpp
+    I_ChannelModel.hpp
+    I_ChannelView.hpp
+    I_ChatCommand.hpp
+    I_ChatCommandController.hpp
+    I_ChatCommandModel.hpp
+    I_ChatCommandView.hpp
+    I_ChatEvent.hpp
+    I_ChatEventController.hpp
+    I_ChatEventModel.hpp
+    I_ChatEventView.hpp
+    I_ChatService.hpp
+    subscription.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

@@ -27,27 +27,27 @@ source_group(
 
 	
 set ( ZInput_SRC
-    ZInputModule.hpp
-    src/InputServiceFactory.cpp
-    src/KeyState.hpp
-    src/ZInputPlugin.cpp
-    src/InputService.hpp
-    src/KeyEvent.hpp
-    src/InputServiceFactory.hpp
-    src/KeyState.cpp
-    src/InputService.cpp
-    src/VectorEvent.hpp
-    src/ZInputPlugin.hpp
-    src/MouseClickEvent.cpp
-    src/MouseMoveEvent.hpp
-    src/MouseMoveEvent.cpp
-    src/KeyEvent.cpp
-    src/MouseClickEvent.hpp
-    src/KeyModifierState.hpp
-    src/ZInputModule.cpp
-    src/KeyModifierState.cpp
-    src/VectorEvent.cpp
     Configuration.hpp
+    src/InputService.cpp
+    src/InputService.hpp
+    src/InputServiceFactory.cpp
+    src/InputServiceFactory.hpp
+    src/KeyEvent.cpp
+    src/KeyEvent.hpp
+    src/KeyModifierState.cpp
+    src/KeyModifierState.hpp
+    src/KeyState.cpp
+    src/KeyState.hpp
+    src/MouseClickEvent.cpp
+    src/MouseClickEvent.hpp
+    src/MouseMoveEvent.cpp
+    src/MouseMoveEvent.hpp
+    src/VectorEvent.cpp
+    src/VectorEvent.hpp
+    src/ZInputModule.cpp
+    src/ZInputPlugin.cpp
+    src/ZInputPlugin.hpp
+    ZInputModule.hpp
 
     )
 
@@ -76,9 +76,9 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
+    Configuration.hpp
     plugin.xml
     ZInputModule.hpp
-    Configuration.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

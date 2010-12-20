@@ -58,6 +58,12 @@ class RESOURCE_DLL_LINK I_ResourceService
 ,   public Zen::Memory::managed_self_ref<I_ResourceService>
 ,   boost::noncopyable
 {
+    /// @name Forward Declarations
+    /// @{
+public:
+    struct I_ResourceNameVisitor;
+    /// @}
+
     /// @name Types
     /// @{
 public:
@@ -86,14 +92,33 @@ public:
     virtual void addResourceLocation(const std::string& _path, const std::string& _type,
         const std::string& _group, bool _recursive = false) = 0;
 
+    /// Remove a resource location
+    /// @param _path Path of the location
+    /// @param _group Group or Mod associated with this resource location.
+    virtual void removeResourceLocation(const std::string& _path, const std::string& _group) = 0;
+
     /// After you're finished adding resource locations, you must
     /// call this method to initialize them.
     virtual void initialiseAllResourceGroups() = 0;
+
+    /// Load a specific resource group.
+    /// @param Group or Mod to load.
+    virtual void loadResourceGroup(const std::string& _path) = 0;
+
+    /// Unload a specific resource group.
+    /// @param Group or Mod to unload.
+    virtual void unloadResourceGroup(const std::string& _path) = 0;
 
     /// Load a resource into memory
     /// @param _config Configuration for the service.
     /// @return Pointer to new I_Resource instance
     virtual pResource_type loadResource(config_type& _config) = 0;
+
+    /// Get resource names using a visitor pattern.
+    /// @param _visitor Visitor that acts on each resource name
+    /// @param _group Group or Mod to get resource names from.
+    /// @param _pattern The pattern to search for (* wildcards are allowed).
+    virtual void getResourceNames(I_ResourceNameVisitor& _visitor, const std::string& _group, const std::string& _pattern) const = 0;
 
     /// Get the name of the singleton exposed to script for this service.
     virtual const std::string& getScriptSingletonName() const = 0;
@@ -123,6 +148,20 @@ public:
     /// The payload is about to be destroyed, so do not keep a reference of it around.
     ServiceEvent_type onDestroyEvent;
     /// @}
+
+    /// @name Inner Structures
+    /// @{
+public:
+    //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    struct I_ResourceNameVisitor
+    {
+        virtual void begin() = 0;
+        virtual void visit(const std::string& _resourceName) = 0;
+        virtual void end() = 0;
+    };  // interface I_ResourceNameVisitor
+    //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    /// @}
+
     /// @name 'Structors
     /// @{
 protected:

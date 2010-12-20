@@ -50,7 +50,6 @@ public:
     /// @name I_PhysicsZone implementation
     /// @{
 public:
-	virtual void stepSimulation(double _elapsedTime);
     virtual void setBoundary(const Math::Vector3& _min, const Math::Vector3& _max);
     virtual void setGravity(const Math::Vector3& _grav);
     virtual pPhysicsActor_type createActor();
@@ -68,12 +67,21 @@ public:
     virtual pCollisionShape_type createHeightFieldShapeFromSerialization(std::string _filename, const Math::Matrix4& _transform);
     virtual pCollisionShape_type createConvexHullShape(std::string _filename);
     virtual pCollisionShape_type createTreeCollisionShape(std::string _filename);
+    virtual pCollisionShape_type createMeshShape(std::vector<Zen::Math::Point3>& _vertices, std::vector<boost::array<int, 3> >& _indices);
     /// @}
 
     /// @name I_ScriptableType implementation
     /// @{
 public:
     virtual Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
+    /// @name I_PhysicsFrameListener implementation
+    /// @{
+public:
+    virtual void beginFrame();
+    virtual void stepSimulation(double _elapsedTime);
+    virtual void endFrame();
     /// @}
 
     /// @name PhysicsZone implementation
@@ -88,6 +96,7 @@ public:
     static void destroyMaterial(wpPhysicsMaterial_type _pMaterial);
     static void destroyCollisionShape(wpCollisionShape_type _pCollisionShape);
     static void destroyHeightfieldCollisionShape(wpCollisionShape_type _pCollisionShape);
+    static void destroyMeshCollisionShape(wpCollisionShape_type _pCollisionShape);
     /// @}
 
     /// @name 'Structors

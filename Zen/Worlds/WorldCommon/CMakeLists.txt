@@ -27,17 +27,17 @@ source_group(
 
 	
 set ( WorldCommon_SRC
+    Configuration.hpp
     I_BehaviorManager.hpp
+    I_WorldEventQueue.hpp
     I_WorldService.hpp
     I_WorldSession.hpp
     I_ZoneId.hpp
-    src/I_BehaviorManager.cpp
     src/BehaviorManager.cpp
     src/BehaviorManager.hpp
-    src/I_ZoneId.cpp
     src/GravityBehavior.hpp
-    I_WorldEventQueue.hpp
-    Configuration.hpp
+    src/I_BehaviorManager.cpp
+    src/I_ZoneId.cpp
 
     )
 
@@ -66,12 +66,12 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
+    Configuration.hpp
     I_BehaviorManager.hpp
+    I_WorldEventQueue.hpp
     I_WorldService.hpp
     I_WorldSession.hpp
     I_ZoneId.hpp
-    I_WorldEventQueue.hpp
-    Configuration.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

@@ -27,77 +27,79 @@ source_group(
 
 	
 set ( ZOgre_SRC
+    Configuration.hpp
     I_OgreLight.hpp
-    src/RenderingServiceFactory.cpp
-    src/SceneNode.cpp
-    src/NullLight.cpp
-    src/SceneService.hpp
-    src/AxisAlignedBoundingBoxTree.hpp
-    src/AxisAlignedBoundingBoxSplitter.hpp
-    src/RenderingService.cpp
-    src/AnimationState.hpp
-    src/RenderingService.hpp
-    src/RenderingServiceFactory.hpp
-    src/Water.hpp
-    src/Camera.cpp
-    src/I_OgreSceneService.cpp
-    src/WaterServiceFactory.hpp
-    src/BoundingVolumeServiceFactory.hpp
-    src/NullLight.hpp
-    src/BoundingSphere.hpp
-    src/AttachableObject.hpp
-    src/RenderingCanvas.hpp
-    src/AttachableObject.cpp
-    src/ParticleSystem.hpp
-    src/RenderingCanvas.cpp
-    src/RenderingView.hpp
-    src/SceneServiceFactory.cpp
-    src/SceneNode.hpp
-    src/Ogre.hpp
-    src/ResourceServiceFactory.cpp
-    src/SceneServiceFactory.hpp
-    src/ResourceEntity.cpp
-    src/Camera.hpp
-    src/SceneService.cpp
-    src/NullContext.hpp
-    src/AxisAlignedBoundingBox.hpp
-    src/ZOgreModule.cpp
-    src/BoundingSphere.cpp
-    src/ResourceService.cpp
-    src/SkyService.hpp
-    src/ParticleSystem.cpp
-    src/Sky.hpp
-    src/ZOgrePlugin.hpp
-    src/ResourceServiceFactory.hpp
-    src/BoundingVolumeService.cpp
-    src/AnimationState.cpp
-    src/RenderingView.cpp
-    src/BoundingVolumeService.hpp
-    src/WaterService.hpp
-    src/Plane.cpp
-    src/I_OgreView.cpp
-    src/SkyServiceFactory.hpp
-    src/AxisAlignedBoundingBox.cpp
-    src/AxisAlignedBoundingBoxTreeNode.hpp
-    src/ResourceService.hpp
-    src/Water.cpp
-    src/BoundingVolumeServiceFactory.cpp
-    src/ZOgrePlugin.cpp
-    src/AxisAlignedBoundingBoxSplitter.cpp
-    src/NullCamera.cpp
-    src/NullCamera.hpp
-    src/AxisAlignedBoundingBoxTreeNode.cpp
-    src/I_OgreRenderingCanvas.cpp
-    src/I_OgreLight.cpp
-    src/WaterService.cpp
-    src/ResourceEntity.hpp
-    src/WaterServiceFactory.cpp
-    src/Plane.hpp
     I_OgreRenderingCanvas.hpp
-    ZOgreModule.hpp
     I_OgreSceneService.hpp
     I_OgreView.hpp
-    Configuration.hpp
+    src/AnimationState.cpp
+    src/AnimationState.hpp
+    src/AttachableObject.cpp
+    src/AttachableObject.hpp
+    src/AxisAlignedBoundingBox.cpp
+    src/AxisAlignedBoundingBox.hpp
+    src/AxisAlignedBoundingBoxSplitter.cpp
+    src/AxisAlignedBoundingBoxSplitter.hpp
+    src/AxisAlignedBoundingBoxTree.hpp
+    src/AxisAlignedBoundingBoxTreeNode.cpp
+    src/AxisAlignedBoundingBoxTreeNode.hpp
+    src/BoundingSphere.cpp
+    src/BoundingSphere.hpp
+    src/BoundingVolumeService.cpp
+    src/BoundingVolumeService.hpp
+    src/BoundingVolumeServiceFactory.cpp
+    src/BoundingVolumeServiceFactory.hpp
+    src/Camera.cpp
+    src/Camera.hpp
+    src/I_OgreLight.cpp
+    src/I_OgreRenderingCanvas.cpp
+    src/I_OgreSceneService.cpp
+    src/I_OgreView.cpp
+    src/Mesh.cpp
+    src/Mesh.hpp
+    src/NullCamera.cpp
+    src/NullCamera.hpp
+    src/NullContext.hpp
+    src/NullLight.cpp
+    src/NullLight.hpp
+    src/Ogre.hpp
+    src/ParticleSystem.cpp
+    src/ParticleSystem.hpp
+    src/Plane.cpp
+    src/Plane.hpp
+    src/RenderingCanvas.cpp
+    src/RenderingCanvas.hpp
+    src/RenderingService.cpp
+    src/RenderingService.hpp
+    src/RenderingServiceFactory.cpp
+    src/RenderingServiceFactory.hpp
+    src/RenderingView.cpp
+    src/RenderingView.hpp
+    src/ResourceEntity.cpp
+    src/ResourceEntity.hpp
+    src/ResourceService.cpp
+    src/ResourceService.hpp
+    src/ResourceServiceFactory.cpp
+    src/ResourceServiceFactory.hpp
+    src/SceneNode.cpp
+    src/SceneNode.hpp
+    src/SceneService.cpp
+    src/SceneService.hpp
+    src/SceneServiceFactory.cpp
+    src/SceneServiceFactory.hpp
+    src/Sky.hpp
+    src/SkyService.hpp
+    src/SkyServiceFactory.hpp
+    src/Water.cpp
+    src/Water.hpp
+    src/WaterService.cpp
+    src/WaterService.hpp
+    src/WaterServiceFactory.cpp
+    src/WaterServiceFactory.hpp
+    src/ZOgreModule.cpp
+    src/ZOgrePlugin.cpp
+    src/ZOgrePlugin.hpp
+    ZOgreModule.hpp
 
     )
 
@@ -126,13 +128,13 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    plugin.xml
+    Configuration.hpp
     I_OgreLight.hpp
     I_OgreRenderingCanvas.hpp
-    ZOgreModule.hpp
     I_OgreSceneService.hpp
     I_OgreView.hpp
-    Configuration.hpp
+    plugin.xml
+    ZOgreModule.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

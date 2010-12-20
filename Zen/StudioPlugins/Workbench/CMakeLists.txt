@@ -14,11 +14,11 @@ Find_Package(IndieZen REQUIRED)
 
 
 install ( FILES 
-    schema/projectWizard.exsd
-    schema/project.exsd
-    schema/node.exsd
     schema/contributor.exsd
+    schema/node.exsd
     schema/nodeAction.exsd
+    schema/project.exsd
+    schema/projectWizard.exsd
     schema/sscell.exsd
     DESTINATION
     Zen/${PROJECT_PREFIX}/schema/

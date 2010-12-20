@@ -72,6 +72,13 @@ ResourceService::addResourceLocation(const std::string& _path, const std::string
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
+ResourceService::removeResourceLocation(const std::string& _path, const std::string& _group)
+{
+    m_groupManager.removeResourceLocation(_path, _group);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
 ResourceService::initialiseAllResourceGroups()
 {
     if (!m_bInitialized)
@@ -83,6 +90,28 @@ ResourceService::initialiseAllResourceGroups()
 
             m_bInitialized = true;
         }
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::loadResourceGroup(const std::string& _group)
+{
+    if (m_bInitialized)
+    {
+        m_groupManager.initialiseResourceGroup(_group);
+        m_groupManager.loadResourceGroup(_group);
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::unloadResourceGroup(const std::string& _group)
+{
+    if (m_bInitialized)
+    {
+        m_groupManager.unloadResourceGroup(_group, false);
+        m_groupManager.clearResourceGroup(_group);
     }
 }
 
@@ -135,6 +164,27 @@ ResourceService::loadResource(config_type& _config)
         return emptyResource;
     }
 
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::getResourceNames(I_ResourceNameVisitor& _visitor, 
+                                  const std::string& _group,
+                                  const std::string& _pattern) const
+{
+    _visitor.begin();
+
+    Ogre::StringVectorPtr pStringVector = 
+        m_groupManager.findResourceNames(_group, _pattern);
+
+    Ogre::StringVector::iterator iter = pStringVector->begin();
+    while (iter != pStringVector->end())
+    {
+        _visitor.visit(*iter);
+        iter++;
+    }
+
+    _visitor.end();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

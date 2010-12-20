@@ -29,18 +29,18 @@ source_group(
 
 	
 set ( TerrainBuilder_SRC
-    src/TerrainGroupNodeContributor.cpp
-    src/ContributorService.hpp
-    src/ContributorService.cpp
-    src/ContributorServiceFactory.hpp
-    src/TerrainChunkNodeContributor.cpp
-    src/TerrainBuilderPlugin.cpp
-    src/TerrainChunkNodeContributor.hpp
-    src/ContributorServiceFactory.cpp
-    src/FolderContributor.hpp
-    src/FolderContributor.cpp
-    src/TerrainGroupNodeContributor.hpp
     Configuration.hpp
+    src/ContributorService.cpp
+    src/ContributorService.hpp
+    src/ContributorServiceFactory.cpp
+    src/ContributorServiceFactory.hpp
+    src/FolderContributor.cpp
+    src/FolderContributor.hpp
+    src/TerrainBuilderPlugin.cpp
+    src/TerrainChunkNodeContributor.cpp
+    src/TerrainChunkNodeContributor.hpp
+    src/TerrainGroupNodeContributor.cpp
+    src/TerrainGroupNodeContributor.hpp
 
     )
 
@@ -71,8 +71,8 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    plugin.xml
     Configuration.hpp
+    plugin.xml
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

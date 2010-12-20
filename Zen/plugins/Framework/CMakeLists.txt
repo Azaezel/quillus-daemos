@@ -14,32 +14,32 @@ Find_Package(IndieZen REQUIRED)
 
 
 install ( FILES 
-    schema/input.exsd
-    schema/rendering.exsd
-    schema/widgets.exsd
-    schema/commandlineparser.exsd
-    schema/camera.exsd
-    schema/sky.exsd
-    schema/terrain.exsd
-    schema/network.exsd
-    schema/sound.exsd
-    schema/physics.exsd
-    schema/navigation.exsd
-    schema/console.exsd
-    schema/importer.exsd
-    schema/gameclient.exsd
-    schema/scripting.exsd
-    schema/world.exsd
-    schema/boundingvolume.exsd
     schema/address.exsd
+    schema/application.exsd
+    schema/boundingvolume.exsd
+    schema/camera.exsd
+    schema/cloud.exsd
+    schema/commandlineparser.exsd
+    schema/console.exsd
+    schema/database.exsd
+    schema/databaseschema.exsd
+    schema/gameclient.exsd
+    schema/importer.exsd
+    schema/input.exsd
+    schema/navigation.exsd
+    schema/network.exsd
+    schema/physics.exsd
+    schema/protocol.exsd
+    schema/rendering.exsd
     schema/resource.exsd
     schema/scene.exsd
+    schema/scripting.exsd
+    schema/sky.exsd
+    schema/sound.exsd
+    schema/terrain.exsd
     schema/water.exsd
-    schema/database.exsd
-    schema/protocol.exsd
-    schema/application.exsd
-    schema/databaseschema.exsd
-    schema/cloud.exsd
+    schema/widgets.exsd
+    schema/world.exsd
     DESTINATION
     Zen/${PROJECT_PREFIX}/schema/
 )

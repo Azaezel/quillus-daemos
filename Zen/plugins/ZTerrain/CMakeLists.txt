@@ -26,17 +26,17 @@ source_group(
 
 	
 set ( ZTerrain_SRC
-    src/TerrainServiceFactory.cpp
+    Configuration.hpp
     src/Terrain.cpp
+    src/Terrain.hpp
+    src/TerrainService.cpp
+    src/TerrainService.hpp
+    src/TerrainServiceFactory.cpp
+    src/TerrainServiceFactory.hpp
     src/ZTerrainModule.cpp
     src/ZTerrainPlugin.cpp
-    src/TerrainService.hpp
-    src/TerrainService.cpp
-    src/TerrainServiceFactory.hpp
-    src/Terrain.hpp
     src/ZTerrainPlugin.hpp
     ZTerrainModule.hpp
-    Configuration.hpp
 
     )
 

@@ -26,32 +26,34 @@ source_group(
 
 	
 set ( ZODE_SRC
-    src/PhysicsServiceFactory.hpp
-    src/PhysicsResourceService.cpp
-    src/PhysicsServiceFactory.cpp
-    src/PhysicsService.cpp
-    src/CollisionShape.hpp
-    src/PhysicsZone.hpp
-    src/HeightfieldCollisionShape.cpp
-    src/PhysicsActor.hpp
-    src/ZODEPlugin.cpp
-    src/PhysicsActor.cpp
-    src/PhysicsMaterial.hpp
-    src/PhysicsJoint.hpp
-    src/ResourceServiceFactory.cpp
-    src/PhysicsJoint.cpp
-    src/CollisionShape.cpp
-    src/ResourceServiceFactory.hpp
-    src/PhysicsResourceService.hpp
-    src/PhysicsResource.hpp
-    src/HeightfieldResource.cpp
-    src/PhysicsMaterial.cpp
-    src/HeightfieldResource.hpp
-    src/PhysicsService.hpp
-    src/PhysicsResource.cpp
-    src/HeightfieldCollisionShape.hpp
-    src/PhysicsZone.cpp
     Configuration.hpp
+    src/CollisionShape.cpp
+    src/CollisionShape.hpp
+    src/HeightfieldCollisionShape.cpp
+    src/HeightfieldCollisionShape.hpp
+    src/HeightfieldResource.cpp
+    src/HeightfieldResource.hpp
+    src/MeshCollisionShape.cpp
+    src/MeshCollisionShape.hpp
+    src/PhysicsActor.cpp
+    src/PhysicsActor.hpp
+    src/PhysicsJoint.cpp
+    src/PhysicsJoint.hpp
+    src/PhysicsMaterial.cpp
+    src/PhysicsMaterial.hpp
+    src/PhysicsResource.cpp
+    src/PhysicsResource.hpp
+    src/PhysicsResourceService.cpp
+    src/PhysicsResourceService.hpp
+    src/PhysicsService.cpp
+    src/PhysicsService.hpp
+    src/PhysicsServiceFactory.cpp
+    src/PhysicsServiceFactory.hpp
+    src/PhysicsZone.cpp
+    src/PhysicsZone.hpp
+    src/ResourceServiceFactory.cpp
+    src/ResourceServiceFactory.hpp
+    src/ZODEPlugin.cpp
 
     )
 

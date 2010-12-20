@@ -1,7 +1,7 @@
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 // Zen Game Engine Framework
 //
-// Copyright (C) 2001 - 2009 Tony Richards
+// Copyright (C) 2001 - 2010 Tony Richards
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -61,6 +61,7 @@ public:
     /// @{
     virtual pAnimationState_type getAnimationState(const std::string& _name) const;
     virtual void getAnimationStates(I_AnimationStateVisitor& _visitor) const;
+    virtual pMesh_type getMesh();
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -72,6 +73,7 @@ public:
     /// @name ResourceEntity implementation
     /// @{
 private:
+    void destroyMesh(pMesh_type::weak_ptr_type _pMesh);
     /// @}
 
     /// @name Getter / Setter

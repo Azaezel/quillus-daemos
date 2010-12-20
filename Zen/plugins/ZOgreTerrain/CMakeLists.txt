@@ -27,23 +27,23 @@ source_group(
 
 	
 set ( ZOgreTerrain_SRC
-    ZOgreTerrainModule.hpp
-    src/TerrainHeightfield.hpp
-    src/ZOgreTerrainPlugin.cpp
-    src/TerrainServiceFactory.cpp
-    src/TerrainHeightfield.cpp
-    src/Terrain.cpp
-    src/TerrainGroup.hpp
-    src/TerrainChunk.cpp
-    src/TerrainService.hpp
-    src/ZOgreTerrainPlugin.hpp
-    src/ZOgreTerrainModule.cpp
-    src/TerrainChunk.hpp
-    src/TerrainService.cpp
-    src/TerrainGroup.cpp
-    src/TerrainServiceFactory.hpp
-    src/Terrain.hpp
     Configuration.hpp
+    src/Terrain.cpp
+    src/Terrain.hpp
+    src/TerrainChunk.cpp
+    src/TerrainChunk.hpp
+    src/TerrainGroup.cpp
+    src/TerrainGroup.hpp
+    src/TerrainHeightfield.cpp
+    src/TerrainHeightfield.hpp
+    src/TerrainService.cpp
+    src/TerrainService.hpp
+    src/TerrainServiceFactory.cpp
+    src/TerrainServiceFactory.hpp
+    src/ZOgreTerrainModule.cpp
+    src/ZOgreTerrainPlugin.cpp
+    src/ZOgreTerrainPlugin.hpp
+    ZOgreTerrainModule.hpp
 
     )
 

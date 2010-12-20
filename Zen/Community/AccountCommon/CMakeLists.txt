@@ -27,34 +27,34 @@ source_group(
 
 	
 set ( AccountCommon_SRC
+    Configuration.hpp
     I_Account.hpp
-    I_GroupMemberView.hpp
     I_AccountController.hpp
-    I_GroupController.hpp
     I_AccountModel.hpp
-    I_GroupMemberModel.hpp
-    I_GroupModel.hpp
-    subscription.hpp
-    src/I_AccountView.cpp
-    src/I_GroupMemberController.cpp
-    src/I_GroupView.cpp
-    src/I_GroupModel.cpp
-    src/I_Group.cpp
-    src/I_PermissibleResource.cpp
-    src/I_GroupMemberModel.cpp
-    src/I_GroupMemberView.cpp
-    src/I_AccountService.cpp
-    src/I_AccountModel.cpp
-    src/I_AccountController.cpp
-    src/I_Account.cpp
-    src/I_GroupController.cpp
     I_AccountService.hpp
     I_AccountView.hpp
-    I_GroupView.hpp
-    Configuration.hpp
     I_Group.hpp
+    I_GroupController.hpp
     I_GroupMemberController.hpp
+    I_GroupMemberModel.hpp
+    I_GroupMemberView.hpp
+    I_GroupModel.hpp
+    I_GroupView.hpp
     I_PermissibleResource.hpp
+    src/I_Account.cpp
+    src/I_AccountController.cpp
+    src/I_AccountModel.cpp
+    src/I_AccountService.cpp
+    src/I_AccountView.cpp
+    src/I_Group.cpp
+    src/I_GroupController.cpp
+    src/I_GroupMemberController.cpp
+    src/I_GroupMemberModel.cpp
+    src/I_GroupMemberView.cpp
+    src/I_GroupModel.cpp
+    src/I_GroupView.cpp
+    src/I_PermissibleResource.cpp
+    subscription.hpp
 
     )
 
@@ -83,21 +83,21 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
+    Configuration.hpp
     I_Account.hpp
-    I_GroupMemberView.hpp
     I_AccountController.hpp
-    I_GroupController.hpp
     I_AccountModel.hpp
-    I_GroupMemberModel.hpp
-    I_GroupModel.hpp
-    subscription.hpp
     I_AccountService.hpp
     I_AccountView.hpp
-    I_GroupView.hpp
-    Configuration.hpp
     I_Group.hpp
+    I_GroupController.hpp
     I_GroupMemberController.hpp
+    I_GroupMemberModel.hpp
+    I_GroupMemberView.hpp
+    I_GroupModel.hpp
+    I_GroupView.hpp
     I_PermissibleResource.hpp
+    subscription.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

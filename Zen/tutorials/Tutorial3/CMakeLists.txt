@@ -20,6 +20,30 @@ SET (LIB_TYPE SHARED)
 # Include various modules of Zen Engine
 
 source_group(
+    resources\\
+	REGULAR_EXPRESSION 
+	resources/*.*
+	)
+
+source_group(
+    scripts\\
+	REGULAR_EXPRESSION 
+	scripts/*.*
+	)
+
+source_group(
+    scripts\\client\\
+	REGULAR_EXPRESSION 
+	scripts/client/*.*
+	)
+
+source_group(
+    scripts\\core\\
+	REGULAR_EXPRESSION 
+	scripts/core/*.*
+	)
+
+source_group(
     Tutorial3\\
 	REGULAR_EXPRESSION 
 	Tutorial3/*.*
@@ -31,40 +55,16 @@ source_group(
 	Tutorial3/src/*.*
 	)
 
-source_group(
-    scripts\\
-	REGULAR_EXPRESSION 
-	scripts/*.*
-	)
-
-source_group(
-    scripts\\core\\
-	REGULAR_EXPRESSION 
-	scripts/core/*.*
-	)
-
-source_group(
-    scripts\\client\\
-	REGULAR_EXPRESSION 
-	scripts/client/*.*
-	)
-
-source_group(
-    resources\\
-	REGULAR_EXPRESSION 
-	resources/*.*
-	)
-
 
 	
 set ( Tutorial3_SRC
-    Tutorial3/src/GameClient.hpp
-    Tutorial3/src/GameClientFactory.hpp
-    Tutorial3/src/WidgetManager.hpp
-    Tutorial3/src/GameClientFactory.cpp
-    Tutorial3/src/GameClientPlugin.cpp
     Tutorial3/src/GameClient.cpp
+    Tutorial3/src/GameClient.hpp
+    Tutorial3/src/GameClientFactory.cpp
+    Tutorial3/src/GameClientFactory.hpp
+    Tutorial3/src/GameClientPlugin.cpp
     Tutorial3/src/WidgetManager.cpp
+    Tutorial3/src/WidgetManager.hpp
 
     )
 

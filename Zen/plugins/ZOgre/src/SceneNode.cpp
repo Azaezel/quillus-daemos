@@ -139,6 +139,44 @@ SceneNode::setScale(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneNode::pitch(const Math::Radian& _pitch, bool _parent, bool _local)
+{
+    Ogre::Radian pitch(_pitch);
+
+    if (m_pNode)
+    {
+        if (_parent)
+        {
+            m_pNode->getParentSceneNode()->pitch(pitch, _local ? Ogre::Node::TS_LOCAL : Ogre::Node::TS_WORLD);
+        }
+        else
+        {
+            m_pNode->pitch(pitch, _local ? Ogre::Node::TS_LOCAL : Ogre::Node::TS_WORLD);
+        }
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SceneNode::yaw(const Math::Radian& _yaw, bool _parent, bool _local)
+{
+    Ogre::Radian yaw(_yaw);
+
+    if (m_pNode)
+    {
+        if (_parent)
+        {
+            m_pNode->getParentSceneNode()->yaw(yaw, _local ? Ogre::Node::TS_LOCAL : Ogre::Node::TS_WORLD);
+        }
+        else
+        {
+            m_pNode->yaw(yaw, _local ? Ogre::Node::TS_LOCAL : Ogre::Node::TS_WORLD);
+        }
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SceneNode::pSceneNode_type
 SceneNode::createChildSceneNode(const std::string& _nodeName)
 {

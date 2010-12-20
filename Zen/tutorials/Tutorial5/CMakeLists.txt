@@ -20,6 +20,24 @@ SET (LIB_TYPE SHARED)
 # Include various modules of Zen Engine
 
 source_group(
+    scripts\\
+	REGULAR_EXPRESSION 
+	scripts/*.*
+	)
+
+source_group(
+    scripts\\client\\
+	REGULAR_EXPRESSION 
+	scripts/client/*.*
+	)
+
+source_group(
+    scripts\\core\\
+	REGULAR_EXPRESSION 
+	scripts/core/*.*
+	)
+
+source_group(
     Tutorial5\\
 	REGULAR_EXPRESSION 
 	Tutorial5/*.*
@@ -31,44 +49,26 @@ source_group(
 	Tutorial5/src/*.*
 	)
 
-source_group(
-    scripts\\
-	REGULAR_EXPRESSION 
-	scripts/*.*
-	)
-
-source_group(
-    scripts\\core\\
-	REGULAR_EXPRESSION 
-	scripts/core/*.*
-	)
-
-source_group(
-    scripts\\client\\
-	REGULAR_EXPRESSION 
-	scripts/client/*.*
-	)
-
 
 	
 set ( Tutorial5_SRC
-    Tutorial5/src/GameClient.hpp
-    Tutorial5/src/GameClientFactory.hpp
+    Tutorial5/src/AvatarCollisionBehavior.cpp
+    Tutorial5/src/AvatarCollisionBehavior.hpp
+    Tutorial5/src/AvatarGameObject.cpp
     Tutorial5/src/AvatarGameObject.hpp
     Tutorial5/src/BehaviorGroup.cpp
+    Tutorial5/src/BehaviorGroup.hpp
     Tutorial5/src/BehaviorManager.cpp
     Tutorial5/src/BehaviorManager.hpp
-    Tutorial5/src/AvatarCollisionBehavior.hpp
-    Tutorial5/src/GameClientFactory.cpp
-    Tutorial5/src/GravityBehavior.cpp
-    Tutorial5/src/GameClientPlugin.cpp
-    Tutorial5/src/GameObject.hpp
     Tutorial5/src/GameClient.cpp
-    Tutorial5/src/AvatarCollisionBehavior.cpp
-    Tutorial5/src/AvatarGameObject.cpp
-    Tutorial5/src/BehaviorGroup.hpp
-    Tutorial5/src/GravityBehavior.hpp
+    Tutorial5/src/GameClient.hpp
+    Tutorial5/src/GameClientFactory.cpp
+    Tutorial5/src/GameClientFactory.hpp
+    Tutorial5/src/GameClientPlugin.cpp
     Tutorial5/src/GameObject.cpp
+    Tutorial5/src/GameObject.hpp
+    Tutorial5/src/GravityBehavior.cpp
+    Tutorial5/src/GravityBehavior.hpp
 
     )
 

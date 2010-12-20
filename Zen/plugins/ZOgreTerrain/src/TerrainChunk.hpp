@@ -62,6 +62,7 @@ public:
     virtual Zen::Math::Real getSkirtSize() const;
     virtual Zen::Math::Real getMaxHeight() const;
     virtual Zen::Math::Real getMinHeight() const;
+    virtual Zen::Math::Vector3& getPosition() const;
     /// @}
 
     /// @name I_ScriptableType implementation
@@ -72,6 +73,8 @@ public:
 
     /// @name TerrainChunk implementation
     /// @{
+private:
+    void checkOgreTerrain() const;
 public:
     static void registerScriptModule(Zen::Scripting::script_module& _module, Zen::Scripting::script_module& _baseModule);
     /// @}
@@ -135,7 +138,7 @@ private:
     long                                    m_x, m_y;
     TerrainChunkId                          m_id;
 
-    Ogre::Terrain*                          m_pTerrainChunk;
+    mutable Ogre::Terrain*                  m_pTerrainChunk;
     /// @}
 
 };  // class TerrainChunk

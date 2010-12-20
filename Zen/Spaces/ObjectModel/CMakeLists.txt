@@ -29,31 +29,31 @@ source_group(
 
 	
 set ( ZenObjectModel_SRC
-    I_ElementTypeCollection.hpp
-    I_MethodType.hpp
-    I_View.hpp
-    I_ObjectModelManager.hpp
+    Configuration.hpp
+    I_Element.hpp
     I_ElementCollection.hpp
-    I_ObjectCollection.hpp
-    I_ObjectType.hpp
+    I_ElementType.hpp
+    I_ElementTypeCollection.hpp
     I_Filter.hpp
+    I_Method.hpp
+    I_MethodType.hpp
+    I_Object.hpp
+    I_ObjectCollection.hpp
+    I_ObjectModelManager.hpp
+    I_ObjectType.hpp
+    I_Subscription.hpp
+    I_View.hpp
     src/I_Element.cpp
-    src/I_Object.cpp
-    src/I_MethodType.cpp
-    src/I_ObjectType.cpp
+    src/I_ElementCollection.cpp
     src/I_ElementType.cpp
     src/I_Filter.cpp
-    src/I_Subscription.cpp
-    src/I_ObjectModelManager.cpp
-    src/I_ElementCollection.cpp
-    src/I_ObjectCollection.cpp
     src/I_Method.cpp
-    I_Element.hpp
-    I_Subscription.hpp
-    I_Method.hpp
-    I_ElementType.hpp
-    Configuration.hpp
-    I_Object.hpp
+    src/I_MethodType.cpp
+    src/I_Object.cpp
+    src/I_ObjectCollection.cpp
+    src/I_ObjectModelManager.cpp
+    src/I_ObjectType.cpp
+    src/I_Subscription.cpp
 
     )
 
@@ -82,20 +82,20 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_ElementTypeCollection.hpp
-    I_MethodType.hpp
-    I_View.hpp
-    I_ObjectModelManager.hpp
-    I_ElementCollection.hpp
-    I_ObjectCollection.hpp
-    I_ObjectType.hpp
-    I_Filter.hpp
-    I_Element.hpp
-    I_Subscription.hpp
-    I_Method.hpp
-    I_ElementType.hpp
     Configuration.hpp
+    I_Element.hpp
+    I_ElementCollection.hpp
+    I_ElementType.hpp
+    I_ElementTypeCollection.hpp
+    I_Filter.hpp
+    I_Method.hpp
+    I_MethodType.hpp
     I_Object.hpp
+    I_ObjectCollection.hpp
+    I_ObjectModelManager.hpp
+    I_ObjectType.hpp
+    I_Subscription.hpp
+    I_View.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

@@ -42,104 +42,104 @@ source_group(
 
 	
 set ( Workbench_SRC
+    Configuration.hpp
     I_Contributor.hpp
-    I_ProjectWizardType.hpp
-    I_ToolViewContributor.hpp
-    I_ContributorServiceFactory.hpp
-    I_SceneContributor.hpp
-    I_PropertyContributor.hpp
-    I_ExplorerNodeDecoration.hpp
-    I_ProjectWizardFactory.hpp
-    I_SpreadSheetContributor.hpp
     I_ContributorService.hpp
-    wxUtilities.hpp
-    I_ProjectWizardManager.hpp
-    I_DocumentWriter.hpp
-    I_Workbench.hpp
-    I_ExplorerNodeContributor.hpp
-    I_Explorer.hpp
-    I_PropertiesHandle.hpp
-    I_StudioTopFrame.hpp
-    I_DocumentWizardService.hpp
-    src/SpreadSheetView.hpp
-    src/I_DocumentWriter.cpp
-    src/ProjectWizardDialog.hpp
-    src/ToolNotebook.cpp
-    src/I_StudioTopFrame.cpp
-    src/ProjectWizardDialog.cpp
-    src/wxUtilities.cpp
-    src/PropertiesHandle.hpp
-    src/I_ExplorerNodeDecoration.cpp
-    src/GridCellEditor.cpp
-    src/WorkspaceExplorer.hpp
-    src/WorkbenchManager.cpp
-    src/ProjectExplorerView.h
-    src/menu_contributor_visitor.hpp
-    src/contributor_visitor.hpp
-    src/StudioTopFrame.cpp
-    src/View.hpp
-    src/ExplorerNotebook.cpp
-    src/I_ProjectExplorerWidget.cpp
-    src/I_Explorer.cpp
-    src/Notebook.cpp
-    src/I_ExplorerNodeContributor.cpp
-    src/WorkspaceNotebook.cpp
-    src/I_SceneView.cpp
-    src/StatusNotebook.hpp
-    src/I_Workbench.cpp
-    src/I_PropertyContributor.cpp
-    src/FileWizardDialog.hpp
-    src/Notebook.hpp
-    src/PropertiesView.cpp
-    src/SpreadSheetView.cpp
-    src/I_ContributorService.cpp
-    src/SceneViewWidget.hpp
-    src/I_Contributor.cpp
-    src/Workbench.hpp
-    src/PropertiesView.hpp
-    src/ToolNotebook.hpp
-    src/FileWizardDialog.cpp
-    src/I_DocumentServiceFactory.cpp
-    src/I_DocumentStoreService.cpp
-    src/I_ToolBarContributor.cpp
-    src/I_WorkbenchManager.cpp
-    src/ProjectExplorerView.cpp
-    src/action_visitor.hpp
-    src/Explorer.cpp
-    src/View.cpp
-    src/I_PropertiesHandle.cpp
-    src/StudioTopFrame.hpp
-    src/WorkbenchManager.hpp
-    src/PropertiesHandle.cpp
-    src/I_ContributorServiceFactory.cpp
-    src/WorkspaceExplorer.cpp
-    src/I_DocumentReader.cpp
-    src/I_Notebook.cpp
-    src/ExplorerNotebook.hpp
-    src/I_SceneContributor.cpp
-    src/StatusNotebook.cpp
-    src/I_ToolViewContributor.cpp
-    src/I_DocumentService.cpp
-    src/WorkspaceNotebook.hpp
-    src/GridCellEditor.hpp
-    src/Workbench.cpp
-    src/SceneViewWidget.cpp
-    src/I_SpreadSheetContributor.cpp
-    src/Explorer.hpp
-    I_ProjectExplorerWidget.hpp
-    I_ProjectWizardService.hpp
+    I_ContributorServiceFactory.hpp
+    I_DocumentReader.hpp
+    I_DocumentService.hpp
+    I_DocumentServiceFactory.hpp
+    I_DocumentStoreService.hpp
     I_DocumentType.hpp
     I_DocumentWizardFactory.hpp
-    I_Notebook.hpp
-    I_WorkbenchManager.hpp
-    I_DocumentService.hpp
-    I_ToolBarContributor.hpp
     I_DocumentWizardManager.hpp
-    I_DocumentServiceFactory.hpp
-    Configuration.hpp
-    I_DocumentStoreService.hpp
+    I_DocumentWizardService.hpp
+    I_DocumentWriter.hpp
+    I_Explorer.hpp
+    I_ExplorerNodeContributor.hpp
+    I_ExplorerNodeDecoration.hpp
+    I_Notebook.hpp
+    I_ProjectExplorerWidget.hpp
+    I_ProjectWizardFactory.hpp
+    I_ProjectWizardManager.hpp
+    I_ProjectWizardService.hpp
+    I_ProjectWizardType.hpp
+    I_PropertiesHandle.hpp
+    I_PropertyContributor.hpp
+    I_SceneContributor.hpp
     I_SceneView.hpp
-    I_DocumentReader.hpp
+    I_SpreadSheetContributor.hpp
+    I_StudioTopFrame.hpp
+    I_ToolBarContributor.hpp
+    I_ToolViewContributor.hpp
+    I_Workbench.hpp
+    I_WorkbenchManager.hpp
+    src/action_visitor.hpp
+    src/contributor_visitor.hpp
+    src/Explorer.cpp
+    src/Explorer.hpp
+    src/ExplorerNotebook.cpp
+    src/ExplorerNotebook.hpp
+    src/FileWizardDialog.cpp
+    src/FileWizardDialog.hpp
+    src/GridCellEditor.cpp
+    src/GridCellEditor.hpp
+    src/I_Contributor.cpp
+    src/I_ContributorService.cpp
+    src/I_ContributorServiceFactory.cpp
+    src/I_DocumentReader.cpp
+    src/I_DocumentService.cpp
+    src/I_DocumentServiceFactory.cpp
+    src/I_DocumentStoreService.cpp
+    src/I_DocumentWriter.cpp
+    src/I_Explorer.cpp
+    src/I_ExplorerNodeContributor.cpp
+    src/I_ExplorerNodeDecoration.cpp
+    src/I_Notebook.cpp
+    src/I_ProjectExplorerWidget.cpp
+    src/I_PropertiesHandle.cpp
+    src/I_PropertyContributor.cpp
+    src/I_SceneContributor.cpp
+    src/I_SceneView.cpp
+    src/I_SpreadSheetContributor.cpp
+    src/I_StudioTopFrame.cpp
+    src/I_ToolBarContributor.cpp
+    src/I_ToolViewContributor.cpp
+    src/I_Workbench.cpp
+    src/I_WorkbenchManager.cpp
+    src/menu_contributor_visitor.hpp
+    src/Notebook.cpp
+    src/Notebook.hpp
+    src/ProjectExplorerView.cpp
+    src/ProjectExplorerView.h
+    src/ProjectWizardDialog.cpp
+    src/ProjectWizardDialog.hpp
+    src/PropertiesHandle.cpp
+    src/PropertiesHandle.hpp
+    src/PropertiesView.cpp
+    src/PropertiesView.hpp
+    src/SceneViewWidget.cpp
+    src/SceneViewWidget.hpp
+    src/SpreadSheetView.cpp
+    src/SpreadSheetView.hpp
+    src/StatusNotebook.cpp
+    src/StatusNotebook.hpp
+    src/StudioTopFrame.cpp
+    src/StudioTopFrame.hpp
+    src/ToolNotebook.cpp
+    src/ToolNotebook.hpp
+    src/View.cpp
+    src/View.hpp
+    src/Workbench.cpp
+    src/Workbench.hpp
+    src/WorkbenchManager.cpp
+    src/WorkbenchManager.hpp
+    src/WorkspaceExplorer.cpp
+    src/WorkspaceExplorer.hpp
+    src/WorkspaceNotebook.cpp
+    src/WorkspaceNotebook.hpp
+    src/wxUtilities.cpp
+    wxUtilities.hpp
 
     )
 
@@ -180,39 +180,39 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
+    Configuration.hpp
     I_Contributor.hpp
-    I_ProjectWizardType.hpp
-    I_ToolViewContributor.hpp
-    I_ContributorServiceFactory.hpp
-    I_SceneContributor.hpp
-    I_PropertyContributor.hpp
-    I_ExplorerNodeDecoration.hpp
-    I_ProjectWizardFactory.hpp
-    I_SpreadSheetContributor.hpp
     I_ContributorService.hpp
-    wxUtilities.hpp
-    I_ProjectWizardManager.hpp
-    I_DocumentWriter.hpp
-    I_Workbench.hpp
-    I_ExplorerNodeContributor.hpp
-    I_Explorer.hpp
-    I_PropertiesHandle.hpp
-    I_StudioTopFrame.hpp
-    I_DocumentWizardService.hpp
-    I_ProjectExplorerWidget.hpp
-    I_ProjectWizardService.hpp
+    I_ContributorServiceFactory.hpp
+    I_DocumentReader.hpp
+    I_DocumentService.hpp
+    I_DocumentServiceFactory.hpp
+    I_DocumentStoreService.hpp
     I_DocumentType.hpp
     I_DocumentWizardFactory.hpp
-    I_Notebook.hpp
-    I_WorkbenchManager.hpp
-    I_DocumentService.hpp
-    I_ToolBarContributor.hpp
     I_DocumentWizardManager.hpp
-    I_DocumentServiceFactory.hpp
-    Configuration.hpp
-    I_DocumentStoreService.hpp
+    I_DocumentWizardService.hpp
+    I_DocumentWriter.hpp
+    I_Explorer.hpp
+    I_ExplorerNodeContributor.hpp
+    I_ExplorerNodeDecoration.hpp
+    I_Notebook.hpp
+    I_ProjectExplorerWidget.hpp
+    I_ProjectWizardFactory.hpp
+    I_ProjectWizardManager.hpp
+    I_ProjectWizardService.hpp
+    I_ProjectWizardType.hpp
+    I_PropertiesHandle.hpp
+    I_PropertyContributor.hpp
+    I_SceneContributor.hpp
     I_SceneView.hpp
-    I_DocumentReader.hpp
+    I_SpreadSheetContributor.hpp
+    I_StudioTopFrame.hpp
+    I_ToolBarContributor.hpp
+    I_ToolViewContributor.hpp
+    I_Workbench.hpp
+    I_WorkbenchManager.hpp
+    wxUtilities.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

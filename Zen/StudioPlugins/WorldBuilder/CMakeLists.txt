@@ -30,29 +30,29 @@ source_group(
 
 	
 set ( WorldBuilder_SRC
-    src/ProjectContributor.cpp
-    src/SimpleLayerPanel.hpp
-    src/TerrainLayerPanel.cpp
-    src/ContributorService.hpp
-    src/ProjectContributor.hpp
-    src/ZoneContributor.hpp
-    src/WorldBuilderPlugin.cpp
     src/ContributorService.cpp
-    src/ZoneLayerView.hpp
-    src/SimpleLayerPanel.cpp
-    src/ZoneContributor.cpp
-    src/ContributorServiceFactory.hpp
-    src/OgitorsController.hpp
-    src/OgitorsController.cpp
-    src/TerrainLayerPanel.hpp
-    src/ZoneFolderContributor.hpp
-    src/ZoneFolderContributor.cpp
+    src/ContributorService.hpp
     src/ContributorServiceFactory.cpp
-    src/ZenOgitorsSystem.hpp
+    src/ContributorServiceFactory.hpp
     src/Creator.cpp
     src/Creator.hpp
-    src/ZoneLayerView.cpp
+    src/OgitorsController.cpp
+    src/OgitorsController.hpp
+    src/ProjectContributor.cpp
+    src/ProjectContributor.hpp
+    src/SimpleLayerPanel.cpp
+    src/SimpleLayerPanel.hpp
+    src/TerrainLayerPanel.cpp
+    src/TerrainLayerPanel.hpp
+    src/WorldBuilderPlugin.cpp
     src/ZenOgitorsSystem.cpp
+    src/ZenOgitorsSystem.hpp
+    src/ZoneContributor.cpp
+    src/ZoneContributor.hpp
+    src/ZoneFolderContributor.cpp
+    src/ZoneFolderContributor.hpp
+    src/ZoneLayerView.cpp
+    src/ZoneLayerView.hpp
 
     )
 

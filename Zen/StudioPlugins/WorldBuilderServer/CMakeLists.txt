@@ -28,21 +28,21 @@ source_group(
 
 	
 set ( WorldBuilderServer_SRC
-    src/Zone.cpp
     src/ExplorerNodeFactory.cpp
-    src/Project.hpp
-    src/WorldBuilderPlugin.cpp
-    src/ZoneFolder.hpp
-    src/ProjectServiceFactory.hpp
-    src/Project.cpp
-    src/ZoneModel.cpp
-    src/ProjectService.cpp
-    src/Zone.hpp
-    src/ProjectServiceFactory.cpp
-    src/ProjectService.hpp
-    src/ZoneFolder.cpp
-    src/ZoneModel.hpp
     src/ExplorerNodeFactory.hpp
+    src/Project.cpp
+    src/Project.hpp
+    src/ProjectService.cpp
+    src/ProjectService.hpp
+    src/ProjectServiceFactory.cpp
+    src/ProjectServiceFactory.hpp
+    src/WorldBuilderPlugin.cpp
+    src/Zone.cpp
+    src/Zone.hpp
+    src/ZoneFolder.cpp
+    src/ZoneFolder.hpp
+    src/ZoneModel.cpp
+    src/ZoneModel.hpp
 
     )
 

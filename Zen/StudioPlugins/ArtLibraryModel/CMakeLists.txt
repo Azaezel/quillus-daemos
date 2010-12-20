@@ -28,43 +28,43 @@ source_group(
 
 	
 set ( ArtLibraryModel_SRC
-    I_ArtAssetExplorerNodeDomainObject.hpp
-    I_ArtAssetExplorerNodeDataMap.hpp
-    I_ArtAssetDocumentDomainObject.hpp
-    src/ArtFolderDataCollection.cpp
-    src/I_ArtFolderDataMap.cpp
-    src/ArtAssetExplorerNodeDataCollection.hpp
-    src/ArtAssetDocumentDataCollection.hpp
-    src/ArtFolderDataMap.hpp
-    src/ArtFolderDataCollection.hpp
-    src/ArtAssetDocumentDataMap.cpp
-    src/ArtAssetDocumentDataCollection.cpp
-    src/ArtAssetDocumentDomainObject.hpp
-    src/ArtAssetExplorerNodeDomainObject.cpp
-    src/ArtAssetExplorerNodeDataMap.cpp
-    src/I_ArtAssetDocumentDataCollection.cpp
-    src/ArtAssetDocumentDataMap.hpp
-    src/ArtAssetExplorerNodeDataMap.hpp
-    src/ArtAssetExplorerNodeDataCollection.cpp
-    src/ArtFolderDomainObject.hpp
-    src/I_ArtAssetDocumentDataMap.cpp
-    src/I_ArtAssetDocumentDomainObject.cpp
-    src/ArtAssetDocumentDomainObject.cpp
-    src/ArtFolderDataMap.cpp
-    src/I_ArtFolderDataCollection.cpp
-    src/ArtAssetExplorerNodeDomainObject.hpp
-    src/I_ArtFolderDomainObject.cpp
-    src/I_ArtAssetExplorerNodeDomainObject.cpp
-    src/ArtFolderDomainObject.cpp
-    src/I_ArtAssetExplorerNodeDataMap.cpp
-    src/I_ArtAssetExplorerNodeDataCollection.cpp
+    Configuration.hpp
     I_ArtAssetDocumentDataCollection.hpp
     I_ArtAssetDocumentDataMap.hpp
+    I_ArtAssetDocumentDomainObject.hpp
     I_ArtAssetExplorerNodeDataCollection.hpp
-    I_ArtFolderDataMap.hpp
+    I_ArtAssetExplorerNodeDataMap.hpp
+    I_ArtAssetExplorerNodeDomainObject.hpp
     I_ArtFolderDataCollection.hpp
-    Configuration.hpp
+    I_ArtFolderDataMap.hpp
     I_ArtFolderDomainObject.hpp
+    src/ArtAssetDocumentDataCollection.cpp
+    src/ArtAssetDocumentDataCollection.hpp
+    src/ArtAssetDocumentDataMap.cpp
+    src/ArtAssetDocumentDataMap.hpp
+    src/ArtAssetDocumentDomainObject.cpp
+    src/ArtAssetDocumentDomainObject.hpp
+    src/ArtAssetExplorerNodeDataCollection.cpp
+    src/ArtAssetExplorerNodeDataCollection.hpp
+    src/ArtAssetExplorerNodeDataMap.cpp
+    src/ArtAssetExplorerNodeDataMap.hpp
+    src/ArtAssetExplorerNodeDomainObject.cpp
+    src/ArtAssetExplorerNodeDomainObject.hpp
+    src/ArtFolderDataCollection.cpp
+    src/ArtFolderDataCollection.hpp
+    src/ArtFolderDataMap.cpp
+    src/ArtFolderDataMap.hpp
+    src/ArtFolderDomainObject.cpp
+    src/ArtFolderDomainObject.hpp
+    src/I_ArtAssetDocumentDataCollection.cpp
+    src/I_ArtAssetDocumentDataMap.cpp
+    src/I_ArtAssetDocumentDomainObject.cpp
+    src/I_ArtAssetExplorerNodeDataCollection.cpp
+    src/I_ArtAssetExplorerNodeDataMap.cpp
+    src/I_ArtAssetExplorerNodeDomainObject.cpp
+    src/I_ArtFolderDataCollection.cpp
+    src/I_ArtFolderDataMap.cpp
+    src/I_ArtFolderDomainObject.cpp
 
     )
 
@@ -93,15 +93,15 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_ArtAssetExplorerNodeDomainObject.hpp
-    I_ArtAssetExplorerNodeDataMap.hpp
-    I_ArtAssetDocumentDomainObject.hpp
+    Configuration.hpp
     I_ArtAssetDocumentDataCollection.hpp
     I_ArtAssetDocumentDataMap.hpp
+    I_ArtAssetDocumentDomainObject.hpp
     I_ArtAssetExplorerNodeDataCollection.hpp
-    I_ArtFolderDataMap.hpp
+    I_ArtAssetExplorerNodeDataMap.hpp
+    I_ArtAssetExplorerNodeDomainObject.hpp
     I_ArtFolderDataCollection.hpp
-    Configuration.hpp
+    I_ArtFolderDataMap.hpp
     I_ArtFolderDomainObject.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/

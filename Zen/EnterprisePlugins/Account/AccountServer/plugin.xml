@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<plugin
+   id="AccountServer"
+   name="Zen Enterprise Account Server"
+   version="0.6.2"
+   provider-name="IndieZen.org">
+
+  <runtime>
+    <library name="AccountServer">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <requires>
+    <import plugin="Framework"/>
+  </requires>
+
+  <extension
+        point="Zen::Enterprise::AppServer::ApplicationService"
+        id="AccountServer"
+        name="Zen Enterprise Account Server"
+        type="AccountServer">
+    <application-service
+          class="Zen::Enterprise::Account::Server::AccountService">
+    </application-service>
+  </extension>
+
+</plugin>

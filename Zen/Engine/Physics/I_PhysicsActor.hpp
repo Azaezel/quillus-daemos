@@ -65,7 +65,7 @@ class PHYSICS_DLL_LINK I_PhysicsActor
     /// @name Types
     /// @{
 public:
-    typedef I_PhysicsActor*                                 pScriptObject_type;
+    typedef Memory::managed_ptr<I_PhysicsActor>             pScriptObject_type;
     typedef Scripting::ObjectReference<I_PhysicsActor>      ScriptObjectReference_type;
 
     class I_TransformEventData;

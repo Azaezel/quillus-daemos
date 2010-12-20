@@ -27,33 +27,33 @@ source_group(
 
 	
 set ( TerrainBuilderCommon_SRC
-    I_ProjectListener.hpp
-    I_TerrainChunkDocument.hpp
-    I_TerrainGroupController.hpp
-    I_TerrainGroupDocument.hpp
-    I_TerrainChunkController.hpp
-    I_Project.hpp
-    src/I_ProjectListener.cpp
-    src/I_Folder.cpp
-    src/I_TerrainGroupNode.cpp
-    src/I_ProjectService.cpp
-    src/I_TerrainGroupDocument.cpp
-    src/I_TerrainChunkDocument.cpp
-    src/I_TerrainGroupController.cpp
-    src/I_TerrainChunkNode.cpp
-    src/I_Project.cpp
-    src/I_TerrainGroupView.cpp
-    src/I_TerrainChunkView.cpp
-    src/I_TerrainBuilderService.cpp
-    src/I_TerrainChunkController.cpp
-    I_TerrainChunkView.hpp
-    I_TerrainGroupView.hpp
-    I_TerrainBuilderService.hpp
-    I_TerrainChunkNode.hpp
-    I_ProjectService.hpp
     Configuration.hpp
     I_Folder.hpp
+    I_Project.hpp
+    I_ProjectListener.hpp
+    I_ProjectService.hpp
+    I_TerrainBuilderService.hpp
+    I_TerrainChunkController.hpp
+    I_TerrainChunkDocument.hpp
+    I_TerrainChunkNode.hpp
+    I_TerrainChunkView.hpp
+    I_TerrainGroupController.hpp
+    I_TerrainGroupDocument.hpp
     I_TerrainGroupNode.hpp
+    I_TerrainGroupView.hpp
+    src/I_Folder.cpp
+    src/I_Project.cpp
+    src/I_ProjectListener.cpp
+    src/I_ProjectService.cpp
+    src/I_TerrainBuilderService.cpp
+    src/I_TerrainChunkController.cpp
+    src/I_TerrainChunkDocument.cpp
+    src/I_TerrainChunkNode.cpp
+    src/I_TerrainChunkView.cpp
+    src/I_TerrainGroupController.cpp
+    src/I_TerrainGroupDocument.cpp
+    src/I_TerrainGroupNode.cpp
+    src/I_TerrainGroupView.cpp
 
     )
 
@@ -82,20 +82,20 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    I_ProjectListener.hpp
-    I_TerrainChunkDocument.hpp
-    I_TerrainGroupController.hpp
-    I_TerrainGroupDocument.hpp
-    I_TerrainChunkController.hpp
-    I_Project.hpp
-    I_TerrainChunkView.hpp
-    I_TerrainGroupView.hpp
-    I_TerrainBuilderService.hpp
-    I_TerrainChunkNode.hpp
-    I_ProjectService.hpp
     Configuration.hpp
     I_Folder.hpp
+    I_Project.hpp
+    I_ProjectListener.hpp
+    I_ProjectService.hpp
+    I_TerrainBuilderService.hpp
+    I_TerrainChunkController.hpp
+    I_TerrainChunkDocument.hpp
+    I_TerrainChunkNode.hpp
+    I_TerrainChunkView.hpp
+    I_TerrainGroupController.hpp
+    I_TerrainGroupDocument.hpp
     I_TerrainGroupNode.hpp
+    I_TerrainGroupView.hpp
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

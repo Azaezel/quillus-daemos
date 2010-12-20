@@ -27,35 +27,35 @@ source_group(
 
 	
 set ( ZSQLite_SRC
-    src/DatabaseServiceFactory.cpp
+    src/DatabaseColumn.cpp
     src/DatabaseColumn.hpp
     src/DatabaseCommand.cpp
-    src/DatabaseStaticQuery.hpp
-    src/sqlite.hpp
-    src/DatabaseConnection.hpp
-    src/sqlite3ext.h
-    src/DatabaseResult.cpp
-    src/DatabaseDynamicQuery.hpp
-    src/DatabaseStaticQuery.cpp
     src/DatabaseCommand.hpp
-    src/DatabaseDynamicQuery.cpp
-    src/DatabaseTransaction.cpp
-    src/DatabaseService.cpp
-    src/DatabaseRow.cpp
-    src/DatabaseQuery.cpp
-    src/DatabaseResult.hpp
-    src/sqlite3.h
-    src/DatabaseRow.hpp
-    src/ZMySQLPlugin.cpp
-    src/sqlite3.c
-    src/DatabaseService.hpp
-    src/DatabaseColumn.cpp
     src/DatabaseConnection.cpp
-    src/DatabaseTransaction.hpp
-    src/SQLiteTypes.hpp
+    src/DatabaseConnection.hpp
+    src/DatabaseDynamicQuery.cpp
+    src/DatabaseDynamicQuery.hpp
+    src/DatabaseQuery.cpp
     src/DatabaseQuery.hpp
-    src/SQLiteTypes.cpp
+    src/DatabaseResult.cpp
+    src/DatabaseResult.hpp
+    src/DatabaseRow.cpp
+    src/DatabaseRow.hpp
+    src/DatabaseService.cpp
+    src/DatabaseService.hpp
+    src/DatabaseServiceFactory.cpp
     src/DatabaseServiceFactory.hpp
+    src/DatabaseStaticQuery.cpp
+    src/DatabaseStaticQuery.hpp
+    src/DatabaseTransaction.cpp
+    src/DatabaseTransaction.hpp
+    src/sqlite.hpp
+    src/sqlite3.c
+    src/sqlite3.h
+    src/sqlite3ext.h
+    src/SQLiteTypes.cpp
+    src/SQLiteTypes.hpp
+    src/ZMySQLPlugin.cpp
 
     )
 

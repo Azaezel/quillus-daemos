@@ -77,6 +77,17 @@ HeightfieldCollisionShape::HeightfieldCollisionShape(dSpaceID _spaceId, pTerrain
         1
     );
 
+    Zen::Math::Vector3& position(m_pTerrainChunk->getPosition());
+    dGeomSetPosition(
+        geometryId,
+        position.m_x,
+        position.m_y,
+        position.m_z
+    );
+
+    /// TODO Set rotation of terrain for cases where it is not
+    /// planar with the X and Z axes.
+
     setGeometryId(geometryId);
 }
 

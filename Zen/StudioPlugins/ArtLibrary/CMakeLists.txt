@@ -29,18 +29,18 @@ source_group(
 
 	
 set ( ArtLibrary_SRC
-    src/ProjectContributor.cpp
-    src/ArtLibraryPlugin.cpp
-    src/ContributorService.hpp
-    src/ProjectContributor.hpp
-    src/ContributorService.cpp
-    src/ArtAssetContributor.cpp
-    src/ContributorServiceFactory.hpp
-    src/ContributorServiceFactory.cpp
-    src/ArtAssetContributor.hpp
-    src/FolderContributor.hpp
-    src/FolderContributor.cpp
     Configuration.hpp
+    src/ArtAssetContributor.cpp
+    src/ArtAssetContributor.hpp
+    src/ArtLibraryPlugin.cpp
+    src/ContributorService.cpp
+    src/ContributorService.hpp
+    src/ContributorServiceFactory.cpp
+    src/ContributorServiceFactory.hpp
+    src/FolderContributor.cpp
+    src/FolderContributor.hpp
+    src/ProjectContributor.cpp
+    src/ProjectContributor.hpp
 
     )
 
@@ -71,8 +71,8 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    plugin.xml
     Configuration.hpp
+    plugin.xml
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

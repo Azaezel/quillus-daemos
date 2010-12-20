@@ -29,6 +29,7 @@
 #include "PhysicsMaterial.hpp"
 #include "CollisionShape.hpp"
 #include "HeightfieldCollisionShape.hpp"
+#include "MeshCollisionShape.hpp"
 
 #include <Zen/Core/Math/Vector3.hpp>
 
@@ -37,6 +38,7 @@
 #include <Zen/Engine/Physics/I_PhysicsManager.hpp>
 
 #include <Zen/Engine/World/I_TerrainHeightfield.hpp>
+#include <Zen/Engine/World/I_TerrainChunk.hpp>
 
 //#include <dVector.h> //no likey. recheck
 //refnotes: http://docs.taoframework.com/Tao.Ode/Tao.Ode.Ode.dHashSpaceCreate.html
@@ -62,10 +64,24 @@ PhysicsZone::~PhysicsZone()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+//static const Zen::Math::Real sm_epsilon = std::numeric_limits<Zen::Math::Real>::epsilon();
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsZone::beginFrame()
+{
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 PhysicsZone::stepSimulation(double _elapsedTime)
 {
     dWorldStep(m_worldId, (dReal)_elapsedTime);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsZone::endFrame()
+{
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -298,6 +314,36 @@ PhysicsZone::pCollisionShape_type
 PhysicsZone::createTreeCollisionShape(std::string _filename)
 {
     throw Utility::runtime_exception("PhysicsZone::createTreeCollisionShape(): Error, not implemented.");
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+PhysicsZone::destroyMeshCollisionShape(wpCollisionShape_type _pCollisionShape)
+{
+    MeshCollisionShape* pRaw =
+        dynamic_cast<MeshCollisionShape*>(_pCollisionShape.get());
+
+    if( pRaw != NULL )
+    {
+        delete pRaw;
+    }
+    else
+    {
+        throw Zen::Utility::runtime_exception("PhysicsZone::destroyMeshCollisionShape() : Invalid type.");
+    }
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+PhysicsZone::pCollisionShape_type
+PhysicsZone::createMeshShape(std::vector<Zen::Math::Point3>& _vertices, std::vector<boost::array<int, 3> >& _indices)
+{
+    MeshCollisionShape* pRawShape = new MeshCollisionShape(NULL);
+    pRawShape->buildFromTriangles(m_spaceId, _vertices, _indices);
+    pCollisionShape_type pCollisionShape(
+        pRawShape,
+        &destroyMeshCollisionShape
+    );
+    return pCollisionShape;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

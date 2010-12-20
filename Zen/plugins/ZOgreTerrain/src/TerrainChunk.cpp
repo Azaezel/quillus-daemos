@@ -68,6 +68,7 @@ TerrainChunk::getId() const
 Zen::Math::Real
 TerrainChunk::getHeight(int _x, int _z) const
 {
+    checkOgreTerrain();
     return m_pTerrainChunk->getHeightAtPoint(_x, _z);
 }
 
@@ -96,6 +97,7 @@ TerrainChunk::getOffset() const
 Zen::Math::Real
 TerrainChunk::getSkirtSize() const
 {
+    checkOgreTerrain();
     return m_pTerrainChunk->getSkirtSize();
 }
 
@@ -103,6 +105,7 @@ TerrainChunk::getSkirtSize() const
 Zen::Math::Real
 TerrainChunk::getMaxHeight() const
 {
+    checkOgreTerrain();
     return m_pTerrainChunk->getMaxHeight();
 }
 
@@ -110,7 +113,20 @@ TerrainChunk::getMaxHeight() const
 Zen::Math::Real
 TerrainChunk::getMinHeight() const
 {
+    checkOgreTerrain();
     return m_pTerrainChunk->getMinHeight();
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Zen::Math::Vector3&
+TerrainChunk::getPosition() const
+{
+    static Zen::Math::Vector3 sm_position;
+
+    checkOgreTerrain();
+    sm_position = Zen::Math::Vector3(m_pTerrainChunk->getPosition().ptr());
+
+    return sm_position;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -127,6 +143,16 @@ TerrainChunk::getScriptObject()
     }
 
     return m_pScriptObject;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+TerrainChunk::checkOgreTerrain() const
+{
+    if (m_pTerrainChunk == NULL)
+    {
+        m_pTerrainChunk = m_parent.getOgreTerrainGroup().getTerrain(m_x, m_y);
+    }
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

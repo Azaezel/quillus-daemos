@@ -27,30 +27,30 @@ source_group(
 
 	
 set ( AccountServer_SRC
-    src/Group.hpp
-    src/AccountServiceFactory.hpp
-    src/AccountViewProxy.hpp
-    src/AccountServiceFactory.cpp
-    src/AccountService.cpp
-    src/AccountModel.hpp
-    src/AccountServerPlugin.cpp
-    src/AccountViewProxy.cpp
-    src/GroupModel.hpp
-    src/GroupViewProxy.cpp
-    src/AccountService.hpp
-    src/PermissibleResource.cpp
-    src/GroupViewProxy.hpp
-    src/GroupModel.cpp
-    src/AccountModel.cpp
-    src/GroupController.hpp
-    src/AccountController.cpp
-    src/PermissibleResource.hpp
-    src/GroupController.cpp
-    src/AccountController.hpp
-    src/Group.cpp
+    Configuration.hpp
     src/Account.cpp
     src/Account.hpp
-    Configuration.hpp
+    src/AccountController.cpp
+    src/AccountController.hpp
+    src/AccountModel.cpp
+    src/AccountModel.hpp
+    src/AccountServerPlugin.cpp
+    src/AccountService.cpp
+    src/AccountService.hpp
+    src/AccountServiceFactory.cpp
+    src/AccountServiceFactory.hpp
+    src/AccountViewProxy.cpp
+    src/AccountViewProxy.hpp
+    src/Group.cpp
+    src/Group.hpp
+    src/GroupController.cpp
+    src/GroupController.hpp
+    src/GroupModel.cpp
+    src/GroupModel.hpp
+    src/GroupViewProxy.cpp
+    src/GroupViewProxy.hpp
+    src/PermissibleResource.cpp
+    src/PermissibleResource.hpp
 
     )
 
@@ -79,8 +79,8 @@ endif(MSVC_IDE)
 
 
 install ( FILES 
-    plugin.xml
     Configuration.hpp
+    plugin.xml
     DESTINATION
     Zen/${PROJECT_PREFIX}/
 )

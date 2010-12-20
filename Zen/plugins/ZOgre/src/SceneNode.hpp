@@ -66,6 +66,8 @@ public:
     virtual void setOrientation(Math::Quaternion4& _quaternion);
     virtual void applyTransformation(Math::Matrix4 _transformationMatrix);
     virtual void setScale(Zen::Math::Real _x, Zen::Math::Real _y, Zen::Math::Real _z);
+    virtual void pitch(const Math::Radian& _pitch, bool _parent, bool _local);
+    virtual void yaw(const Math::Radian& _yaw, bool _parent, bool _local);
     virtual void attachObject(Engine::Rendering::I_AttachableObject& _object);
     virtual void attachObject(const std::string& _name, Engine::Rendering::I_AttachableObject& _object, Math::Vector3& _translate, Math::Quaternion4& _rotate);
     virtual int getNumAttachedObjects() const;

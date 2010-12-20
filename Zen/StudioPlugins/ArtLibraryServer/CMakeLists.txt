@@ -27,17 +27,17 @@ source_group(
 
 	
 set ( ArtLibraryServer_SRC
-    src/ExplorerNodeFactory.cpp
-    src/ArtLibraryPlugin.cpp
     src/ArtAssetController.cpp
-    src/ArtFolder.hpp
+    src/ArtAssetController.hpp
+    src/ArtAssetDocument.cpp
+    src/ArtAssetDocument.hpp
+    src/ArtAssetExplorerNode.cpp
     src/ArtAssetExplorerNode.hpp
     src/ArtFolder.cpp
-    src/ArtAssetDocument.hpp
-    src/ArtAssetDocument.cpp
-    src/ArtAssetExplorerNode.cpp
+    src/ArtFolder.hpp
+    src/ArtLibraryPlugin.cpp
+    src/ExplorerNodeFactory.cpp
     src/ExplorerNodeFactory.hpp
-    src/ArtAssetController.hpp
 
     )
 
