@@ -5,7 +5,8 @@ FIND_PATH(ALUT_INCLUDE_DIR AL/alut.h
   PATH_SUFFIXES include/AL include
   PATHS
   c:/Program Files/Alut
-  c:/dev/alut
+  ${INDIEZEN_PARENT}/alut
+  ${INDIEZEN_PARENT}/freealut
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -21,7 +22,8 @@ FIND_LIBRARY(ALUT_LIBRARY alut
   PATH_SUFFIXES lib64 lib libs64 libs libs/Win32 libs/Win64
   PATHS
   c:/Program Files/Alut
-  c:/dev/alut
+  ${INDIEZEN_PARENT}/alut
+  ${INDIEZEN_PARENT}/freealut
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local

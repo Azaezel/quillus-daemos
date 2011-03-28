@@ -4,7 +4,7 @@ FIND_PATH(VORBIS_INCLUDE_DIR vorbis/vorbisfile.h
   HINTS
   PATH_SUFFIXES include/vorbis include
   PATHS
-  c:/dev/vorbis
+  ${INDIEZEN_PARENT}/vorbis
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -19,10 +19,10 @@ FIND_LIBRARY(VORBIS_DEBUG_LIBRARY libvorbis
   HINTS
   PATH_SUFFIXES lib64 lib libs64 libs libs/Win32 libs/Win64 Win32/Debug Win64/Debug
   PATHS
-  C:/dev/vorbis/win32/VS6/Win32/Debug
-  C:/dev/vorbis/win32/VS2003/Win32/Debug
-  C:/dev/vorbis/win32/VS2005/Win32/Debug
-  C:/dev/vorbis/win32/VS2008/Win32/Debug
+  ${INDIEZEN_PARENT}/vorbis/win32/VS6/Win32/Debug
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2003/Win32/Debug
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2005/Win32/Debug
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2008/Win32/Debug
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -37,10 +37,10 @@ FIND_LIBRARY(VORBIS_RELEASE_LIBRARY libvorbis
   HINTS
   PATH_SUFFIXES lib64 lib libs64 libs libs/Win32 libs/Win64 Win32/Release Win64/Release
   PATHS
-  C:/dev/vorbis/win32/VS6/Win32/Release
-  C:/dev/vorbis/win32/VS2003/Win32/Release
-  C:/dev/vorbis/win32/VS2005/Win32/Release
-  C:/dev/vorbis/win32/VS2008/Win32/Release
+  ${INDIEZEN_PARENT}/vorbis/win32/VS6/Win32/Release
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2003/Win32/Release
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2005/Win32/Release
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2008/Win32/Release
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -55,10 +55,10 @@ FIND_LIBRARY(VORBISFILE_DEBUG_LIBRARY libvorbisfile
   HINTS
   PATH_SUFFIXES lib64 lib libs64 libs libs/Win32 libs/Win64 Win32/Debug Win64/Debug
   PATHS
-  C:/dev/vorbis/win32/VS6/Win32/Debug
-  C:/dev/vorbis/win32/VS2003/Win32/Debug
-  C:/dev/vorbis/win32/VS2005/Win32/Debug
-  C:/dev/vorbis/win32/VS2008/Win32/Debug
+  ${INDIEZEN_PARENT}/vorbis/win32/VS6/Win32/Debug
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2003/Win32/Debug
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2005/Win32/Debug
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2008/Win32/Debug
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -73,10 +73,10 @@ FIND_LIBRARY(VORBISFILE_RELEASE_LIBRARY libvorbisfile
   HINTS
   PATH_SUFFIXES lib64 lib libs64 libs libs/Win32 libs/Win64 Win32/Release Win64/Release
   PATHS
-  C:/dev/vorbis/win32/VS6/Win32/Release
-  C:/dev/vorbis/win32/VS2003/Win32/Release
-  C:/dev/vorbis/win32/VS2005/Win32/Release
-  C:/dev/vorbis/win32/VS2008/Win32/Release
+  ${INDIEZEN_PARENT}/vorbis/win32/VS6/Win32/Release
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2003/Win32/Release
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2005/Win32/Release
+  ${INDIEZEN_PARENT}/vorbis/win32/VS2008/Win32/Release
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local

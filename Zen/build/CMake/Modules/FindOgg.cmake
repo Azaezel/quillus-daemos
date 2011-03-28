@@ -4,7 +4,7 @@ FIND_PATH(OGG_INCLUDE_DIR ogg/ogg.h
   HINTS
   PATH_SUFFIXES include/ogg include
   PATHS
-  c:/dev/ogg
+  ${INDIEZEN_PARENT}/ogg
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -19,10 +19,10 @@ FIND_LIBRARY(OGG_DEBUG_LIBRARY libogg
   HINTS
   PATH_SUFFIXES lib64 lib libs64 libs libs/Win32 libs/Win64 Win32/Debug Win64/Debug
   PATHS
-  C:/dev/ogg/win32/VS6/Win32/Debug
-  C:/dev/ogg/win32/VS2003/Win32/Debug
-  C:/dev/ogg/win32/VS2005/Win32/Debug
-  C:/dev/ogg/win32/VS2008/Win32/Debug
+  ${INDIEZEN_PARENT}/ogg/win32/VS6/Win32/Debug
+  ${INDIEZEN_PARENT}/ogg/win32/VS2003/Win32/Debug
+  ${INDIEZEN_PARENT}/ogg/win32/VS2005/Win32/Debug
+  ${INDIEZEN_PARENT}/ogg/win32/VS2008/Win32/Debug
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -37,10 +37,10 @@ FIND_LIBRARY(OGG_RELEASE_LIBRARY libogg
   HINTS
   PATH_SUFFIXES lib64 lib libs64 libs libs/Win32 libs/Win64 Win32/Release Win64/Release
   PATHS
-  C:/dev/ogg/win32/VS6/Win32/Release
-  C:/dev/ogg/win32/VS2003/Win32/Release
-  C:/dev/ogg/win32/VS2005/Win32/Release
-  C:/dev/ogg/win32/VS2008/Win32/Release
+  ${INDIEZEN_PARENT}/ogg/win32/VS6/Win32/Release
+  ${INDIEZEN_PARENT}/ogg/win32/VS2003/Win32/Release
+  ${INDIEZEN_PARENT}/ogg/win32/VS2005/Win32/Release
+  ${INDIEZEN_PARENT}/ogg/win32/VS2008/Win32/Release
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
