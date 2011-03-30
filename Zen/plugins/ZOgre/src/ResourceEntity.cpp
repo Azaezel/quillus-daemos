@@ -37,6 +37,7 @@
 #include "Ogre.hpp"
 
 #include <iostream>
+#include <boost/bind.hpp>
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
