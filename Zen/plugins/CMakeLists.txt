@@ -201,6 +201,18 @@ endif(OPENAL_FOUND AND ALUT_FOUND AND OGG_FOUND AND VORBIS_FOUND)
 #add_subdirectory( ZOpenAL )
 
 #-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+Find_Package(FMOD)
+
+if (FMOD_FOUND)
+    message("-- ZFMOD")
+    add_subdirectory(ZFMOD)
+else(FMOD_FOUND)
+    message("ZFMOD will NOT be compiled. Dependencies not found.")
+endif(FMOD_FOUND)
+
+#add_subdirectory( ZFMOD )
+
+#-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 # These have not yet been ported.
 #  Please add them if you port them ;)
 #add_subdirectory( BasicNetworking )
