@@ -297,6 +297,9 @@ BaseClient::run()
         // Dispatch all of the script events.
         m_pEventService->getEventQueue("script").dispatchAllEvents(false);
 
+        //queue and dequeue all possible sounds as apropriate up to max sustained by hardware+O/S
+        m_pSoundService->processEvents(elapsed);
+
         onAfterFrameRenderedEvent(elapsed);
 
         Threading::I_Thread::sleepForMilliseconds(0);

@@ -63,6 +63,7 @@ public:
         QUEUED,                             //for letting the service know to start it next onframe
         PLAYING,                            //for letting the service know it's already playing during the next onframe
         DEQUEUED,                           //for letting the service know to stop playing it next onframe
+        PAUSED,
         STOPPED
     };
 
@@ -100,8 +101,11 @@ public:
     virtual void dequeue() = 0;
     virtual PLAYSTATE getPlayState()= 0;
     virtual void setPlayState(const PLAYSTATE _state)= 0;
-    virtual Math::Real getVolDist() = 0;                        //these two are only placeholders
-    virtual void setVolDist(const Math::Real _dist) = 0;              //to cut down on sort-crunching
+    virtual Math::Real getPriority() = 0;
+    virtual void setPriority(const Math::Real _dist) = 0;
+
+    virtual Math::Real getTime() const = 0;
+    virtual void setTime(Math::Real _timeOffset) = 0;
     /// @}
 
     /// @name I_ScriptableType implementation

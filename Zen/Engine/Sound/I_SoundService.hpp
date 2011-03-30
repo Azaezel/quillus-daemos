@@ -93,6 +93,8 @@ public:
 
     virtual void setListenRadius(Math::Real _radius) = 0;
     virtual Math::Real getListenRadius() = 0;
+    virtual void setListenMatrix(Zen::Math::Matrix4& _listenMatrix) =0;
+    virtual const Math::Matrix4& getListenMatrix() =0;
 
     /// @todo Should this be moved to I_ScriptableType?
     virtual void registerScriptModule(Zen::Scripting::script_module& _module) = 0;
@@ -108,6 +110,9 @@ public:
     /// @name Events
     /// @{
 public:
+    /// The sound service is non-self-executing, and thus requires an explicit
+    ///  event process call from the aplication to update 3 dimensional data, queueing and the like
+    virtual void processEvents(Zen::Math::Real _deltaTime) =0;
     /// Fired immediately before this object is destroyed.
     /// The payload is about to be destroyed, so do not keep a reference to it.
     serviceEvent_type   onDestroyEvent;
