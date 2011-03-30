@@ -82,8 +82,10 @@ public:
     virtual void dequeue();
     virtual PLAYSTATE getPlayState();
     virtual void setPlayState(const PLAYSTATE _state);
-    virtual Math::Real getVolDist() {return m_volDist;}
-    virtual void setVolDist(const Math::Real _dist) { m_volDist = _dist;}
+    virtual Math::Real getPriority() {return m_volDist;}
+    virtual void setPriority(const Math::Real _dist);
+    virtual Math::Real getTime() const;
+    virtual void setTime(Math::Real _timeOffset);
     /// @}
 
     /// @name SoundService implementation
@@ -104,6 +106,7 @@ public:
     /// @{
 private:
     unsigned int                        m_sourceId;
+    Math::Real                          m_timeOffset;
 
     PLAYSTATE                           m_playState;
     Math::Real                          m_volDist;
