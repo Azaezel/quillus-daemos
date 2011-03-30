@@ -36,7 +36,8 @@ SoundResource::SoundResource(ALuint _bufferID)
 SoundResource::~SoundResource()
 {
     if ((m_data)&&(m_internalMalloc)) free(m_data);
-        else alutUnloadWAV(m_format, m_data, m_size, m_freq);
+    else alutUnloadWAV(m_format, m_data, m_size, m_freq);
+    alDeleteBuffers(1,&m_bufferID);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
