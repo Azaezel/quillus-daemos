@@ -44,7 +44,6 @@ namespace ZFMOD {
 
 class ResourceService
 :   public Engine::Resource::I_ResourceService
-,   public Memory::managed_self_ref<Engine::Resource::I_ResourceService>
 {
     /// @name Types
     /// @{
@@ -64,9 +63,15 @@ public:
 public:
     virtual void addResourceLocation(const std::string& _path, const std::string& _type, 
         const std::string& _group, bool _recursive = false);
-    //virtual void removeResourceLocation(const std::string& _path, const std::string& _type, 
-    //    const std::string& _group, bool _recursive = false);
+    virtual void initialiseAllResourceGroups();
     virtual pResource_type loadResource(config_type& _config);
+    virtual const std::string& getScriptSingletonName() const;
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
+    
+    virtual void removeResourceLocation(const std::string& _path, const std::string& _group);
+    virtual void loadResourceGroup(const std::string& _group);
+    virtual void unloadResourceGroup(const std::string& _group);
+    virtual void getResourceNames(I_ResourceNameVisitor& _visitor, const std::string& _group, const std::string& _pattern) const;
     /// @}
 
     /// @name Event handlers
@@ -78,7 +83,7 @@ protected:
     /// @{
 private:
     void destroyResource(wpResource_type);
-    bool findFile(const boost::filesystem::path& dir_path, const std::string& file_name, boost::filesystem::path& path_found);
+    bool findFile(const boost::filesystem::path& _dir_path, const std::string& _file_name, boost::filesystem::path& _path_found);
     /// @}
 
     /// @name 'Structors
@@ -102,10 +107,15 @@ private:
 		std::string path;
 		bool recursive;
 	};
-	std::list<ResourceLocation*> m_locationList;
+    /// True if the group manager has been initialized
+    Threading::I_Mutex*             m_pGroupInitLock;
+    volatile bool                   m_bInitialized;
 
-    pScriptModule_type          m_pScriptModule;
-    ScriptObjectReference_type* m_pScriptObject;
+    Threading::I_Mutex*             m_pLocationListMutex;
+    std::list<ResourceLocation*>    m_locationList;
+
+    ScriptObjectReference_type*     m_pScriptObject;
+    Zen::Scripting::script_module*  m_pModule;
     /// @}
 
 };  // class ResourceService
