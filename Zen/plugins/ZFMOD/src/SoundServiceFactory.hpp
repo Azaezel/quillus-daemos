@@ -39,16 +39,16 @@ class SoundServiceFactory
     /// @name I_SoundServiceFactory implementation
     /// @{
 public:
-    virtual pSoundService_type create(const std::string& _type, Zen::Engine::Sound::I_SoundServiceFactory::config_type& _config);
+    virtual pSoundService_type create(const std::string& _type, config_type& _config);
     /// @}
 
     /// @name SoundServiceFactory implementation
     /// @{
-private:
-    void destroy(wpSoundService_type _pService);
+public:
+    void onDestroy(wpSoundService_type& _pService);
     /// @}
 
-    /// @name Static methods
+    /// @name Static Methods
     /// @{
 public:
     static SoundServiceFactory& getSingleton();

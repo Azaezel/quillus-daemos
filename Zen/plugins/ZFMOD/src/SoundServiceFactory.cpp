@@ -47,22 +47,22 @@ SoundServiceFactory::~SoundServiceFactory()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-static SoundServiceFactory sm_soundServiceFactory;
+static SoundServiceFactory sm_factory;
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SoundServiceFactory&
 SoundServiceFactory::getSingleton()
 {
-    return sm_soundServiceFactory;
+    return sm_factory;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SoundServiceFactory::pSoundService_type
-SoundServiceFactory::create(const std::string& _type, Zen::Engine::Sound::I_SoundServiceFactory::config_type& _config)
+SoundServiceFactory::create(const std::string& _type, config_type& _config)
 {
     SoundService* pRawService = new SoundService(_config);
 
-	SoundServiceFactory::pSoundService_type pService(pRawService, boost::bind(&SoundServiceFactory::destroy, this, _1));
+    pSoundService_type pService(pRawService, boost::bind(&SoundServiceFactory::onDestroy,this,_1));
 
     wpSoundService_type pWeakPtr(pService);
 
@@ -73,21 +73,21 @@ SoundServiceFactory::create(const std::string& _type, Zen::Engine::Sound::I_Soun
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-SoundServiceFactory::destroy(wpSoundService_type _pService)
+SoundServiceFactory::onDestroy(wpSoundService_type& _pService)
 {
-    /// Fire the service's onDestroyEvent.
+    /// Fire the service's onDestroyEvent
     _pService->onDestroyEvent(_pService);
 
     /// Delete the service
     SoundService* pService = dynamic_cast<SoundService*>(_pService.get());
 
-    if (pService != NULL)
+    if(pService != NULL)
     {
         delete pService;
     }
     else
     {
-        // TODO Error!
+        // TODO : Error
     }
 }
 

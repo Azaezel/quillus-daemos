@@ -35,7 +35,7 @@
 namespace Zen {
 namespace ZFMOD {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-SoundResource::SoundResource(void * _buff, FMOD_CREATESOUNDEXINFO _exinfo)
+SoundResource::SoundResource(const char * _buff, FMOD_CREATESOUNDEXINFO _exinfo)
 {
     m_bufferID = _buff;
     m_exInfo = _exinfo;
@@ -44,7 +44,7 @@ SoundResource::SoundResource(void * _buff, FMOD_CREATESOUNDEXINFO _exinfo)
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SoundResource::~SoundResource()
 {
-    free(m_bufferID);
+
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -111,7 +111,7 @@ SoundResource::getIs3d()
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void *
+const char *
 SoundResource::getBufferID()
 {
    return m_bufferID;
@@ -119,7 +119,7 @@ SoundResource::getBufferID()
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-SoundResource::setBufferID(void * _bufferID)
+SoundResource::setBufferID(const char * _bufferID)
 {
     m_bufferID = _bufferID;
 }
