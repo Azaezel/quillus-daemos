@@ -39,12 +39,14 @@ Source::Source()
 ,   m_looping(false)
 ,   m_pModule(Zen::Engine::Sound::I_SoundManager::getSingleton().getDefaultScriptModule())
 ,   m_pScriptObject(NULL)
+,   m_timeOffset(0)
 {
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 Source::~Source()
 {
+    if (m_sourceId!=NULL) alDeleteSources(1,&m_sourceId);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -85,13 +87,13 @@ Source::setLooping(const bool _loop)
     m_looping = _loop;
     if (_loop)
     {
-        std::cout << "Sound looping mode enabled." << std::endl;
+        //std::cout << "Sound looping mode enabled." << std::endl;
         alSourcei (m_sourceId, AL_LOOPING,  AL_TRUE  );
     }
     else
     {
         alSourcei (m_sourceId, AL_LOOPING,  AL_FALSE  );
-        std::cout << "Sound looping mode disabled." << std::endl;
+        //std::cout << "Sound looping mode disabled." << std::endl;
     }
 }
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -211,7 +213,7 @@ Source::mute(const bool _mute)
     alGetError();
     if (_mute)
     {
-        std::cout << "Sound muted" << std::endl;
+        //std::cout << "Sound muted" << std::endl;
         if (m_sourceId != NULL)
             alSourcef(m_sourceId, AL_GAIN, 0);
         else
@@ -219,7 +221,7 @@ Source::mute(const bool _mute)
     }
     else
     {
-        std::cout << "Sound unmuted" << std::endl;
+        //std::cout << "Sound unmuted" << std::endl;
         if (m_sourceId != NULL)
             alSourcef(m_sourceId, AL_GAIN, m_volume);
         else
@@ -234,13 +236,14 @@ Source::pause(const bool _paused)
 {
     if (_paused)
     {
-        std::cout << "Sound paused" << std::endl;
-        m_playState = QUEUED;
+        //std::cout << "Sound paused" << std::endl;
+        m_playState = PAUSED;
+        alSourcePause(m_sourceId);
     }
     else
     {
-        std::cout << "Sound unpaused" << std::endl;
-        m_playState = DEQUEUED;
+        //std::cout << "Sound unpaused" << std::endl;
+        m_playState = QUEUED;
     }
 }
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -346,6 +349,43 @@ Source::getEmissionRadius() const
    return m_emissionRadius;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Source::setPriority(const Math::Real _dist)
+{
+    m_volDist = _dist;
+};
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Math::Real
+Source::getTime() const
+{
+   return m_timeOffset;
+}
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+Source::setTime(Math::Real _timeOffset)
+{
+    m_timeOffset += _timeOffset;
+    if (m_sourceId!= NULL)
+    {
+        alGetError();
+        alSourcef(m_sourceId, AL_SEC_OFFSET, m_timeOffset);
+        ALenum erno = alGetError();
+        //if we exceed the buffer range, consider us done.
+        if (erno != AL_NO_ERROR)
+        {
+            if (m_looping == true)
+            {
+                m_timeOffset = 0;
+            }
+            else
+            {
+                stop();
+            }
+    }
+    }
+}
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZOpenAL
 }   // namespace Zen

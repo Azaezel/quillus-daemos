@@ -40,11 +40,60 @@ namespace ZFMOD {
 
 class Source
 :   public Engine::Sound::I_SoundSource
-,   public Memory::managed_self_ref<Engine::Sound::I_SoundSource>
 {
+    /// @name Types
+    /// @{
+public:
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
+    /// @}
+
+    /// @name I_Audible implementation
+    /// @{
+public:
+	virtual bool play();
+    virtual void mute(bool _mute);
+    virtual void pause(bool _pause);
+    virtual void stop();
+    /// @}
+
     /// @name I_Source implementation
     /// @{
 public:
+    virtual void setResource(ResourceService::pResource_type _pResource);
+    virtual ResourceService::pResource_type getResource() const;
+    virtual void setPosition(const Math::Point3& _pos);
+    virtual const Math::Point3& getPosition() const;
+    virtual void setVelocity(const Math::Vector3& _vel);
+    virtual const Math::Vector3& getVelocity() const;
+    virtual void setVolume(const Math::Real _vol);
+    virtual Math::Real getVolume() const;
+    virtual void setPitch(const Math::Real _pitch);
+    virtual Math::Real getPitch() const;
+    virtual void setEmissionRadius(const Math::Real _radius);
+    virtual Math::Real getEmissionRadius() const;
+    virtual void setLooping(const bool _loop);
+    virtual bool getLooping() const;
+    virtual void queue();
+    virtual void dequeue();
+    virtual PLAYSTATE getPlayState();
+    virtual void setPlayState(const PLAYSTATE _state);
+    virtual Math::Real getPriority() {return m_volDist;}
+    virtual void setPriority(const Math::Real _dist);
+
+    virtual Math::Real getTime() const;
+    virtual void setTime(Math::Real _timeOffset);
+    /// @}
+
+    /// @name SoundService implementation
+    /// @{
+public:
+    virtual void setSourceID(FMOD::Channel* _sourceID);
+    virtual FMOD::Channel* getSourceID();
     /// @}
 
     /// @name 'Structors
@@ -54,74 +103,27 @@ public:
     virtual ~Source();
     /// @}
 
-    /// @name I_Source implementation
-    /// @{
-public:
-
-    virtual void setResource(ResourceService::pResource_type _resource);
-    virtual ResourceService::pResource_type getResource() const;
-    //playback
-    virtual void setLooping(const bool _loop);
-    virtual bool getLooping() const;
-	virtual bool play();
-    virtual void mute(bool _mute);
-    virtual void pause(bool _pause);
-    virtual void stop();
-    //3d coords
-    virtual void setPosition(const Math::Point3 &_pos);
-    virtual const Math::Point3& getPosition() const;
-    virtual void setVelocity(const Math::Vector3& _vel);
-    virtual const Math::Vector3& getVelocity() const;
-    //fine grain manipulation
-    virtual void setVolume(const Math::Real _vol);
-    virtual Math::Real getVolume() const;
-    virtual void setPitch(const Math::Real _pitch);
-    virtual Math::Real getPitch() const;
-    virtual void setEmissionRadius(const Math::Real _radius);
-    virtual Math::Real getEmissionRadius() const;
-    /// @}
-
-    /// @name SoundService class data-interfacing. For use with SoundService::onFrame() and SoundService::sortSounds()
-    /// @{
-public:
-
-    virtual void queue();
-    virtual void dequeue();
-    virtual PLAYSTATE   getPlayState();
-    virtual void    setPlayState(const PLAYSTATE _state);
-    virtual Math::Real getVolDist(){return m_VolDist;};                 //these two are only placeholders
-    virtual void setVolDist(const Math::Real _dist);
-    /// @}
-
     /// @name Member Variables
     /// @{
 private:
-    PLAYSTATE           m_playState;
-    Math::Real          m_VolDist;                              //volume*distance storage for sorting
-    /// @}
+    FMOD::Channel*                      m_sourceId;
+    Math::Real                          m_timeOffset;
 
-    ///FMOD specific:
-public:
-    virtual void setSourceID(FMOD::Channel* _sourceID);
-    virtual FMOD::Channel* getSourceID();
-private:
-    /// @}
+    PLAYSTATE                           m_playState;
+    Math::Real                          m_volDist;          //volume*distance storage for sorting
 
-    /// @name Member Variables
-    /// @{
-private:
-    Math::Real          m_frequency;
-    /// @}
+    bool                                m_looping;          //loops or a one off playthrough?
+    ResourceService::pResource_type     m_pSoundResource;   //the sound file struct (turn to vector<> for randomised list support?)
+    Math::Point3                        m_pos;              //3d coords of the emitter
+    Math::Vector3                       m_vec;              //3d velocity vector
+    Math::Real                          m_volume;           //volume from this source
+    Math::Real                          m_pitch;            //pitch from this source
+    Math::Real                          m_emissionRadius;
 
-    /// Sound Source General:
-
-    bool    m_looping;          //loops or a one off playthrough?
-    ResourceService::pResource_type      m_SoundResource;    //the sound file struct (turn to vector<> for randomised list support?)
-    Math::Point3        m_pos;              //3d coords of the emitter
-    Math::Vector3       m_vec;              //3d velocity vector
-    Math::Real          m_volume;           //volume from this source
-    Math::Real          m_pitch;            //pitch from this source
-    Math::Real          m_emissionRadius;
+    ScriptObjectReference_type*         m_pScriptObject;
+    pScriptModule_type                  m_pModule;
+    Math::Real                          m_frequency;
+    
     ///FMOD specific:
     FMOD::System* m_pFMODSystem;
     FMOD::Channel* m_pChannel;
