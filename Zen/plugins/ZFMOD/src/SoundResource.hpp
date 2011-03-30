@@ -74,14 +74,14 @@ public:
     /// @name 'Structors
     /// @{
 public:
-             SoundResource(void * _buff, FMOD_CREATESOUNDEXINFO _exinfo);
+             SoundResource(const char * _buff, FMOD_CREATESOUNDEXINFO _exinfo);
     virtual ~SoundResource();
     /// @}
 
     ///FMOD specific:
 public:
-    virtual void * getBufferID();
-    virtual void setBufferID(void * _bufferID);
+    virtual const char * getBufferID();
+    virtual void setBufferID(const char * _bufferID);
     virtual FMOD_CREATESOUNDEXINFO getExInfo();
     virtual void setExInfo(FMOD_CREATESOUNDEXINFO _exInfo);
     /// @}
@@ -90,7 +90,7 @@ public:
     /// @{
 private:
     FMOD::System* m_pFMODSystem;
-    void*   m_bufferID;
+    const char *   m_bufferID;
     FMOD_CREATESOUNDEXINFO m_exInfo;
     int     m_format;
     int     m_size;
