@@ -28,6 +28,7 @@
 
 #include <assert.h>
 
+#include "../Configuration.hpp"
 #include "Thread_win32.hpp"
 
 #include "../I_Runnable.hpp"
