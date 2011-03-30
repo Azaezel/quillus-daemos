@@ -40,7 +40,13 @@
 namespace Zen {
 namespace ZFMOD {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ResourceService::ResourceService()
+:   m_pLocationListMutex(Zen::Threading::MutexFactory::create())
+,   m_pGroupInitLock(Zen::Threading::MutexFactory::create())
+,   m_bInitialized(false)
+,   m_pScriptObject(NULL)
+,   m_pModule(NULL)
 {
     m_pFMODSystem = NULL;
 }
@@ -48,66 +54,41 @@ ResourceService::ResourceService()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ResourceService::~ResourceService()
 {
+    Zen::Threading::MutexFactory::destroy(m_pLocationListMutex);
+    Zen::Threading::MutexFactory::destroy(m_pGroupInitLock);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-Scripting::I_ObjectReference*
-ResourceService::getScriptObject()
+void
+ResourceService::addResourceLocation(const std::string& _path, const std::string& _type,
+                                        const std::string& _group, bool _recursive)
 {
-    // TODO Make thread safe?
-    if (m_pScriptObject == NULL)
-    {
-        m_pScriptObject = new ScriptObjectReference_type
-            (m_pScriptModule, m_pScriptModule->getScriptType(getScriptTypeName()), getSelfReference().lock());
-    }
-
-    return m_pScriptObject;
+    Zen::Threading::CriticalSection guard(m_pLocationListMutex);
+	ResourceLocation* loc = new ResourceLocation();
+	loc->path = _path;
+	loc->recursive = _recursive;
+    m_locationList.push_back(loc);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-bool
-ResourceService::findFile(const boost::filesystem::path& dir_path, const std::string& file_name, boost::filesystem::path& path_found)
+void
+ResourceService::initialiseAllResourceGroups()
 {
-    if (!exists(dir_path))
-        return false;
-    boost::filesystem::directory_iterator end_itr; // default construction yields past-the-end
-    for (boost::filesystem::directory_iterator itr(dir_path); itr != end_itr; ++itr)
+    if (!m_bInitialized)
     {
-        if (is_directory(itr->status()))
+        Zen::Threading::CriticalSection guard(m_pGroupInitLock);
+        if (!m_bInitialized)
         {
-            if (findFile(itr->path(), file_name, path_found))
-                return true;
-        }
-        else if (itr->leaf() == file_name) // see below
-        {
-            path_found = itr->path();
-            return true;
+            m_bInitialized = true;
         }
     }
-    return false;
-}
-
-void ResourceService::LoadFileIntoMemory(const char *name, void **buff, int *length)
-{
-    FILE *fp = fopen(name, "rb");
-    
-    fseek(fp, 0, SEEK_END);
-    *length = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    
-    *buff = malloc(*length);
-    fread(*buff, *length, 1, fp);
-    
-    fclose(fp);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ResourceService::pResource_type 
 ResourceService::loadResource(config_type& _config)
 {
-    // TODO search paths based on string structure (i.e. "<Type>::<Group>::<ResourceName>")
-    // and determine importer to use based on resource file extension and then,
-    // of course, import the resource.
+    initialiseAllResourceGroups();
 
     void *buff = 0;
     int length = 0;
@@ -158,7 +139,7 @@ ResourceService::loadResource(config_type& _config)
             // found the file
             std::cout << fullPath.string().c_str() << " loaded" << std::endl;
             
-            SoundResource* pRawPointer = new SoundResource(buff,exinfo);
+            SoundResource* pRawPointer = new SoundResource(static_cast<const char *>(buff),exinfo);
             pResource_type pSoundResource(pRawPointer, boost::bind(&ResourceService::destroyResource, this, _1));
             wpResource_type pWeakPtr(pSoundResource);
             pRawPointer->setSelfReference(pWeakPtr);
@@ -178,48 +159,121 @@ ResourceService::loadResource(config_type& _config)
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#if 0
 void
-ResourceService::removeResourceLocation(const std::string& _path, const std::string& _type,
-                                     const std::string& _group, bool _recursive)
+ResourceService::destroyResource(wpResource_type _pResource)
 {
-	// Note: parameters _type, _group and _recursive are ignored
-    // TODO - don't assume non-recursive paths
-    for (std::list<ResourceLocation*>::iterator iter = m_locationList.begin();
-        iter != m_locationList.end(); iter++)
+    SoundResource* pResource =
+        dynamic_cast<SoundResource*>(_pResource.get());
+
+    if (pResource != NULL)
     {
-        ResourceLocation* loc = *iter;
-	    std::string filename = loc->path;
-        if (filename.compare(_path) == 0)
-        {
-            m_locationList.remove(*iter);
-            // TODO - is this a memory leak??
-            //delete loc;
-            break;
-        }
+        _pResource->onDestroyEvent(_pResource);
+        delete pResource;
+    }
+    else
+    {
+        throw Zen::Utility::runtime_exception("ResourceService::destroyResource() : Invalid type.");
     }
 }
-#endif
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-void
-ResourceService::addResourceLocation(const std::string& _path, const std::string& _type,
-                                        const std::string& _group, bool _recursive)
+static std::string sm_scriptSingletonName("soundResourceService");
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const std::string&
+ResourceService::getScriptSingletonName() const
 {
-    std::cout << "addResourceLocation() called" << std::endl;
-	// Note: parameters _type, _group and _recursive are ignored
-	ResourceLocation* loc = new ResourceLocation();
-	loc->path = _path;
-	loc->recursive = _recursive;
-    m_locationList.push_back(loc);
+    return sm_scriptSingletonName;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Scripting::I_ObjectReference*
+ResourceService::getScriptObject()
+{
+    // TODO Make thread safe?
+    if (m_pScriptObject == NULL)
+    {
+        m_pScriptObject = new ScriptObjectReference_type(
+            m_pModule->getScriptModule(), 
+            m_pModule->getScriptModule()->getScriptType(getScriptTypeName()), 
+            getSelfReference().lock()
+        );
+    }
+
+    return m_pScriptObject;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-ResourceService::destroyResource(wpResource_type)
+ResourceService::registerScriptModule(Zen::Scripting::script_module& _module)
 {
-    // TODO Call onDestroy and delete
+    m_pModule = &_module;
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+bool
+ResourceService::findFile(const boost::filesystem::path& _dir_path, const std::string& _file_name, boost::filesystem::path& _path_found)
+{
+    if (!exists(_dir_path))
+        return false;
+    boost::filesystem::directory_iterator end_itr; // default construction yields past-the-end
+    for (boost::filesystem::directory_iterator itr(_dir_path); itr != end_itr; ++itr)
+    {
+        if (is_directory(itr->status()))
+        {
+            if (findFile(itr->path(), _file_name, _path_found))
+                return true;
+        }
+        else if (itr->leaf() == _file_name) // see below
+        {
+            _path_found = itr->path();
+            return true;
+        }
+    }
+    return false;
+}
+
+void ResourceService::LoadFileIntoMemory(const char *name, void **buff, int *length)
+{
+    FILE *fp = fopen(name, "rb");
     
+    fseek(fp, 0, SEEK_END);
+    *length = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    
+    *buff = malloc(*length);
+    fread(*buff, *length, 1, fp);
+    
+    fclose(fp);
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::removeResourceLocation(const std::string& _path, const std::string& _group)
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::loadResourceGroup(const std::string& _group)
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::unloadResourceGroup(const std::string& _group)
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::getResourceNames(I_ResourceNameVisitor& _visitor,
+                                         const std::string& _group,
+                                         const std::string& _pattern) const
+{
+    // TODO Implement?
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

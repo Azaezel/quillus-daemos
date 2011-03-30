@@ -62,6 +62,12 @@ public:
     virtual pResource_type loadResource(config_type& _config);
     virtual const std::string& getScriptSingletonName() const;
     virtual void registerScriptModule(Zen::Scripting::script_module& _module);
+
+    virtual void removeResourceLocation(const std::string& _path, const std::string& _group);
+    virtual void loadResourceGroup(const std::string& _group);
+    virtual void unloadResourceGroup(const std::string& _group);
+    virtual void getResourceNames(I_ResourceNameVisitor& _visitor, const std::string& _group, const std::string& _pattern) const;
+
     /// @}
 
     /// @name Event handlers

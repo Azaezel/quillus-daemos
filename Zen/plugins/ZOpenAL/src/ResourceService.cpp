@@ -338,6 +338,36 @@ ResourceService::loadVorbisBuffer(const char* _fileName, ALenum* _format, ALsize
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::removeResourceLocation(const std::string& _path, const std::string& _group)
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::loadResourceGroup(const std::string& _group)
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::unloadResourceGroup(const std::string& _group)
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+ResourceService::getResourceNames(I_ResourceNameVisitor& _visitor,
+                                         const std::string& _group,
+                                         const std::string& _pattern) const
+{
+    // TODO Implement?
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 }   // namespace ZOpenAL
 }   // namespace Zen
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
