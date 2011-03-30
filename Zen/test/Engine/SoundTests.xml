@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<application
+   id="SoundTests"
+   name="Zen::Engine::Sound Unit Tests"
+   version="0.6.2"
+   provider-name="IndieZen.org">
+
+  <plugin-path path="E:/dev/Zen/plugins"/>
+  <module-path path="E:/dev/bin"/>
+
+  <requires>
+    <import plugin="ZOpenAL"/>
+    <import plugin="ZFMOD"/>
+  </requires>
+
+</application>

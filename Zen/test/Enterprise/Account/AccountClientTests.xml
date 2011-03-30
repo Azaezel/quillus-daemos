@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<application
+   id="AccountClientTest"
+   name="Zen Enterprise Account Client Test Application"
+   version="0.6.2"
+   provider-name="IndieZen.org">
+
+  <plugin-path path="C:/dev/Zen/plugins"/>
+  <plugin-path path="~/dev/Zen/plugins"/>
+  <plugin-path path="C:/dev/Zen/EnterprisePlugins/Account"/>
+  <plugin-path path="~/dev/Zen/EnterprisePlugins/Account"/>
+  <module-path path="C:/dev/bin"/>
+  <module-path path="~/dev/bin"/>
+
+    <requires>
+        <import plugin="ZLua" />
+        <import plugin="ZSQLite" />
+        <import plugin="ZBoostNetworking" />
+        <import plugin="AccountClient" />
+        <import plugin="AccountService" />
+    </requires>
+
+    <databases>
+        <database type="sqlite" name="accountConnection">
+            <fileName value="accountTests.sqlite" />
+        </database>
+    </databases>
+    
+    <applications>
+        <application type="AccountClient" location="/accountClient" />
+        <application type="AccountService" location="/accountService">
+	    	<database connection="accountConnection" />
+        </application>
+    </applications>
+
+    <protocols>
+        <protocol type="tcp-binary" address="localhost" port="10001" threads="2" name="accountService" />
+        <protocol type="tcp-binary" name="accountClient" threads="2" />
+    </protocols>
+
+</application>

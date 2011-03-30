@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?indiezen version="1.0"?>
+<application
+   id="SessionClientTest"
+   name="Zen Enterprise Session Client Test Application"
+   version="0.6.2"
+   provider-name="IndieZen.org">
+
+  <plugin-path path="C:/dev/Zen/plugins"/>
+  <plugin-path path="~/dev/Zen/plugins"/>
+  <plugin-path path="C:/dev/Zen/EnterprisePlugins"/>
+  <plugin-path path="~/dev/Zen/EnterprisePlugins"/>
+  <module-path path="C:/dev/bin"/>
+  <module-path path="~/dev/bin"/>
+
+    <requires>
+        <import plugin="ZLua" />
+        <import plugin="ZSQLite" />
+        <import plugin="ZBoostNetworking" />
+        <import plugin="SessionClient" />
+        <import plugin="SessionService" />
+        <import plugin="AccountClient" />
+        <import plugin="AccountService" />
+    </requires>
+
+    <databases>
+        <database type="sqlite" name="accountConnection">
+            <fileName value="sessionTests.sqlite" />
+        </database>
+    </databases>
+    
+    <applications>
+        <application type="SessionClient" location="/sessionClient" />
+        <application type="SessionService" location="/sessionService">
+            <account-client location="/accountClient" />
+	    	<account-service address="localhost" port="10001" location="/accountService"/>
+            <account-protocol name="accountClient" />
+        </application>
+        <application type="AccountClient" location="/accountClient" />
+        <application type="AccountService" location="/accountService">
+	    	<database connection="accountConnection" />
+        </application>
+    </applications>
+
+    <protocols>
+        <protocol type="tcp-binary" address="localhost" port="10000" threads="2" name="sessionService" />
+        <protocol type="tcp-binary" name="sessionClient" threads="2" />
+        <protocol type="tcp-binary" address="localhost" port="10001" threads="2" name="accountService" />
+        <protocol type="tcp-binary" name="accountClient" threads="2" />
+    </protocols>
+
+</application>
