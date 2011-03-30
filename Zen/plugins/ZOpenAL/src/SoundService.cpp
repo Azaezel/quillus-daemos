@@ -43,6 +43,13 @@
 namespace Zen {
 namespace ZOpenAL {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+struct SoundPriorityIsLess {
+   bool operator()(const SoundService::wpSource_type& _lhs, const SoundService::wpSource_type& _rhs) const {
+      return _lhs->getPriority() < _rhs->getPriority();
+   }
+};
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SoundService::SoundService(config_type& _config)
 :   m_pModule(NULL)
 ,   m_pScriptObject(NULL)
@@ -54,11 +61,15 @@ SoundService::SoundService(config_type& _config)
     alGetError(); // clear error code
     m_maxSources = 128;                     // verry verry unlikely to see a card that can handle this many sources
     m_listenRadius = 20.0f;
+    m_listenMatrix.identity();
+    alListener3f(AL_POSITION, 0, 0, 0);
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SoundService::~SoundService()
 {
+    for(Sources_type::iterator iter = m_sources.begin(); iter != m_sources.end(); iter++)
+        m_sources.erase(iter);
     Zen::Threading::MutexFactory::destroy(m_pSourcesMutex);
 }
 
@@ -93,6 +104,7 @@ SoundService::createSource(Engine::Sound::I_SoundResource::pSoundResource_type _
     pSource->setResource(_pResource);
 
     _pResource->setIs3d(false);
+    alSourcei(pRawPointer->getSourceID(),AL_SOURCE_RELATIVE,true);
 
     pSource->play(); 
 
@@ -116,6 +128,8 @@ SoundService::createSource(Engine::Sound::I_SoundResource::pSoundResource_type _
     );
 
     pSource->setResource(_pResource);
+    _pResource->setIs3d(true);
+    alSourcei(pRawPointer->getSourceID(),AL_SOURCE_RELATIVE,false);
 
     pSource->setPosition(_pos);
 
@@ -144,6 +158,8 @@ SoundService::createSource(Engine::Sound::I_SoundResource::pSoundResource_type _
 
     Math::Point3 pos = Math::Point3(_x,_y,0);
 
+    alSourcei(pRawPointer->getSourceID(),AL_SOURCE_RELATIVE,false);
+
     pSource->setPosition(pos);
 
     pSource->play();
@@ -155,10 +171,30 @@ SoundService::createSource(Engine::Sound::I_SoundResource::pSoundResource_type _
 
     return pSource;
 }
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+void
+SoundService::orderByPriority()
+{
+    std::set<wpSource_type,SoundPriorityIsLess> temp;
+
+    Sources_type::iterator iter = m_sources.begin();
+    while( iter != m_sources.end() )
+    {
+        temp.insert(*iter);
+        ++iter;
+    }
+
+    std::set<wpSource_type,SoundPriorityIsLess>::iterator tempIter = temp.begin();
+    while( tempIter != temp.end() )
+    {
+        m_sources.insert(*tempIter);
+        ++tempIter;
+    }
+}
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
-SoundService::onFrame()
+SoundService::processEvents(Zen::Math::Real _deltaTime)
 {
     Zen::Threading::CriticalSection guard(m_pSourcesMutex);
 
@@ -167,15 +203,20 @@ SoundService::onFrame()
     Sources_type::iterator iter = m_sources.begin();
     while( iter != m_sources.end() )
     {
+        //increment timers for sounds that should have played but haven't
+        Math::Real curSoundTime = (*iter)->getTime();
+        (*iter)->setTime(curSoundTime+_deltaTime);
+        //kill off finished, or should have finished if we were in range sounds
         if ((*iter)->getPlayState() == Source::STOPPED)
         {
             (*iter)->stop();
-            //TODO: kill source class?
             iter = m_sources.erase( iter );
         }
         else
             ++iter;
     }
+
+    orderByPriority();
 
     boost::uint8_t activeSourceCount = 0;
     boost::uint8_t sourceAddFails = 0;
@@ -214,8 +255,40 @@ SoundService::onFrame()
         //we must have run out of possible voices. Update the maxSources to reflect this, and dequeue the rest
         //this way we avoid artificial hardware limitations
         m_maxSources = activeSourceCount-sourceAddFails;
-        std::cout << "alGenSources(1, &sourceID); failed! setting new voices cap to:" << m_maxSources <<"\n";
+        //std::cout << "alGenSources(1, &sourceID); failed! setting new voices cap to:" << m_maxSources <<"\n";
     }
+}
+	 	 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~ 
+void 
+SoundService::setListenMatrix(Zen::Math::Matrix4& _listenMatrix) 
+{ 
+    alGetError(); 
+    m_listenMatrix = _listenMatrix; 
+    // http://www.gamedev.net/reference/articles/article1958.asp
+    //set current listener position 
+    Math::Point3 pos; 
+    m_listenMatrix.getPosition(pos); 
+    alListener3f(AL_POSITION,pos.m_x,pos.m_y,pos.m_z); 
+    //set current listener orientation 
+    Math::Real vec[6]; 
+    Math::Vector3 fvec = m_listenMatrix.getForwardVector(); 
+    vec[0] = fvec.m_x; //forward vector x value 
+    vec[1] = fvec.m_y; //forward vector y value 
+    vec[2] = fvec.m_z; //forward vector z value 
+    vec[3] = m_listenMatrix.m_array[1]; //up vector x value 
+    vec[4] = m_listenMatrix.m_array[5]; //up vector y value
+    vec[5] = m_listenMatrix.m_array[9]; //up vector z value 
+    alListenerfv(AL_ORIENTATION, vec); 
+    //alListenerfv(AL_VELOCITY,    ListenerVel); 
+    if(alGetError() != AL_NO_ERROR) std::cout << "SoundService::setListenMatrix(Zen::Math::Matrix4 _listenMatrix) failed!"; 
+}
+
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+const Math::Matrix4&
+SoundService::getListenMatrix()
+{
+    return m_listenMatrix;
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

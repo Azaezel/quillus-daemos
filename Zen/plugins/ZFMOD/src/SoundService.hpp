@@ -48,37 +48,50 @@ namespace ZFMOD {
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 class SoundService
-:   public Zen::Engine::Sound::I_SoundService
-,   public Memory::managed_self_ref<Zen::Engine::Sound::I_SoundService>
+:   public Engine::Sound::I_SoundService
 {
     /// @name Types
     /// @{
 public:
     typedef std::map< std::string, std::string >                config_type;
-    typedef ResourceService                                     pResourceService;
-    typedef Engine::Sound::I_SoundResource::pSoundResource_type pSoundResource_type;
+    typedef std::set<wpSource_type>                             Sources_type;
+    /// @}
+
+    /// @name I_ScriptableType implementation
+    /// @{
+public:
+    virtual Zen::Scripting::I_ObjectReference* getScriptObject();
     /// @}
 
     /// @name I_SoundService implementation
     /// @{
 public:
+	virtual void muteAll(bool _isMuted);
     virtual pSource_type createSource(pSoundResource_type _pResource);
     virtual pSource_type createSource(pSoundResource_type _pResource, Math::Point3 _pos);
     virtual pSource_type createSource(pSoundResource_type _pResource, Math::Real _x, Math::Real _y);
-public:
-	virtual void muteAll(bool bMute);
-    virtual void setListenMatrix(Math::Matrix4 _listenMatrix);
-    virtual Math::Matrix4 getListenMatrix();
-    void    sortVectorbyLooping(std::vector<pSource_type> * _vector);
-    virtual void sortSounds();
     virtual void setListenRadius(Math::Real _radius);
     virtual Math::Real getListenRadius();
+    virtual void registerScriptModule(Zen::Scripting::script_module& _module);
+    virtual void setListenMatrix(Zen::Math::Matrix4& _listenMatrix);
+    virtual const Math::Matrix4& getListenMatrix();
+    /// @}
+
+    /// @name SoundService implementation
+    /// @{
+public:
+    void destroySource(wpSource_type _wpSource);
+    /// @}
+
+    /// @name Static methods
+    /// @{
+public:
     /// @}
 
     /// @name Event handlers
     /// @{
-protected:
-	virtual void onFrame();
+//protected:
+	virtual void processEvents(Zen::Math::Real _deltaTime);
     /// @}
 
     /// @name 'Structors
@@ -91,14 +104,19 @@ public:
     /// @name Member Variables
     /// @{
 private:
-	FMOD::System* m_pFMODSystem;
-	FMOD::ChannelGroup* m_channelGroupMain;
-	FMOD::Channel* m_channelBGMusic;
-	bool m_bMainMuted;
-    Math::Matrix4 m_ListenMatrix;
-    Math::Real m_listenRadius;
-	std::vector<pSource_type> m_SoundSources;
-    Math::Real m_maxSources;
+    Math::Real                      m_listenRadius;
+    boost::uint8_t                  m_maxSources;
+    bool                            m_isMuted;
+    Math::Matrix4                   m_listenMatrix;
+    Zen::Threading::I_Mutex*        m_pSourcesMutex;
+    Sources_type                    m_sources;
+
+    Zen::Scripting::script_module*  m_pModule;
+    ScriptObjectReference_type*     m_pScriptObject;
+    
+    FMOD::System* m_pFMODSystem;
+    FMOD::ChannelGroup* m_channelGroupMain;
+    FMOD::Channel* m_channelBGMusic;
     /// @}
 
 };  // class SoundService

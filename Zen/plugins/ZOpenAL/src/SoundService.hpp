@@ -69,12 +69,15 @@ public:
     virtual void setListenRadius(Math::Real _radius);
     virtual Math::Real getListenRadius();
     virtual void registerScriptModule(Zen::Scripting::script_module& _module);
+    virtual void setListenMatrix(Zen::Math::Matrix4& _listenMatrix);
+    virtual const Math::Matrix4& getListenMatrix();
     /// @}
 
     /// @name SoundService implementation
     /// @{
 public:
     void destroySource(wpSource_type _wpSource);
+    void orderByPriority();
     /// @}
 
     /// @name Static methods
@@ -85,7 +88,7 @@ public:
     /// @name Event handlers
     /// @{
 //protected:
-	virtual void onFrame();
+	virtual void processEvents(Zen::Math::Real _deltaTime);
     /// @}
 
     /// @name 'Structors
@@ -100,9 +103,9 @@ public:
 private:
     Math::Real                      m_listenRadius;
     boost::uint8_t                  m_maxSources;
-	bool                            m_isMuted;
+    bool                            m_isMuted;
     bool                            m_eaxEnabled;
-
+    Math::Matrix4                   m_listenMatrix;
     Zen::Threading::I_Mutex*        m_pSourcesMutex;
     Sources_type                    m_sources;
 
