@@ -1,0 +1,9 @@
+DEBUG: Parsing configuration file: E:/dev/Zen/test/Engine/SoundTests.xml
+DEBUG: setPluginPath E:/dev/Zen/plugins
+DEBUG: setPluginPath E:/dev/Zen/test/Engine
+DEBUG: setModulePath E:/dev/BIN
+DEBUG: Done parsing.
+DEBUG: Application Id: SoundTests
+DEBUG:           Name: Zen::Engine::Sound Unit Tests
+DEBUG:        Version: 0.6.1
+DEBUG:       Provider: IndieZen.org
