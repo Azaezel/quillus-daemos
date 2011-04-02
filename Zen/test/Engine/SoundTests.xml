@@ -3,11 +3,12 @@
 <application
    id="SoundTests"
    name="Zen::Engine::Sound Unit Tests"
-   version="0.6.2"
+   version="0.6.1"
    provider-name="IndieZen.org">
 
   <plugin-path path="E:/dev/Zen/plugins"/>
-  <module-path path="E:/dev/bin"/>
+  <plugin-path path="E:/dev/Zen/test/Engine"/>
+  <module-path path="E:/dev/BIN"/>
 
   <requires>
     <import plugin="ZOpenAL"/>
