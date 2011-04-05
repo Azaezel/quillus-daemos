@@ -87,10 +87,12 @@ ResourceService::ResourceService()
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ResourceService::~ResourceService()
 {
+    m_locationList.clear();
     Zen::Threading::MutexFactory::destroy(m_pLocationListMutex);
     Zen::Threading::MutexFactory::destroy(m_pGroupInitLock);
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 int
 ResourceService::getEndianState()
 {

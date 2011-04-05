@@ -68,8 +68,8 @@ SoundService::SoundService(config_type& _config)
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 SoundService::~SoundService()
 {
-    for(Sources_type::iterator iter = m_sources.begin(); iter != m_sources.end(); iter++)
-        m_sources.erase(iter);
+    m_sources.clear();
+    alutExit();
     Zen::Threading::MutexFactory::destroy(m_pSourcesMutex);
 }
 
