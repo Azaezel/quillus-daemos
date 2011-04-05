@@ -81,6 +81,7 @@ private:
     void destroyResource(wpResource_type);
     bool findFile(const boost::filesystem::path& _dir_path, const std::string& _file_name, boost::filesystem::path& _path_found);
     ALvoid* loadVorbisBuffer(const char* _fileName, ALenum* _format, ALsizei* _size, ALfloat* _frequency);
+    int getEndianState();
     /// @}
 
     /// @name 'Structors
@@ -115,6 +116,7 @@ private:
     Zen::Scripting::script_module*  m_pModule;
 
     ov_callbacks	                m_file_callbacks;
+    int                             m_Endian;
     /// @}
 
 };  // class ResourceService

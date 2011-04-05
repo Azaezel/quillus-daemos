@@ -37,8 +37,6 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 
-#define OGG_ENDIAN 0 //as appropriate for your platform (0 for intel/little endian, 1 for ppc/big endian)
-
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 namespace Zen {
 namespace ZOpenAL {
@@ -82,6 +80,8 @@ ResourceService::ResourceService()
 	m_file_callbacks.seek_func = ov_seek_func;
 	m_file_callbacks.close_func = ov_close_func;
 	m_file_callbacks.tell_func = ov_tell_func;
+
+    m_Endian = getEndianState();
 }
 
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -91,6 +91,17 @@ ResourceService::~ResourceService()
     Zen::Threading::MutexFactory::destroy(m_pGroupInitLock);
 }
 
+int
+ResourceService::getEndianState()
+{
+    int i = 1;
+    char *p = (char *)&i;
+
+    if (p[0] == 1)
+        return 0; //LITTLE_ENDIAN
+    else
+        return 1; //BIG_ENDIAN
+}
 //-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ResourceService::addResourceLocation(const std::string& _path, const std::string& _type,
@@ -313,7 +324,7 @@ ResourceService::loadVorbisBuffer(const char* _fileName, ALenum* _format, ALsize
                 BYTE *bufpt = data;
                 while (todo)
                 {
-                    int read = ov_read(&oggFile, (char *) bufpt, todo, OGG_ENDIAN, 2, 1, &bs);
+                    int read = ov_read(&oggFile, (char *) bufpt, todo, m_Endian, 2, 1, &bs);
                         todo -= read;
                         bufpt += read;
                 }
