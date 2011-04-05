@@ -55,7 +55,7 @@ SoundTests::setUp()
 {
     boost::filesystem::path configPath = boost::filesystem::system_complete
         (
-            boost::filesystem::path("SoundTests.xml", boost::filesystem::native)
+            boost::filesystem::path("Engine/SoundTests.xml", boost::filesystem::native)
         ).normalize();
 
     m_pApp = Zen::Plugins::I_PluginManager::getSingleton()
