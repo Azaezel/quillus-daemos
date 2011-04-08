@@ -59,9 +59,10 @@ SoundService::SoundService(config_type& _config)
     // Check for EAX 2.0 support
     m_eaxEnabled = static_cast<bool>(alIsExtensionPresent("EAX2.0"));
     alGetError(); // clear error code
-    m_maxSources = 128;                     // verry verry unlikely to see a card that can handle this many sources
-    m_listenRadius = 20.0f;
     m_listenMatrix.identity();
+    setListenMatrix(m_listenMatrix);
+    m_listenRadius = 2000.0f;
+    m_maxSources = 128;
     alListener3f(AL_POSITION, 0, 0, 0);
 }
 

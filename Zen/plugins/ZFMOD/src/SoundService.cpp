@@ -163,6 +163,7 @@ SoundService::processEvents(Zen::Math::Real _deltaTime)
         //kill off finished, or should have finished if we were in range sounds
         if ((*iter)->getPlayState() == Source::STOPPED)
         {
+            (*iter)->stop();
             iter = m_sources.erase( iter );
         }
         else

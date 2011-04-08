@@ -84,7 +84,7 @@ SoundServiceFactory::onDestroy(wpSoundService_type& _pService)
     }
     else
     {
-        // TODO : Error
+        throw Zen::Utility::runtime_exception("SoundServiceFactory::onDestroy : Invalid type.");
     }
 }
 
